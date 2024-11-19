@@ -1,0 +1,64 @@
+FROM golang:1.23-bookworm
+
+# 安装软件
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    locales \
+    curl \
+    net-tools \
+    wget \
+    vim \
+    iputils-ping \
+    make \
+    openssh-server \
+    git \
+    unzip \
+    php-cli \
+    php-mbstring \
+    php-pgsql \
+    php-dom \
+    php-curl \
+    php-zip \
+    php-igbinary \
+    php-msgpack \
+    php-bcmath \
+    php-gd \
+    php-imagick \
+    composer \
+    npm && \
+    sed -i '/zh_CN.UTF-8/s/^# //g' /etc/locale.gen && \
+    locale-gen && \
+    update-locale LANG=zh_CN.UTF-8 LC_ALL=zh_CN.UTF-8 && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# 设置语言环境变量
+ENV LANG=zh_CN.UTF-8 \
+    LANGUAGE=zh_CN:zh \
+    LC_ALL=zh_CN.UTF-8
+
+# PHP 扩展配置
+COPY docker/main/edl.so /usr/lib/php/20220829/
+RUN mkdir -p /etc/php/8.2/cli/conf.d && \
+    echo "extension=edl.so" > /etc/php/8.2/cli/conf.d/20-edl.ini && \
+    chmod 644 /etc/php/8.2/cli/conf.d/20-edl.ini && \
+    chmod 644 /usr/lib/php/20220829/edl.so
+
+# 配置SSH
+RUN mkdir -p /var/run/sshd && \
+    echo 'root:root' | chpasswd && \
+    sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+    echo "PATH=${PATH}" > /etc/profile.d/environment.sh && \
+    echo 'cd /var/www' >> /root/.bashrc
+
+# 配置git
+RUN git config --global core.editor "vim" && \
+    git config --global pull.rebase false && \
+    git config --global credential.helper store
+
+# 配置代理
+RUN npm config set registry https://registry.npmmirror.com && \
+    go env -w GOPROXY=https://goproxy.cn,direct
+
+# 工作目录
+WORKDIR /var/www/

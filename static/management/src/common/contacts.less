@@ -1,0 +1,108 @@
+.contact-box {
+    font-size: 12px;
+
+    .contact-item {
+        cursor: pointer;
+        width: 100%;
+        padding: 8px 16px;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+
+        &:hover {
+            background: #F2F4F7;
+        }
+
+        &.active {
+            background: #E5EFFF;
+            border-left: 2px solid #2475FC;
+        }
+
+        &:last-child {
+            border-bottom: none;
+        }
+
+        .left {
+            flex-shrink: 0;
+            width: 40px;
+            padding-top: 4px;
+            margin-right: 8px;
+
+            .avatar {
+                width: 40px;
+                height: 40px;
+                border-radius: 2px;
+            }
+        }
+
+        .right {
+            flex-shrink: 0;
+            width: calc(100% - 40px);
+            line-height: 18px;
+
+            .userinfo {
+                display: flex;
+                align-items: center;
+                width: calc(100% - 20px);
+
+                .user-name {
+                    font-size: 12px;
+                    font-weight: 400;
+                    color: #595959;
+                    max-width: 95%;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+
+                .corp-name.is-wx {
+                    color: #07C160;
+                }
+
+                .corp-name {
+                    font-size: 12px;
+                    font-weight: 400;
+                    color: #E07B00;
+                    max-width: 95%;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+            }
+
+            .wx-info {
+                font-size: 12px;
+                color: #8C8C8C;
+            }
+
+            .last-msg {
+                font-size: 12px;
+                font-weight: 400;
+                color: #8C8C8C;
+                display: flex;
+                align-items: center;
+            }
+        }
+
+        .is-new-tag {
+            color: #fa541c;
+            font-size: 12px;
+            font-weight: 400;
+            padding: 0 3px;
+            border-radius: 2px;
+            border: 1px solid #FABEAA;
+            margin-right: 4px;
+        }
+
+        .is-read-tag {
+            color: #8C8C8C;
+            font-size: 12px;
+            font-weight: 400;
+            padding: 0 3px;
+            border-radius: 2px;
+            border: 1px solid #D9D9D9;
+            margin-right: 4px;
+            white-space: nowrap;
+        }
+    }
+}

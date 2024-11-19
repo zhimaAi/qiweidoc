@@ -1,0 +1,67 @@
+{
+  "name": "zmwk_session_archive",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
+  },
+  "dependencies": {
+    "ant-design-vue": "^4.2.5",
+    "axios": "^1.7.7",
+    "benz-amr-recorder": "^1.1.5",
+    "core-js": "^3.8.3",
+    "dayjs": "^1.11.13",
+    "deploy": "^1.0.3",
+    "qs": "^6.13.0",
+    "run": "^1.5.0",
+    "v-viewer": "^3.0.21",
+    "video-player": "^0.0.1",
+    "viewerjs": "^1.11.6",
+    "vue": "^3.2.13",
+    "vue-clipboard3": "^2.0.0",
+    "vue-router": "^4.0.3",
+    "vue-virtual-scroller": "^2.0.0-beta.8",
+    "vuex": "^4.0.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.16",
+    "@babel/eslint-parser": "^7.12.16",
+    "@vue/cli-plugin-babel": "~5.0.0",
+    "@vue/cli-plugin-eslint": "~5.0.0",
+    "@vue/cli-plugin-router": "~5.0.0",
+    "@vue/cli-plugin-vuex": "~5.0.0",
+    "@vue/cli-service": "~5.0.0",
+    "eslint": "^7.32.0",
+    "eslint-plugin-vue": "^8.0.3",
+    "less": "^4.0.0",
+    "less-loader": "^8.0.0",
+    "svg-sprite-loader": "^6.0.11",
+    "svgo-loader": "^4.0.0",
+    "vitepress": "^1.5.0"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/vue3-essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "@babel/eslint-parser"
+    },
+    "rules": {}
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ]
+}

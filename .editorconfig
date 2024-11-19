@@ -1,0 +1,28 @@
+# editorconfig.org
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+
+[*.php]
+ij_php_space_before_short_closure_left_parenthesis = false
+ij_php_space_after_type_cast = true
+
+# 注释配置
+# 取消行注释在第一列
+ij_php_line_comment_at_first_column = false
+# 在行注释开始处添加空格
+ij_php_line_comment_add_space = true
+
+
+[*.md]
+trim_trailing_whitespace = false
+
+[{*.yml,*.yaml}]
+indent_size = 2

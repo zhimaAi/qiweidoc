@@ -1,0 +1,9 @@
+.env
+.git
+vendor
+node_modules
+*.log
+*.bin
+runtime/debug/*
+runtime/logs/*
+runtime/cache/*
