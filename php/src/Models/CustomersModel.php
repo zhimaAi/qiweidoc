@@ -12,7 +12,7 @@ class CustomersModel extends BaseModel
         return "customers";
     }
 
-    protected function getPrimaryKeys(): string | array
+    public function getPrimaryKeys(): string | array
     {
         return "id";
     }
@@ -37,7 +37,7 @@ class CustomersModel extends BaseModel
                 ['external_userid' => $externalUserid],
             ])
             ->getOne();
-        if (!empty($customer)) {
+        if (! empty($customer)) {
             $customer->update(['has_conversation' => true]);
         }
     }

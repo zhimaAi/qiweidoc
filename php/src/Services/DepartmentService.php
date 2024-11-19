@@ -3,7 +3,6 @@
 
 namespace App\Services;
 
-use App\Libraries\Core\Yii;
 use App\Models\DepartmentModel;
 use App\Models\UserModel;
 use Throwable;

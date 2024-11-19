@@ -28,7 +28,7 @@ class ChatSessionService
     {
         // 拼接客户信息查询sql
         $customerWhere = "";
-        if (!empty($search['keyword'])) {
+        if (! empty($search['keyword'])) {
             $customerWhere .= " and (c.external_name ilike '%{$search['keyword']}%' or c.external_userid = '{$search['keyword']}')";
         }
 
@@ -36,7 +36,7 @@ class ChatSessionService
         $whereSql = "";
         $toWhere = "";
         $fromWhere = "";
-        if (!empty($search["conversation_id"])) {
+        if (! empty($search["conversation_id"])) {
             $whereSql .= " and v.id = '" . $search["conversation_id"] . "'";
         } else {
             if (empty($staffUserId)) {
@@ -81,7 +81,7 @@ SQL;
     {
         // 拼接员工名称搜索sql
         $staffWhere = "";
-        if (!empty($search['keyword'])) {
+        if (! empty($search['keyword'])) {
             $staffWhere .= " and s.name ilike '%{$search['keyword']}%'";
         }
 
@@ -89,7 +89,7 @@ SQL;
         $whereSql = "";
         $toWhere = "";
         $fromWhere = "";
-        if (!empty($search["conversation_id"])) {
+        if (! empty($search["conversation_id"])) {
             $whereSql .= " and v.id = '" . $search["conversation_id"] . "'";
         } else {
             if (empty($staffUserId)) {
@@ -126,12 +126,12 @@ SQL;
         // 获取部门id和名称的映射
         $departmentListIndex = [];
         $departmentIdList = array_unique(array_column($listRes, 'main_department'));
-        if (!empty($departmentIdList)) {
+        if (! empty($departmentIdList)) {
             $departmentList = DepartmentModel::query()
                 ->select(['department_id', 'name', 'corp_id'])
                 ->where(['and',
                     ['corp_id' => $corp->get('id')],
-                    ['in', 'department_id', $departmentIdList]
+                    ['in', 'department_id', $departmentIdList],
                 ])
                 ->getAll();
             $departmentListIndex = ArrayHelper::index($departmentList->toArray(), 'department_id');
@@ -153,7 +153,7 @@ SQL;
     {
         // 拼接群聊查询参数
         $groupWhere = "";
-        if (!empty($search['keyword'])) {
+        if (! empty($search['keyword'])) {
             $groupWhere .= " and g.name ilike '%{$search['keyword']}%'";
         }
 
@@ -161,7 +161,7 @@ SQL;
         $whereSql = "";
         $toWhere = "";
         $fromWhere = "";
-        if (!empty($search["conversation_id"])) {
+        if (! empty($search["conversation_id"])) {
             $whereSql .= " and v.id = '" . $search["conversation_id"] . "'";
         } else {
             if (empty($staffUserId)) {
@@ -206,7 +206,7 @@ SQL;
     {
         // 拼接员工名称搜索sql
         $staffWhere = "";
-        if (!empty($search['keyword'])) {
+        if (! empty($search['keyword'])) {
             $staffWhere .= " and s.name ilike '{$search['keyword']}'";
         }
 
@@ -214,7 +214,7 @@ SQL;
         $whereSql = "";
         $toWhere = "";
         $fromWhere = "";
-        if (!empty($search["conversation_id"])) {
+        if (! empty($search["conversation_id"])) {
             $whereSql .= " and v.id = '" . $search["conversation_id"] . "'";
         } else {
             if (empty($externalUserid)) {
@@ -251,12 +251,12 @@ SQL;
         // 获取部门id和名称的映射
         $departmentListIndex = [];
         $departmentIdList = array_unique(array_column($listRes, 'main_department'));
-        if (!empty($departmentIdList)) {
+        if (! empty($departmentIdList)) {
             $departmentList = DepartmentModel::query()
                 ->select(['department_id', 'name', 'corp_id'])
                 ->where(['and',
                     ['corp_id' => $corp->get('id')],
-                    ['in', 'department_id', $departmentIdList]
+                    ['in', 'department_id', $departmentIdList],
                 ])
                 ->getAll();
             $departmentListIndex = ArrayHelper::index($departmentList->toArray(), 'department_id');
@@ -384,7 +384,7 @@ SQL;
                 ->select(['id', 'name', 'status', 'enable', 'alias', 'corp_id', 'userid', 'main_department'])
                 ->where(['and',
                     ['corp_id' => $corp->get('id')],
-                    ['in', 'userid', $staffUseridList]
+                    ['in', 'userid', $staffUseridList],
                 ])
                 ->getAll();
 
@@ -394,7 +394,7 @@ SQL;
                 ->select(['department_id', 'name', 'corp_id'])
                 ->where(['and',
                     ['corp_id' => $corp->get('id')],
-                    ['in', 'department_id', $departmentIdList]
+                    ['in', 'department_id', $departmentIdList],
                 ])
                 ->getAll();
             $departmentListIndex = ArrayHelper::index($departmentList->toArray(), 'department_id');
@@ -411,7 +411,7 @@ SQL;
 
         // 提取出所有相关的客户信息
         $customerListMap = [];
-        if (!empty($customerExternalUseridList)) {
+        if (! empty($customerExternalUseridList)) {
             $customerList = CustomersModel::query()
                 ->select(['id', 'avatar', 'corp_id', 'gender', 'external_userid', 'external_name'])
                 ->where(['and',
@@ -470,7 +470,7 @@ SQL;
 
         //发送人
         $fromUserIds = [];
-        if (!empty($data["from"]) && !empty($data["from_type"])) {
+        if (! empty($data["from"]) && ! empty($data["from_type"])) {
             if ($data["from_type"] == ChatMessageRole::Customer->value) {//员工
                 $customerUserList = CustomersModel::query()
                     ->where(['and',
@@ -497,7 +497,7 @@ SQL;
             ->andWhere(['<', 'msg_time', $stop_time]);
 
         //存在发送人
-        if (!empty($fromUserIds)) {
+        if (! empty($fromUserIds)) {
             $query->andWhere(['in', 'from', array_values(array_unique($fromUserIds))]);
         }
 
@@ -518,7 +518,7 @@ SQL;
             $cstUserIds = [];
 
             foreach ($res['items'] as $item) {
-                 /** @var ChatMessageModel $item */
+                /** @var ChatMessageModel $item */
 
                 //群聊
                 if ($item->get('roomid') != "") {
@@ -541,7 +541,7 @@ SQL;
             }
 
             //查询群信息
-            if (!empty($roomIds)) {
+            if (! empty($roomIds)) {
                 $groupDetail = GroupModel::query()
                     ->select(["chat_id", "name", "member_list"])
                     ->where(['and',
@@ -553,24 +553,24 @@ SQL;
             }
 
             //查询员工信息
-            if (!empty($staffUserIds)) {
+            if (! empty($staffUserIds)) {
                 $staffUserInfo = StaffModel::query()
                     ->select(["name", "userid"])
                     ->where(['and',
                         ['corp_id' => $currentUser->get('corp_id')],
-                        ['in', 'userid', array_values(array_unique($staffUserIds))]
+                        ['in', 'userid', array_values(array_unique($staffUserIds))],
                     ])
                     ->getAll();
                 $staffUserInfoIndex = ArrayHelper::index($staffUserInfo->toArray(), "userid");
             }
 
             //查询客户信息
-            if (!empty($cstUserIds)) {
+            if (! empty($cstUserIds)) {
                 $customerInfo = CustomersModel::query()
                     ->select(["external_name", "external_userid", "avatar"])
                     ->where(['and',
                         ['corp_id' => $currentUser->get('corp_id')],
-                        ['in', 'external_userid', array_values(array_unique($cstUserIds))]
+                        ['in', 'external_userid', array_values(array_unique($cstUserIds))],
                     ])
                     ->getAll();
                 $customerInfoIndex = ArrayHelper::index($customerInfo->toArray(), "externalUserid");
@@ -583,7 +583,7 @@ SQL;
             //群聊，追加群信息
             if ($message->get('roomid') != "") {
                 $group_name = "已删除群聊";
-                if (!empty($groupDetailIndex[$message->get('roomid')])) {
+                if (! empty($groupDetailIndex[$message->get('roomid')])) {
                     $group_name = $groupDetailIndex[$message->get('roomid')]['name'];
                 }
                 $message->append("group_info", [
@@ -595,7 +595,7 @@ SQL;
                 case ChatMessageRole::Customer:
                     $name = "";
                     $avatar = "";
-                    if (!empty($customerInfoIndex[$message->get('from')])) {
+                    if (! empty($customerInfoIndex[$message->get('from')])) {
                         $name = $customerInfoIndex[$message->get('from')]['external_name'];
                         $avatar = $customerInfoIndex[$message->get('from')]['avatar'];
                     }
@@ -608,7 +608,7 @@ SQL;
                     break;
                 case ChatMessageRole::Staff:
                     $name = "";
-                    if (!empty($staffUserInfoIndex[$message->get('from')])) {
+                    if (! empty($staffUserInfoIndex[$message->get('from')])) {
                         $name = $staffUserInfoIndex[$message->get('from')]['name'];
                     }
 
@@ -624,7 +624,7 @@ SQL;
                     $memberListIndex = ArrayHelper::index($groupDetailIndex[$message->get('roomid')]['member_list'], "userid");
 
                     $name = "";
-                    if (!empty($memberListIndex[$message->get('from')])) {
+                    if (! empty($memberListIndex[$message->get('from')])) {
                         $name = $memberListIndex[$message->get('from')]["name"];
                     }
 
@@ -644,7 +644,7 @@ SQL;
                     $name = "";
                     $avatar = "";
 
-                    if (!empty($customerInfoIndex[$message->get('to_list')[0]])) {
+                    if (! empty($customerInfoIndex[$message->get('to_list')[0]])) {
                         $name = $customerInfoIndex[$message->get('to_list')[0]]['external_name'];
                         $avatar = $customerInfoIndex[$message->get('to_list')[0]]['avatar'];
                     }
@@ -657,7 +657,7 @@ SQL;
                     break;
                 case ChatMessageRole::Staff:
                     $name = "";
-                    if (!empty($staffUserInfoIndex[$message->get('to_list')[0]])) {
+                    if (! empty($staffUserInfoIndex[$message->get('to_list')[0]])) {
                         $name = $staffUserInfoIndex[$message->get('to_list')[0]]['name'];
                     }
                     $message->append("receiver_info", [

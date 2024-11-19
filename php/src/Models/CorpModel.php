@@ -26,7 +26,7 @@ class CorpModel extends BaseModel
         return "corps";
     }
 
-    protected function getPrimaryKeys(): string | array
+    public function getPrimaryKeys(): string | array
     {
         return "id";
     }

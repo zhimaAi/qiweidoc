@@ -3,14 +3,9 @@
 
 declare(strict_types=1);
 
-use Cycle\Database\Config\Postgres\DsnConnectionConfig;
-use Cycle\Database\Config\PostgresDriverConfig;
-use Cycle\Schema\Provider\FromFilesSchemaProvider;
-use Cycle\Schema\Provider\SimpleCacheSchemaProvider;
 use Yiisoft\Assets\AssetManager;
 use Yiisoft\Db\Pgsql\Dsn;
 use Yiisoft\Definitions\Reference;
-use Yiisoft\Yii\Cycle\Schema\Provider\FromConveyorSchemaProvider;
 
 return [
     'supportEmail' => 'support@example.com',

@@ -13,7 +13,7 @@ class StaffModel extends BaseModel
         return "staff";
     }
 
-    protected function getPrimaryKeys(): string | array
+    public function getPrimaryKeys(): string | array
     {
         return "id";
     }
@@ -41,7 +41,7 @@ class StaffModel extends BaseModel
                 ['userid' => $userid],
             ])
             ->getOne();
-        if (!empty($staff)) {
+        if (! empty($staff)) {
             $staff->update(['has_conversation' => true]);
         }
     }

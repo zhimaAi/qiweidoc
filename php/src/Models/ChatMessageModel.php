@@ -14,7 +14,7 @@ class ChatMessageModel extends BaseModel
         return "chat_messages";
     }
 
-    protected function getPrimaryKeys(): string | array
+    public function getPrimaryKeys(): string | array
     {
         return "msg_id";
     }

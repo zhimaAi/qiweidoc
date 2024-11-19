@@ -4,7 +4,6 @@
 declare(strict_types=1);
 
 use Predis\Client;
-use Psr\Container\ContainerInterface;
 use Yiisoft\Cache\Redis\RedisCache;
 
 /** @var array $params */

@@ -40,6 +40,7 @@ class CorpService
                 throw new LogicException("您的ip不在可信名单内");
             } else {
                 Yii::logger()->warning($e);
+
                 throw new LogicException("企业信息验证不通过");
             }
         }
@@ -49,6 +50,7 @@ class CorpService
             $corpModel->getWechatApi('/cgi-bin/agent/get', ['agentid' => $corpInfoDTO->agentId]);
         } catch (Throwable $e) {
             Yii::logger()->warning($e);
+
             throw new LogicException("应用id不正确");
         }
 

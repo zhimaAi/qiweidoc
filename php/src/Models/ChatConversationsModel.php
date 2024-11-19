@@ -14,7 +14,7 @@ class ChatConversationsModel extends BaseModel
         return "chat_conversations";
     }
 
-    protected function getPrimaryKeys(): string | array
+    public function getPrimaryKeys(): string | array
     {
         return "id";
     }

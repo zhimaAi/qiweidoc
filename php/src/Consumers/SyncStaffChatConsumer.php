@@ -4,9 +4,7 @@
 namespace App\Consumers;
 
 use App\Libraries\Core\Consumer\BaseConsumer;
-use App\Libraries\Core\Yii;
 use App\Models\CorpModel;
-use App\Models\GroupModel;
 use App\Models\StaffModel;
 
 /**
@@ -37,7 +35,7 @@ class SyncStaffChatConsumer extends BaseConsumer
         $res = $this->corpInfo->getWechatApi("cgi-bin/msgaudit/get_permit_user_list", [], CorpModel::SecretTypeChat);
 
         $chatUserIds = [];
-        if (!empty($res["ids"])) {//这是开了会话存档的员工
+        if (! empty($res["ids"])) {//这是开了会话存档的员工
             $chatUserIds = $res["ids"];
             StaffModel::query()
                 ->where(['and',

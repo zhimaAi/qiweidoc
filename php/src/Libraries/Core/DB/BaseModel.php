@@ -19,7 +19,7 @@ abstract class BaseModel
 
     abstract public function getTableName(): string;
 
-    abstract protected function getPrimaryKeys(): string | array;
+    abstract public function getPrimaryKeys(): string | array;
 
     abstract protected function casts(): array;
 
@@ -35,7 +35,7 @@ abstract class BaseModel
     {
         return [
             'created_at' => 'created_at',
-            'updated_at' => 'updated_at'
+            'updated_at' => 'updated_at',
         ];
     }
 
@@ -72,10 +72,10 @@ abstract class BaseModel
         $model->exists = false;
 
         $timestampFields = $model->getTimestampFields();
-        if (!empty($timestampFields['created_at'])) {
+        if (! empty($timestampFields['created_at'])) {
             $attributes[$timestampFields['created_at']] = now();
         }
-        if (!empty($timestampFields['updated_at'])) {
+        if (! empty($timestampFields['updated_at'])) {
             $attributes[$timestampFields['updated_at']] = now();
         }
         foreach ($attributes as $field => $value) {
@@ -155,10 +155,10 @@ abstract class BaseModel
 
         return match ($cast) {
             'array' => is_array($value) ? $value : json_decode($value, true),
-            'int' => (int)$value,
-            'float' => (float)$value,
-            'bool' => (bool)$value,
-            'string' => (string)$value,
+            'int' => (int) $value,
+            'float' => (float) $value,
+            'bool' => (bool) $value,
+            'string' => (string) $value,
             default => $this->handleEnumCast($cast, $value),
         };
     }
@@ -219,6 +219,7 @@ abstract class BaseModel
         if ($value !== null) {
             return $this->transform($field, $value);
         }
+
         return $default;
     }
 
@@ -248,10 +249,11 @@ abstract class BaseModel
     {
         $dirty = [];
         foreach ($this->attributes as $key => $value) {
-            if (!array_key_exists($key, $this->original) || $this->original[$key] !== $value) {
+            if (! array_key_exists($key, $this->original) || $this->original[$key] !== $value) {
                 $dirty[$key] = $value;
             }
         }
+
         return $dirty;
     }
 
@@ -259,6 +261,7 @@ abstract class BaseModel
     {
         try {
             $this->saveOrFail();
+
             return true;
         } catch (Throwable) {
             return false;
@@ -281,15 +284,16 @@ abstract class BaseModel
         $timestampFields = $model->getTimestampFields();
 
         foreach ($rows as &$row) {
-            if (!empty($timestampFields['created_at'])) {
+            if (! empty($timestampFields['created_at'])) {
                 $row[$timestampFields['created_at']] = now();
             }
-            if (!empty($timestampFields['updated_at'])) {
+            if (! empty($timestampFields['updated_at'])) {
                 $row[$timestampFields['updated_at']] = now();
             }
         }
 
         $columns = array_keys(reset($rows));
+
         return $model->executeCommand(function ($db) use ($model, $columns, $rows) {
             return $db->createCommand()->batchInsert($model->getTableName(), $columns, $rows)->execute();
         });
@@ -316,11 +320,11 @@ abstract class BaseModel
                 return;
             }
 
-            if (!empty($this->getTimestampFields()['updated_at'])) {
+            if (! empty($this->getTimestampFields()['updated_at'])) {
                 $dirty[$this->getTimestampFields()['updated_at']] = now();
             }
 
-            $primaryKeys = (array)$this->getPrimaryKeys();
+            $primaryKeys = (array) $this->getPrimaryKeys();
             $condition = array_intersect_key($this->original, array_flip($primaryKeys));
 
             $this->executeCommand(function ($db) use ($dirty, $condition) {
@@ -328,7 +332,7 @@ abstract class BaseModel
             });
         } else {
             // 对于非自增主键（如UUID），在插入前必须确保主键值已设置
-            if (!$this->isAutoIncrementPK()) {
+            if (! $this->isAutoIncrementPK()) {
                 $pk = $this->getPrimaryKeys();
                 if (is_string($pk) && empty($this->attributes[$pk])) {
                     throw new RuntimeException('Primary key value must be set for non-auto-increment primary key.');
@@ -358,6 +362,7 @@ abstract class BaseModel
     {
         try {
             $this->deleteOrFail();
+
             return true;
         } catch (Throwable) {
             return false;
@@ -369,11 +374,11 @@ abstract class BaseModel
      */
     public function deleteOrFail(): void
     {
-        if (!$this->exists) {
+        if (! $this->exists) {
             throw new RuntimeException('Model does not exist.');
         }
 
-        $primaryKeys = (array)$this->getPrimaryKeys();
+        $primaryKeys = (array) $this->getPrimaryKeys();
         $condition = array_intersect_key($this->attributes, array_flip($primaryKeys));
 
         $this->executeCommand(function ($db) use ($condition) {
@@ -392,12 +397,14 @@ abstract class BaseModel
         try {
             $result = $command(Yii::db());
             self::$lastSql = Yii::db()->createCommand()->getRawSql();
+
             return $result;
         } catch (Throwable $e) {
             self::$lastSql = Yii::db()->createCommand()->getRawSql();
             if (Yii::isDebug()) {
                 throw new Exception("sql执行出错：" . self::$lastSql . $e->getMessage(), 500, $e);
             }
+
             throw $e;
         }
     }

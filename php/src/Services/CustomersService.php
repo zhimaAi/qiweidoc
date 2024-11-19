@@ -29,7 +29,7 @@ class CustomersService
         if (! empty($data["keyword"])) {
             $query->andWhere(['or',
                 ['ilike', 'external_name', $data['keyword']],
-                ['external_userid' => $data['keyword']]
+                ['external_userid' => $data['keyword']],
             ]);
         }
 
@@ -44,7 +44,7 @@ class CustomersService
         }
 
         //有过会话记录的
-        if (!empty($data['has_conversation'])) {
+        if (! empty($data['has_conversation'])) {
             $query->andWhere(['has_conversation' => true]);
         }
 
@@ -67,7 +67,7 @@ class CustomersService
                 $customerTag = CustomerTagModel::query()
                     ->where(['and',
                         ['corp_id' => $corp->get('id')],
-                        ['in', 'tag_id', $tagIdList]
+                        ['in', 'tag_id', $tagIdList],
                     ])
                     ->getAll()
                     ->toArray();

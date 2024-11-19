@@ -9,7 +9,6 @@ use App\Models\CorpModel;
 use App\Services\CustomersService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Yiisoft\Auth\Middleware\Authentication;
 
 class CustomersController extends BaseController
 {

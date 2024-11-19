@@ -12,7 +12,7 @@ class DepartmentModel extends BaseModel
         return "department";
     }
 
-    protected function getPrimaryKeys(): string | array
+    public function getPrimaryKeys(): string | array
     {
         return "id";
     }

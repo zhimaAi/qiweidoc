@@ -42,17 +42,17 @@ class StaffService
         if (! empty($data["keyword"])) {
             $query->andWhere(['or',
                 ['ilike', 'name', $data["keyword"]],
-                ['userid' => $data['keyword']]
+                ['userid' => $data['keyword']],
             ]);
         }
 
         // 是否在会话存档中
-        if (!empty($data['chat_status'])) {
+        if (! empty($data['chat_status'])) {
             $query->andWhere(["chat_status" => $data["chat_status"]]);
         }
 
         // 员工ID筛选
-        if (!empty($data["userid"])) {
+        if (! empty($data["userid"])) {
             $query->andWhere(["userid" => $data["userid"]]);
         }
 
@@ -99,7 +99,7 @@ class StaffService
                     ->select(["tag_id", "tag_name"])
                     ->where(['and',
                         ['corp_id' => $corp->get('id')],
-                        ['in', 'tag_id', $allTagsId]
+                        ['in', 'tag_id', $allTagsId],
                     ])
                     ->getAll()
                     ->toArray();

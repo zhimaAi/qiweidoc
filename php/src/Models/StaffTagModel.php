@@ -12,7 +12,7 @@ class StaffTagModel extends BaseModel
         return "staff_tag";
     }
 
-    protected function getPrimaryKeys(): string | array
+    public function getPrimaryKeys(): string | array
     {
         return "id";
     }

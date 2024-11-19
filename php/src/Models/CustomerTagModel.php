@@ -12,7 +12,7 @@ class CustomerTagModel extends BaseModel
         return "customer_tag";
     }
 
-    protected function getPrimaryKeys(): string | array
+    public function getPrimaryKeys(): string | array
     {
         return "id";
     }

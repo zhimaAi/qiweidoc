@@ -53,7 +53,7 @@ class SyncDepartmentConsumer extends BaseConsumer
     public function syncDepartmentList()
     {
         // 查询库里面所有的部门列表
-        $dbDepartmentIds = DepartmentModel::query()->getAll()->map(fn($item) => $item->get('department_id'))->toArray();
+        $dbDepartmentIds = DepartmentModel::query()->getAll()->map(fn ($item) => $item->get('department_id'))->toArray();
 
         $res = $this->corpInfo->getWechatApi("/cgi-bin/department/simplelist");
         if (empty($res['department_id'])) {
@@ -159,7 +159,7 @@ class SyncDepartmentConsumer extends BaseConsumer
         foreach ($res["taglist"] as $tagInfo) {
             StaffTagModel::updateOrCreate(['and',
                 ["corp_id" => $this->corpInfo->get('id')],
-                ["tag_id" => $tagInfo["tagid"]]
+                ["tag_id" => $tagInfo["tagid"]],
             ], [
                 "corp_id" => $this->corpInfo->get('id'),
                 "tag_id" => $tagInfo["tagid"],

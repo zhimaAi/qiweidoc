@@ -20,6 +20,7 @@ class ModelCollection extends ArrayCollection
             if (is_object($element) && method_exists($element, 'toArray')) {
                 return $element->toArray();
             }
+
             return $element;
         }, $elements);
     }

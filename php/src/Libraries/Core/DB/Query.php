@@ -28,13 +28,16 @@ class Query extends \Yiisoft\Db\Query\Query
         try {
             $result = $command();
             BaseModel::$lastSql = $this->createCommand()->getRawSql();
+
             return $result;
         } catch (Throwable $e) {
             BaseModel::$lastSql = $this->createCommand()->getRawSql();
             if (Yii::isDebug()) {
                 ddump(BaseModel::$lastSql);
+
                 throw new Exception("sql执行出错：" . BaseModel::$lastSql . $e->getMessage(), 500, $e);
             }
+
             throw $e;
         }
     }
@@ -46,7 +49,7 @@ class Query extends \Yiisoft\Db\Query\Query
      */
     public function getOne(): BaseModel | null
     {
-        $attributes = $this->executeCommand(fn() => $this->one());
+        $attributes = $this->executeCommand(fn () => $this->one());
 
         if (empty($attributes)) {
             return null;
@@ -55,6 +58,7 @@ class Query extends \Yiisoft\Db\Query\Query
         $modelClass = get_class($this->model);
         $model = new $modelClass();
         $model->setAttributes($attributes, true);
+
         return $model;
     }
 
@@ -66,7 +70,7 @@ class Query extends \Yiisoft\Db\Query\Query
     public function getAll(): ModelCollection
     {
         $collection = new ModelCollection();
-        $all = $this->executeCommand(fn() => $this->all());
+        $all = $this->executeCommand(fn () => $this->all());
 
         $modelClass = get_class($this->model);
         foreach ($all as $attributes) {
@@ -94,7 +98,7 @@ class Query extends \Yiisoft\Db\Query\Query
     public function paginate(int $page = 1, int $size = 20): array
     {
         $total = $this->count();
-        $totalPage = (int)ceil($total / $size);
+        $totalPage = (int) ceil($total / $size);
 
         $items = $this->offset(($page - 1) * $size)
             ->limit($size)
@@ -118,7 +122,7 @@ class Query extends \Yiisoft\Db\Query\Query
      */
     public function update(array $attributes): int
     {
-        if (!empty($this->model->getTimestampFields()['updated_at'])) {
+        if (! empty($this->model->getTimestampFields()['updated_at'])) {
             $attributes['updated_at'] = now();
         }
 

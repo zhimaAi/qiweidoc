@@ -4,7 +4,6 @@
 namespace App\Consumers;
 
 use App\Libraries\Core\Consumer\BaseConsumer;
-use App\Libraries\Core\Yii;
 use App\Models\CorpModel;
 use App\Models\CustomerTagModel;
 

@@ -12,7 +12,7 @@ class GroupModel extends BaseModel
         return "groups";
     }
 
-    protected function getPrimaryKeys(): string | array
+    public function getPrimaryKeys(): string | array
     {
         return "id";
     }
@@ -36,7 +36,7 @@ class GroupModel extends BaseModel
                 ['chat_id' => $chatId],
             ])
             ->getOne();
-        if (!empty($group)) {
+        if (! empty($group)) {
             $group->update(['has_conversation' => true]);
         }
     }

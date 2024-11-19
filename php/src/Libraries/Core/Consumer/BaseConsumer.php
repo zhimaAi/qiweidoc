@@ -3,7 +3,6 @@
 
 namespace App\Libraries\Core\Consumer;
 
-use App\Libraries\Core\SmartSerializer;
 use App\Libraries\Core\Yii;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;

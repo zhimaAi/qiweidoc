@@ -98,6 +98,7 @@ service:
   SyncChatSessionArchive:
     service_name_in_log: true
     command: "php php/yii chat-session-message-pull"
+    remain_after_exit: true
 
 # 自定义插件minio配置,封装文件上传功能
 minio:

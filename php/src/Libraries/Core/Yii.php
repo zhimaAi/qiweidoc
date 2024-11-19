@@ -7,8 +7,6 @@
 
 namespace App\Libraries\Core;
 
-use Cycle\Database\DatabaseInterface;
-use Cycle\Database\DatabaseManager;
 use EasyWeChat\Kernel\Exceptions\InvalidArgumentException;
 use EasyWeChat\Work\Application;
 use Psr\Container\ContainerInterface;
@@ -62,7 +60,7 @@ final class Yii
 
     public static function isDebug()
     {
-        return self::params()['yiisoft/yii-debug']['enabled'];
+        return $_ENV['YII_DEBUG'];
     }
 
     public static function aliases(): Aliases

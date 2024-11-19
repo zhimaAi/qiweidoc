@@ -45,12 +45,12 @@ class GroupService
         if (! empty($data["start_time"]) && ! empty($data["stop_time"])) {
             $query->andWhere(['between',
                 date('Y-m-d H:i:s', $data['start_time']),
-                date('Y-m-d H:i:s', $data['stop_id'])
+                date('Y-m-d H:i:s', $data['stop_id']),
             ]);
         }
 
         //有过会话记录的
-        if (!empty($data['has_conversation'])) {
+        if (! empty($data['has_conversation'])) {
             $query->andWhere(['has_conversation' => true]);
         }
 
@@ -61,7 +61,7 @@ class GroupService
         }
 
         $res = $query->orderBy([$order_by => SORT_DESC])->paginate($data["page"] ?? 1, $data["size"] ?? 1);
-        if (!$res['items']->isEmpty()) {
+        if (! $res['items']->isEmpty()) {
             $staffListIndex = [];
             foreach ($res["items"] as $group) {
                 /** @var GroupModel $group */

@@ -21,7 +21,7 @@ class UserModel extends BaseModel implements IdentityInterface, IdentityWithToke
         return "users";
     }
 
-    protected function getPrimaryKeys(): string | array
+    public function getPrimaryKeys(): string | array
     {
         return "id";
     }
@@ -48,6 +48,7 @@ class UserModel extends BaseModel implements IdentityInterface, IdentityWithToke
             $decoded = JWT::decode($token, new Key(AuthService::getJwtKey(), 'HS256'));
             /** @var UserModel $result */
             $result = self::query()->where(['id' => $decoded->id])->getOne();
+
             return $result;
         } catch (\Exception $e) {
             return null;

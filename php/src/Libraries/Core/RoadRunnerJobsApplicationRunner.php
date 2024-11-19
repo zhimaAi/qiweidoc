@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace App\Libraries\Core;
 
 use App\Libraries\Core\Consumer\ConsumerInterface;
+use App\Libraries\Core\Consumer\SmartSerializer;
 use ErrorException;
 use function gc_collect_cycles;
 use JsonException;

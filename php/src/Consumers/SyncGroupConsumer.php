@@ -4,7 +4,6 @@
 namespace App\Consumers;
 
 use App\Libraries\Core\Consumer\BaseConsumer;
-use App\Libraries\Core\Yii;
 use App\Models\CorpModel;
 use App\Models\GroupModel;
 
@@ -136,7 +135,7 @@ class SyncGroupConsumer extends BaseConsumer
         GroupModel::query()
             ->where(['and',
                 ['corp_id' => $this->corpInfo->get('id')],
-                ['group_status' => 10]
+                ['group_status' => 10],
             ])
             ->deleteAll();
 
