@@ -7,6 +7,8 @@ volumes:
     driver: local
   nats_data:
     driver: local
+  main_certs_data:
+    driver: local
 
 services:
   db:
@@ -90,6 +92,8 @@ services:
       - minio
       - nats
       - redis
+    volumes:
+      - main_certs_data:/etc/letsencrypt
     ports:
       - ${EXTERNAL_HTTP_PORT:-80}:80
       - ${EXTERNAL_HTTPS_PORT:-443}:443

@@ -83,7 +83,7 @@ func getRoadrunner(cfgFile string) (*roadrunner.RR, error) {
 			`http.ssl.address=0.0.0.0:443`,
 			`http.ssl.acme.domains=`+acmeDomains,
 			`http.ssl.acme.email=`+acmeEmail,
-			`http.ssl.acme.certs_dir=/etc/letsencrypt`,
+			`http.ssl.acme.cache_dir=/etc/letsencrypt`,
 			`http.ssl.acme.use_production_endpoint=`+fmt.Sprintf("%t", isProd),
 		)
 	}
