@@ -573,7 +573,7 @@ SQL;
                         ['in', 'external_userid', array_values(array_unique($cstUserIds))],
                     ])
                     ->getAll();
-                $customerInfoIndex = ArrayHelper::index($customerInfo->toArray(), "externalUserid");
+                $customerInfoIndex = ArrayHelper::index($customerInfo->toArray(), "external_userid");
             }
         }
 

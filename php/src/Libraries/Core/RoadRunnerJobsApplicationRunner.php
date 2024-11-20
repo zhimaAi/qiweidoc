@@ -6,19 +6,11 @@ declare(strict_types=1);
 namespace App\Libraries\Core;
 
 use App\Libraries\Core\Consumer\ConsumerInterface;
-use App\Libraries\Core\Consumer\SmartSerializer;
-use ErrorException;
+use Throwable;
 use function gc_collect_cycles;
-use JsonException;
-use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
-use Psr\Container\NotFoundExceptionInterface;
 use Spiral\RoadRunner\Jobs\Consumer;
 use Spiral\RoadRunner\Jobs\Task\ReceivedTaskInterface;
-use Yiisoft\Definitions\Exception\CircularReferenceException;
-use Yiisoft\Definitions\Exception\InvalidConfigException;
-use Yiisoft\Definitions\Exception\NotInstantiableException;
-use Yiisoft\Di\NotFoundException;
 use Yiisoft\Di\StateResetter;
 use Yiisoft\Yii\Console\Application;
 use Yiisoft\Yii\Runner\ApplicationRunner;
@@ -71,8 +63,7 @@ final class RoadRunnerJobsApplicationRunner extends ApplicationRunner
     /**
      * {@inheritDoc}
      *
-     * @throws CircularReferenceException|ErrorException|InvalidConfigException|JsonException
-     * @throws ContainerExceptionInterface|NotFoundException|NotFoundExceptionInterface|NotInstantiableException
+     * @throws Throwable
      */
     public function run(): void
     {
@@ -95,7 +86,7 @@ final class RoadRunnerJobsApplicationRunner extends ApplicationRunner
                 $processor->handle();
 
                 $task->ack();
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 $this->handleTaskFailure($task, $e);
                 $logger->error($e, [
                     'id' => $task->getId(),
@@ -118,12 +109,12 @@ final class RoadRunnerJobsApplicationRunner extends ApplicationRunner
     {
         $name = $task->getName();
         $payload = $task->getPayload();
-        $data = (new SmartSerializer())->unserialize($payload);
+        $data = unserialize($payload);
 
         return $container->get(ConsumerInterface::class)($name, $data);
     }
 
-    private function handleTaskFailure(ReceivedTaskInterface $task, \Throwable $e): void
+    private function handleTaskFailure(ReceivedTaskInterface $task, Throwable $e): void
     {
         $attempts = (int) $task->getHeaderLine('attempts');
         $retryDelay = max((int) $task->getHeaderLine('retry-delay'), 3);

@@ -27,7 +27,7 @@ abstract class BaseConsumer implements ConsumerInterface
         $instance = self::getInstance($data);
 
         $queue = Yii::queue($instance->queue);
-        $task = $queue->create(static::class, (new SmartSerializer())->serialize($data))
+        $task = $queue->create(static::class, serialize($data))
             ->withHeader('attempts', $instance->attempts)
             ->withDelay($delay);
 

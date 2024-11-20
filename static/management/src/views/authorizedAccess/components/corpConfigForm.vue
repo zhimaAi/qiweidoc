@@ -1,6 +1,6 @@
 <template>
     <div class="main-content">
-        <div class="title">使用前请按照步骤正确完成配置 <a class="ml16">如何配置?</a></div>
+        <div class="title">使用前请按照步骤正确完成配置 <a class="ml16" href="http://huihua.xiaokefu.cn/docs/integration/#%E4%BC%9A%E8%AF%9D%E5%AD%98%E6%A1%A3%E7%9A%84%E9%85%8D%E7%BD%AE%E6%B5%81%E7%A8%8B" target="_blank">如何配置?</a></div>
         <div class="content mt24">
             <a-steps :current="current" :items="steps"></a-steps>
             <a-form

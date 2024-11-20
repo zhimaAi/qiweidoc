@@ -80,11 +80,11 @@ final class ExceptionMiddleware implements MiddlewareInterface
 
     private function response(Throwable $e, array $context, int $code, string $reason = "", array $debugData = []): ResponseInterface
     {
-        if (! Yii::isDebug()) {
-            return $this->dataResponseFactory->createResponse([], $code, $reason ?: "服务器内部错误");
+        if (Yii::isDebug()) {
+            $data = ['detail' => array_merge($context, ['trace' => $this->formatTrace($e)], $debugData)];
+        } else {
+            $data = [];
         }
-
-        $data = ['detail' => array_merge($context, ['trace' => $this->formatTrace($e)], $debugData)];
 
         return $this->dataResponseFactory->createResponse($data, $code, $reason ?: $e->getMessage());
     }
