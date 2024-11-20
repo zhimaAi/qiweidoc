@@ -58,7 +58,7 @@ func (p *Plugin) Middleware(next http.Handler) http.Handler {
 		}
 
 		// 官网
-		if r.Host == "demo.zhimahuihua.com" {
+		if r.Host == "zhimahuihua.com" {
 			p.fileServerProxy.ServeHTTP(w, r)
 			return
 		} else { // 业务系统

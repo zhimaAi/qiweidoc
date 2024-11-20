@@ -92,3 +92,7 @@ services:
       - redis
     ports:
       - ${EXTERNAL_HTTP_PORT:-80}:80
+      - ${EXTERNAL_HTTPS_PORT:-443}:443
+    environment:
+      - ACME_DOMAINS=${ACME_DOMAINS}
+      - ACME_EMAIL=${ACME_EMAIL}

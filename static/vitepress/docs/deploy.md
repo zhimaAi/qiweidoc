@@ -26,7 +26,7 @@ mkdir ~/zm_session_archive
 下载最新 docker-compose 配置文件：
 
 ```shell
-curl http://huihua.xiaokefu.cn/docker-compose-prod.yml -o docker-compose.yml
+curl http://zhimahuihua.com/docker-compose-prod.yml -o docker-compose.yml
 ```
 
 运行：
@@ -35,15 +35,35 @@ curl http://huihua.xiaokefu.cn/docker-compose-prod.yml -o docker-compose.yml
 podman-compose up -d
 ```
 
-#### 3，配置 nginx（可选）
+如果想要自动配置 https 证书
 
-容器默认会监听服务器的 80 端口，如果你的服务器上有 nginx 而且也监听了 80 端口，可能会出现端口冲突，应该在前面加上环境变量来修改端口号，比如：
-
-```shell
-EXTERNAL_HTTP_PORT=8080 podman-compose up -d
+```
+echo ACME_DOMAINS=example.com > .env
+echo ACME_EMAIL=youremail >> .env
 ```
 
-nginx 配置文件如下：
+再运行：
+
+```shell
+podman-compose up -d
+```
+
+#### 3，配置 nginx（可选）
+
+容器默认会监听服务器的 80 端口 和 443 端口，如果你的服务器上有 nginx 而且也监听了 80 端口和 443 端口，可能会出现端口冲突，应该通过环境变量来修改默认端口号，如：
+
+```shell
+echo EXTERNAL_HTTP_PORT=8080 > .env
+echo EXTERNAL_HTTPS_PORT=4443 >> .env
+```
+
+再运行：
+
+```shell
+podman-compose up -d
+```
+
+nginx 配置示例如下：
 
 ```nginx
 server {

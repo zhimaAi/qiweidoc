@@ -76,10 +76,11 @@ func getRoadrunner(cfgFile string) (*roadrunner.RR, error) {
 	}
 
 	// ACME证书配置
-	acmeDomains := os.Getenv(`acme_domains`)
-	acmeEmail := os.Getenv(`acme_email`)
+	acmeDomains := os.Getenv(`ACME_DOMAINS`)
+	acmeEmail := os.Getenv(`ACME_EMAIL`)
 	if len(acmeDomains) > 0 && len(acmeEmail) > 0 {
 		overrides = append(overrides,
+			`http.ssl.address=0.0.0.0:443`,
 			`http.ssl.acme.domains=`+acmeDomains,
 			`http.ssl.acme.email=`+acmeEmail,
 			`http.ssl.acme.certs_dir=/etc/letsencrypt`,

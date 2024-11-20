@@ -1,4 +1,0 @@
-services:
-  core:
-    ports:
-      - ${EXTERNAL_HTTPS_PORT:-443}:443
