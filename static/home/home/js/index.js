@@ -123,39 +123,41 @@ document.addEventListener('DOMContentLoaded', function() {
 
   window.addEventListener('scroll', handleScroll);
 
-  $(window).resize(function() {
-    var windowWidth = $(window).width();
-    // 这里监听的是窗口可是区域不包含滚动条，所以是750，媒体查询加上滚动条是768
-    if (windowWidth <= 750) {
-      console.log('移动端');
-      $('#isPc').hide()
-      $('#isMobile').show()
-    } else {
-      console.log('PC端');
-      $('#isMobile').hide()
-      $('#isPc').show()
-    }
-  });
+  $('#isMobile').hide()
+  $('#isPc').show()
+//   $(window).resize(function() {
+//     var windowWidth = $(window).width();
+//     // 这里监听的是窗口可是区域不包含滚动条，所以是750，媒体查询加上滚动条是768
+//     if (windowWidth <= 750) {
+//       console.log('移动端');
+//       $('#isPc').hide()
+//       $('#isMobile').show()
+//     } else {
+//       console.log('PC端');
+//       $('#isMobile').hide()
+//       $('#isPc').show()
+//     }
+//   });
 
-  function isMobile() {
-    // 判断是否为移动设备
-    return (
-        typeof window.orientation !== "undefined" || // 判断是否存在window.orientation属性，此属性在移动设备上一般存在
-        navigator.userAgent.indexOf('IEMobile') !== -1 || // 判断是否为Windows Phone
-        navigator.userAgent.indexOf('iPhone') !== -1 || // 判断是否为iPhone
-        navigator.userAgent.indexOf('Android') !== -1 && navigator.userAgent.indexOf('Mobile') !== -1 || // 判断是否为Android手机
-        navigator.userAgent.indexOf('BlackBerry') !== -1 || // 判断是否为BlackBerry
-        navigator.userAgent.indexOf('Opera Mini') !== -1 // 判断是否为Opera Mini浏览器
-    );
-  }
+//   function isMobile() {
+//     // 判断是否为移动设备
+//     return (
+//         typeof window.orientation !== "undefined" || // 判断是否存在window.orientation属性，此属性在移动设备上一般存在
+//         navigator.userAgent.indexOf('IEMobile') !== -1 || // 判断是否为Windows Phone
+//         navigator.userAgent.indexOf('iPhone') !== -1 || // 判断是否为iPhone
+//         navigator.userAgent.indexOf('Android') !== -1 && navigator.userAgent.indexOf('Mobile') !== -1 || // 判断是否为Android手机
+//         navigator.userAgent.indexOf('BlackBerry') !== -1 || // 判断是否为BlackBerry
+//         navigator.userAgent.indexOf('Opera Mini') !== -1 // 判断是否为Opera Mini浏览器
+//     );
+//   }
 
-  if (isMobile()) {
-    console.log('移动端');
-    $('#isPc').hide()
-  } else {
-    console.log('PC端');
-    $('#isMobile').hide()
-  }
+//   if (isMobile()) {
+//     console.log('移动端');
+//     $('#isPc').hide()
+//   } else {
+//     console.log('PC端');
+//     $('#isMobile').hide()
+//   }
 
   function onUse() {
     $('#usePopup').show()

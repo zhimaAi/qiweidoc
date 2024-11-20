@@ -1,6 +1,7 @@
 package golang
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -60,16 +61,30 @@ func Run(cfgFile string) {
 func getRoadrunner(cfgFile string) (*roadrunner.RR, error) {
 	var overrides []string
 
-	if os.Getenv(`MODE`) == `development` {
-		overrides = append(overrides, `logs.mode=development`)
-		overrides = append(overrides, `logs.level=debug`)
-		overrides = append(overrides, `http.pool.debug=true`)
-		overrides = append(overrides, `jobs.pool.debug=true`)
-	} else {
+	// 环境配置
+	isProd := os.Getenv(`MODE`) != `development`
+	if isProd {
 		overrides = append(overrides, `logs.mode=production`)
 		overrides = append(overrides, `logs.level=false`)
 		overrides = append(overrides, `http.pool.debug=false`)
 		overrides = append(overrides, `jobs.pool.debug=false`)
+	} else {
+		overrides = append(overrides, `logs.mode=development`)
+		overrides = append(overrides, `logs.level=debug`)
+		overrides = append(overrides, `http.pool.debug=true`)
+		overrides = append(overrides, `jobs.pool.debug=true`)
+	}
+
+	// ACME证书配置
+	acmeDomains := os.Getenv(`acme_domains`)
+	acmeEmail := os.Getenv(`acme_email`)
+	if len(acmeDomains) > 0 && len(acmeEmail) > 0 {
+		overrides = append(overrides,
+			`http.ssl.acme.domains=`+acmeDomains,
+			`http.ssl.acme.email=`+acmeEmail,
+			`http.ssl.acme.certs_dir=/etc/letsencrypt`,
+			`http.ssl.acme.use_production_endpoint=`+fmt.Sprintf("%t", isProd),
+		)
 	}
 
 	// 获取默认插件

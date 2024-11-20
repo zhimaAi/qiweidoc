@@ -51,20 +51,21 @@ func (p *Plugin) Serve() chan error {
 
 func (p *Plugin) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/" || strings.HasPrefix(r.URL.Path, "/home") {
-			p.fileServerProxy.ServeHTTP(w, r)
-		} else if strings.HasPrefix(r.URL.Path, "/ws") {
+		// 过滤一些请求
+		if strings.HasPrefix(r.URL.Path, "/ws") {
 			http.Error(w, "Forbidden", http.StatusForbidden)
-		} else if strings.HasPrefix(r.URL.Path, "/minio") {
-			p.minioServerProxy.ServeHTTP(w, r)
-		} else if strings.HasPrefix(r.URL.Path, "/management") {
+			return
+		}
+
+		// 官网
+		if r.Host == "zhimahuihua.com" {
 			p.fileServerProxy.ServeHTTP(w, r)
-		} else if strings.HasPrefix(r.URL.Path, "/docs") {
-			p.fileServerProxy.ServeHTTP(w, r)
-		} else if r.URL.Path == "/docker-compose-prod.yml" {
-			p.fileServerProxy.ServeHTTP(w, r)
-		} else {
-			next.ServeHTTP(w, r)
+		} else { // 业务系统
+			if strings.HasPrefix(r.URL.Path, "/minio") { // minio
+				p.minioServerProxy.ServeHTTP(w, r)
+			} else { // php
+				next.ServeHTTP(w, r)
+			}
 		}
 	})
 }

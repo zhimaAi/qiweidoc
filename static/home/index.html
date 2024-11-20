@@ -1,375 +1,404 @@
 <!doctype html>
 <html lang="zh">
-  <head>
-    <title>【芝麻客服】免费在线客服系统-云客服系统-微信生态智能客服营销专家</title>
+
+<head>
+    <title>芝麻会话存档-免费开源的私有化部署会话存档解决方案</title>
     <meta charset="UTF-8" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <meta http-equiv="Cache-Control" content="no-cache" />
     <meta http-equiv="Cache" content="no-cache">
-    <link href="./home/img/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <link href="./home/img/favicon.ico?v=202411201617" rel="shortcut icon" type="image/x-icon" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta
-      name="description"
-      content="芝麻会话存档私有化部解决方案"
-    />
-    <meta
-      name="keywords"
-      content="独立部署，接入简单，高安全，强隐私，聊天记录存储在专属的服务器。"
-    />
+    <meta name="description" content="独立部署，接入简单，高安全，强隐私，聊天记录存储在专属的服务器。" />
+    <meta name="keywords" content="会话存档 私有化 自建应用  独立部署  聊天记录" />
     <link rel="stylesheet" href="./home/css/normalize.css">
     <link rel="stylesheet" href="./home/css/animate.css">
     <link rel="stylesheet" href="./home/libs/swiper-11.0.3/swiper-bundle.min.css">
-    <link rel="stylesheet" media="screen and (max-width: 767.98px)" href="./home/css/index-mobile.css">
-    <link rel="stylesheet" media="screen and (min-width: 768px) and (max-width: 991.98px)" href="./home/css/index-pc.css">
-    <link rel="stylesheet" media="screen and (min-width: 992px) and (max-width: 1199.98px)" href="./home/css/index-pc.css">
+    <!-- <link rel="stylesheet" media="screen and (max-width: 767.98px)" href="./home/css/index-mobile.css"> -->
+    <link rel="stylesheet" media="screen and (min-width: 768px) and (max-width: 991.98px)"
+        href="./home/css/index-pc.css">
+    <link rel="stylesheet" media="screen and (min-width: 992px) and (max-width: 1199.98px)"
+        href="./home/css/index-pc.css">
     <link rel="stylesheet" media="screen and (min-width: 1200px)" href="./home/css/index-pc.css">
 
     <!-- 百度统计代码 -->
     <script>
-      var _hmt = _hmt || [];
-        (function() {
-          var hm = document.createElement("script");
-          hm.src = "https://hm.baidu.com/hm.js?6d03397bfccbfad91054d0473dba0fb0";
-          var s = document.getElementsByTagName("script")[0];
-          s.parentNode.insertBefore(hm, s);
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?6d03397bfccbfad91054d0473dba0fb0";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
         })();
     </script>
-  </head>
-  <body>
+</head>
+
+<body>
     <div class="login-box" id="isPc">
-      <div class="header">
-        <div class="header-content">
-          <div class="header-left">
-            <a class="logo" href="#">
-              <img class="admin-logo" src="./home/img/logo.png" alt="logo" />
-            </a>
-            <nav class="header-item-box">
-              <div class="header-item active" onclick="window.location.reload()">首页</div>
-              <a class="header-item" href="/docs" target="_blank">帮助文档</a>
-            </nav>
-          </div>
-          <div class="header-right">
-            <button id="loginBtn" class="login-btn" onclick="window.open('/management#/')">登录/注册</button>
-            <div id="userInfo" class="user-info">
-                <img class="user-info-avator" src="./home/img/default-avatar.svg" alt="">
-                <span class="user-name" id="userName">-</span>
-                <img class="user-info-down" src="./home/img/down.svg" alt="">
-                <div class="option-box wow fadeInDown" data-wow-duration='0.2s'>
-                    <div class="option-item" id="loginOut">
-                        <img class="user-info-down default-info-icon" src="./home/img/not-close.png" alt="">
-                        <img class="user-info-down active-info-icon" src="./home/img/yes-close.png" alt="">
-                        <span>退出登录</span>
+        <div class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <a class="logo" href="#">
+                        <img class="admin-logo" src="./home/img/logo.png" alt="logo" />
+                    </a>
+                    <nav class="header-item-box">
+                        <div class="header-item active" onclick="window.location.reload()">首页</div>
+                        <a class="header-item" href="https://zmwk.cn?source=qiweidoc" target="_blank">芝麻微客</a>
+                        <a class="header-item" href="https://xiaokefu.com.cn?source=qiweidoc" target="_blank">芝麻小客服</a>
+                        <a class="header-item" href="/docs" target="_blank">帮助文档</a>
+                    </nav>
+                </div>
+                <div class="header-right">
+                    <button id="loginBtn" class="login-btn" onclick="window.open('/management#/')">登录/注册</button>
+                    <div id="userInfo" class="user-info">
+                        <img class="user-info-avator" src="./home/img/default-avatar.svg" alt="">
+                        <span class="user-name" id="userName">-</span>
+                        <img class="user-info-down" src="./home/img/down.svg" alt="">
+                        <div class="option-box wow fadeInDown" data-wow-duration='0.2s'>
+                            <div class="option-item" id="loginOut">
+                                <img class="user-info-down default-info-icon" src="./home/img/not-close.png" alt="">
+                                <img class="user-info-down active-info-icon" src="./home/img/yes-close.png" alt="">
+                                <span>退出登录</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-          </div>
         </div>
-      </div>
-      <div class="content">
-        <div class="swiper mySwiper">
-          <div class="swiper-wrapper">
-            <div class="swiper-slide">
-              <div class="banner-box">
-                <div class="banner-item">
-                  <h1 class="banner-item-name wow fadeInUp" data-wow-duration='1.2s'>芝麻会话存档</h1>
-                  <h4 class="banner-item-title wow fadeInUp" data-wow-duration='1.4s'>免费开源的私有化部署会话存档解决方案</h4>
-                  <h4 class="banner-item-info">
-                    <div class="info-item wow fadeInUp" data-wow-duration='1.6s'>
-                        <div class="info-item-label">支持一键本地部署</div>
-                        <div class="info-item-content">开箱即用</div>
-                        <img class="info-item-icon" src="./home/img/info-icon.svg" alt="">
+        <div class="content">
+            <div class="swiper mySwiper">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <div class="banner-box">
+                            <div class="banner-item">
+                                <h1 class="banner-item-name wow fadeInUp" data-wow-duration='1.2s'>芝麻会话存档</h1>
+                                <h4 class="banner-item-title wow fadeInUp" data-wow-duration='1.4s'>免费开源的私有化部署会话存档解决方案
+                                </h4>
+                                <h4 class="banner-item-info">
+                                    <div class="info-item wow fadeInUp" data-wow-duration='1.6s'>
+                                        <div class="info-item-label">支持一键本地部署</div>
+                                        <div class="info-item-content">开箱即用</div>
+                                        <img class="info-item-icon" src="./home/img/info-icon.svg" alt="">
+                                    </div>
+                                    <div class="info-item wow fadeInUp" data-wow-duration='1.8s'>
+                                        <div class="info-item-label">数据存储安全性更高</div>
+                                        <div class="info-item-content">安全可控</div>
+                                        <img class="info-item-icon" src="./home/img/info-icon.svg" alt="">
+                                    </div>
+                                    <div class="info-item wow fadeInUp" data-wow-duration='2.0s'>
+                                        <div class="info-item-label">企业自建应用接入</div>
+                                        <div class="info-item-content">成本更低</div>
+                                        <img class="info-item-icon" src="./home/img/info-icon.svg" alt="">
+                                    </div>
+                                </h4>
+                                <div class="btn-box wow fadeInUp" data-wow-duration='2.2s'>
+                                    <button class="use-btn" onclick="window.open('/management#/')">立即使用</button>
+                                </div>
+                            </div>
+                            <img class="banner-icon wow fadeInUp" data-wow-duration='1.6s' src="./home/img/banner1.svg"
+                                alt="banner">
+                        </div>
                     </div>
-                    <div class="info-item wow fadeInUp" data-wow-duration='1.8s'>
-                        <div class="info-item-label">数据存储安全性更高</div>
-                        <div class="info-item-content">安全可控</div>
-                        <img class="info-item-icon" src="./home/img/info-icon.svg" alt="">
-                    </div>
-                    <div class="info-item wow fadeInUp" data-wow-duration='2.0s'>
-                        <div class="info-item-label">企业自建应用接入</div>
-                        <div class="info-item-content">成本更低</div>
-                        <img class="info-item-icon" src="./home/img/info-icon.svg" alt="">
-                    </div>
-                  </h4>
-                  <div class="btn-box wow fadeInUp" data-wow-duration='2.2s'>
-                    <button class="use-btn" onclick="window.open('/management#/')">立即使用</button>
-                  </div>
                 </div>
-                <img class="banner-icon wow fadeInUp" data-wow-duration='1.6s' src="./home/img/banner1.svg" alt="banner">
-              </div>
+                <div class="swiper-pagination"></div>
             </div>
-          </div>
-          <div class="swiper-pagination"></div>
+            <div class="main-box">
+                <!-- 选择芝麻客服 -->
+                <div class="simple-choice wow fadeInUp" data-wow-duration='1.0s' data-wow-offset="100">
+                    <div class="simple-choice-box">
+                        <h3 class="simple-choice-title">功能亮点</h3>
+                        <div class="simple-choice-content">
+                            <div class="simple-choice-item wow fadeInUp" data-wow-duration='1.2s'>
+                                <div class="item-title">
+                                    <img class="item-title-icon simple-default" src="./home/img/secure.svg" alt="">
+                                    <img class="item-title-icon simple-active" src="./home/img/secure-active.svg"
+                                        alt="">
+                                    <h4 class="item-title-info">数据安全</h4>
+                                </div>
+                                <div class="item-info">聊天记录存在专属独立环境</div>
+                                <button class="free-use-btn fadeInUp" data-wow-duration='1.2s' data-wow-offset="100"
+                                    onclick="window.open('/management#/')">立即使用</button>
+                            </div>
+                            <div class="simple-choice-item wow fadeInUp" data-wow-duration='1.2s'>
+                                <div class="item-title">
+                                    <img class="item-title-icon simple-default" src="./home/img/privacy.svg" alt="">
+                                    <img class="item-title-icon simple-active" src="./home/img/privacy-active.svg"
+                                        alt="">
+                                    <h4 class="item-title-info">强隐私</h4>
+                                </div>
+                                <div class="item-info">更强隐私性，满足企业合规需求</div>
+                                <button class="free-use-btn fadeInUp" data-wow-duration='1.2s' data-wow-offset="100"
+                                    onclick="window.open('/management#/')">立即使用</button>
+                            </div>
+                            <div class="simple-choice-item wow fadeInUp" data-wow-duration='1.2s'>
+                                <div class="item-title">
+                                    <img class="item-title-icon simple-default" src="./home/img/act.svg" alt="">
+                                    <img class="item-title-icon simple-active" src="./home/img/act-active.svg" alt="">
+                                    <h4 class="item-title-info">自主可控</h4>
+                                </div>
+                                <div class="item-info">服务安全，自主可控制</div>
+                                <button class="free-use-btn fadeInUp" data-wow-duration='1.2s' data-wow-offset="100"
+                                    onclick="window.open('/management#/')">立即使用</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 查看多维度支持 -->
+                <div class="product-scheme wow fadeInUp" data-wow-duration='1.2s'>
+                    <div class="main-title wow fadeInUp" data-wow-duration='1.2s'>
+                        <h3 class="main-title-info">使用芝麻会话存档，全方位掌握企业沟通情况</h3>
+                        <div class="main-title-item-box" id="tabParent">
+                            <div class="main-title-item main-active" data-index="1">
+                                <img class="main-title-item-icon default-icon"
+                                    src="./home/img/icon-t4-01@2x.png?v=202411201605" alt="">
+                                <img class="main-title-item-icon active-icon"
+                                    src="./home/img/icon-t4-01-active@2x.png?v=202411201605" alt="">
+                                <h4 class="main-title-item-info">会话存档</h4>
+                            </div>
+                            <div class="main-title-item" data-index="2">
+                                <img class="main-title-item-icon default-icon"
+                                    src="./home/img/icon-t4-04@2x.png?v=202411201605" alt="">
+                                <img class="main-title-item-icon active-icon"
+                                    src="./home/img/icon-t4-04-active@2x.png?v=202411201605" alt="">
+                                <h4 class="main-title-item-info">敏感词提醒</h4>
+                            </div>
+                            <div class="main-title-item" data-index="3">
+                                <img class="main-title-item-icon default-icon" src="./home/img/4.png?v=202411201605"
+                                    alt="">
+                                <img class="main-title-item-icon active-icon" src="./home/img/4-c.png?v=202411201605"
+                                    alt="">
+                                <h4 class="main-title-item-info">聊天统计</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="product1" class="product-scheme-item display-flex">
+                        <div class="product-scheme-item-left fadeInUp" data-wow-duration='1.2s'>
+                            <h2 class="left-title">会话存档，实时掌握企业沟通情况</h2>
+                            <div class="left-feature">
+                                <div class="left-feature-item">
+                                    <img class="left-feature-item-icon" src="./home/img/session-archive1.svg" alt="">
+                                    <div class="left-feature-item-content">
+                                        <div class="left-feature-item-label">会话内容实时存档</div>
+                                        <div class="left-feature-item-info">文字、图片、文件、短语音、删除、撤回等内容实时存档</div>
+                                    </div>
+                                </div>
+                                <div class="left-feature-item">
+                                    <img class="left-feature-item-icon" src="./home/img/session-archive2.svg" alt="">
+                                    <div class="left-feature-item-content">
+                                        <div class="left-feature-item-label">多角度查看</div>
+                                        <div class="left-feature-item-info">员工/客户/群聊/离职员工等多角度查看</div>
+                                    </div>
+                                </div>
+                                <div class="left-feature-item">
+                                    <img class="left-feature-item-icon" src="./home/img/session-archive3.svg" alt="">
+                                    <div class="left-feature-item-content">
+                                        <div class="left-feature-item-label">多维度查询</div>
+                                        <div class="left-feature-item-info">标签/时间/客户类型，已回复/未回复等多维度筛选查看</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="preview-btn" onclick="window.open('/management#/')">立即使用</button>
+                        </div>
+                        <div class="product-scheme-item-right fadeInUp" data-wow-duration='1.2s' data-wow-offset="100">
+                            <img src="./home/img/session-archive-banner1.svg" alt="">
+                        </div>
+                    </div>
+                    <div id="product2" class="product-scheme-item">
+                        <div class="product-scheme-item-left fadeInUp" data-wow-duration='1.2s'>
+                            <h2 class="left-title">敏感词，敏感行为监控，发送通知员工，及时跟进</h2>
+                            <div class="left-feature">
+                                <div class="left-feature-item">
+                                    <img class="left-feature-item-icon" src="./home/img/session-archive4.svg" alt="">
+                                    <div class="left-feature-item-content">
+                                        <div class="left-feature-item-label">全场景监控</div>
+                                        <div class="left-feature-item-info">自定义设置员工、客户敏感词，触发可即时提醒</div>
+                                    </div>
+                                </div>
+                                <div class="left-feature-item">
+                                    <img class="left-feature-item-icon" src="./home/img/session-archive5.svg" alt="">
+                                    <div class="left-feature-item-content">
+                                        <div class="left-feature-item-label">员工行为监控</div>
+                                        <div class="left-feature-item-info">针对员工的不良行为，不良聊天方式等敏感动作实时监管营</div>
+                                    </div>
+                                </div>
+                                <div class="left-feature-item">
+                                    <img class="left-feature-item-icon" src="./home/img/session-archive6.svg" alt="">
+                                    <div class="left-feature-item-content">
+                                        <div class="left-feature-item-label">触发通知</div>
+                                        <div class="left-feature-item-info">员工或客户触发后，及时通知，快速响应</div>
+                                    </div>
+                                </div>
+                                <div class="left-feature-item">
+                                    <img class="left-feature-item-icon" src="./home/img/session-archive7.svg" alt="">
+                                    <div class="left-feature-item-content">
+                                        <div class="left-feature-item-label">消息追溯</div>
+                                        <div class="left-feature-item-info">支持对敏感词的触发记录进行前后消息追溯</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="preview-btn" onclick="window.open('/management#/')">立即使用</button>
+                        </div>
+                        <div class="product-scheme-item-right fadeInUp" data-wow-duration='1.2s' data-wow-offset="100">
+                            <img src="./home/img/session-archive-banner2.svg" alt="">
+                        </div>
+                    </div>
+                    <div id="product3" class="product-scheme-item">
+                        <div class="product-scheme-item-left fadeInUp" data-wow-duration='1.2s'>
+                            <h2 class="left-title">统计员工单聊，群聊内员工回复效率</h2>
+                            <div class="left-feature">
+                                <div class="left-feature-item">
+                                    <img class="left-feature-item-icon" src="./home/img/session-archive8.svg" alt="">
+                                    <div class="left-feature-item-content">
+                                        <div class="left-feature-item-label">回复消息数统计</div>
+                                        <div class="left-feature-item-info">统计员工负责客户，群聊数等工作量的统计</div>
+                                    </div>
+                                </div>
+                                <div class="left-feature-item">
+                                    <img class="left-feature-item-icon" src="./home/img/session-archive9.svg" alt="">
+                                    <div class="left-feature-item-content">
+                                        <div class="left-feature-item-label">N分钟回复速度</div>
+                                        <div class="left-feature-item-info">统计设置时间内员工回复客户的效率</div>
+                                    </div>
+                                </div>
+                                <div class="left-feature-item">
+                                    <img class="left-feature-item-icon" src="./home/img/session-archive10.svg" alt="">
+                                    <div class="left-feature-item-content">
+                                        <div class="left-feature-item-label">首次响应时长</div>
+                                        <div class="left-feature-item-info">统计员工首次响应客户问题的时间</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="preview-btn" onclick="window.open('/management#/')">立即使用</button>
+                        </div>
+                        <div class="product-scheme-item-right fadeInUp" data-wow-duration='1.2s' data-wow-offset="100">
+                            <img src="./home/img/session-archive-banner3.svg" alt="">
+                        </div>
+                    </div>
+                </div>
+                <!-- 免费开源，自主可控 -->
+                <div class="free wow fadeInUp" data-wow-duration='1.2s'>
+                    <div class="free-box">
+                        <div class="free-title">免费开源，自主可控</div>
+                        <div class="free-content">
+                            <div class="free-item">
+                                <div class="free-item-title">支持一键部署本地，开箱即用</div>
+                                <div class="free-item-info">整个软件开源免费，企业可以到GitHub下载软件代码，然后署到自己服务器上。部署成功，只需简单设置即可正常使用，非常省心
+                                </div>
+                                <img class="free-item-icon" src="./home/img/free1.svg" alt="">
+                            </div>
+                            <div class="free-item">
+                                <div class="free-item-title">支持企业私有化使用，数据更安全</div>
+                                <div class="free-item-info">企业将产生的会话记录中的文档，图片等私有数据存储到自己的服务器中，保证数据的安全性，同时保存时间，自主可控制</div>
+                                <img class="free-item-icon" src="./home/img/free2.svg" alt="">
+                            </div>
+                            <div class="free-item">
+                                <div class="free-item-title">支持定制化开发，兼容性更强</div>
+                                <div class="free-item-info">如果软件提供的渠道无法满足企业实际业务需求，企业可以在软件现有基础之上进行二次开发，确保软件完全贴合业务实际运作流程
+                                </div>
+                                <img class="free-item-icon" src="./home/img/free3.svg" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 常见问题 -->
+                <div class="familiar wow fadeInUp" data-wow-duration='1.2s'>
+                    <div class="familiar-box">
+                        <div class="familiar-title">常见问答</div>
+                        <div class="familiar-content">
+                            <div class="familiar-item">
+                                <div class="familiar-item-title-box">
+                                    <div class="familiar-item-title">Q：芝麻会话存档私有化支持哪些部署环境?</div>
+                                    <img class="familiar-item-icon" src="./home/img/familiar-big.svg" alt="">
+                                </div>
+                                <div class="familiar-item-info">
+                                    Ａ：芝麻会话存档支持阿里云、腾讯云、华为云、天翼云、中国大陆Azure、中国大陆AWS等云计算平台及本地IDC私有部署</div>
+                            </div>
+                            <div class="familiar-item">
+                                <div class="familiar-item-title-box">
+                                    <div class="familiar-item-title">Q：为什么要配置对应的备案域名?</div>
+                                    <img class="familiar-item-icon" src="./home/img/familiar-big.svg" alt="">
+                                </div>
+                                <div class="familiar-item-info">Ａ：保障企业数据安全，企业微信要求企业内部开发配置的域名必须对应企业主体</div>
+                            </div>
+                        </div>
+                        <div class="familiar-content-small">
+                            <div class="familiar-item">
+                                <div class="familiar-item-title-box">
+                                    <div class="familiar-item-title">Q：私有化部署需要准备什么??</div>
+                                    <img class="familiar-item-icon" src="./home/img/familiar-small.svg" alt="">
+                                </div>
+                                <div class="familiar-item-info">Ａ：对应的服务器2.固定IP3.企业同主体的备案域名</div>
+                            </div>
+                            <div class="familiar-item">
+                                <div class="familiar-item-title-box">
+                                    <div class="familiar-item-title">Q：服务器配置有什么要求?</div>
+                                    <img class="familiar-item-icon" src="./home/img/familiar-small.svg" alt="">
+                                </div>
+                                <div class="familiar-item-info">Ａ：根据企业的消息量和存档人数等因素来评估具体配置。详情咨询客服</div>
+                            </div>
+                            <div class="familiar-item">
+                                <div class="familiar-item-title-box">
+                                    <div class="familiar-item-title">Q：支持纯内网部署吗?</div>
+                                    <img class="familiar-item-icon" src="./home/img/familiar-small.svg" alt="">
+                                </div>
+                                <div class="familiar-item-info">Ａ：芝麻会话存档支持纯内网部署，高度保障数据安全隐私</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="float-sidebar">
+                <!-- <div id="contactCustomerBtnShow">
+                    <div class="contact-img-border"></div>
+                    <div class="contact-img-box">
+                        <img class="contact-img" src="./home/img/sidebar/contact-customer-btn.png" alt="联系客服"
+                            style='display:block;margin:auto'>
+                    </div>
+                    <div class="contact-title">联系客服</div>
+                </div> -->
+                <a class="contact" target="_blank">
+                    <div class="contact-customer-box">
+                        <div class="contact-customer" id="contactCustomer" style="top:-190px;">
+                            <img class="contact-customer-img" src="./home/img/sidebar/zm-sq.png" />
+                        </div>
+                    </div>
+                    <p class="require contact-sales-btn">
+                        <img class="contact-sales" src="./home/img/sidebar/lxkf_action.png" alt="联系售后"
+                            style='display:block;margin:auto'>
+                        联系我们
+                    </p>
+                    <div class="xkf_logo contact-sales-box" style="top:-14px;">
+                        <div class="contact-sales-content">
+                            <div class="contact-sales-title">客服企微</div>
+                            <img class="contact-sales-img" src="./home/img/qrcode.png?v=202411201605" />
+                            <div class="contact-sales-info">扫码添加客服企微</div>
+                        </div>
+                    </div>
+                    <div class="xkf_logo" style="top: -14px;">
+                        <img class="" src="./home/img/sidebar/routineImg.png" />
+                        <p>微信扫码咨询</p>
+                    </div>
+                    <p class="top-header-box" id="goBackTopBox" onclick="window.location.href='#'">
+                        <img class='top-header' src="./home/img/sidebar/icon_huiding_action.png" alt="回到顶部">
+                    </p>
+                </a>
+            </div>
         </div>
-        <div class="main-box">
-          <!-- 选择芝麻客服 -->
-          <div class="simple-choice wow fadeInUp" data-wow-duration='1.0s' data-wow-offset="100">
-            <div class="simple-choice-box">
-              <h3 class="simple-choice-title">功能亮点</h3>
-              <div class="simple-choice-content">
-                <div class="simple-choice-item wow fadeInUp" data-wow-duration='1.2s'>
-                  <div class="item-title">
-                      <img class="item-title-icon simple-default" src="./home/img/secure.svg" alt="">
-                      <img class="item-title-icon simple-active" src="./home/img/secure-active.svg" alt="">
-                      <h4 class="item-title-info">数据安全</h4>
-                  </div>
-                  <div class="item-info">聊天记录存在专属独立环境</div>
-                  <button class="free-use-btn fadeInUp" data-wow-duration='1.2s' data-wow-offset="100" onclick="window.open('/management#/')">立即使用</button>
-                </div>
-                <div class="simple-choice-item wow fadeInUp" data-wow-duration='1.2s'>
-                  <div class="item-title">
-                      <img class="item-title-icon simple-default" src="./home/img/privacy.svg" alt="">
-                      <img class="item-title-icon simple-active" src="./home/img/privacy-active.svg" alt="">
-                      <h4 class="item-title-info">强隐私</h4>
-                  </div>
-                  <div class="item-info">更强隐私性，满足企业合规需求</div>
-                  <button class="free-use-btn fadeInUp" data-wow-duration='1.2s' data-wow-offset="100" onclick="window.open('/management#/')">立即使用</button>
-                </div>
-                <div class="simple-choice-item wow fadeInUp" data-wow-duration='1.2s'>
-                  <div class="item-title">
-                      <img class="item-title-icon simple-default" src="./home/img/act.svg" alt="">
-                      <img class="item-title-icon simple-active" src="./home/img/act-active.svg" alt="">
-                      <h4 class="item-title-info">自主可控</h4>
-                  </div>
-                  <div class="item-info">服务安全，自主可控制</div>
-                  <button class="free-use-btn fadeInUp" data-wow-duration='1.2s' data-wow-offset="100" onclick="window.open('/management#/')">立即使用</button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- 查看多维度支持 -->
-          <div class="product-scheme wow fadeInUp" data-wow-duration='1.2s'>
-            <div class="main-title wow fadeInUp" data-wow-duration='1.2s'>
-              <h3 class="main-title-info">使用芝麻会话存档，全方位掌握企业沟通情况</h3>
-              <div class="main-title-item-box" id="tabParent">
-                <div class="main-title-item main-active" data-index="1">
-                  <img class="main-title-item-icon default-icon" src="./home/img/icon-t4-01@2x.png?v=202411191429" alt="">
-                  <img class="main-title-item-icon active-icon" src="./home/img/icon-t4-01-active@2x.png?v=202411191429" alt="">
-                  <h4 class="main-title-item-info">会话存档</h4>
-                </div>
-                <div class="main-title-item" data-index="2">
-                  <img class="main-title-item-icon default-icon" src="./home/img/icon-t4-04@2x.png?v=202411191429" alt="">
-                  <img class="main-title-item-icon active-icon" src="./home/img/icon-t4-04-active@2x.png?v=202411191429" alt="">
-                  <h4 class="main-title-item-info">敏感词提醒</h4>
-                </div>
-                <div class="main-title-item" data-index="3">
-                  <img class="main-title-item-icon default-icon" src="./home/img/4.png?v=202411191429" alt="">
-                  <img class="main-title-item-icon active-icon" src="./home/img/4-c.png?v=202411191429" alt="">
-                  <h4 class="main-title-item-info">聊天统计</h4>
-                </div>
-              </div>
-            </div>
-            <div id="product1" class="product-scheme-item display-flex">
-              <div class="product-scheme-item-left fadeInUp" data-wow-duration='1.2s'>
-                <h2 class="left-title">会话存档，实时掌握企业沟通情况</h2>
-                <div class="left-feature">
-                  <div class="left-feature-item">
-                    <img class="left-feature-item-icon" src="./home/img/session-archive1.svg" alt="">
-                    <div class="left-feature-item-content">
-                      <div class="left-feature-item-label">会话内容实时存档</div>
-                      <div class="left-feature-item-info">文字、图片、文件、短语音、删除、撤回等内容实时存档</div>
+        <footer class="layout-footer-wrapper">
+            <div class="footer-introduce wow fadeInUp" data-wow-duration='0.7s' data-wow-offset="100">
+                <div class="experience-box">
+                    <div class="experience-box-name">芝麻会话存档</div>
+                    <div class="experience-box-title">免费开源的私有化部署会话存档解决方案</div>
+                    <div class="experience-box-info">支持一键本地部署、数据存储安全性更高、企业自建应用接入</div>
+                    <div class="btn-box">
+                        <button onclick="window.open('/management#/')" class="experience-btn" id="onUse">
+                            <img class='experience-btn-icon' src="./home/img/experience.svg" alt="">
+                            立即使用
+                        </button>
                     </div>
-                  </div>
-                  <div class="left-feature-item">
-                    <img class="left-feature-item-icon" src="./home/img/session-archive2.svg" alt="">
-                    <div class="left-feature-item-content">
-                      <div class="left-feature-item-label">多角度查看</div>
-                      <div class="left-feature-item-info">员工/客户/群聊/离职员工等多角度查看</div>
-                    </div>
-                  </div>
-                  <div class="left-feature-item">
-                    <img class="left-feature-item-icon" src="./home/img/session-archive3.svg" alt="">
-                    <div class="left-feature-item-content">
-                      <div class="left-feature-item-label">多维度查询</div>
-                      <div class="left-feature-item-info">标签/时间/客户类型，已回复/未回复等多维度筛选查看</div>
-                    </div>
-                  </div>
                 </div>
-                <button class="preview-btn" onclick="window.open('/management#/')">立即使用</button>
-              </div>
-              <div class="product-scheme-item-right fadeInUp" data-wow-duration='1.2s' data-wow-offset="100">
-                <img src="./home/img/session-archive-banner1.svg" alt="">
-              </div>
-            </div>
-            <div id="product2" class="product-scheme-item">
-              <div class="product-scheme-item-left fadeInUp" data-wow-duration='1.2s'>
-                <h2 class="left-title">敏感词，敏感行为监控，发送通知员工，及时跟进</h2>
-                <div class="left-feature">
-                  <div class="left-feature-item">
-                    <img class="left-feature-item-icon" src="./home/img/session-archive4.svg" alt="">
-                    <div class="left-feature-item-content">
-                      <div class="left-feature-item-label">全场景监控</div>
-                      <div class="left-feature-item-info">自定义设置员工、客户敏感词，触发可即时提醒</div>
-                    </div>
-                  </div>
-                  <div class="left-feature-item">
-                    <img class="left-feature-item-icon" src="./home/img/session-archive5.svg" alt="">
-                    <div class="left-feature-item-content">
-                      <div class="left-feature-item-label">员工行为监控</div>
-                      <div class="left-feature-item-info">针对员工的不良行为，不良聊天方式等敏感动作实时监管营</div>
-                    </div>
-                  </div>
-                  <div class="left-feature-item">
-                    <img class="left-feature-item-icon" src="./home/img/session-archive6.svg" alt="">
-                    <div class="left-feature-item-content">
-                      <div class="left-feature-item-label">触发通知</div>
-                      <div class="left-feature-item-info">员工或客户触发后，及时通知，快速响应</div>
-                    </div>
-                  </div>
-                  <div class="left-feature-item">
-                    <img class="left-feature-item-icon" src="./home/img/session-archive7.svg" alt="">
-                    <div class="left-feature-item-content">
-                      <div class="left-feature-item-label">消息追溯</div>
-                      <div class="left-feature-item-info">支持对敏感词的触发记录进行前后消息追溯</div>
-                    </div>
-                  </div>
-                </div>
-                <button class="preview-btn" onclick="window.open('/management#/')">立即使用</button>
-              </div>
-              <div class="product-scheme-item-right fadeInUp" data-wow-duration='1.2s' data-wow-offset="100">
-                <img src="./home/img/session-archive-banner2.svg" alt="">
-              </div>
-            </div>
-            <div id="product3" class="product-scheme-item">
-              <div class="product-scheme-item-left fadeInUp" data-wow-duration='1.2s'>
-                <h2 class="left-title">统计员工单聊，群聊内员工回复效率</h2>
-                <div class="left-feature">
-                  <div class="left-feature-item">
-                    <img class="left-feature-item-icon" src="./home/img/session-archive8.svg" alt="">
-                    <div class="left-feature-item-content">
-                      <div class="left-feature-item-label">回复消息数统计</div>
-                      <div class="left-feature-item-info">统计员工负责客户，群聊数等工作量的统计</div>
-                    </div>
-                  </div>
-                  <div class="left-feature-item">
-                    <img class="left-feature-item-icon" src="./home/img/session-archive9.svg" alt="">
-                    <div class="left-feature-item-content">
-                      <div class="left-feature-item-label">N分钟回复速度</div>
-                      <div class="left-feature-item-info">统计设置时间内员工回复客户的效率</div>
-                    </div>
-                  </div>
-                  <div class="left-feature-item">
-                    <img class="left-feature-item-icon" src="./home/img/session-archive10.svg" alt="">
-                    <div class="left-feature-item-content">
-                      <div class="left-feature-item-label">首次响应时长</div>
-                      <div class="left-feature-item-info">统计员工首次响应客户问题的时间</div>
-                    </div>
-                  </div>
-                </div>
-                <button class="preview-btn" onclick="window.open('/management#/')">立即使用</button>
-              </div>
-              <div class="product-scheme-item-right fadeInUp" data-wow-duration='1.2s' data-wow-offset="100">
-                <img src="./home/img/session-archive-banner3.svg" alt="">
-              </div>
-            </div>
-          </div>
-          <!-- 免费开源，自主可控 -->
-          <div class="free wow fadeInUp" data-wow-duration='1.2s'>
-            <div class="free-box">
-              <div class="free-title">免费开源，自主可控</div>
-              <div class="free-content">
-                <div class="free-item">
-                  <div class="free-item-title">支持一键部署本地，开箱即用</div>
-                  <div class="free-item-info">整个软件开源免费，企业可以到GitHub下载软件代码，然后署到自己服务器上。部署成功，只需简单设置即可正常使用，非常省心</div>
-                  <img class="free-item-icon" src="./home/img/free1.svg" alt="">
-                </div>
-                <div class="free-item">
-                  <div class="free-item-title">支持企业私有化使用，数据更安全</div>
-                  <div class="free-item-info">企业将产生的会话记录中的文档，图片等私有数据存储到自己的服务器中，保证数据的安全性，同时保存时间，自主可控制</div>
-                  <img class="free-item-icon" src="./home/img/free2.svg" alt="">
-                </div>
-                <div class="free-item">
-                  <div class="free-item-title">支持定制化开发，兼容性更强</div>
-                  <div class="free-item-info">如果软件提供的渠道无法满足企业实际业务需求，企业可以在软件现有基础之上进行二次开发，确保软件完全贴合业务实际运作流程</div>
-                  <img class="free-item-icon" src="./home/img/free3.svg" alt="">
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- 常见问题 -->
-           <div class="familiar wow fadeInUp" data-wow-duration='1.2s'>
-            <div class="familiar-box">
-              <div class="familiar-title">常见问答</div>
-              <div class="familiar-content">
-                <div class="familiar-item">
-                  <div class="familiar-item-title-box">
-                    <div class="familiar-item-title">Q：芝麻会话存档私有化支持哪些部署环境?</div>
-                    <img class="familiar-item-icon" src="./home/img/familiar-big.svg" alt="">
-                  </div>
-                  <div class="familiar-item-info">Ａ：芝麻会话存档支持阿里云、腾讯云、华为云、天翼云、中国大陆Azure、中国大陆AWS等云计算平台及本地IDC私有部署</div>
-                </div>
-                <div class="familiar-item">
-                  <div class="familiar-item-title-box">
-                    <div class="familiar-item-title">Q：为什么要配置对应的备案域名?</div>
-                    <img class="familiar-item-icon" src="./home/img/familiar-big.svg" alt="">
-                  </div>
-                  <div class="familiar-item-info">Ａ：保障企业数据安全，企业微信要求企业内部开发配置的域名必须对应企业主体</div>
-                </div>
-              </div>
-              <div class="familiar-content-small">
-                <div class="familiar-item">
-                  <div class="familiar-item-title-box">
-                    <div class="familiar-item-title">Q：私有化部署需要准备什么??</div>
-                    <img class="familiar-item-icon" src="./home/img/familiar-small.svg" alt="">
-                  </div>
-                  <div class="familiar-item-info">Ａ：对应的服务器2.固定IP3.企业同主体的备案域名</div>
-                </div>
-                <div class="familiar-item">
-                  <div class="familiar-item-title-box">
-                    <div class="familiar-item-title">Q：服务器配置有什么要求?</div>
-                    <img class="familiar-item-icon" src="./home/img/familiar-small.svg" alt="">
-                  </div>
-                  <div class="familiar-item-info">Ａ：根据企业的消息量和存档人数等因素来评估具体配置。详情咨询客服</div>
-                </div>
-                <div class="familiar-item">
-                  <div class="familiar-item-title-box">
-                    <div class="familiar-item-title">Q：支持纯内网部署吗?</div>
-                    <img class="familiar-item-icon" src="./home/img/familiar-small.svg" alt="">
-                  </div>
-                  <div class="familiar-item-info">Ａ：芝麻会话存档支持纯内网部署，高度保障数据安全隐私</div>
-                </div>
-              </div>
-            </div>
-           </div>
-        </div>
-        <!-- <div class="float-sidebar">
-          <div id="contactCustomerBtnShow">
-              <div class="contact-img-border"></div>
-              <div class="contact-img-box">
-                <img class="contact-img" src="./home/img/sidebar/contact-customer-btn.png" alt="联系客服" style='display:block;margin:auto'>
-              </div>
-              <div class="contact-title">联系客服</div>
-          </div>
-          <a class="contact" target="_blank">
-            <div class="contact-customer-box">
-              <div class="contact-customer" id="contactCustomer" style="top:-190px;">
-                <img class="contact-customer-img" src="./home/img/sidebar/zm-sq.png" />
-              </div>
-            </div>
-            <p class="require contact-sales-btn">
-                <img class="contact-sales" src="./home/img/sidebar/lxkf_action.png" alt="联系售后" style='display:block;margin:auto'>
-                联系售后
-            </p>
-            <div class="xkf_logo contact-sales-box" style="top:-14px;">
-              <div class="contact-sales-content">
-                  <div class="contact-sales-title">售后微信</div>
-                  <img class="contact-sales-img" src="./home/img/sidebar/zm-sh.png" />
-                  <div class="contact-sales-info">扫码添加&nbsp;&nbsp;&nbsp;一对一解答</div>
-              </div>
-            </div>
-            <div class="xkf_logo" style="top: -14px;">
-                <img class="" src="./home/img/sidebar/routineImg.png" />
-                <p>微信扫码咨询</p>
-            </div>
-            <p class="top-header-box" id="goBackTopBox" onclick="window.location.href='#'">
-                <img class='top-header' src="./home/img/sidebar/icon_huiding_action.png" alt="回到顶部">
-            </p>
-          </a>
-        </div> -->
-      </div>
-      <footer class="layout-footer-wrapper">
-        <div class="footer-introduce wow fadeInUp" data-wow-duration='0.7s' data-wow-offset="100">
-          <div class="introduce-left">
+                <!-- <div class="introduce-left">
             <div class="introduce-item">
               <h4 class="introduce-title">产品</h4>
               <div class="introduce-info">
@@ -386,21 +415,25 @@
           </div>
           <div class="introduce-right">
             <div class="introduce-info-item item-img-box">
-              <img src="./home/img/qrcode.jpg?v=202411191429" alt="">
+              <img src="./home/img/qrcode.jpg?v=202411201605" alt="">
               <strong class="item-text">请添加客服企业微信快速体验系统功服</strong>
             </div>
-          </div>
-        </div>
-        <div class="layout-footer">
-          <div class="copyright-box">
-            <div class="copyright-text-box">
-              <strong class="copyright-text-info">Copyright © 2021, 芝麻小事网络科技（武汉）有限公司<em class="copyright-text-info-to"><a href="https://beian.miit.gov.cn/#/Integrated/index" target="_blank">鄂ICP备2022002398号-1</a></em><em class="copyright-text-info-to"></em></strong>
+          </div> -->
             </div>
-          </div>
-        </div>
-      </footer>
+            <div class="layout-footer wow fadeInUp" data-wow-duration='0.7s'>
+                <div class="copyright-box">
+                    <div class="copyright-text-box">
+                        <div class="copyright-text-top">芝麻会话存档使用，请遵循<a href="https://github.com/zhimaAi/qiweidoc?tab=License-1-ov-file" target="_blank" class="source-protocol">《芝麻会话存档开源协议》</a></div>
+                        <strong class="copyright-text-info">Copyright © 2021, 芝麻小事网络科技（武汉）有限公司<em
+                                class="copyright-text-info-to"><a href="https://beian.miit.gov.cn/#/Integrated/index"
+                                    target="_blank">鄂ICP备2022002398号-1</a></em><em
+                                class="copyright-text-info-to"></em></strong>
+                    </div>
+                </div>
+            </div>
+        </footer>
     </div>
-    <div id="isMobile">
+    <!-- <div id="isMobile">
       <div class="header">
         <div class="header-content">
           <div class="header-left">
@@ -457,10 +490,11 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
     <script src="./home/js/jquery-3.3.1.min.js"></script>
     <script src="./home/libs/swiper-11.0.3/swiper-bundle.min.js"></script>
     <script src="./home/js/wow.js"></script>
     <script src="./home/js/index.js"></script>
-  </body>
+</body>
+
 </html>

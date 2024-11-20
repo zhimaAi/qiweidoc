@@ -794,7 +794,7 @@ body {
 }
 
 .layout-footer-wrapper {
-	background-color: #393B46;
+	background: var(--10, #FFF);
 }
 
 .footer-introduce {
@@ -802,12 +802,81 @@ body {
 	width: 1200px;
 	height: 300px;
 	justify-content: space-between;
-	background: var(--10, #393B46);
+	background: var(--10, #FFF);
 	box-sizing: border-box;
-	padding: 60px 0;
 	display: flex;
+    align-items: center;
+    justify-content: center;
 	gap: 62px;
 }
+
+.experience-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.experience-box-name {
+    text-align: center;
+    color: #2475fc;
+    font-size: 36px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 44px;
+    text-transform: capitalize;
+}
+
+.experience-box-title {
+    color: #262626;
+    text-align: center;
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 900;
+    line-height: 44px;
+    margin: 8px 0 16px;
+}
+
+.experience-box-info {
+    color: #3a4559;
+    text-align: center;
+    font-family: PingFang SC;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 26px;
+}
+
+.btn-box {
+    width: 200px;
+    justify-content: center;
+    margin-top: 40px;
+    display: flex;
+}
+
+.btn-box:hover {
+    opacity: 0.75;
+}
+
+.experience-btn {
+    display: flex;
+    width: 200px;
+    box-sizing: border-box;
+    justify-content: center;
+    align-items: center;
+    height: 52px;
+    border-radius: 100px;
+    color: #fff;
+    background-color: #2475fc;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+}
+
+.experience-btn-icon {
+    width: 14px;
+    margin-right: 10px;
+}
+
 .introduce-left {
   display: flex;
 }
@@ -887,16 +956,25 @@ body {
     line-height: 60px;
     font-size: 12px;
     font-weight: 400;
-    color: rgba(255, 255, 255, .65);
-    background: #2A2C32;
+    color: #8c8c8c;
+    background: #FFF;
+    border-top: 1px solid #EEE;
 }
 .layout-footer .copyright-box .copyright-text-box {
 	display: flex;
+    flex-direction: column;
 	align-items: center;
-	cursor: pointer;
 	line-height: 20px;
 	font-size: 12px;
 	text-align: center;
+}
+.source-protocol {
+    display: inline-block;
+    cursor: pointer;
+    color: #2475fc;
+}
+.source-protocol:hover {
+    text-decoration: underline;
 }
 .layout-footer .copyright-box .copyright-text-box .copyright-text-info {
 	font-weight: 400;

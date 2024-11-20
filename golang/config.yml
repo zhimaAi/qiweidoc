@@ -36,10 +36,15 @@ http:
     supervisor:
       max_worker_memory: 128 # 当进程使用内存超过128MB后自动重启(不会终止正在处理的请求)
       exec_ttl: 30s  # 请求最长执行时间为30秒，超过就自动重启进程以便结束请求
-  middleware: ["proxy", "headers", "gzip", "sendfile"]
+  middleware: ["proxy", "headers", "gzip", "sendfile", "static"]
   headers:
     response:
       "Cache-Control": "no-cache"
+  static:
+    dir: "./static/management/dist/"
+    forbid: [ ".php", ".htaccess" ]
+    calculate_etag: true
+    weak: false
 
 # 静态文件服务
 fileserver:
@@ -47,8 +52,6 @@ fileserver:
   serve:
     - prefix: "/"
       root: "./static/home/"
-    - prefix: "/management"
-      root: "./static/management/dist/"
     - prefix: "/docs"
       root: "./static/vitepress/docs/.vitepress/dist"
     - prefix: "/docker-compose-prod.yml"

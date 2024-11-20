@@ -3,7 +3,6 @@ const dev_host = process.env.VUE_APP_HOST || '/';
 const path = require("path");
 const webpack = require('webpack');
 module.exports = defineConfig({
-    publicPath: process.env.NODE_ENV === 'production' ? '/management/' : '/',  // 添加这行
     transpileDependencies: true,
     devServer: {
         open: true,

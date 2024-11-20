@@ -24,7 +24,9 @@
 
 5、统计员工单聊，群聊内员工回复效率，响应时间
 
-详细文档以及部署流程请参考[官方文档](http://huihua.xiaokefu.cn/docs/)。
+详细使用和部署文档请参考[官方文档](http://zhimahuihua.com/docs/)
+
+可以参考我们的[演示站]((http://demo.zhimahuihua.com))
 
 操作界面预览：
 

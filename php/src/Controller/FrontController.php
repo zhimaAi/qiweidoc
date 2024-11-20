@@ -13,6 +13,14 @@ use Yiisoft\Router\HydratorAttribute\RouteArgument;
 
 class FrontController extends BaseController
 {
+    public function management(): ResponseInterface
+    {
+        $staticFile = Yii::aliases()->get('@root/../static/management/dist/index.html');
+        $content = file_get_contents($staticFile);
+
+        return $this->htmlResponse($content);
+    }
+
     /**
      * ping pong
      */

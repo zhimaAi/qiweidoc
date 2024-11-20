@@ -19,169 +19,65 @@ use Yiisoft\Router\Group;
 use Yiisoft\Router\Route;
 
 return [
-    // ping-pong
+    // 渲染前端
+    Route::get('/')->action([FrontController::class, 'management']),
     Route::get('/ping')->action([FrontController::class, 'pingPong']),
-
-    // 企微验证域名用
     Route::get('/WW_verify_{content:.+\.txt}')->action([FrontController::class, 'verify']),
 
     // 认证相关的接口
     Group::create('/api/auth')->routes(
-
-        // 扫码授权登录
-        Route::post('/code/login')
-            ->action([AuthController::class, 'codeLogin']),
-
-        // 账号密码登录
-        Route::post('/password/login')
-            ->action([AuthController::class, 'passwordLogin']),
+        Route::post('/code/login')->action([AuthController::class, 'codeLogin']),
+        Route::post('/password/login')->action([AuthController::class, 'passwordLogin']),
     ),
 
-    // 企业相关的接口
+    // 接入流程
     Group::create('/api/corps')->routes(
-
-        // 检查是否已初始化
-        Route::post('/init/check')
-            ->action([CorpController::class, 'checkInit']),
-
-        // 企业基础信息保存
-        Route::post('/basic')
-            ->action([CorpController::class, 'initCorpInfo']),
-
-        // 获取当前企业信息
-        Route::get('/current')
-            ->middleware(Authentication::class)
-            ->middleware(CurrentCorpInfoMiddleware::class)
-            ->action([CorpController::class, 'getCurrentCorpInfo']),
-
-        // 获取会话存档密钥
-        Route::get('/session/publicKey')
-            ->middleware(Authentication::class)
-            ->middleware(CurrentCorpInfoMiddleware::class)
-            ->action([CorpController::class,'getSessionPublicKey']),
-
-        // 保存会话存档配置
-        Route::post('/session/saveConfig')
-            ->middleware(Authentication::class)
-            ->middleware(CurrentCorpInfoMiddleware::class)
-            ->action([CorpController::class,'saveConfig']),
-
-        // 更新企业信息
-        Route::put('/current')
-            ->middleware(Authentication::class)
-            ->middleware(CurrentCorpInfoMiddleware::class)
-            ->action([CorpController::class, 'updateConfig']),
+        Route::post('/init/check')->action([CorpController::class, 'checkInit']),
+        Route::post('/basic')->action([CorpController::class, 'initCorpInfo']),
     ),
 
-    // 用户(员工)相关的接口
-    Group::create('/api/users')
-        ->middleware(Authentication::class)
-        ->middleware(CurrentCorpInfoMiddleware::class)
-        ->routes(
-            // 获取当前用户信息
-            Route::get('/current')
-                ->action([UserController::class, 'getCurrentUserInfo']),
-
-            // 修改密码
-            Route::put('/current')
-                ->action([UserController::class, 'updateCurrentUserInfo']),
-        ),
-
-    // 群相关的接口
-    Group::create('/api/groups')
+    // 需要验证登录的接口
+    Group::create("/api/")
         ->middleware(Authentication::class)
         ->middleware(CurrentCorpInfoMiddleware::class)
         ->routes(
 
-            // 群同步
-            Route::get('/sync')->action([GroupController::class, 'sync']),
+            // 企业相关接口
+            Route::get('/corps/current')->action([CorpController::class, 'getCurrentCorpInfo']),
+            Route::get('/corps/session/publicKey')->action([CorpController::class,'getSessionPublicKey']),
+            Route::post('/corps/session/saveConfig')->action([CorpController::class,'saveConfig']),
+            Route::put('/corps/current')->action([CorpController::class, 'updateConfig']),
 
-            // 群列表
-            Route::get('/list')->action([GroupController::class, 'list']),
-        ),
+            // 用户相关接口
+            Route::get('/users/current')->action([UserController::class, 'getCurrentUserInfo']),
+            Route::put('/users/current')->action([UserController::class, 'updateCurrentUserInfo']),
 
-    // 客户相关的接口
-    Group::create('/api/customers')
-        ->middleware(Authentication::class)
-        ->middleware(CurrentCorpInfoMiddleware::class)
-        ->routes(
+            // 群相关的接口
+            Route::get('/groups/sync')->action([GroupController::class, 'sync']),
+            Route::get('/groups/list')->action([GroupController::class, 'list']),
 
-            // 客户同步
-            Route::get('/sync')->action([CustomersController::class, 'sync']),
+            // 客户相关的接口
+            Route::get('/customers/sync')->action([CustomersController::class, 'sync']),
+            Route::get('/customers/list')->action([CustomersController::class, 'list']),
 
-            // 客户列表
-            Route::get('/list')->action([CustomersController::class, 'list']),
-        ),
+            // 员工相关接口
+            Route::get('/staff/list')->action([StaffController::class, 'list']),
 
-    // 标签相关的接口
-    Group::create('/api/tags')
-        ->middleware(Authentication::class)
-        ->middleware(CurrentCorpInfoMiddleware::class)
-        ->routes(
+            // 部门相关接口
+            Route::get('/department/sync')->action([DepartmentController::class, 'sync']),
+            Route::get('/department/list')->action([DepartmentController::class, 'list']),
 
-            // 员工标签列表
-            Route::get('/staff')->action([TagsController::class, 'staff']),
+            // 标签相关的接口
+            Route::get('/tags/staff')->action([TagsController::class, 'staff']),
+            Route::get('/tags/customer')->action([TagsController::class, 'customer']),
 
-            // 客户标签列表
-            Route::get('/customer')->action([TagsController::class, 'customer']),
-        ),
-
-    // 会话存档相关的接口
-    Group::create('/api/chats')
-        ->middleware(Authentication::class)
-        ->middleware(CurrentCorpInfoMiddleware::class)
-        ->routes(
-
-            // 按员工查询与客户的会话列表
-            Route::get('/by/staff/customer/conversation/list')
-                ->action([ChatController::class, 'getCustomerConversationListByStaff']),
-
-            // 按员工查询与员工的会话列表
-            Route::get('/by/staff/staff/conversation/list')
-                ->action([ChatController::class, 'getStaffConversationListByStaff']),
-
-            // 按员工查询与群的会话列表
-            Route::get('/by/staff/room/conversation/list')
-                ->action([ChatController::class, 'getRoomConversationListByStaff']),
-
-            // 按客户查询与员工的会话列表
-            Route::get('/by/customer/staff/conversation/list')
-                ->action([ChatController::class, 'getStaffConversationListByCustomer']),
-
-            // 根据会话获取聊天内容
-            Route::get('/by/conversation/message/list')
-                ->action([ChatController::class, 'getMessageListByConversation']),
-
-            // 根据群聊获取聊天内容
-            Route::get('/by/group/message/list')
-                ->action([ChatController::class, 'getMessageListByGroup']),
-
-            // 会话搜索
-            Route::get('/search')
-                ->action([ChatController::class, 'getSearch']),
-        ),
-
-    // 企业员工
-    Group::create('/api/staff')
-        ->middleware(Authentication::class)
-        ->middleware(CurrentCorpInfoMiddleware::class)
-        ->routes(
-
-            // 员工列表
-            Route::get('/list')->action([StaffController::class, 'list']),
-        ),
-
-    // 企业部门
-    Group::create('/api/department')
-        ->middleware(Authentication::class)
-        ->middleware(CurrentCorpInfoMiddleware::class)
-        ->routes(
-
-            // 部门同步
-            Route::get('/sync')->action([DepartmentController::class, 'sync']),
-
-            // 部门列表
-            Route::get('/list')->action([DepartmentController::class, 'list']),
-        ),
-
+            // 会话存档相关的接口
+            Route::get('/chats/by/staff/customer/conversation/list')->action([ChatController::class, 'getCustomerConversationListByStaff']),
+            Route::get('/chats/by/staff/staff/conversation/list')->action([ChatController::class, 'getStaffConversationListByStaff']),
+            Route::get('/chats/by/staff/room/conversation/list')->action([ChatController::class, 'getRoomConversationListByStaff']),
+            Route::get('/chats/by/customer/staff/conversation/list')->action([ChatController::class, 'getStaffConversationListByCustomer']),
+            Route::get('/chats/by/conversation/message/list')->action([ChatController::class, 'getMessageListByConversation']),
+            Route::get('/chats/by/group/message/list')->action([ChatController::class, 'getMessageListByGroup']),
+            Route::get('/chats/search')->action([ChatController::class, 'getSearch']),
+    ),
 ];
