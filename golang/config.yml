@@ -36,7 +36,7 @@ http:
     supervisor:
       max_worker_memory: 128 # 当进程使用内存超过128MB后自动重启(不会终止正在处理的请求)
       exec_ttl: 30s  # 请求最长执行时间为30秒，超过就自动重启进程以便结束请求
-  middleware: ["proxy", "headers", "gzip", "sendfile", "static"]
+  middleware: ["headers", "gzip", "sendfile", "static", "proxy"]
   headers:
     response:
       "Cache-Control": "no-cache"

@@ -37,7 +37,7 @@ return [
     ),
 
     // 需要验证登录的接口
-    Group::create("/api/")
+    Group::create("/api")
         ->middleware(Authentication::class)
         ->middleware(CurrentCorpInfoMiddleware::class)
         ->routes(
