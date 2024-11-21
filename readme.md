@@ -56,3 +56,19 @@
   <img src="./static/images/contact-us.png" alt="">
 
 - **邮箱：** 您可以发送邮件到jarvis@2bai.com.cn联系我们。
+
+### 协议
+
+---
+
+本仓库遵循[qiweidoc Open Source License](https://github.com/zhimaAi/qiweidoc/blob/main/LICENSE)
+开源协议。[qiweidoc Open Source License](https://github.com/zhimaAi/qiweidoc/blob/main/LICENSE)基于Apache License
+2.0协议，但是有一些额外的限制，包括：
+
+1、允许作为后台服务商用，但是不可用于多租户SAAS模式。
+
+2、除非您获取特定的商业许可，否则任何形式的商用服务均不可移除qiweidoc页面上的版权信息和qiweidoc logo。
+
+完整协议请查看[qiweidoc Open Source License](https://github.com/zhimaAi/qiweidoc/blob/main/LICENSE)
+，需要获取额外的商业许可请[联系我们](#联系我们)
+

@@ -39,7 +39,7 @@ onMounted(async () => {
 })
 
 const localLoginTest = () => {
-    loginAfterHandle('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6NTQ4MzY0LCJjb3JwX2lkIjoid3c1ZjQzMmIzYTI0YTliOWYxIiwiZXhwIjoxNzMyMDg3MjU1fQ.1CrKj4lNDrfILlnFqR6ReOZ3nS5AD2QCuR3ru0_I-lI')
+    loginAfterHandle('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjMiLCJ1c2VyaWQiOiJMaWFvWGl1WXVhbiIsImNvcnBfaWQiOiJ3dzVmNDMyYjNhMjRhOWI5ZjEiLCJleHAiOjE3MzIyNDA0ODd9.Gg8eWqr58T02reyrlV3jkH5V295zBFvKuv2bBpt48nw')
 }
 
 const checkCorpInit = () => {
