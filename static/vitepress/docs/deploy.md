@@ -2,18 +2,18 @@
 
 ## 一，准备工作
 
-- 联网的 x86-64 架构的 Linux 服务器一台（示例：ubuntu 24.04 LTS 64 bit），配置不低于 1 核 1 GB（如果会话聊天内容包含大量文件，还需要有较大的磁盘空间）
+- 联网的 x86-64 架构的 Linux 服务器一台（示例：ubuntu 24.04 LTS 64 bit），配置不低于 2 核 2 GB（如果会话聊天内容包含大量文件，还需要有较大的磁盘空间）
 - 已经备案的域名，且备案主体与当前企业主体相同或有关联关系的域名，详情参考[企微官方配置指引](https://open.work.weixin.qq.com/wwopen/common/readDocument/40754)
 - 已开通企业微信
 ## 二，服务部署
 
-#### 1，安装 podman
+#### 1，安装 docker
 
 ```shell
-sudo apt install podman podman-compose
+sudo curl -sSL https://get.docker.com/ | CHANNEL=stable sh
 ```
 
-> 也可以用 docker 替换
+如果是境内服务器，可能会安装不了，请参考华为云提供的[安装方法](https://mirrors.huaweicloud.com/mirrorDetail/5ea14d84b58d16ef329c5c13?mirrorName=docker-ce&catalog=docker)。
 
 #### 2，下载部署文件
 
@@ -26,13 +26,17 @@ mkdir ~/zm_session_archive
 下载最新 docker-compose 配置文件：
 
 ```shell
+<<<<<<< HEAD
 curl http://zhimahuihua.com/docker-compose-prod.yml -o docker-compose.yml
+=======
+curl https://zhimahuihua.com/docker-compose-prod.yml -o docker-compose.yml
+>>>>>>> master
 ```
 
 运行：
 
 ```shell
-podman-compose up -d
+docker-compose up -d
 ```
 
 如果想要自动配置 https 证书
@@ -45,6 +49,28 @@ echo ACME_EMAIL=youremail >> .env
 再运行：
 
 ```shell
+docker-compose up -d
+```
+
+如果想要自动配置 https 证书
+
+<<<<<<< HEAD
+```
+echo ACME_DOMAINS=example.com > .env
+echo ACME_EMAIL=youremail >> .env
+=======
+容器默认会监听服务器的 80 端口 和 443 端口，如果你的服务器上有 nginx 而且也监听了 80 端口和 443 端口，可能会出现端口冲突，应该通过环境变量来修改默认端口号，如：
+
+```shell
+echo EXTERNAL_HTTP_PORT=8080 > .env
+echo EXTERNAL_HTTPS_PORT=4443 >> .env
+>>>>>>> master
+```
+
+再运行：
+
+```shell
+<<<<<<< HEAD
 podman-compose up -d
 ```
 
@@ -61,6 +87,9 @@ echo EXTERNAL_HTTPS_PORT=4443 >> .env
 
 ```shell
 podman-compose up -d
+=======
+docker-compose up -d
+>>>>>>> master
 ```
 
 nginx 配置示例如下：

@@ -17,7 +17,7 @@ body {
 	align-items: center;
 	gap: 10px;
 	border-radius: 6px;
-	background: var(---, #2475FC);
+	background: var(---, #3861ea);
 	color: #ffffff;
 	font-family: "PingFang SC";
 	font-size: 14px;
@@ -90,7 +90,7 @@ body {
 	opacity: 0.9;
 }
 .header .header-left .header-item:hover .item-icon {
-	filter: drop-shadow(#2475fc 1000px 0);
+	filter: drop-shadow(#3861ea 1000px 0);
 }
 .header .header-left .active {
 	color: white;
@@ -314,6 +314,13 @@ body {
 }
 .banner-item .btn-box {
 	margin-top: 58px;
+    display: flex;
+    justify-content: flex-start;
+    gap: 16px;
+    width: 100%;
+}
+.banner-item .btn-box .btn .experience-btn:hover{
+    opacity: 0.75;
 }
 .banner-item .btn-box .use-btn {
 	display: inline-flex;
@@ -397,7 +404,7 @@ body {
 }
 
 .main-title .main-active .main-title-item-info {
-    color: #2475FC;
+    color: #3861ea;
     font-weight: 600;
 }
 
@@ -503,8 +510,8 @@ body {
   align-items: center;
   gap: 8px;
   border-radius: 2px;
-  border: var(---0, 1px) solid var(--2475-fc, #2475FC);
-  background: var(--2475-fc, #2475FC);
+  border: var(---0, 1px) solid var(--2475-fc, #3861ea);
+  background: var(--2475-fc, #3861ea);
   box-shadow: 0 2px 0 0 #0000000a;
   color: #ffffff;
   text-align: center;
@@ -555,7 +562,7 @@ body {
     text-align: center;
 }
 .simple-choice .simple-choice-box {
-    width: 1200px;
+    max-width: 1200px;
     display: inline-block;
 }
 .simple-choice .simple-choice-title,
@@ -575,7 +582,7 @@ body {
 .simple-choice .simple-choice-content,
 .co-selection .simple-choice-content {
 	display: flex;
-	flex-wrap: wrap;
+	flex-wrap: nowrap;
 	gap: 60px;
     justify-content: center;
 }
@@ -636,7 +643,7 @@ body {
     align-items: center;
     gap: 10px;
     border-radius: 6px;
-    background: var(---, #2475FC);
+    background: var(---, #3861ea);
     color: #ffffff;
     font-size: 16px;
     font-style: normal;
@@ -758,7 +765,7 @@ body {
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	background-color: #2475FC;
+	background-color: #3861ea;
 	gap: 32px;
 }
 .zhima .zhima-title {
@@ -784,7 +791,7 @@ body {
 	background: var(---, #FFF);
 	width: 160px;
 	height: 52px;
-	color: #2475FC;
+	color: #3861ea;
 	text-align: center;
 	font-family: "PingFang SC";
 	font-size: 20px;
@@ -799,7 +806,7 @@ body {
 
 .footer-introduce {
 	margin: 0 auto;
-	width: 1200px;
+	max-width: 1200px;
 	height: 300px;
 	justify-content: space-between;
 	background: var(--10, #FFF);
@@ -818,7 +825,11 @@ body {
 
 .experience-box-name {
     text-align: center;
+<<<<<<< HEAD
     color: #2475fc;
+=======
+    color: #3861ea;
+>>>>>>> master
     font-size: 36px;
     font-style: normal;
     font-weight: 600;
@@ -851,6 +862,7 @@ body {
     justify-content: center;
     margin-top: 40px;
     display: flex;
+<<<<<<< HEAD
 }
 
 .btn-box:hover {
@@ -858,25 +870,62 @@ body {
 }
 
 .experience-btn {
+=======
+    gap: 16px;
+}
+
+.btn-box .btn:hover {
+    opacity: 0.75;
+}
+
+.btn-box .github-box .github-btn:hover {
+    background-color: #f4f4f4;
+}
+
+.experience-btn {
+    border: 1px solid #fff;
+>>>>>>> master
     display: flex;
     width: 200px;
     box-sizing: border-box;
     justify-content: center;
     align-items: center;
     height: 52px;
+<<<<<<< HEAD
     border-radius: 100px;
     color: #fff;
     background-color: #2475fc;
+=======
+    border-radius: 8px;
+    color: #fff;
+    background-color: #3861ea;
+>>>>>>> master
     font-size: 20px;
     font-style: normal;
     font-weight: 400;
 }
 
+<<<<<<< HEAD
+=======
+.github-btn {
+    background-color: white;
+    border: 1px solid #D9D9D9;
+    color: #262626;
+}
+
+>>>>>>> master
 .experience-btn-icon {
     width: 14px;
     margin-right: 10px;
 }
 
+<<<<<<< HEAD
+=======
+.github-icon {
+    width: 18px;
+}
+
+>>>>>>> master
 .introduce-left {
   display: flex;
 }
@@ -971,7 +1020,11 @@ body {
 .source-protocol {
     display: inline-block;
     cursor: pointer;
+<<<<<<< HEAD
     color: #2475fc;
+=======
+    color: #3861ea;
+>>>>>>> master
 }
 .source-protocol:hover {
     text-decoration: underline;
@@ -991,7 +1044,7 @@ body {
 }
 .layout-footer .copyright-box .copyright-text-box .copyright-text-info-to a:hover {
 	cursor: pointer;
-	color: #2475fc;
+	color: #3861ea;
 }
 .layout-footer .user-agreement-box {
 	display: flex;
@@ -1066,7 +1119,7 @@ body {
 	box-sizing: border-box;
 	width: 70px;
 	height: 70px;
-	border: 2px solid #2475FC;
+	border: 2px solid #3861ea;
 	border-radius: 100%;
 	padding: 3px;
 	display: flex;
@@ -1078,7 +1131,7 @@ body {
 	box-sizing: border-box;
 	width: 70px;
 	height: 70px;
-	border: 2px solid #2475FC;
+	border: 2px solid #3861ea;
 	border-radius: 100%;
 	animation: contact-img-box 2s linear infinite;
 	position: absolute;
@@ -1115,7 +1168,7 @@ body {
 	gap: 10px;
 	border-radius: 8px;
 	border: 1px solid #e5efff6f;
-	background: var(---, #2475FC);
+	background: var(---, #3861ea);
 	color: #ffffff;
 	font-family: "PingFang SC";
 	font-size: 14px;
@@ -1196,7 +1249,7 @@ background-color: transparent;
 
  .float-sidebar .contact p {
 		align-self: stretch;
-		color: #2475fc;
+		color: #3861ea;
 		text-align: center;
 		font-family: "PingFang SC";
 		font-size: 10px;
@@ -1299,7 +1352,7 @@ background-color: transparent;
  }
 
  .free {
-  height: 412px;
+  height: 433px;
   align-self: stretch;
   background: #FFF;
   width: 100%;
@@ -1320,21 +1373,21 @@ background-color: transparent;
   font-style: normal;
   font-weight: 600;
   line-height: 36px;
-  margin: 60px 0 32px 0;
+  margin: 80px 0 32px 0;
  }
 
  .free-content {
   display: flex;
-  flex-wrap: wrap;
-  gap: 30px;
+  flex-wrap: nowrap;
+  gap: 48px;
  }
 
  .free-item {
   box-sizing: border-box;
   position: relative;
   display: flex;
-  width: 380px;
-  height: 224px;
+  flex-basis: calc(33.3% - 32px);
+  height: 205px;
   padding: 46px var(---24, 24px);
   flex-direction: column;
   align-items: flex-start;
@@ -1363,6 +1416,7 @@ background-color: transparent;
   font-style: normal;
   font-weight: 400;
   line-height: 22px;
+  text-align: left;
  }
 
  .free-item-icon {
@@ -1402,7 +1456,7 @@ background-color: transparent;
 
  .familiar-content {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: space-between;
  }
 
@@ -1444,6 +1498,14 @@ background-color: transparent;
   width: 461px;
  }
 
+ .familiar-item-angle {
+    width: 9px;
+    z-index: 0;
+    position: absolute;
+    left: 0;
+    bottom: -7px;
+ }
+
  .familiar-content .familiar-item-info {
   flex-basis: calc(50% - 8px);
   color: #595959;
@@ -1451,13 +1513,13 @@ background-color: transparent;
   font-style: normal;
   font-weight: 400;
   line-height: 22px;
-  margin: 24px 0 0 24px;
+  margin: 24px 24px 0 24px;
  }
 
 
  .familiar-content-small {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: space-between;
   margin-top: 16px;
  }
@@ -1496,5 +1558,5 @@ background-color: transparent;
   font-style: normal;
   font-weight: 400;
   line-height: 22px;
-  margin: 24px 0 0 24px;
+  margin: 24px 24px 0 24px;
  }

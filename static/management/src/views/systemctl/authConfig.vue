@@ -39,7 +39,7 @@
                         </div>
                     </div>
                     <div class="form-block-item">
-                        <div class="form-block-title">复制以下信息并填入到企业微信后台</div>
+                        <div class="form-block-title">将以下信息复制并填入到企业微信后台</div>
                         <div class="form-block-content">
                             <a-form-item label="加密公钥" class="label-height-unset">
                                 <div class="c595959 zm-pointer" @click="copyText(formState.chat_public_key)">
@@ -51,6 +51,29 @@
                                 <div class="c595959 zm-pointer" @click="copyText(formState.chat_private_key)">
                                     <div><a>点击复制</a></div>
                                     {{ maskStringByPercentage(formState.chat_private_key, 80) }}
+                                </div>
+                            </a-form-item>
+                        </div>
+                    </div>
+                    <div class="form-block-item">
+                        <div class="form-block-title">将以下信息复制到企微后台-应用管理-接收消息服务器中</div>
+                        <div class="form-block-content">
+                            <a-form-item label="URL" class="label-height-unset">
+                                <div class="zm-pointer" @click="copyText(formState.url)">
+                                    <div><a>点击复制</a></div>
+                                    {{ formState.url }}
+                                </div>
+                            </a-form-item>
+                            <a-form-item label="token" class="label-height-unset">
+                                <div class="zm-pointer" @click="copyText(formState.callback_event_token)">
+                                    <div><a>点击复制</a></div>
+                                    {{ maskStringByPercentage(formState.callback_event_token) }}
+                                </div>
+                            </a-form-item>
+                            <a-form-item label="encodingAESSKey" class="label-height-unset">
+                                <div class="zm-pointer" @click="copyText(formState.callback_event_aes_key)">
+                                    <div><a>点击复制</a></div>
+                                    {{ maskStringByPercentage(formState.callback_event_aes_key) }}
                                 </div>
                             </a-form-item>
                         </div>
@@ -95,13 +118,15 @@
 </template>
 
 <script setup>
-import {onMounted, ref} from 'vue';
+import {onMounted, ref, reactive, computed} from 'vue';
+import {useStore} from 'vuex';
 import {message} from 'ant-design-vue';
 import MainLayout from "@/components/mainLayout.vue";
-import {getCurrentCorp, setCurrentCorp} from "@/api/auth-login";
+import {getCurrentCorp, getEventToken, setCurrentCorp} from "@/api/auth-login";
 import {copyObj, copyText, maskStringByPercentage} from "@/utils/tools";
 import LoadingBox from "@/components/loadingBox.vue";
 
+const store = useStore()
 const loading = ref(true)
 const baseInfoEdit = ref(false)
 const sessionInfoEdit = ref(false)
@@ -116,22 +141,36 @@ const formState = ref({
     chat_private_key: '',
     chat_public_key_version: '',
     chat_secret: '',
+    callback_event_token: '',
+    callback_event_aes_key: '',
+    url: '',
+})
+
+const corpId = computed(() => {
+    return store.getters.getCorpId
 })
 
 onMounted(() => {
-    loadCorpInfo()
+    init()
 })
 
-const loadCorpInfo = () => {
+const init = async () => {
     loading.value = true
-    getCurrentCorp({
+    try {
+        await loadCorpInfo()
+    } catch (e) {
+        // console.log('Err:', e)
+    }
+    loading.value = false
+}
+
+const loadCorpInfo = async () => {
+    const {data} = await getCurrentCorp({
         show_config: true
-    }).then(res => {
-        formState.value = res.data || {}
-        formStateDefault.value = copyObj(formState.value)
-    }).finally(() => {
-        loading.value = false
     })
+    formState.value = data || {}
+    formState.value.url = window.location.origin + '/openpush/qw/' + corpId.value
+    formStateDefault.value = copyObj(formState.value)
 }
 
 const editBaseInfo = () => {

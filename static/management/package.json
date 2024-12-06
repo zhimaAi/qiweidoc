@@ -5,7 +5,9 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "build:modules": "npm-run-all --parallel build build:customer_tag",
+    "build:customer_tag": "cross-env VUE_APP_MODULE=customer_tag vue-cli-service build"
   },
   "dependencies": {
     "ant-design-vue": "^4.2.5",
@@ -16,13 +18,14 @@
     "deploy": "^1.0.3",
     "qs": "^6.13.0",
     "run": "^1.5.0",
+    "swiper": "^8.4.7",
     "v-viewer": "^3.0.21",
     "video-player": "^0.0.1",
     "viewerjs": "^1.11.6",
     "vue": "^3.2.13",
+    "vue-awesome-swiper": "^5.0.1",
     "vue-clipboard3": "^2.0.0",
     "vue-router": "^4.0.3",
-    "vue-virtual-scroller": "^2.0.0-beta.8",
     "vuex": "^4.0.0"
   },
   "devDependencies": {
@@ -33,10 +36,12 @@
     "@vue/cli-plugin-router": "~5.0.0",
     "@vue/cli-plugin-vuex": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
+    "cross-env": "^7.0.3",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
     "less": "^4.0.0",
     "less-loader": "^8.0.0",
+    "npm-run-all": "^4.1.5",
     "svg-sprite-loader": "^6.0.11",
     "svgo-loader": "^4.0.0",
     "vitepress": "^1.5.0"

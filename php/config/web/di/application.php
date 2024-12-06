@@ -3,7 +3,7 @@
 
 declare(strict_types=1);
 
-use App\Libraries\Core\Http\NotFoundHandler;
+use Common\ErrorHandler\NotFoundHandler;
 use Yiisoft\Definitions\DynamicReference;
 use Yiisoft\Definitions\Reference;
 use Yiisoft\Injector\Injector;

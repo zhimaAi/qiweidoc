@@ -17,9 +17,7 @@
                         :key="menu.key"
                         :icon="menu.icon"
                         :title="menu.title">
-                        <a-menu-item
-                            v-for="sub in menu.subs"
-                            :key="sub.key">
+                        <a-menu-item v-for="sub in menu.subs" :key="sub.key" :class="{'menus-hide': sub.hide}">
                             <router-link :to="{path: sub.route}">{{ sub.title }}</router-link>
                         </a-menu-item>
                     </a-sub-menu>
@@ -36,7 +34,8 @@
 </template>
 
 <script setup>
-import {h, reactive, onMounted} from 'vue';
+import {h, reactive, ref, onMounted, computed, watch} from 'vue';
+import {useStore} from 'vuex';
 import {useRoute, useRouter} from 'vue-router';
 import {
     TeamOutlined,
@@ -44,32 +43,37 @@ import {
     SettingOutlined,
     MessageOutlined
 } from '@ant-design/icons-vue';
+import { getModules } from "@/api/company";
 
+const store = useStore()
 const route = useRoute();
 const router = useRouter();
+const loading = ref(false)
 const state = reactive({
     mode: 'inline',
     theme: 'light',
     selectedKeys: [],
     openKeys: [
         'SessionQualityInspection',
+        'FunctionCenter',
         'CustomerManagement',
         'GroupManagement',
         'companyManagement',
-        'Systemctl'
+        'Systemctl',
+        'SessionStatistics'
     ],
 });
-
-onMounted(() => {
-    const query = route.query
-    state.selectedKeys = [query._key || route.name]
+const lists = computed(() => {
+    return store.getters.getModules
 })
-
 const changeTheme = checked => {
     state.theme = checked ? 'dark' : 'light';
 }
 
-const menus = [
+/**
+ * key = route name
+ * */
+const menus = ref([
     {
         key: 'SessionQualityInspection',
         title: '会话质检',
@@ -77,6 +81,15 @@ const menus = [
         subs: [
             {key: 'sessionArchiveHome', title: '会话质检', route: '/sessionArchive/index'},
             {key: 'sessionArchiveSearch', title: '会话搜索', route: '/sessionArchive/search'}
+        ]
+    },
+    {
+        key: 'FunctionCenter',
+        title: '功能插件',
+        icon: h(AppstoreOutlined),
+        subs: [
+            {key: 'plugManagementHome', title: '功能插件', route: '/plug/index'},
+            {key: 'CustomerLabelInex', title: '客户标签', route: '/module/customer_tag/index'},
         ]
     },
     {
@@ -104,11 +117,55 @@ const menus = [
         icon: h(SettingOutlined),
         subs: [
             {key: 'systemctlAuthConfig', title: '配置信息', route: '/systemctl/authConfig'},
-            // {key: 'systemctlAccount', title: '账号管理', route: '/systemctl/account'},
+            {key: 'systemctlAccount', title: '账号管理', route: '/systemctl/account'},
             // {key: 'systemctlFileExport', title: '文件导出记录', route: '/systemctl/fileExport'},
         ]
     },
-]
+])
+
+function formatData (data) {
+  menus.value.map((item) => {
+    if (item.key === 'FunctionCenter') {
+      item.subs.map(ctem => {
+        if (ctem.key === 'CustomerLabelInex') {
+          data.map(dtem => {
+            if (dtem.name === 'customer_tag') {
+              ctem.hide = !dtem.enable
+            }
+          })
+        }
+      })
+    }
+  })
+}
+
+const loadData = () => {
+  loading.value = true
+  let params = {}
+  getModules(params).then(res => {
+    if (res.status === 'success') {
+      let data = JSON.parse(JSON.stringify(res.data))
+      data.map(dtem => {
+        dtem.enable = !dtem.paused
+      })
+      formatData(data)
+      store.commit('setModules', data)
+    }
+  }).finally(() => {
+    loading.value = false
+  })
+}
+
+watch(() => lists.value, (data) => {
+  formatData(data)
+})
+
+onMounted(() => {
+    loadData()
+    // const query = route.query
+    // state.selectedKeys = [query._key || route?.meta?.selectNav || route.name]
+    state.selectedKeys = [route.meta.activeMenuKey || route.name]
+})
 </script>
 
 <style scoped lang="less">
@@ -166,6 +223,10 @@ const menus = [
 
     .search-menu-box {
         padding: 12px;
+    }
+
+    :deep(.menus-hide) {
+        display: none;
     }
 }
 </style>

@@ -90,8 +90,11 @@
                                             <span class="qunfa_name">
                                                 {{ textLimit(record.external_name, 7) }}
                                             </span>
-                                            <span style="color: #faad14">
-                                                {{ record.corp_name == "" ? "@微信" : "@" + record.corp_name }}
+                                            <span class="is-wx-tag" v-if="!record.corp_name">
+                                                @微信
+                                            </span>
+                                            <span style="color: #faad14" v-else>
+                                                {{ record.corp_name }}
                                             </span>
                                         </div>
                                     </div>
@@ -557,6 +560,10 @@ const tableChange = p => {
 .flex {
     display: flex;
     align-items: center;
+}
+
+.is-wx-tag {
+    color: #07C160;
 }
 </style>
 

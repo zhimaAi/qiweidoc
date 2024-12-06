@@ -31,7 +31,8 @@ const props = defineProps({
     padding-top: 52px;
 
     ._main-right-block {
-        flex: 1;
+        //flex: 1;
+        width: calc(100vw - 256px);
     }
 }
 </style>

@@ -3,9 +3,8 @@
 
 declare(strict_types=1);
 
-use Yiisoft\Assets\AssetManager;
+use Common\Module;
 use Yiisoft\Db\Pgsql\Dsn;
-use Yiisoft\Definitions\Reference;
 
 return [
     'supportEmail' => 'support@example.com',
@@ -13,36 +12,16 @@ return [
     'yiisoft/aliases' => [
         'aliases' => [
             '@root' => dirname(__DIR__, 2),
-            '@assets' => '@public/assets',
-            '@assetsUrl' => '@baseUrl/assets',
             '@baseUrl' => '/',
-            '@data' => '@root/data',
-            '@messages' => '@resources/messages',
-            '@public' => '@root/public',
-            '@resources' => '@root/resources',
             '@runtime' => '@root/runtime',
-            '@src' => '@root/src',
-            '@tests' => '@root/tests',
-            '@views' => '@root/views',
+            '@src' => "@root/modules/" . Module::getCurrentModuleName(),
+            '@modules' => '@root/modules',
             '@vendor' => '@root/vendor',
         ],
     ],
 
     'yiisoft/router-fastroute' => [
         'enableCache' => false,
-    ],
-
-    'yiisoft/view' => [
-        'basePath' => '@views',
-        'parameters' => [
-            'assetManager' => Reference::to(AssetManager::class),
-        ],
-    ],
-
-    'yiisoft/yii-swagger' => [
-        'annotation-paths' => [
-            '@app',
-        ],
     ],
 
     'yiisoft/db-pgsql' => [
@@ -52,8 +31,14 @@ return [
     ],
 
     'yiisoft/db-migration' => [
-        'newMigrationNamespace' => 'App\\Migrations',
-        'sourceNamespaces' => ['App\\Migrations'],
+        'sourcePaths' => ["modules/" . Module::getCurrentModuleName() . "/migration"],
+        'newMigrationPath' => "modules/" . Module::getCurrentModuleName() . "/migration",
+        'historyTable' => Module::getCurrentModuleName() . ".migration",
+    ],
+
+    'predis' => [
+        'uri' => "tcp://" . $_ENV['REDIS_HOST'] . ":" . $_ENV['REDIS_PORT'],
+        'password' => $_ENV['REDIS_PASSWORD'],
     ],
 
     'yiisoft/cache-redis' => [

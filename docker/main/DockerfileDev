@@ -25,6 +25,9 @@ RUN apt-get update && \
     php-gd \
     php-imagick \
     composer \
+    php-dev \
+    php-pear \
+    zlib1g-dev \
     npm && \
     sed -i '/zh_CN.UTF-8/s/^# //g' /etc/locale.gen && \
     locale-gen && \
@@ -36,6 +39,13 @@ RUN apt-get update && \
 ENV LANG=zh_CN.UTF-8 \
     LANGUAGE=zh_CN:zh \
     LC_ALL=zh_CN.UTF-8
+
+# 安装grpc扩展
+RUN pecl install grpc && \
+    echo "extension=grpc.so" > /etc/php/8.2/cli/conf.d/20-grpc.ini
+COPY docker/main/protoc /usr/local/bin/
+COPY docker/main/grpc_php_plugin /usr/local/bin/
+COPY docker/main/protoc-gen-php-grpc /usr/local/bin/
 
 # PHP 扩展配置
 COPY docker/main/edl.so /usr/lib/php/20220829/

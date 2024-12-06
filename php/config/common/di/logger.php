@@ -3,6 +3,8 @@
 
 declare(strict_types=1);
 
+use Common\Module;
+use Common\RoadRunnerLogTarget;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Spiral\RoadRunner\Environment;
@@ -15,14 +17,14 @@ use Yiisoft\Log\Target\File\FileTarget;
 
 /** @var array $params */
 return [
-
+    // 默认日志
     LoggerInterface::class => static function (ContainerInterface $container) {
         $aliases = $container->get(Aliases::class);
-        $logName = $aliases->get('@runtime/logs/' . date('Y-m-d') . '.log');
+        $logName = $aliases->get('@runtime/logs/app.log');
         $fileTarget = new FileTarget($logName);
         $context = [
             'env' => $_ENV['YII_ENV'],
-            'mode' => Environment::fromGlobals()->getMode(),
+            'mode' => Environment::fromGlobals()->getMode() ?: 'cli',
         ];
         $contextProvider = new CompositeContextProvider(
             new SystemContextProvider(traceLevel: 3, excludedTracePaths: ['vendor/yiisoft/di']),
@@ -34,29 +36,46 @@ return [
         return $logger;
     },
 
-    'custom.category.logger' => static function (ContainerInterface $container) {
-        return function (string $category = '') use ($container) {
-            // 设置日期文件名
-            $aliases = $container->get(Aliases::class);
-            $logName = $aliases->get('@runtime/logs/' . date('Y-m-d') . '.log');
-            $fileTarget = new FileTarget($logName);
-
-            // 添加额外上下文
+    // 自定义日志
+    'custom.logger' => static function (ContainerInterface $container) {
+        return function (string $business = '') use ($container) {
+            $module = Module::getCurrentModuleName();
             $context = [
                 'env' => $_ENV['YII_ENV'],
-                'mode' => Environment::fromGlobals()->getMode(),
+                'mode' => Environment::fromGlobals()->getMode() ?: 'cli',
+                'module' => $module,
+                'business' => $business,
             ];
-            if (! empty($category)) {
-                $context['category'] = $category;
-            }
-            $contextProvider = new CompositeContextProvider(
-                new SystemContextProvider(traceLevel: 3, excludedTracePaths: ['vendor/yiisoft/di']),
-                new CommonContextProvider($context),
+
+            $aliases = $container->get(Aliases::class);
+            $logName = $aliases->get("@runtime/logs/{$module}/{$business}/" . date('Y-m-d') . '.log');
+            $fileTarget = new FileTarget($logName);
+
+            $logger = new Logger(
+                [$fileTarget, new RoadRunnerLogTarget()],
+                contextProvider: new CompositeContextProvider(
+                    new SystemContextProvider(traceLevel: 3, excludedTracePaths: ['vendor/yiisoft/di']),
+                    new CommonContextProvider($context),
+                )
             );
-            $logger = new Logger([$fileTarget], contextProvider: $contextProvider);
             $logger->setFlushInterval(1);
 
             return $logger;
         };
+    },
+
+    // 数据库查询日志
+    'db.logger' => static function (ContainerInterface $container) {
+        $aliases = $container->get(Aliases::class);
+        $logName = $aliases->get('@runtime/logs/db.log');
+        $fileTarget = new FileTarget($logName);
+        $context = [
+            'env' => $_ENV['YII_ENV'],
+            'mode' => Environment::fromGlobals()->getMode() ?: 'cli',
+        ];
+        $logger = new Logger([$fileTarget], new CommonContextProvider($context));
+        $logger->setFlushInterval(3);
+
+        return $logger;
     },
 ];

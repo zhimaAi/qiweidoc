@@ -34,15 +34,15 @@
     "require": {
         "php": "^8.2",
         "ext-openssl": "*",
+        "ext-pdo": "*",
         "cebe/markdown": "^1.2@dev",
-        "crunzphp/crunz": "^3.7",
-        "cycle/active-record": "^0.8.0",
-        "cycle/entity-behavior": "^1.3",
         "doctrine/collections": "^2.2",
         "filp/whoops": "^2.16",
         "firebase/php-jwt": "^6.10",
+        "google/protobuf": "^3.25",
+        "grpc/grpc": "^1.57",
+        "guzzlehttp/guzzle": "^7.9",
         "httpsoft/http-message": "^1.1",
-        "peppeocchi/php-cron-scheduler": "^4.0",
         "psr/container": "^2.0",
         "psr/http-factory": "^1.0",
         "psr/http-message": "^1.1|^2.0",
@@ -50,8 +50,11 @@
         "psr/http-server-middleware": "^1.0",
         "psr/log": "^3.0",
         "ramsey/collection": "^2.0",
+        "roadrunner-php/app-logger": "^1.2",
         "spiral/goridge": "^4.2",
+        "spiral/roadrunner-grpc": "^3.4",
         "spiral/roadrunner-jobs": "^4.6",
+        "spiral/roadrunner-services": "v2.2.0",
         "symfony/console": "^6.0",
         "symfony/event-dispatcher": "^7.1",
         "symfony/messenger": "^7.1",
@@ -61,6 +64,7 @@
         "vlucas/phpdotenv": "^5.3",
         "w7corp/easywechat": "^6.15",
         "yiisoft/auth": "^3.1",
+        "yiisoft/cache": "^3.0",
         "yiisoft/cache-file": "^3.0",
         "yiisoft/cache-redis": "^2.0",
         "yiisoft/config": "^1.0",
@@ -81,68 +85,37 @@
         "yiisoft/log-target-file": "^3.0",
         "yiisoft/middleware-dispatcher": "^5.2",
         "yiisoft/mutex": "^1.1",
-        "yiisoft/mutex-pdo-pgsql": "^1.1",
+        "yiisoft/mutex-redis": "dev-dependabot/composer/predis/predis-tw-2.1",
         "yiisoft/request-body-parser": "^1.1",
         "yiisoft/router": "^3.0",
         "yiisoft/router-fastroute": "^3.0",
         "yiisoft/validator": "^1.0",
         "yiisoft/yii-console": "^2.0",
+        "yiisoft/yii-debug": "dev-master",
         "yiisoft/yii-event": "^2.0",
         "yiisoft/yii-http": "^1.0",
         "yiisoft/yii-middleware": "^1.0",
         "yiisoft/yii-runner-console": "^2.0",
         "yiisoft/yii-runner-http": "^2.0",
-        "yiisoft/yii-runner-roadrunner": "^3.0",
-        "yiisoft/yii-swagger": "^2.0"
+        "yiisoft/yii-runner-roadrunner": "^3.0"
     },
     "require-dev": {
-        "codeception/c3": "^2.6",
-        "codeception/codeception": "^5.0",
-        "codeception/lib-innerbrowser": "^3.0",
-        "codeception/module-asserts": "^3.0",
-        "codeception/module-cli": "^2.0",
-        "codeception/module-db": "^3.0",
-        "codeception/module-phpbrowser": "^3.0",
-        "codeception/module-rest": "^3.0",
-        "friendsofphp/php-cs-fixer": "^3.64",
-        "maglnet/composer-require-checker": "^4.7",
-        "phpunit/phpunit": "^9.5",
-        "rector/rector": "^1.0.0",
-        "roave/infection-static-analysis-plugin": "^1.34",
-        "spatie/phpunit-watcher": "~1.23.0",
-        "vimeo/psalm": "^5.20",
-        "yiisoft/json": "^1.0",
-        "yiisoft/yii-debug-api": "dev-master",
-        "yiisoft/yii-debug-viewer": "dev-master",
-        "yiisoft/yii-testing": "dev-master"
+        "friendsofphp/php-cs-fixer": "^3.64"
+    },
+    "suggest": {
+        "ext-grpc": "Required for gRPC functionality"
     },
     "autoload": {
         "psr-4": {
-            "App\\": "src"
+            "Common\\": "common",
+            "GRPC\\": "generated/GRPC"
         },
         "files": [
-            "src/functions.php",
-            "src/enums.php"
+            "common/functions.php"
         ]
     },
-    "autoload-dev": {
-        "psr-4": {
-            "App\\Tests\\": "tests/"
-        }
-    },
     "scripts": {
-        "format": "php-cs-fixer fix",
-        "serve": [
-            "Composer\\Config::disableProcessTimeout",
-            "@php ./yii serve"
-        ],
-        "post-update-cmd": [
-            "App\\Installer::postUpdate"
-        ],
-        "post-create-project-cmd": [
-        ],
-        "test": "codecept run",
-        "test-watch": "phpunit-watcher watch"
+        "format": "php-cs-fixer fix"
     },
     "extra": {
         "branch-alias": {
@@ -151,12 +124,15 @@
         "config-plugin-file": "configuration.php"
     },
     "config": {
+        "platform": {
+            "php": "8.2"
+        },
         "sort-packages": true,
         "allow-plugins": {
-            "codeception/c3": true,
             "infection/extension-installer": true,
             "composer/package-versions-deprecated": true,
-            "yiisoft/config": true
+            "yiisoft/config": true,
+            "codeception/c3": true
         }
     }
 }

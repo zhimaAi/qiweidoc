@@ -58,9 +58,11 @@
                         v-show="main.contactType === 'CUSTOMER'"
                         @change="val => contactChange(val, 'CUSTOMER')"
                         @totalReport="val => contactTotalReport(val, 'CUSTOMER')"
+                        @cancelCollect="onCancelCollect"
                         :staffInfo="currentStaff"
                         :filterData="filterData"
                         :default="defaultParams"
+                        :callbackData="callbackData"
                         :key="contactCompKey * 100"
                         class="main-content-box"
                     />
@@ -77,6 +79,8 @@
                 </DragStretchBox>
                 <ChatBox ref="chatRef" class="right-block"
                          :chatInfo="chatInfo"
+                         :currentMsgCancelCollect="currentMsgCancelCollect"
+                         @changeCollect="onChangeCollect"
                          :loadType="main.contactType === 'GROUP' ? 'group' : 'session'"/>
             </div>
         </div>
@@ -150,12 +154,16 @@ const currentContact = computed(() => {
 })
 
 const chatInfo = computed(() => {
+    // console.log('currentContact', currentContact.value)
     if (!currentContact.value || !currentStaff.value) {
         return {}
     }
     let receiver
     let params = {
-        conversation_id: currentContact.value.id
+        conversation_id: currentContact.value.id,
+        is_collect: currentContact.value.is_collect,
+        collect_reason: currentContact.value.collect_reason,
+        tab: 'LOAD_BY_STAFF' // 这里的tab是上级的，此处是按员工：LOAD_BY_STAFF
     }
     switch (main.contactType) {
         case 'GROUP':
@@ -165,6 +173,9 @@ const chatInfo = computed(() => {
             }
             params = {
                 group_chat_id: currentContact.value.chat_id,
+                conversation_id: currentContact.value.id,
+                is_collect: currentContact.value.is_collect,
+                collect_reason: currentContact.value.collect_reason
             }
             break
         case 'CUSTOMER':
@@ -194,6 +205,21 @@ const chatInfo = computed(() => {
         }
     }
 })
+
+const callbackData = ref({})
+const currentMsgCancelCollect = ref(0)
+
+const onChangeCollect = (obj) => {
+    // console.log('items', obj)
+    callbackData.value = obj
+    currentContact.value.id = obj.conversation_id
+    currentContact.value.is_collect = obj.is_collect
+    currentContact.value.collect_reason = obj.collect_reason
+}
+
+const onCancelCollect = (val) => {
+    currentMsgCancelCollect.value = Math.random()
+}
 
 onMounted(() => {
     checkDefaultChat()

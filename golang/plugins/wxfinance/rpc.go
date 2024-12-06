@@ -42,7 +42,7 @@ func (r *rpc) FetchData(input *FetchDataRequest, output *[]ChatMsg) (err error) 
 
 // FetchMediaData 从企微下载文件，然后上传到minio返回url链接
 func (r *rpc) FetchMediaData(input *FetchMediaDataRequest, output *minio.UploadFileResponse) (err error) {
-	r.pl.log.Info("收到RPC请求",
+	r.pl.log.Debug("收到RPC请求",
 		zap.String("method", "FetchMediaData"),
 		zap.Any("input", input),
 	)
@@ -56,9 +56,10 @@ func (r *rpc) FetchMediaData(input *FetchMediaDataRequest, output *minio.UploadF
 		)
 	} else {
 		*output = *result
-		r.pl.log.Info("RPC请求成功",
+		r.pl.log.Debug("RPC请求成功",
 			zap.String("method", "FetchMediaData"),
 			zap.Any("input", input),
+			zap.Any("output", output),
 		)
 	}
 

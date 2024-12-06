@@ -4,8 +4,10 @@
 use Yiisoft\Cache\File\FileCache;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Migration\Migrator;
 use Yiisoft\Db\Pgsql\Connection;
 use Yiisoft\Db\Pgsql\Driver;
+use Yiisoft\Definitions\Reference;
 
 /** @var array $params */
 
@@ -17,14 +19,26 @@ return [
                 $params['yiisoft/db-pgsql']['dsn'],
                 $params['yiisoft/db-pgsql']['username'],
                 $params['yiisoft/db-pgsql']['password'],
+                [
+                    PDO::ATTR_EMULATE_PREPARES => true,
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                ],
             ),
         ],
+        'setLogger()' => [Reference::to('db.logger')],
     ],
 
     SchemaCache::class => [
         'class' => SchemaCache::class,
         '__construct()' => [
             new FileCache(__DIR__ . '/../../../runtime/cache'),
+        ],
+    ],
+
+    Migrator::class => [
+        'class' => Migrator::class,
+        '__construct()' => [
+            'historyTable' => $params['yiisoft/db-migration']['historyTable'],
         ],
     ],
 ];

@@ -1,11 +1,3 @@
-/*
- * @Description:
- * @Author: chris
- * @Date: 2021-11-24 11:48:52
- * @LastEditTime: 2022-02-21 12:18:00
- * @LastEditors: chris
- */
-
 const USER_AUTH_TOKEN = 'zm:session:archive:login:token';
 const USER_INFO_KEY = 'zm:session:archive:login:user';
 const CORP_INFO_KEY = 'zm:session:archive:login:corp';
@@ -87,6 +79,38 @@ function get(key) {
 function del(key) {
   return localStorage.removeItem(key);
 }
+
+// 定义一个Cookie对象
+var Cookie = {
+    // 设置cookie
+    set: function(name, value, expire) {
+      var cookie = name + "=" + encodeURIComponent(value);
+      if (expire) {
+        cookie += "; expires=" + expire.toUTCString();
+      }
+      document.cookie = cookie;
+    },
+
+    // 获取cookie
+    get: function(name) {
+      var cookies = document.cookie.split(';');
+      for (var i = 0; i < cookies.length; i++) {
+        var parts = cookies[i].split('=');
+        if (parts[0].trim() === name) {
+          return decodeURIComponent(parts[1]);
+        }
+      }
+      return '';
+    },
+
+    // 删除cookie
+    remove: function(name) {
+      this.set(name, '', new Date(0));
+    }
+  };
+
+  // 使用示例
+//   Cookie.set('user', 'John Doe', new Date(2023, 0, 1)); // 设置cookie，有效期至2023年1月1日
 
 // 等待DOM完全加载
 document.addEventListener('DOMContentLoaded', function() {
@@ -200,7 +224,18 @@ document.addEventListener('DOMContentLoaded', function() {
   // setUserInfo({"id":3,"corp_id":"ww5f432b3a24a9b9f1","userid":"LuoYingBinFen","account":"ww5f432b3a24a9b9f1_LuoYingBinFen","password":"","created_at":"2024-11-19 16:38:36","updated_at":"2024-11-19 16:38:36","cacheTimestamp":-1})
   $('#tabParent .main-title-item').hover(handleClick)
 
-  const userInfo = getUserInfo()
+
+function isJsonThenParse(str) {
+    try {
+      var obj = JSON.parse(str);
+      return obj;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  var userInfo = isJsonThenParse(Cookie.get(USER_INFO_KEY)); // 获取cookie
+  console.log('userInfo', userInfo)
 
   if (userInfo && userInfo.account) {
       $('#loginBtn').hide()
@@ -213,6 +248,9 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   $('#loginOut').on('click', function () {
+    Cookie.remove(USER_AUTH_TOKEN); // 删除cookie
+    Cookie.remove(USER_INFO_KEY); // 删除cookie
+    Cookie.remove(CORP_INFO_KEY); // 删除cookie
     del(USER_AUTH_TOKEN)
     del(USER_INFO_KEY)
     del(CORP_INFO_KEY)

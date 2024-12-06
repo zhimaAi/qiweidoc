@@ -3,14 +3,14 @@
 
 declare(strict_types=1);
 
-use App\Libraries\Core\Http\AuthenticationFailureHandler;
-use App\Models\UserModel;
+use Common\ErrorHandler\AuthenticationFailureHandler;
 use HttpSoft\Message\RequestFactory;
 use HttpSoft\Message\ResponseFactory;
 use HttpSoft\Message\ServerRequestFactory;
 use HttpSoft\Message\StreamFactory;
 use HttpSoft\Message\UploadedFileFactory;
 use HttpSoft\Message\UriFactory;
+use Modules\Main\Model\UserModel;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseFactoryInterface;

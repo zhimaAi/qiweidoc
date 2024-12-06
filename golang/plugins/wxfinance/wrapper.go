@@ -276,7 +276,6 @@ func (p *Plugin) FetchMediaData(input *FetchMediaDataRequest) (*minio.UploadFile
 	result, err := p.minioPlugin.UploadFile(updateMetaData)
 	if err != nil {
 		return nil, errors.E(errors.Op(fmt.Sprintf(`上传文件%s到服务器失败`, tempFile.Name())), err)
-
 	}
 
 	return &result, nil

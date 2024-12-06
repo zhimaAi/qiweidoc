@@ -7,7 +7,6 @@ nbproject
 .settings
 Thumbs.db
 vendor
-rr
 composer.phar
 .DS_Store
 phpunit.phar
@@ -24,8 +23,9 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 node_modules
-#dist
+dist
 dist-ssr
+build
 *.local
 *.suo
 *.ntvs*

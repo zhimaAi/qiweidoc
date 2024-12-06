@@ -72,7 +72,7 @@ export function get(key) {
       }
       return data;
     } catch (e) {
-      console.log(e,99999);
+    //   console.log(e,99999);
       return data;
     }
   } else {

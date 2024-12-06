@@ -1,0 +1,65 @@
+volumes:
+  pg_data:
+    driver: local
+  redis_data:
+    driver: local
+  minio_data:
+    driver: local
+  nats_data:
+    driver: local
+
+services:
+  db:
+    build:
+      context: ..
+      dockerfile: docker/postgres/Dockerfile
+    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/chat_session_archive_db:latest
+    restart: always
+    shm_size: 256mb
+    command: "postgres -c 'config_file=/etc/postgresql/postgresql.conf'"
+    environment:
+      POSTGRES_PASSWORD: postgres
+      TZ: Asia/Shanghai
+    network_mode: host
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  redis:
+    build:
+      context: ..
+      dockerfile: docker/redis/Dockerfile
+    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/chat_session_archive_redis:latest
+    command: [ "redis-server", "/etc/redis/redis.conf" ]
+    restart: always
+    environment:
+      TZ: Asia/Shanghai
+    volumes:
+      - redis_data:/data
+    network_mode: host
+
+  minio:
+    build:
+      context: ..
+      dockerfile: docker/minio/Dockerfile
+    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/chat_session_archive_minio:latest
+    command: "server /data"
+    environment:
+      TZ: Asia/Shanghai
+    restart: always
+    network_mode: host
+    volumes:
+      - minio_data:/data
+
+  nats:
+    build:
+      context: ..
+      dockerfile: docker/nats/Dockerfile
+    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/chat_session_archive_nats:latest
+    command: "-js -c /etc/nats/nats-server.conf"
+    restart: always
+    environment:
+      TZ: Asia/Shanghai
+    network_mode: host
+    volumes:
+      - nats_data:/data/jetstream
+

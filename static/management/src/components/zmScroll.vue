@@ -78,6 +78,7 @@ const checkScroll = () => {
 }
 
 const onScroll = e => {
+    // console.log('props.finished', props.finished)
     if (props.finished || props.loading || scrollLoading.value) {
         // 如果已经加载完成或者正在加载中，则不处理滚动
         return

@@ -1,6 +1,6 @@
 <template>
     <div class="main-content">
-        <div class="title">请先按照步骤完成自建应用的创建与配置并获取对应的信息填写到此处 <a class="ml16" href="http://huihua.xiaokefu.cn/docs/integration/" target="_blank">如何配置?</a>
+        <div class="title">请先按照步骤完成自建应用的创建与配置并获取对应的信息填写到此处 <a class="ml16" href="http://zhimahuihua.com/docs/integration/" target="_blank">如何配置?</a>
         </div>
         <div class="mt24">
             <a-form

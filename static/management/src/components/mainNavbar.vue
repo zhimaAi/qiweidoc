@@ -2,8 +2,8 @@
     <div class="_main-nav">
         <a-breadcrumb v-if="Array.isArray(title)">
             <a-breadcrumb-item v-for="(tit,i) in title" :key="i">
-                <router-link v-if="tit.route" :to="tit.route"/>
-                <template v-else>员工管理</template>
+                <router-link v-if="tit.route" :to="tit.route">{{tit.name}}</router-link>
+                <template v-else>{{ tit.name }}</template>
             </a-breadcrumb-item>
         </a-breadcrumb>
         <div v-else class="title">{{title}}</div>

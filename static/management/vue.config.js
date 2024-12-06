@@ -2,7 +2,24 @@ const {defineConfig} = require('@vue/cli-service')
 const dev_host = process.env.VUE_APP_HOST || 'http://hhdev1.xiaokefu.cn';
 const path = require("path");
 const webpack = require('webpack');
+const ModuleConfig = require('./module-config');
+const RootPath = path.resolve(__dirname, '../../');
+let outputDir = "../dist"
+const Module = process.env.VUE_APP_MODULE || 'main'
+if (Module && ModuleConfig[Module]) {
+    outputDir = RootPath + ModuleConfig[Module].buildOutputPath
+}
+let publicPath = '/build/'
+if (process.env.NODE_ENV === 'development') {
+    publicPath = '/'
+}
+
 module.exports = defineConfig({
+<<<<<<< HEAD
+=======
+    outputDir: outputDir,
+    publicPath: publicPath,
+>>>>>>> master
     transpileDependencies: true,
     devServer: {
         open: true,

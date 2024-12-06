@@ -4,6 +4,6 @@ vendor
 node_modules
 *.log
 *.bin
-runtime/debug/*
-runtime/logs/*
-runtime/cache/*
+php/runtime/debug/*
+php/runtime/logs/*
+php/runtime/cache/*

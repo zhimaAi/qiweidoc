@@ -1,6 +1,11 @@
 <template>
     <div class="main-content">
-        <div class="title">使用前请按照步骤正确完成配置 <a class="ml16" href="http://huihua.xiaokefu.cn/docs/integration/#%E4%BC%9A%E8%AF%9D%E5%AD%98%E6%A1%A3%E7%9A%84%E9%85%8D%E7%BD%AE%E6%B5%81%E7%A8%8B" target="_blank">如何配置?</a></div>
+        <div class="title">
+            使用前请按照步骤正确完成配置
+            <a class="ml16"
+               href="http://zhimahuihua.com/docs/integration/#%E4%BC%9A%E8%AF%9D%E5%AD%98%E6%A1%A3%E7%9A%84%E9%85%8D%E7%BD%AE%E6%B5%81%E7%A8%8B"
+               target="_blank">如何配置?</a>
+        </div>
         <div class="content mt24">
             <a-steps :current="current" :items="steps"></a-steps>
             <a-form
@@ -19,18 +24,12 @@
                                 复制以下信息并填入到企业微信后台
                             </div>
                             <div class="form-block-content">
-                                <!--                                <a-form-item label="IP地址">-->
-                                <!--                                    <div class="c595959">复制您的IP地址</div>-->
-                                <!--                                </a-form-item>-->
                                 <a-form-item label="加密公钥" class="label-height-unset">
                                     <div class="c595959 zm-pointer" @click="copyText(formState.chat_public_key)">
                                         <a>点击复制</a>
                                         <pre>{{ formState.chat_public_key }}</pre>
                                     </div>
                                 </a-form-item>
-                                <!--                                <a-form-item label="加密私钥">-->
-                                <!--                                    <div class="c595959 zm-pointer" @click="copyText(formState.chat_private_key)"><pre>{{formState.chat_private_key}}</pre></div>-->
-                                <!--                                </a-form-item>-->
                             </div>
                         </div>
                         <div class="form-block-item">
@@ -54,6 +53,36 @@
                         </div>
                     </template>
                     <template v-else-if="current==1">
+                        <div class="form-block-item">
+                            <div class="form-block-title">
+                                将以下信息复制到企微后台-应用管理-接收消息服务器中
+                            </div>
+                            <div class="form-block-content">
+                                <a-form-item label="URL" class="label-height-unset">
+                                    <div class="zm-pointer" @click="copyText(evnetConfig.url)">
+                                        <div><a>点击复制</a></div>
+                                        {{ evnetConfig.url }}
+                                    </div>
+                                </a-form-item>
+                                <a-form-item label="token" class="label-height-unset">
+                                    <div class="zm-pointer" @click="copyText(evnetConfig.callback_event_token)">
+                                        <div><a>点击复制</a></div>
+                                        {{ evnetConfig.callback_event_token }}
+                                    </div>
+                                </a-form-item>
+                                <a-form-item label="encodingAESSKey" class="label-height-unset">
+                                    <div class="zm-pointer" @click="copyText(evnetConfig.callback_event_aes_key)">
+                                        <div><a>点击复制</a></div>
+                                        {{ evnetConfig.callback_event_aes_key }}
+                                    </div>
+                                </a-form-item>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <a-button type="primary" class="main-btn" @click="save" :loading="saving">完成</a-button>
+                        </div>
+                    </template>
+                    <template v-else-if="current==2">
                         <div class="text-center status-box">
                             <CheckCircleFilled style="color: #21A665;font-size: 60px;"/>
                             <div class="status-title mt16">验证成功</div>
@@ -62,43 +91,6 @@
                             </router-link>
                         </div>
                     </template>
-                    <!--                    <template v-else-if="current==1">-->
-                    <!--                        <template v-if="verifyStatus == 2">-->
-                    <!--                            <div class="text-center status-box">-->
-                    <!--                                <ExclamationCircleFilled style="color: #FF9900;font-size: 60px;"/>-->
-                    <!--                                <div class="status-title mt16">失败原因：信息填写错误</div>-->
-                    <!--                                <a-button class="mt32" type="primary">去使用</a-button>-->
-                    <!--                            </div>-->
-                    <!--                        </template>-->
-                    <!--                        <template>-->
-                    <!--                            <div class="form-block-item">-->
-                    <!--                                <div class="form-block-title">将以下信息配置到企微后台会话存档-接收事件服务器中</div>-->
-                    <!--                                <div class="form-block-content">-->
-                    <!--                                    <a-form-item label="URL">-->
-                    <!--                                        <div class="c595959">http://zhima.cn/get.redback</div>-->
-                    <!--                                        <div class="zm-tip-info">请将上面更换成企业的服务期IP地址</div>-->
-                    <!--                                    </a-form-item>-->
-                    <!--                                    <a-form-item label="Token">-->
-                    <!--                                        <div class="c595959">-->
-                    <!--                                            MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA6GXpDa0DFugP60RTUhvX-->
-                    <!--                                            K3Iy5jrySVouD4o7QFDCjapcOra1iDboo3iNlpkOr7x32CisHIAq9Z7MI1epIiJ7-->
-                    <!--                                            UN3GQkb6HDnt5+d67k05bpfmd7rwcJKOwXgHG/-->
-                    <!--                                        </div>-->
-                    <!--                                    </a-form-item>-->
-                    <!--                                    <a-form-item label="EncodingAESSKey">-->
-                    <!--                                        <div class="c595959">-->
-                    <!--                                            MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA6GXpDa0DFugP60RTUhvX-->
-                    <!--                                            K3Iy5jrySVouD4o7QFDCjapcOra1iDboo3iNlpkOr7x32CisHIAq9Z7MI1epIiJ7-->
-                    <!--                                            UN3GQkb6HDnt5+d67k05bpfmd7rwcJKOwXgHG/-->
-                    <!--                                        </div>-->
-                    <!--                                    </a-form-item>-->
-                    <!--                                </div>-->
-                    <!--                            </div>-->
-                    <!--                            <div class="text-center">-->
-                    <!--                                <a-button type="primary" class="main-btn">验证配置信息</a-button>-->
-                    <!--                            </div>-->
-                    <!--                        </template>-->
-                    <!--                    </template>-->
                 </div>
             </a-form>
         </div>
@@ -106,28 +98,39 @@
 </template>
 
 <script setup>
-import {onMounted, reactive, ref} from 'vue';
+import {onMounted, reactive, ref, computed} from 'vue';
+import {useStore} from 'vuex';
 import {ExclamationCircleFilled, CheckCircleFilled} from '@ant-design/icons-vue';
 import {message} from 'ant-design-vue';
-import {getPublicKey, saveCorpConfig} from "@/api/auth-login";
+import {getEventToken, getPublicKey, saveCorpConfig, saveEventToken} from "@/api/auth-login";
 import {copyText} from "@/utils/tools";
 import LoadingBox from "@/components/loadingBox.vue";
 
+const store = useStore()
 const current = ref(0)
 const verifyStatus = ref(1)
 const loading = ref(false)
 const saving = ref(false)
 const steps = ref([
     {title: '企业信息',},
-    // {title: '配置接收事件服务器',},
+    {title: '配置接收事件服务器',},
     {title: '完成',},
 ])
+const corpId = computed(() => {
+    return store.getters.getCorpId
+})
 
 const formState = reactive({
     chat_public_key: '',
     chat_private_key: '',
     chat_public_key_version: '',
     chat_secret: '',
+})
+
+const evnetConfig = reactive({
+    url: '',
+    callback_event_token: '',
+    callback_event_aes_key: '',
 })
 
 onMounted(() => {
@@ -138,29 +141,43 @@ onMounted(() => {
     }).finally(() => {
         loading.value = false
     })
+    getEventToken().then(res => {
+        evnetConfig.callback_event_token = res.data.token
+        evnetConfig.callback_event_aes_key = res.data.aes_key
+        evnetConfig.url = window.location.origin + '/openpush/qw/' + corpId.value
+    })
 })
 
 const save = () => {
     try {
         saving.value = true
-        formState.chat_secret = formState.chat_secret.trim()
-        if (!formState.chat_public_key || !formState.chat_private_key) {
-            throw '缺少密钥信息'
+        switch (current.value) {
+            case 0:
+                formState.chat_secret = formState.chat_secret.trim()
+                if (!formState.chat_public_key || !formState.chat_private_key) {
+                    throw '缺少密钥信息'
+                }
+                if (!formState.chat_secret) {
+                    throw '请输入会话存档密钥'
+                }
+                if (!formState.chat_public_key) {
+                    throw '请输入公钥版本号'
+                }
+                saveCorpConfig(formState).then(() => {
+                    current.value += 1
+                }).finally(() => {
+                    saving.value = false
+                })
+                break
+            case 1:
+                saveEventToken(evnetConfig).then(res => {
+                    current.value += 1
+                    verifyStatus.value = 1
+                }).finally(() => {
+                    saving.value = false
+                })
+                break
         }
-        if (!formState.chat_secret) {
-            throw '请输入会话存档密钥'
-        }
-        if (!formState.chat_public_key) {
-            throw '请输入公钥版本号'
-        }
-        saveCorpConfig({
-            ...formState,
-        }).then(() => {
-            current.value = 1
-            verifyStatus.value = 1
-        }).finally(() => {
-            saving.value = false
-        })
     } catch (e) {
         message.error(e)
         saving.value = false

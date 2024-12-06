@@ -1,6 +1,5 @@
 import axios from 'axios';
-import Qs from 'qs';
-import {message, Modal} from 'ant-design-vue';
+import {message} from 'ant-design-vue';
 import {getAuthToken} from "@/utils/cache";
 import {logoutHandle} from "@/utils/tools";
 

@@ -17,12 +17,17 @@
             <div class="right">
                 <div class="flex-between" :title="item.external_name+'@'+(item.corp_name || '微信')">
                     <div class="userinfo">
-                        <span v-if="item.is_new_user == 1" class="is-new-tag">新</span>
-                        <div class="user-name">
-                            {{ item.external_name || '...' }}
+                        <div class="user-info-left">
+                            <span v-if="item.is_new_user == 1" class="is-new-tag">新</span>
+                            <div class="user-name">
+                                {{ item.external_name || '...' }}
+                            </div>
+                            <div :class="['corp-name ml4',{'is-wx': ! item.corp_name ||  item.corp_name === '微信'}]">
+                                @{{ item.corp_name || '微信' }}
+                            </div>
                         </div>
-                        <div :class="['corp-name ml4',{'is-wx': ! item.corp_name ||  item.corp_name === '微信'}]">
-                            @{{ item.corp_name || '微信' }}
+                        <div class="collection" v-if="item.is_collect">
+                            <img class="chat-collection-icon" :src="require('@/assets/svg/is_collect.svg')" @click="onCollection(item)" />
                         </div>
                     </div>
                 </div>
@@ -39,13 +44,14 @@
 </template>
 
 <script setup>
-import {onMounted, ref, reactive, watch} from 'vue';
+import {onMounted, ref, reactive, watch, nextTick} from 'vue';
 import dayjs from 'dayjs';
 import LoadingBox from "@/components/loadingBox.vue";
 import ZmScroll from "@/components/zmScroll.vue";
-import {staffCstSessions} from "@/api/session";
+import {staffCstSessions, cancelCollect} from "@/api/session";
 import '@/common/contacts.less';
 import {formatTime} from "@/utils/tools";
+import { message } from 'ant-design-vue';
 
 const props = defineProps({
     default: {
@@ -57,8 +63,11 @@ const props = defineProps({
     filterData: {
         type: Object,
     },
+    callbackData: {
+        type: Object
+    }
 })
-const emit = defineEmits(['change', 'totalReport'])
+const emit = defineEmits(['change', 'totalReport', 'cancelCollect'])
 
 const loading = ref(true)
 const finished = ref(false)
@@ -69,6 +78,37 @@ const pagination = reactive({
     current: 1,
     pageSize: 20,
     total: 0,
+})
+
+function cancelCollectListFormat (obj) {
+    list.value.map(item => {
+        if (obj.conversation_id === item.id) {
+            // 当前文件调用是取消收藏，如果是监听props传值则取值的状态
+            item.is_collect = obj.is_collect || 0
+            return
+        }
+    })
+}
+
+const onCollection = (item) => {
+    let params = {
+        conversation_id: item.id // 会话id
+    }
+    cancelCollect(params).then((res) => {
+        if (res.status == 'success') {
+            message.success('取消收藏成功')
+            // 更新列表数据，取消收藏后当前数据没有收藏图标
+            cancelCollectListFormat({ conversation_id: item.id })
+            emit('cancelCollect', 0)
+            return
+        }
+        res.error_message && message.error(res.error_message)
+    })
+}
+
+watch(() => props.callbackData, (obj) => {
+    // 收藏/取消收藏后要更新列表状态
+    cancelCollectListFormat(obj)
 })
 
 onMounted(() => {
@@ -177,5 +217,32 @@ const change = (item) => {
 </script>
 
 <style scoped lang="less">
+.contact-box {
+    .right {
+        .userinfo {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            overflow: hidden;
+            width: 100%;
 
+            .user-info-left {
+                display: flex;
+                align-items: center;
+                max-width: calc(100% - 15px);
+
+                .user-name {
+                    max-width: calc(100% - 15px);
+                }
+                .corp-name {
+                    max-width: calc(100% - 15px);
+                }
+            }
+        }
+    }
+}
+.collection {
+    width: 12px;
+    margin-right: 8px;
+}
 </style>

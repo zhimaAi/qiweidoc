@@ -129,7 +129,10 @@ func (p *Plugin) UploadFile(request UploadFileRequest) (UploadFileResponse, erro
 	if err != nil {
 		return result, errors.E(errors.Op(`文件上传失败`), err.Error())
 	}
-	p.log.Info("文件上传成功", zap.String("origin_file_name", request.OriginFileName))
+	p.log.Info("文件上传成功",
+		zap.String("origin_file_name", request.OriginFileName),
+		zap.String("object_name", objectName),
+	)
 
 	if err = p.saveHash(request.BucketName, md5sum, objectName); err != nil {
 		p.log.Error(`文件名写入hash关联失败`)

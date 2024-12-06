@@ -424,7 +424,7 @@ const pullCustomerGroup = () => {
         refreshFlag.value = true;
         latest_info.success = false;
         groupsSync({}).then((res) => {
-            console.log('rea1', res)
+            // console.log('rea1', res)
             //已经在拉取的状态
             refreshFlag.value = false;
             latest_info.success = true;
@@ -473,7 +473,7 @@ const search = () => {
 
 const loadData = () => {
     loading.value = true
-    console.log(searchForm)
+    // console.log(searchForm)
     let params = {
         page: pagination.current,
         size: pagination.pageSize,
@@ -484,7 +484,7 @@ const loadData = () => {
         params.keyword = filterData.keyword
     }
     groupsList(params).then(res => {
-        console.log('res', res)
+        // console.log('res', res)
         list.value = res.data.items || []
         last_sync_time.value = res.data.last_sync_time || ''
         pagination.total = Number(res.data.total)

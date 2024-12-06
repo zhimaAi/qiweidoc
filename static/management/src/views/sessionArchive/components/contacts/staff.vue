@@ -177,5 +177,7 @@ const change = (item) => {
 </script>
 
 <style scoped lang="less">
-
+.contact-box {
+    height: calc(100% - 42px);
+}
 </style>

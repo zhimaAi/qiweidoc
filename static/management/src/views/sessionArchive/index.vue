@@ -3,10 +3,11 @@
         <template #navbar>
             <a-tabs v-model:active-key="BASE_TYPE"
                     @change="mainTabChange"
-                    class="nav-tabs">
+                    class="zm-nav-tabs">
                 <a-tab-pane key="LOAD_BY_STAFF" tab="按员工"/>
                 <a-tab-pane key="LOAD_BY_CUSTOMER" tab="按客户"/>
                 <a-tab-pane key="LOAD_BY_GROUP" tab="按群聊"/>
+                <a-tab-pane key="LOAD_BY_COLLECT" tab="收藏聊天"/>
             </a-tabs>
         </template>
         <div id="session-panel">
@@ -20,6 +21,7 @@
 import {onMounted, h, ref, computed, nextTick} from 'vue';
 import MainLayout from "@/components/mainLayout.vue";
 import MainPanelLoadByStaff from "./components/mainPanelLoadByStaff.vue";
+import MainPanelLoadByCollect from "./components/mainPanelLoadByCollect.vue";
 import MainPanelLoadByCst from "./components/mainPanelLoadByCst.vue";
 import MainPanelLoadByGroup from "./components/mainPanelLoadByGroup.vue";
 import {useRouter, useRoute} from 'vue-router';
@@ -33,7 +35,8 @@ const BASE_TYPE = ref('LOAD_BY_STAFF')
 const MAIN_TBBS = [
     'LOAD_BY_STAFF',
     'LOAD_BY_CUSTOMER',
-    'LOAD_BY_GROUP'
+    'LOAD_BY_GROUP',
+    'LOAD_BY_COLLECT'
 ]
 const defaultParams = ref(null)
 const loading = ref(true)
@@ -45,6 +48,8 @@ const mainPanelComponent = computed(() => {
             return MainPanelLoadByCst
         case 'LOAD_BY_GROUP':
             return MainPanelLoadByGroup
+        case 'LOAD_BY_COLLECT':
+            return MainPanelLoadByCollect
     }
 })
 
@@ -72,6 +77,9 @@ onMounted(() => {
                 break
             case 'Staff':
                 BASE_TYPE.value = 'LOAD_BY_STAFF'
+                break
+            case 'Collect':
+                BASE_TYPE.value = 'LOAD_BY_COLLECT'
                 break
         }
         defaultParams.value = {
@@ -108,34 +116,9 @@ const rsetRouteQuery = queryParams => {
 </script>
 
 <style scoped lang="less">
-:deep(.nav-tabs.ant-tabs) {
-    background: #FFF;
-
-    .ant-tabs-nav-list {
-        margin: 0 24px;
-    }
-
-    .ant-tabs-nav {
-        margin-bottom: 0;
-    }
-
-    .ant-tabs-tab {
-        font-size: 16px;
-        color: #595959;
-
-        &.ant-tabs-tab-active {
-            font-weight: 500;
-        }
-    }
-
-    .ant-tabs-ink-bar {
-        display: none;
-    }
-}
-
 #session-panel {
     position: relative;
-    min-height: 80vh;
+    min-height: calc(100vh - 115px);
     :deep(.ant-tabs-tab) {
         font-size: 12px;
     }

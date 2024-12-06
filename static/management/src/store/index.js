@@ -6,6 +6,7 @@ const getState = () => {
         corp_id: '',
         agent_id: '',
         user_info: {},
+        modules: {},
         corp_info: {},
     }
 }
@@ -16,7 +17,8 @@ export default createStore({
         getCorpId: state => state.corp_id,
         getAgentId: state => state.agent_id,
         getCorpInfo: state => state.corp_info,
-        getUserInfo: state => state.user_info
+        getUserInfo: state => state.user_info,
+        getModules: state => state.modules
     },
     mutations: {
         RESET_STATE(state) {
@@ -24,6 +26,9 @@ export default createStore({
         },
         setLoginInfo(state, info) {
             state.user_info = info
+        },
+        setModules(state, info) {
+            state.modules = info
         },
         setCorpInfo(state, corp_info) {
             state.corp_info = corp_info

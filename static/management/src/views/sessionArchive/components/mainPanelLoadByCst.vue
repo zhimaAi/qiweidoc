@@ -39,7 +39,7 @@
                             @totalReport="contactTotalReport"/>
                     </DragStretchBox>
                     <div class="right-block">
-                        <ChatBox ref="chatRef" :chatInfo="chatInfo" style="height: 100%;"/>
+                        <ChatBox ref="chatRef" :chatInfo="chatInfo" @changeCollect="onChangeCollect" style="height: 100%;"/>
                     </div>
                 </div>
             </div>
@@ -79,7 +79,10 @@ const chatInfo = computed(() => {
         receiver = null
     if (main.selectedContact?.id) {
         params = {
-            conversation_id: main.selectedContact?.id
+            conversation_id: main.selectedContact?.id,
+            is_collect: main.selectedContact?.is_collect,
+            collect_reason: main.selectedContact?.collect_reason,
+            tab: 'LOAD_BY_CUSTOMER' // 这里的tab是上级的，此处是按客户：LOAD_BY_CUSTOMER
         }
         receiver = {
             name: main.selectedContact?.name,
@@ -112,7 +115,7 @@ const search = val => {
 
 const loadSessionMsg = () => {
     nextTick(() => {
-        console.log('-----')
+        // console.log('-----')
         chatRef.value.init()
     })
 }
@@ -123,6 +126,7 @@ const cstChange = cst => {
 }
 
 const contactChange = cst => {
+    // console.log('currentcst', cst)
     main.selectedContact = cst
     loadSessionMsg()
 }
@@ -134,6 +138,16 @@ const totalReport = val => {
 const contactTotalReport = val => {
     main.contactStaffCount = val
 }
+
+const callbackData = ref({})
+const onChangeCollect = (obj) => {
+    // console.log('items', obj)
+    callbackData.value = obj
+    main.selectedContact.id = obj.conversation_id
+    main.selectedContact.is_collect = obj.is_collect
+    main.selectedContact.collect_reason = obj.collect_reason
+}
+
 </script>
 
 <style scoped lang="less">
@@ -144,7 +158,6 @@ const contactTotalReport = val => {
     display: flex;
     flex-direction: column;
     height: calc(100vh - 126px); // 窗口 - 顶部菜单 - 面包屑 - padding（24）
-    min-height: 800px;
 
     .filter-block {
         flex-shrink: 0;
@@ -195,6 +208,7 @@ const contactTotalReport = val => {
         }
 
         .session-right-block {
+            height: calc(100vh - 158px);
             flex: 1;
 
             .content-block {

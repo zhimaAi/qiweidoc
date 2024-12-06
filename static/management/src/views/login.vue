@@ -5,11 +5,64 @@
             <div class="left-box">
                 <img src="@/assets/login-cover.png" class="cover"/>
             </div>
-            <div class="right-box">
+            <div class="right-box" v-if="isWxLogin">
+                <div class="right-icon-box">
+                    <div class="login-tip-top">
+                        使用密码登录
+                        <img class="login-tip-top-icon" src="@/assets/svg/login-tips-triangle.svg" />
+                    </div>
+                    <img class="right-check" src="@/assets/user-login.svg" @click="onChangeLogin('account')" />
+                </div>
                 <div id="ww_login"></div>
-                <!--                <div class="title">企业微信登录扫码登录</div>-->
-                <!--                <div class="qrcode"></div>-->
-                <!--                <div class="tip-info mt16">请使用企业微信扫描二维码登录</div>-->
+            </div>
+            <div class="right-box" v-else>
+                <div class="right-icon-box">
+                    <div class="login-tip-top">
+                        扫码登录更便捷
+                        <img class="login-tip-top-icon" src="@/assets/svg/login-tips-triangle.svg" />
+                    </div>
+                    <img class="right-check" src="@/assets/wx-login.svg" @click="onChangeLogin('wx')" />
+                </div>
+                <div class="sign-in">
+                    <!-- Sign In Form -->
+                    <h2 class="login-title">密码登录</h2>
+                    <a-form
+                        class="login-form"
+                        :model="formState"
+                        name="basic"
+                        autocomplete="off"
+                        @finish="onFinish"
+                    >
+                        <a-form-item
+                            name="username"
+                            class="usernames"
+                            :rules="[{ required: true, message: '请输入账号' }]"
+                        >
+                            <a-input class="login-item" v-model:value="formState.username" autocomplete="off" placeholder="请输入账号">
+                                <template #prefix>
+                                    <img class="login-input-icon" src="@/assets/svg/user.svg" />
+                                </template>
+                            </a-input>
+                        </a-form-item>
+
+                        <a-form-item
+                            name="password"
+                            :rules="[{ required: true, message: '请输入密码' }]"
+                        >
+                            <a-input-password class="login-item" v-model:value="formState.password" autocomplete="off" type="password" placeholder="请输入密码">
+                                <template #prefix>
+                                    <img class="login-input-icon" src="@/assets/svg/password.svg" />
+                                </template>
+                            </a-input-password>
+                        </a-form-item>
+
+                        <a-form-item>
+                            <a-button class="login-btn" type="primary" block html-type="submit">登录</a-button>
+                            <div class="login-tip">暂无账号？可扫码登录后设置</div>
+                        </a-form-item>
+                    </a-form>
+                    <!-- / Sign In Form -->
+                </div>
             </div>
         </div>
         <MainFooter/>
@@ -17,29 +70,68 @@
 </template>
 
 <script setup>
-import {onMounted, getCurrentInstance, ref} from 'vue';
+import {onMounted, getCurrentInstance, ref, reactive} from 'vue';
 import {useRouter} from 'vue-router';
 import {useStore} from 'vuex';
 import MainHeader from "@/components/mainHeader.vue";
 import MainFooter from "@/components/mainFooter.vue";
-import {checkInit, getCurrentCorp, getCurrentUser, loginByCode} from "@/api/auth-login";
+import {checkInit, getCurrentCorp, getCurrentUser, loginByCode, loginByAccount} from "@/api/auth-login";
 import {setAuthToken, setCorpInfo, setUserInfo} from "@/utils/cache";
+import { UserOutlined, LockOutlined } from '@ant-design/icons-vue';
+import {setCookieAcrossSubdomain} from "@/utils/cookie";
+import {loginHandle} from "@/utils/tools";
 
 const {proxy} = getCurrentInstance();
 const router = useRouter()
 const store = useStore()
 const loading = ref(true)
+const isWxLogin = ref(false)
+const formState = reactive({
+  username: '',
+  password: '',
+  remember: true
+})
 
 onMounted(async () => {
-    console.log('ww', ww)
-    console.log('SDK_VERSION', ww.SDK_VERSION)
-    console.log('process.env.NODE_ENV', process.env.NODE_ENV)
-    // 验证是否完成企业初始化
-    checkCorpInit()
+    // console.log('ww', ww)
+    // console.log('SDK_VERSION', ww.SDK_VERSION)
+    // console.log('process.env.NODE_ENV', process.env.NODE_ENV)
 })
 
 const localLoginTest = () => {
+<<<<<<< HEAD
     loginAfterHandle('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjMiLCJ1c2VyaWQiOiJMaWFvWGl1WXVhbiIsImNvcnBfaWQiOiJ3dzVmNDMyYjNhMjRhOWI5ZjEiLCJleHAiOjE3MzIyNDA0ODd9.Gg8eWqr58T02reyrlV3jkH5V295zBFvKuv2bBpt48nw')
+=======
+    loginAfterHandle('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MiwidXNlcmlkIjoiTHVvWWluZ0JpbkZlbiIsImNvcnBfaWQiOiJ3dzVmNDMyYjNhMjRhOWI5ZjEiLCJleHAiOjE3MzM1NTg2MjV9.qTdiMRJvB75G2fo8Kyu0tF_dcO18rNH0BGA9lJ5z2jY')
+}
+
+const onChangeLogin = (type) => {
+    // console.log(type)
+    if (type === 'wx') {
+        isWxLogin.value = true
+         // 验证是否完成企业初始化
+        checkCorpInit()
+    } else {
+        isWxLogin.value = false
+    }
+}
+
+const onFinish = () => {
+  handleLogin()
+}
+
+const handleLogin = () => {
+    loginByAccount({
+      username: formState.username,
+      password: formState.password
+    })
+    .then((res) => {
+        loginAfterHandle(res.data.token)
+    })
+    .catch((err) => {
+    //   console.log(err.message)
+    })
+>>>>>>> master
 }
 
 const checkCorpInit = () => {
@@ -74,41 +166,32 @@ const loginInit = async (corp_id, agent_id) => {
                 redirect_type: 'callback',
             },
             onCheckWeComLogin({isWeComLogin}) {
-                console.log(isWeComLogin)
+                // console.log(isWeComLogin)
             },
             onLoginSuccess({code}) {
-                console.log({code})
+                // console.log({code})
                 loginByCode({
                     corp_id: corp_id,
                     code,
                 }).then(res => {
-                    console.log('res', res)
+                    // console.log('res', res)
                     loginAfterHandle(res.data.token)
                 })
             },
             onLoginFail(err) {
-                console.log(err)
+                // console.log(err)
             },
         })
     } catch (e) {
-        console.log("loginInit Err:", e)
+        // console.log("loginInit Err:", e)
         proxy.$message.error('初始化登录失败！')
     }
 }
 
 const loginAfterHandle = async token => {
     try {
-        setAuthToken(token)
-        const userInfo = await getCurrentUser()
+        await loginHandle(token)
         const corpInfo = await getCurrentCorp()
-        if (!userInfo.data || !corpInfo.data) {
-            proxy.$message.error('登录失败')
-            return
-        }
-        setUserInfo(userInfo.data)
-        setCorpInfo(corpInfo.data)
-        store.commit('setLoginInfo', userInfo.data)
-        store.commit('setCorpInfo', corpInfo.data)
         proxy.$message.success('登录成功，正在跳转主页')
         setTimeout(() => {
             // chat_public_key_version > 0表示已经配置会话存档
@@ -120,7 +203,7 @@ const loginAfterHandle = async token => {
             }
         }, 1000)
     } catch (e) {
-        console.log('Err:', e)
+        // console.log('Err:', e)
         proxy.$message.error('登录失败')
     }
 }
@@ -128,7 +211,7 @@ const loginAfterHandle = async token => {
 
 <style scoped lang="less">
 ._main-container {
-    background: #E6EFFF;
+    background: linear-gradient(254deg, #F6F9FE 6.01%, #E5EEFF 62.87%);
     min-height: 100vh;
     padding: 24px;
     display: flex;
@@ -155,36 +238,117 @@ const loginAfterHandle = async token => {
         }
 
         .right-box {
+            position: relative;
             flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
 
-            //.title {
-            //    color: #262626;
-            //    font-size: 24px;
-            //    font-weight: 600;
-            //    margin-bottom: 56px;
-            //}
-            //
-            //.qrcode {
-            //    width: 200px;
-            //    height: 200px;
-            //    border-radius: 10px;
-            //    box-shadow: 0 3.33px 26.67px 0 #00000014;
-            //    margin: auto;
-            //
-            //    img {
-            //        width: 100%;
-            //        height: 100%;
-            //    }
-            //}
-            //
-            //.tip-info {
-            //    color: #8c8c8c;
-            //    font-size: 14px;
-            //    font-weight: 400;
-            //}
+            .right-icon-box {
+                display: flex;
+                align-items: center;
+                position: absolute;
+                right: 0;
+                top: 0;
+            }
+
+            .login-tip-top {
+                position: relative;
+                width: 142px;
+                height: 32px;
+                display: inline-flex;
+                padding: 4px 12px;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
+                border-radius: 6px;
+                background: var(--01-, #1D5EC9);
+                color: #ffffff;
+                font-size: 16px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 24px;
+
+                .login-tip-top-icon {
+                    position: absolute;
+                    width: 6px;
+                    right: -6px;
+                    top: 50%;
+                    margin-top: -6px;
+                }
+            }
+        }
+
+        .right-check {
+            width: 60px;
+            cursor: pointer;
+            display: inline-block;
+            margin: 8px;
+        }
+
+        .sign-in {
+            padding: 20px;
+            width: 382px;
+            height: 334px;
+            border-radius: 16px;
+            padding: 0px 20px;
+            font-family: "PingFang SC";
+
+            .login-title {
+                text-align: center;
+                color: #262626;
+                font-size: 24px;
+                font-style: normal;
+                font-weight: 600;
+                line-height: 32px;
+                margin-bottom: 56px;
+            }
+
+            .login-form {
+                font-weight: 700;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .login-item {
+                display: flex;
+                width: 380px;
+                padding: 8px 12px;
+                height: 40px;
+                box-sizing: border-box;
+                align-items: center;
+                border-radius: 6px;
+                background: #FFF;
+                margin-bottom: 8px;
+
+                .login-input-icon {
+                    width: 16px;
+                    color: #8C8C8C;
+                }
+            }
+
+            .login-btn {
+                height: 40px;
+                box-sizing: border-box;
+                display: flex;
+                width: 380px;
+                padding: 8px 12px;
+                align-items: center;
+                justify-content: center;
+                border-radius: 6px;
+            }
+
+            .login-tip {
+                text-align: center;
+                color: #8c8c8c;
+                font-size: 14px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 22px;
+                margin-top: 10px;
+            }
         }
     }
 

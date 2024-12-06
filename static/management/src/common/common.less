@@ -83,6 +83,7 @@
 
 a {
     color: #2475FC;
+    cursor: pointer;
 }
 
 .ant-alert-info {
@@ -91,7 +92,7 @@ a {
 }
 
 .ant-btn {
-    border-radius: 2px;
+    border-radius: 6px;
 }
 
 .ant-input-search > .ant-input-group > .ant-input-group-addon:last-child .ant-input-search-button:not(.ant-btn-primary) {
@@ -144,12 +145,16 @@ a {
     position: fixed;
     z-index: 1000;
     bottom: 0;
-    left: 272px;
-    width: calc(100% - 293px);
+    left: 268px;
+    width: calc(100% - 280px);
     padding: 12px 56px;
     background: #ffffff;
     filter: blur(0px);
     box-shadow: 0 -5px 8px 4px rgba(0, 0, 0, 0.08);
+    &.in-module {
+        left: 12px;
+        width: calc(100% - 24px);
+    }
 }
 
 .zm-pointer {
@@ -225,6 +230,31 @@ a {
 .zm-customize-tabs.ant-tabs {
     .ant-tabs-nav-list {
         padding: 0 12px;
+    }
+}
+
+.zm-nav-tabs.ant-tabs {
+    background: #FFF;
+
+    .ant-tabs-nav-list {
+        margin: 0 24px;
+    }
+
+    .ant-tabs-nav {
+        margin-bottom: 0;
+    }
+
+    .ant-tabs-tab {
+        font-size: 16px;
+        color: #595959;
+
+        &.ant-tabs-tab-active {
+            font-weight: 500;
+        }
+    }
+
+    .ant-tabs-ink-bar {
+        display: none;
     }
 }
 

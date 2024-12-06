@@ -3,6 +3,27 @@ import {message} from 'ant-design-vue';
 import useClipboard from 'vue-clipboard3';
 import router from "@/router";
 import store from "@/store";
+import {setAuthToken, setCorpInfo, setUserInfo} from "@/utils/cache";
+import {getCurrentCorp, getCurrentUser} from "@/api/auth-login";
+import {setCookieAcrossSubdomain} from "@/utils/cookie";
+
+export const loginHandle = async token => {
+    setAuthToken(token)
+    const userInfo = await getCurrentUser()
+    const corpInfo = await getCurrentCorp()
+    if (!userInfo.data || !corpInfo.data) {
+        throw '用户信息异常'
+    }
+    setUserInfo(userInfo.data)
+    setCookieAcrossSubdomain(JSON.stringify(userInfo.data))
+    setCorpInfo(corpInfo.data)
+    store.commit('setLoginInfo', userInfo.data)
+    store.commit('setCorpInfo', corpInfo.data)
+    return {
+        userInfo,
+        corpInfo
+    }
+}
 
 export const logoutHandle = () => {
     store.commit('RESET_STATE')
@@ -19,6 +40,20 @@ export const copyText = async text => {
         console.error(e)
         message.warning('复制失败')
     }
+}
+
+export const debounce = (fn, wait) => {
+    let timeout = null;
+    return function() {
+        let context = this;
+        let args = arguments;
+        if (timeout) clearTimeout(timeout);
+        let callNow = !timeout;
+        timeout = setTimeout(() => {
+            timeout = null;
+        }, wait);
+        if (callNow) fn.apply(context, args);
+    };
 }
 
 /**
@@ -260,6 +295,38 @@ export const jsonDecode = (jsonStr, nullval = {}) => {
         return nullval
     }
 }
+
+export const weeks = [
+    {
+        label: "周一",
+        value: 1,
+    },
+    {
+        label: "周二",
+        value: 2,
+    },
+    {
+        label: "周三",
+        value: 3,
+    },
+    {
+        label: "周四",
+        value: 4,
+    },
+    {
+        label: "周五",
+        value: 5,
+    },
+    {
+        label: "周六",
+        value: 6,
+    },
+    {
+        label: "周日",
+        value: 0,
+    },
+]
+
 
 export const weeksMap = {
     0: "周日",

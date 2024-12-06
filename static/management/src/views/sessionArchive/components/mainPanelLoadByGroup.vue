@@ -19,7 +19,7 @@
                           @change="groupChange"
                           @totalReport="totalReport"/>
             </DragStretchBox>
-            <ChatBox ref="chatRef" class="session-right-block" :chatInfo="chatInfo" loadType="group"/>
+            <ChatBox ref="chatRef" class="session-right-block" :chatInfo="chatInfo" @changeCollect="onChangeCollect" loadType="group"/>
         </div>
     </div>
 </template>
@@ -48,12 +48,16 @@ const main = reactive({
 })
 
 const chatInfo = computed(() => {
+    // console.log('main', main)
     if (!main.selectedGroup?.chat_id) {
         return null
     }
     return {
         params: {
-            group_chat_id: main.selectedGroup?.chat_id
+            group_chat_id: main.selectedGroup?.chat_id,
+            conversation_id: main.selectedGroup?.conversations_id,
+            is_collect: main.selectedGroup?.is_collect,
+            collect_reason: main.selectedGroup?.collect_reason
         },
         receiver: {
             name: main.selectedGroup?.name,
@@ -84,6 +88,15 @@ const groupChange = group => {
 const totalReport = val => {
     main.groupCount = val
 }
+
+const callbackData = ref({})
+const onChangeCollect = (obj) => {
+    // console.log('items', obj)
+    callbackData.value = obj
+    main.selectedGroup.conversations_id = obj.conversation_id
+    main.selectedGroup.is_collect = obj.is_collect
+    main.selectedGroup.collect_reason = obj.collect_reason
+}
 </script>
 
 <style scoped lang="less">
@@ -94,7 +107,6 @@ const totalReport = val => {
     display: flex;
     flex-direction: column;
     height: calc(100vh - 126px); // 窗口 - 顶部菜单 - 面包屑 - padding（24）
-    min-height: 800px;
 
     .filter-block {
         flex-shrink: 0;

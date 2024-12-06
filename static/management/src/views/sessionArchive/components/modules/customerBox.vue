@@ -30,8 +30,8 @@
 <script setup>
 import {onMounted, ref, reactive} from 'vue';
 import ZmScroll from "@/components/zmScroll.vue";
-import {customersList} from "@/api/company";
 import LoadingBox from "@/components/loadingBox.vue";
+import {sessionCustomer} from "@/api/session";
 
 const emit = defineEmits(['change', 'totalReport'])
 const props = defineProps({
@@ -75,7 +75,7 @@ const loadData = () => {
     if (props.filterData?.keyword) {
         params.keyword = props.filterData.keyword
     }
-    customersList(params).then(res => {
+    sessionCustomer(params).then(res => {
         let data = res.data || {}
         let {items, total} = data
         total = Number(total)
@@ -124,7 +124,7 @@ const selectedHandle = async () => {
         } else {
             let item
             try {
-                const res = customersList({
+                const res = sessionCustomer({
                     page: 1,
                     size: 1,
                     has_conversation: 1,

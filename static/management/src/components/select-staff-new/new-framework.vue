@@ -296,7 +296,7 @@ export default {
 				//多选
         if (this.currSelectKeys.includes(department_id)) {
           let flag = this.currSelectKeys.findIndex(i => i === department_id)
-          console.log(flag,'flag');
+          // console.log(flag,'flag');
           if (flag !== -1) {
             this.currSelectKeys.splice(flag, 1)
             this.setTreeKeys()
