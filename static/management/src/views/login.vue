@@ -99,9 +99,6 @@ onMounted(async () => {
 })
 
 const localLoginTest = () => {
-<<<<<<< HEAD
-    loginAfterHandle('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjMiLCJ1c2VyaWQiOiJMaWFvWGl1WXVhbiIsImNvcnBfaWQiOiJ3dzVmNDMyYjNhMjRhOWI5ZjEiLCJleHAiOjE3MzIyNDA0ODd9.Gg8eWqr58T02reyrlV3jkH5V295zBFvKuv2bBpt48nw')
-=======
     loginAfterHandle('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MiwidXNlcmlkIjoiTHVvWWluZ0JpbkZlbiIsImNvcnBfaWQiOiJ3dzVmNDMyYjNhMjRhOWI5ZjEiLCJleHAiOjE3MzM1NTg2MjV9.qTdiMRJvB75G2fo8Kyu0tF_dcO18rNH0BGA9lJ5z2jY')
 }
 
@@ -131,7 +128,6 @@ const handleLogin = () => {
     .catch((err) => {
     //   console.log(err.message)
     })
->>>>>>> master
 }
 
 const checkCorpInit = () => {

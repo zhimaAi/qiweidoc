@@ -1,2 +1,0 @@
-"use strict";(self["webpackChunkzmwk_session_archive"]=self["webpackChunkzmwk_session_archive"]||[]).push([[980],{1241:function(n,e){e.A=(n,e)=>{const s=n.__vccOpts||n;for(const[r,t]of e)s[r]=t;return s}},4980:function(n,e,s){function r(n,e,s,r,t,c){return null}s.r(e),s.d(e,{default:function(){return f}});var t={name:"staff"},c=s(1241);const u=(0,c.A)(t,[["render",r]]);var f=u}}]);
-//# sourceMappingURL=980.2bd44e7b.js.map

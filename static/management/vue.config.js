@@ -15,11 +15,8 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 module.exports = defineConfig({
-<<<<<<< HEAD
-=======
     outputDir: outputDir,
     publicPath: publicPath,
->>>>>>> master
     transpileDependencies: true,
     devServer: {
         open: true,

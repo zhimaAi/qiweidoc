@@ -825,11 +825,7 @@ body {
 
 .experience-box-name {
     text-align: center;
-<<<<<<< HEAD
-    color: #2475fc;
-=======
     color: #3861ea;
->>>>>>> master
     font-size: 36px;
     font-style: normal;
     font-weight: 600;
@@ -862,15 +858,6 @@ body {
     justify-content: center;
     margin-top: 40px;
     display: flex;
-<<<<<<< HEAD
-}
-
-.btn-box:hover {
-    opacity: 0.75;
-}
-
-.experience-btn {
-=======
     gap: 16px;
 }
 
@@ -884,48 +871,35 @@ body {
 
 .experience-btn {
     border: 1px solid #fff;
->>>>>>> master
     display: flex;
     width: 200px;
     box-sizing: border-box;
     justify-content: center;
     align-items: center;
     height: 52px;
-<<<<<<< HEAD
-    border-radius: 100px;
-    color: #fff;
-    background-color: #2475fc;
-=======
     border-radius: 8px;
     color: #fff;
     background-color: #3861ea;
->>>>>>> master
     font-size: 20px;
     font-style: normal;
     font-weight: 400;
 }
 
-<<<<<<< HEAD
-=======
 .github-btn {
     background-color: white;
     border: 1px solid #D9D9D9;
     color: #262626;
 }
 
->>>>>>> master
 .experience-btn-icon {
     width: 14px;
     margin-right: 10px;
 }
 
-<<<<<<< HEAD
-=======
 .github-icon {
     width: 18px;
 }
 
->>>>>>> master
 .introduce-left {
   display: flex;
 }
@@ -1020,11 +994,7 @@ body {
 .source-protocol {
     display: inline-block;
     cursor: pointer;
-<<<<<<< HEAD
-    color: #2475fc;
-=======
     color: #3861ea;
->>>>>>> master
 }
 .source-protocol:hover {
     text-decoration: underline;
