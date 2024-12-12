@@ -200,7 +200,7 @@ class QwOpenPushConsumer
     private function handleMsgAuditNotifyEvent(): void
     {
         if ($this->message->Event == 'msgaudit_notify') {
-            Producer::dispatch(SyncSessionMessageConsumer::class, ['corp' => $this->corp]);
+            // Producer::dispatch(SyncSessionMessageConsumer::class, ['corp' => $this->corp]);
         }
     }
 }

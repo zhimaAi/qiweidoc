@@ -89,6 +89,7 @@ const menus = ref([
         icon: h(AppstoreOutlined),
         subs: [
             {key: 'plugManagementHome', title: '功能插件', route: '/plug/index'},
+            {key: 'hintKeywordsHome', title: '敏感词提醒', route: '/module/hint_keywords/index'},
             {key: 'CustomerLabelInex', title: '客户标签', route: '/module/customer_tag/index'},
         ]
     },
@@ -130,6 +131,13 @@ function formatData (data) {
         if (ctem.key === 'CustomerLabelInex') {
           data.map(dtem => {
             if (dtem.name === 'customer_tag') {
+              ctem.hide = !dtem.enable
+            }
+          })
+        }
+        if (ctem.key === 'hintKeywordsHome') {
+          data.map(dtem => {
+            if (dtem.name === 'hint_keywords') {
               ctem.hide = !dtem.enable
             }
           })
@@ -209,12 +217,22 @@ onMounted(() => {
         > .ant-menu-item .ant-menu-title-content {
             font-size: 16px;
             font-weight: 600;
+            transition: none;
+        }
+
+        .ant-menu-submenu-title .ant-menu-item-icon,
+        > .ant-menu-item .ant-menu-item-icon {
+            transition: none;
         }
     }
 
     :deep(.ant-menu-light .ant-menu-item-selected ) {
         color: #FFF;
         background-color: #2475fc;
+    }
+
+    :deep(.ant-menu-light .ant-menu-item-selected a) {
+        transition: none;
     }
 
     :deep(.ant-menu-inline .ant-menu-sub.ant-menu-inline) {

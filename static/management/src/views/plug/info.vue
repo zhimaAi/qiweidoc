@@ -17,7 +17,7 @@
       <LoadingBox v-if="loading" />
       <div class="info-box">
         <div class="client">
-          <img class="client-img" :src="defaultAvatar" alt="">
+          <img class="client-img" :src="query.name === 'hint_keywords' ? defaultSensitiveWordsAvatar : defaultAvatar" alt="">
           <div class="client-box">
             <div class="client-box-top">
               <div class="top-title">{{ detailData.title }}</div>
@@ -96,9 +96,14 @@ import LoadingBox from "@/components/loadingBox.vue";
 import { Modal, message } from 'ant-design-vue'
 import { getModulesInfo, enableModules, disableModules } from "@/api/company";
 import defaultAvatar from "@/assets/customer-label.png"
+import defaultSensitiveWordsAvatar from "@/assets/sensitive-words.png"
 import defaultImg1 from "@/assets/image/func-plug-1.png"
 import defaultImg2 from "@/assets/image/func-plug-2.png"
 import defaultImg3 from "@/assets/image/func-plug-3.png"
+import defaultImg21 from "@/assets/image/func-plug-2-1.png"
+import defaultImg22 from "@/assets/image/func-plug-2-2.png"
+import defaultImg23 from "@/assets/image/func-plug-2-3.png"
+import defaultImg24 from "@/assets/image/func-plug-2-4.png"
 
 const defaultImgs = ref([
     defaultImg1,
@@ -144,12 +149,20 @@ const loadData = () => {
   loading.value = true
   let params = {name: query.name}
   getModulesInfo(params).then(res => {
-    // console.log('res', res)
     if (res.status === 'success') {
       let data = res.data
       data.enable = !data.paused
       detailData.value = data
       store.commit('setModules', [data])
+    }
+
+    if (query.name === 'hint_keywords') {
+        defaultImgs.value = [
+            defaultImg21,
+            defaultImg22,
+            defaultImg23,
+            defaultImg24
+        ]
     }
   }).finally(() => {
     loading.value = false
@@ -164,7 +177,6 @@ const setVisible = (value, img) => {
 }
 
 onMounted(() => {
-  // console.log('query', query)
   query.name && loadData()
 })
 </script>

@@ -3,6 +3,7 @@
 namespace Common\DB;
 
 use BackedEnum;
+use Carbon\Carbon;
 use Common\Yii;
 use Exception;
 use RuntimeException;
@@ -117,10 +118,10 @@ abstract class BaseModel
 
         $timestampFields = $model->getTimestampFields();
         if (!empty($timestampFields['created_at'])) {
-            $attributes[$timestampFields['created_at']] = now();
+            $attributes[$timestampFields['created_at']] = Carbon::now()->format('Y-m-d H:i:s.v');
         }
         if (!empty($timestampFields['updated_at'])) {
-            $attributes[$timestampFields['updated_at']] = now();
+            $attributes[$timestampFields['updated_at']] = Carbon::now()->format('Y-m-d H:i:s.v');
         }
         foreach ($attributes as $field => $value) {
             $model->set($field, $value);
@@ -174,7 +175,7 @@ abstract class BaseModel
         $result = [];
 
         foreach ($this->attributes as $field => $value) {
-            $result[$field] = $this->untransform($field, $value);
+            $result[$field] = $this->transform($field, $value);
         }
 
         foreach ($this->appends as $field => $value) {
@@ -353,10 +354,10 @@ abstract class BaseModel
 
         foreach ($rows as &$row) {
             if (!empty($timestampFields['created_at'])) {
-                $row[$timestampFields['created_at']] = now();
+                $row[$timestampFields['created_at']] = Carbon::now()->format('Y-m-d H:i:s.v');
             }
             if (!empty($timestampFields['updated_at'])) {
-                $row[$timestampFields['updated_at']] = now();
+                $row[$timestampFields['updated_at']] = Carbon::now()->format('Y-m-d H:i:s.v');
             }
         }
 
@@ -389,7 +390,7 @@ abstract class BaseModel
             }
 
             if (!empty($this->getTimestampFields()['updated_at'])) {
-                $dirty[$this->getTimestampFields()['updated_at']] = now();
+                $dirty[$this->getTimestampFields()['updated_at']] = Carbon::now()->format('Y-m-d H:i:s.v');
             }
 
             $primaryKeys = (array) $this->getPrimaryKeys();
@@ -447,7 +448,7 @@ abstract class BaseModel
         }
 
         if ($this->usesSoftDelete) {
-            $this->set($this->deletedAtColumn, now());
+            $this->set($this->deletedAtColumn, Carbon::now()->format('Y-m-d H:i:s.v'));
             $this->saveOrFail();
 
             return;

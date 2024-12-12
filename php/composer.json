@@ -43,6 +43,8 @@
         "grpc/grpc": "^1.57",
         "guzzlehttp/guzzle": "^7.9",
         "httpsoft/http-message": "^1.1",
+        "khanamiryan/qrcode-detector-decoder": "^2.0",
+        "nesbot/carbon": "^3.8",
         "psr/container": "^2.0",
         "psr/http-factory": "^1.0",
         "psr/http-message": "^1.1|^2.0",
@@ -58,6 +60,7 @@
         "symfony/console": "^6.0",
         "symfony/event-dispatcher": "^7.1",
         "symfony/messenger": "^7.1",
+        "symfony/process": "^7.2",
         "symfony/property-access": "^7.1",
         "symfony/scheduler": "^7.1",
         "symfony/string": "^7.1",
@@ -102,13 +105,9 @@
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.64"
     },
-    "suggest": {
-        "ext-grpc": "Required for gRPC functionality"
-    },
     "autoload": {
         "psr-4": {
-            "Common\\": "common",
-            "GRPC\\": "generated/GRPC"
+            "Common\\": "common"
         },
         "files": [
             "common/functions.php"

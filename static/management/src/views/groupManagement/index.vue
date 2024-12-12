@@ -386,13 +386,10 @@ const staff_ids = ref([])
 // const rowSelection = ref({
 //   checkStrictly: false,
 //   onChange: (selectedRowKeys, selectedRows) => {
-//     console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
 //   },
 //   onSelect: (record, selected, selectedRows) => {
-//     console.log(record, selected, selectedRows);
 //   },
 //   onSelectAll: (selected, selectedRows, changeRows) => {
-//     console.log(selected, selectedRows, changeRows);
 //   },
 // });
 
@@ -424,7 +421,6 @@ const pullCustomerGroup = () => {
         refreshFlag.value = true;
         latest_info.success = false;
         groupsSync({}).then((res) => {
-            // console.log('rea1', res)
             //已经在拉取的状态
             refreshFlag.value = false;
             latest_info.success = true;
@@ -473,7 +469,6 @@ const search = () => {
 
 const loadData = () => {
     loading.value = true
-    // console.log(searchForm)
     let params = {
         page: pagination.current,
         size: pagination.pageSize,
@@ -484,7 +479,6 @@ const loadData = () => {
         params.keyword = filterData.keyword
     }
     groupsList(params).then(res => {
-        // console.log('res', res)
         list.value = res.data.items || []
         last_sync_time.value = res.data.last_sync_time || ''
         pagination.total = Number(res.data.total)

@@ -9,6 +9,9 @@ import { message } from 'ant-design-vue';
 import VueViewer from 'v-viewer';
 import SwiperClass, { /* swiper modules... */ } from 'swiper'
 import VueAwesomeSwiper from 'vue-awesome-swiper'
+import { registGlobalComponent } from './components'
+// 引入指令入口文件
+import directive from "@/directive/index";
 
 // import swiper module styles
 import 'swiper/css'
@@ -16,13 +19,21 @@ import 'swiper/css'
 
 // use swiper modules
 SwiperClass.use([/* swiper modules... */])
-
+const setupAll = async () => {
 const app = createApp(App);
+
+// 挂载
+directive(app);
+app.config.globalProperties.$message = message;
 app.use(store)
     .use(router)
     .use(Antd)
     .use(VueViewer)
     .use(VueAwesomeSwiper)
-    .mount('#app');
 
-app.config.globalProperties.$message = message;
+  registGlobalComponent(app)
+
+  app.mount('#app');
+}
+
+setupAll()

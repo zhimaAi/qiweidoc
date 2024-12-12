@@ -30,8 +30,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
    && ln -fs /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
    && dpkg-reconfigure -f noninteractive tzdata \
    && docker-php-ext-install pdo_pgsql bcmath gd zip sockets \
-   && pecl install imagick igbinary msgpack grpc \
-   && docker-php-ext-enable imagick igbinary msgpack grpc \
+   && pecl install imagick igbinary msgpack\
+   && docker-php-ext-enable imagick igbinary msgpack \
    && apt-get clean \
    && rm -rf /var/lib/apt/lists/* \
    && rm -rf /tmp/pear \
@@ -44,11 +44,6 @@ COPY --from=composer /usr/bin/composer /usr/bin/composer
 COPY docker/main/edl.so /usr/local/lib/php/extensions/no-debug-non-zts-20220829/
 RUN docker-php-ext-enable edl
 
-# 安装grpc buffer
-COPY docker/main/protoc /usr/local/bin/
-COPY docker/main/grpc_php_plugin /usr/local/bin/
-COPY docker/main/protoc-gen-php-grpc /usr/local/bin/
-
 # 复制前端代码和php代码
 COPY --from=node_builder /build/ /var/www/
 WORKDIR /var/www/
@@ -57,11 +52,16 @@ WORKDIR /var/www/
 COPY --from=go_builder /build/golang /var/www/golang
 
 # 安装php依赖
+COPY php/composer.lock php/composer.lock
 RUN COMPOSER_ALLOW_SUPERUSER=1 composer --working-dir php install --no-dev
 
 # 复制环境变量文件
 COPY .env.prod .env
 
-# 运行
+# 权限
 RUN chmod -R 777 php/runtime
-CMD ["make", "exec"]
+
+# 运行
+ENV LD_LIBRARY_PATH=/var/www/golang/plugins/wxfinance/linux
+RUN chmod +x /var/www/golang/build/master
+CMD ["/var/www/golang/build/master"]

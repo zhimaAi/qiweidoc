@@ -1,11 +1,13 @@
 package main
 
 import (
-    "github.com/joho/godotenv"
-    "log"
-    "os"
-    "os/signal"
-    "syscall"
+	"log"
+	"os"
+	"os/signal"
+	"session_archive/golang/initialize"
+	"syscall"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -14,10 +16,11 @@ func main() {
 		panic(err)
 	}
 
-	// 初始化数据库连接
-	if err := initDb(); err != nil {
+	// 初始化nats
+	if err := initialize.InitNats(); err != nil {
 		panic(err)
 	}
+	defer initialize.CloseNats()
 
 	var errCh = make(chan error)
 
@@ -41,14 +44,12 @@ func main() {
 	select {
 	case err := <-errCh:
 		log.Printf("服务出错了: %v", err)
-		defer stopFiberProxy()
-		defer stopEndureContainer()
-		defer closeDb()
+		stopFiberProxy()
+		stopEndureContainer()
 	case <-sigCh:
 		log.Printf("收到退出信号...")
-		defer stopFiberProxy()
-		defer stopEndureContainer()
-		defer closeDb()
+		stopFiberProxy()
+		stopEndureContainer()
 	}
 
 	close(errCh)

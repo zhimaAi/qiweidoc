@@ -2,10 +2,23 @@ package main
 
 import (
 	"fmt"
+	"log/slog"
+	"os"
+	"os/signal"
+	"session_archive/golang/define"
+	"session_archive/golang/initialize"
+	"session_archive/golang/pkg/nats_util"
+	"session_archive/golang/plugins/common"
+	"session_archive/golang/plugins/cron"
+	"session_archive/golang/plugins/httpbatch"
+	"session_archive/golang/plugins/minio"
+	"session_archive/golang/plugins/wxfinance"
+	"strings"
+	"syscall"
+
 	"github.com/joho/godotenv"
 	"github.com/roadrunner-server/config/v5"
 	"github.com/roadrunner-server/endure/v2"
-	grpcPlugin "github.com/roadrunner-server/grpc/v5"
 	"github.com/roadrunner-server/gzip/v5"
 	"github.com/roadrunner-server/headers/v5"
 	httpPlugin "github.com/roadrunner-server/http/v5"
@@ -13,14 +26,10 @@ import (
 	"github.com/roadrunner-server/nats/v5"
 	"github.com/roadrunner-server/rpc/v5"
 	"github.com/roadrunner-server/server/v5"
+	"github.com/roadrunner-server/service/v5"
 	"github.com/roadrunner-server/static/v5"
 	"github.com/shellphy/logger/v5"
 	"github.com/spf13/cast"
-	"log/slog"
-	"os"
-	"os/signal"
-	"strings"
-	"syscall"
 )
 
 var (
@@ -29,9 +38,22 @@ var (
 )
 
 func startEndureApp() error {
-	// 加载.env文件
-	err := godotenv.Load()
-	if err != nil {
+
+	name := strings.TrimSpace(os.Getenv(`MODULE_NAME`))
+	version := strings.TrimSpace(os.Getenv(`MODULE_VERSION`))
+	description := strings.TrimSpace(os.Getenv(`MODULE_DESCRIPTION`))
+	httpPort := strings.TrimSpace(os.Getenv(`MODULE_HTTP_PORT`))
+	metadata := map[string]string{
+		"type": "http",
+		"port": httpPort,
+	}
+
+	define.ModuleName = name
+	define.HttpPort = cast.ToUint(os.Getenv(`MODULE_HTTP_PORT`))
+	define.RpcPort = cast.ToUint(os.Getenv(`MODULE_RPC_PORT`))
+
+	// 向nats注册服务
+	if err := nats_util.RegisterNatsService(define.NatsConn, name, version, description, metadata); err != nil {
 		panic(err)
 	}
 
@@ -40,6 +62,7 @@ func startEndureApp() error {
 		&logger.Plugin{},
 		&rpc.Plugin{},
 		&server.Plugin{},
+		&service.Plugin{},
 
 		// http
 		&httpPlugin.Plugin{},
@@ -47,58 +70,51 @@ func startEndureApp() error {
 		&headers.Plugin{},
 		&gzip.Plugin{},
 
-		// gRPC
-		&grpcPlugin.Plugin{},
-
 		// jobs
 		&jobs.Plugin{},
 		&nats.Plugin{},
+
+		// 自定义插件
+		&common.Plugin{},
+		&httpbatch.Plugin{},
+		&minio.Plugin{},
+		&wxfinance.Plugin{},
+		&cron.Plugin{},
 	}
 
 	var overrides []string
 
-	moduleName := strings.TrimSpace(os.Getenv(`MODULE_NAME`))
-
 	// rpc配置
-	overrides = append(overrides, fmt.Sprintf(`rpc.listen=tcp://127.0.0.1:%s`, os.Getenv(`MODULE_RPC_PORT`)))
+	overrides = append(overrides, fmt.Sprintf(`rpc.listen=tcp://127.0.0.1:%d`, define.RpcPort))
 
 	// 添加php worker环境变量
-	overrides = append(overrides, fmt.Sprintf(`server.env[0]=MODULE_NAME=%s`, moduleName))
+	overrides = append(overrides, fmt.Sprintf(`server.env[0]=MODULE_NAME=%s`, name))
 
 	// 覆盖http配置
-	overrides = append(overrides, fmt.Sprintf(`http.pool.command=php php/yii %s http`, moduleName))
-	overrides = append(overrides, fmt.Sprintf(`http.address=0.0.0.0:%s`, os.Getenv(`MODULE_HTTP_PORT`)))
+	overrides = append(overrides, fmt.Sprintf(`http.pool.command=php php/yii %s http`, name))
+	overrides = append(overrides, fmt.Sprintf(`http.address=0.0.0.0:%d`, define.HttpPort))
 	staticDir := strings.TrimSpace(os.Getenv(`MODULE_STATIC_DIR`))
 	if len(staticDir) > 0 {
 		overrides = append(overrides, fmt.Sprintf(`http.static.dir=%s`, staticDir))
 	}
 
-	// 覆盖grpc配置（目前暂时只允许main模块使用grpc）
-	grpcProtoFiles := strings.TrimSpace(os.Getenv(`MODULE_PROTO_FILES`))
-	if len(grpcProtoFiles) > 0 {
-		overrides = append(overrides, fmt.Sprintf(`grpc.pool.command=php php/yii %s grpc`, moduleName))
-		overrides = append(overrides, fmt.Sprintf("grpc.listen=tcp://0.0.0.0:%s", os.Getenv(`MODULE_GRPC_PORT`)))
-		overrides = append(overrides, fmt.Sprintf("grpc.proto=%s", grpcProtoFiles))
-	}
+	// 覆盖service配置
+	overrides = append(overrides, fmt.Sprintf(`service.init-module.env[0]=MODULE_NAME=%s`, name))
 
 	// 覆盖jobs配置
-	natsAddr := strings.TrimSpace(os.Getenv(`NATS_ADDR`))
-	if len(natsAddr) == 0 {
-		natsAddr = "nats://nats:4222"
-	}
-	overrides = append(overrides, fmt.Sprintf(`nats.addr=%s`, natsAddr))
+	overrides = append(overrides, fmt.Sprintf(`nats.addr=%s`, define.NatsAddr))
 	consumeList := strings.TrimSpace(os.Getenv(`CONSUME_LIST`))
 	if len(consumeList) > 0 {
-		overrides = append(overrides, fmt.Sprintf(`jobs.pool.command=php php/yii %s jobs`, moduleName))
-		overrides = append(overrides, fmt.Sprintf(`jobs.pool.supervisor.max_worker_memory=128`))
-		overrides = append(overrides, fmt.Sprintf(`jobs.pool.supervisor.ttl=300s`))
-		overrides = append(overrides, fmt.Sprintf(`jobs.pool.supervisor.idle_ttl=5s`))
+		overrides = append(overrides, fmt.Sprintf(`jobs.pool.command=php php/yii %s jobs`, name))
+		overrides = append(overrides, `jobs.pool.supervisor.max_worker_memory=128`)
+		overrides = append(overrides, `jobs.pool.supervisor.ttl=300s`)
+		overrides = append(overrides, `jobs.pool.supervisor.idle_ttl=5s`)
 		workerNum := 0
 		var fullConsumeNameList []string
 		for _, consume := range strings.Split(consumeList, `,`) {
 			deleteSteamOnStop := cast.ToString(cast.ToBool(os.Getenv(`CONSUME_` + strings.ToUpper(consume) + `_DELETE`)))
 			prefetchCount := cast.ToInt(os.Getenv(`CONSUME_` + strings.ToUpper(consume) + `_COUNT`))
-			fullConsumeName := moduleName + `_` + consume
+			fullConsumeName := name + `_` + consume
 			fullConsumeNameList = append(fullConsumeNameList, fullConsumeName)
 			if prefetchCount > 0 {
 				overrides = append(overrides, fmt.Sprintf(`jobs.pipelines.%s.config.delete_stream_on_stop=%s`, fullConsumeName, deleteSteamOnStop))
@@ -124,11 +140,8 @@ func startEndureApp() error {
 		overrides = append(overrides, "logs.mode=development")
 		overrides = append(overrides, "logs.level=info")
 		overrides = append(overrides, "http.pool.debug=true")
+		overrides = append(overrides, "tcp.pool.debug=true")
 		overrides = append(overrides, "jobs.pool.debug=true")
-
-		if len(grpcProtoFiles) > 0 {
-			overrides = append(overrides, "grpc.pool.debug=true")
-		}
 	}
 
 	// 创建基础配置插件
@@ -168,6 +181,24 @@ func stopEndureApp() {
 }
 
 func main() {
+	// 加载.env文件
+	err := godotenv.Load()
+	if err != nil {
+		panic(err)
+	}
+
+	// 初始化nats
+	if err := initialize.InitNats(); err != nil {
+		panic(err)
+	}
+	defer initialize.CloseNats()
+
+	// 初始化数据库连接
+	if err := initialize.InitDb(); err != nil {
+		panic(err)
+	}
+	defer initialize.CloseDb()
+
 	var errCh = make(chan error)
 
 	// 启动插件容器

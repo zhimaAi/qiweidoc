@@ -83,7 +83,15 @@ class StaffService
             }
         }
 
-        $res = $query->orderBy(['id' => SORT_DESC])->paginate($data['page'] ?? 1, $data['limit'] ?? 10);
+        $query->orderBy(['id' => SORT_DESC]);
+
+
+        //排序字段
+        if (!empty($data["order_fields"]) && !empty($data["order_by"]) && in_array($data["order_fields"], ["cst_total"])) {
+            $query->orderBy([$data["order_fields"] => $data["order_by"]]);
+        }
+
+        $res = $query->paginate($data['page'] ?? 1, $data['limit'] ?? 10);
 
         if (!$res['items']->isEmpty()) {
 

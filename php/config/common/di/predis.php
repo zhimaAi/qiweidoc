@@ -9,7 +9,12 @@ return [
     ClientInterface::class => static function (ContainerInterface $container) use ($params) {
         return new Predis\Client(
             $params['predis']['uri'],
-            ['parameters' => ['password' => $params['predis']['password']]],
+            [
+                'parameters' => [
+                    'password' => $params['predis']['password'],
+                    'persistent' => true,
+                ]
+            ],
         );
     },
 ];

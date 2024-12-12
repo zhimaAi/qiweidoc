@@ -99,7 +99,7 @@ onMounted(async () => {
 })
 
 const localLoginTest = () => {
-    loginAfterHandle('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MiwidXNlcmlkIjoiTHVvWWluZ0JpbkZlbiIsImNvcnBfaWQiOiJ3dzVmNDMyYjNhMjRhOWI5ZjEiLCJleHAiOjE3MzM1NTg2MjV9.qTdiMRJvB75G2fo8Kyu0tF_dcO18rNH0BGA9lJ5z2jY')
+    loginAfterHandle('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MywidXNlcmlkIjoiTHVvWWluZ0JpbkZlbiIsImNvcnBfaWQiOiJ3dzVmNDMyYjNhMjRhOWI5ZjEiLCJleHAiOjE3MzQwNTUwMjl9.YSJ8vvmKdk7QbTZsJiqJoERPniOo25n8GviXwauRAX0')
 }
 
 const onChangeLogin = (type) => {
@@ -186,8 +186,7 @@ const loginInit = async (corp_id, agent_id) => {
 
 const loginAfterHandle = async token => {
     try {
-        await loginHandle(token)
-        const corpInfo = await getCurrentCorp()
+        const {corpInfo} = await loginHandle(token)
         proxy.$message.success('登录成功，正在跳转主页')
         setTimeout(() => {
             // chat_public_key_version > 0表示已经配置会话存档
@@ -206,6 +205,10 @@ const loginAfterHandle = async token => {
 </script>
 
 <style scoped lang="less">
+._main-header {
+    background: none;
+    box-shadow: none;
+}
 ._main-container {
     background: linear-gradient(254deg, #F6F9FE 6.01%, #E5EEFF 62.87%);
     min-height: 100vh;

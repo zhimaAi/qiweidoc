@@ -9,11 +9,9 @@ use Throwable;
 
 class SyncSessionMessageConsumer
 {
-    private readonly CorpModel $corp;
-
-    public function __construct(CorpModel $corp)
+    public function __construct()
     {
-        $this->corp = $corp;
+        
     }
 
     /**
@@ -21,10 +19,14 @@ class SyncSessionMessageConsumer
      */
     public function handle(): void
     {
-        $mutexKey = self::class . $this->corp->get('id');
-        if (Yii::mutex()->acquire($mutexKey)) {
-            ChatSessionPullService::handleMessage($this->corp);
-            Yii::mutex()->release($mutexKey);
+        $corp = CorpModel::query()->getOne();
+
+        if (!empty($corp) && !empty($corp->get('chat_private_key'))) {
+            $mutexKey = self::class . $corp->get('id');
+            if (Yii::mutex()->acquire($mutexKey)) {
+                ChatSessionPullService::handleMessage($corp);
+                Yii::mutex()->release($mutexKey);
+            }
         }
     }
 }

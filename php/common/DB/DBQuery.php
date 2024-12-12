@@ -2,6 +2,7 @@
 
 namespace Common\DB;
 
+use Carbon\Carbon;
 use Common\Yii;
 use Doctrine\Common\Collections\ArrayCollection;
 use Exception;
@@ -117,7 +118,7 @@ class DBQuery extends \Yiisoft\Db\Query\Query
     public function update(array $attributes): int
     {
         if (!empty($this->model->getTimestampFields()['updated_at'])) {
-            $attributes['updated_at'] = now();
+            $attributes['updated_at'] = Carbon::now()->format('Y-m-d H:i:s.v');
         }
 
         return $this->executeCommand(function () use ($attributes) {

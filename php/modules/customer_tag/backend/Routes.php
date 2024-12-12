@@ -2,6 +2,7 @@
 
 namespace Modules\CustomerTag;
 
+use Common\Broadcast;
 use Common\RouterProvider;
 use Modules\CustomerTag\Controller\TagController;
 use Modules\Main\Library\Middlewares\CurrentCorpInfoMiddleware;
@@ -11,9 +12,19 @@ use Yiisoft\Router\Route;
 
 class Routes extends RouterProvider
 {
-    public function getGrpcRouters(): array
+    public function init(): void
     {
-        return [];
+        echo "ok\n";
+        return;
+    }
+    
+    public function getBroadcastRouters(): array
+    {
+        return [
+            Broadcast::event('test')->from('main')->handle(function (string $payload) {
+                ddump($payload);
+            }),
+        ];
     }
 
     public function getHttpRouters(): array

@@ -2,10 +2,11 @@
 
 namespace Modules\Main;
 
+use Common\Broadcast;
 use Common\Job\Consumer;
+use Common\Job\Producer;
 use Common\RouterProvider;
 use Common\Yii;
-use GRPC\Pinger\PingerInterface;
 use Modules\Main\Command\PullChatSessionMessageCommand;
 use Modules\Main\Consumer\DownloadChatSessionMediasConsumer;
 use Modules\Main\Consumer\QwOpenPushConsumer;
@@ -26,7 +27,6 @@ use Modules\Main\Controller\OpenPushController;
 use Modules\Main\Controller\StaffController;
 use Modules\Main\Controller\TagsController;
 use Modules\Main\Controller\UserController;
-use Modules\Main\GRPC\Pinger;
 use Modules\Main\Library\Middlewares\CurrentCorpInfoMiddleware;
 use Psr\Http\Message\ServerRequestInterface;
 use Yiisoft\Auth\Middleware\Authentication;
@@ -39,6 +39,25 @@ use Yiisoft\Router\Route;
 
 class Routes extends RouterProvider
 {
+    /**
+     * 模块刚启动时需要执行的方法
+     */
+    public function init(): void
+    {
+        Producer::dispatchCron(SyncSessionMessageConsumer::class, [], '5 seconds');
+        
+        return;
+    }
+    
+    public function getBroadcastRouters(): array
+    {
+        return [
+            Broadcast::event('test')->from('main')->handle(function (string $payload) {
+            
+            }),
+        ];
+    }
+
     /**
      * 控制台路由
      */
@@ -66,16 +85,6 @@ class Routes extends RouterProvider
 
             Consumer::name("sync_session_message")->count(1)->action(SyncSessionMessageConsumer::class),
             Consumer::name("download_session_medias")->count(5)->action(DownloadChatSessionMediasConsumer::class)->reserveOnStop(),
-        ];
-    }
-
-    /**
-     * grpc路由
-     */
-    public function getGrpcRouters(): array
-    {
-        return [
-            PingerInterface::class => Pinger::class,
         ];
     }
 
@@ -170,7 +179,6 @@ class Routes extends RouterProvider
                     Route::get('/chats/by/collect/room/conversation/list')->action([ChatController::class, 'getRoomConversationListByCollect']),
                     Route::put('/chats/join/collect')->action([ChatController::class, 'joinCollect']),
                     Route::put('/chats/cancel/collect')->action([ChatController::class, 'cancelCollect']),
-
 
                     // 模块管理
                     Route::get("/modules")->action([ModuleController::class, "getModuleList",]),

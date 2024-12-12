@@ -24,4 +24,3 @@ CREATE EXTENSION IF NOT EXISTS hstore;
 
 -- 设置时区
 SET timezone TO 'Asia/Shanghai';
-

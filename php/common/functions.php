@@ -2,6 +2,7 @@
 // Copyright © 2016- 2024 Sesame Network Technology all right reserved
 
 use Yiisoft\Db\Migration\MigrationBuilder;
+use Zxing\QrReader;
 
 function ddump($var, $echo = true, $label = null, $strict = true, $level = 0): ?string
 {
@@ -125,3 +126,63 @@ function array_pick_fields($data, $keys)
         return array_merge(array_fill_keys($keys, null), array_intersect_key($data, array_flip($keys)));
     }
 }
+
+
+/**
+ * @param $url
+ * @param $json
+ * @param $time_out
+ * @param $header
+ * Notes: 发起post请求
+ * User: rand
+ * Date: 2024/12/10 12:26
+ * @return bool|string
+ */
+function requestByPost($url, $json,$time_out=0,$header=null)
+{
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    //@dany20200417  加：http://www.04007.cn/article/424.html
+    curl_setopt ( $ch,  CURLOPT_NOSIGNAL,true);
+
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+    if(empty($header)){
+        $header= array(
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen($json)
+        );
+    }
+    curl_setopt($ch, CURLOPT_HTTPHEADER,$header);
+    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36');
+    if($time_out){
+        curl_setopt($ch, CURLOPT_TIMEOUT_MS, $time_out);
+    }
+    $result = curl_exec($ch);
+    if (curl_errno($ch)) {
+        wkLog("curl错误：".curl_error($ch),'requestByPost');
+    }
+    curl_close($ch);
+    return $result;
+}
+
+/**
+ * @param $img_url
+ * Notes: 验证是否为二维码图片
+ * User: rand
+ * Date: 2024/12/10 12:19
+ * @return array
+ */
+function checkImgIsQrcode($img_url)
+{
+    $qrcode = new QrReader($img_url);
+    try {
+        $text = $qrcode->text(); // 尝试读取二维码内容
+        return ['is_qrcode' => !empty($text), 'qrcode_content' => $text];
+    } catch (\Exception $e) {
+        return ['is_qrcode' => false, 'qrcode_content' => ''];// 如果抛出异常，则不是二维码
+    }
+}
+

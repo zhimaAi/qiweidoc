@@ -4,6 +4,7 @@
 
 use Common\Module;
 use Common\Runner\RoadRunnerJobsApplicationRunner;
+use Common\Runner\RoadRunnerTcpApplicationRunner;
 use Common\Yii;
 use Dotenv\Dotenv;
 use Spiral\RoadRunner\Environment;
@@ -33,17 +34,24 @@ $_ENV['REDIS_HOST'] = $_ENV['REDIS_HOST'] ?? 'redis';
 $_ENV['REDIS_PORT'] = $_ENV['REDIS_PORT'] ?? 6379;
 $_ENV['REDIS_PASSWORD'] = $_ENV['REDIS_PASSWORD'] ?? '';
 
-// 加载模块
-Module::setModule();
-Module::loadModule($loader, 'main');
-Module::loadModule($loader, Module::getCurrentModuleName());
-
 // 配置数据库
 $_ENV['DB_HOST'] = $_ENV['DB_HOST'] ?? 'db';
 $_ENV['DB_PORT'] = $_ENV['DB_PORT'] ?? 5432;
-$_ENV['DB_DATABASE'] = 'postgres';
-$_ENV['DB_USERNAME'] = Module::getCurrentModuleName();
-$_ENV['DB_PASSWORD'] = Module::getCurrentModuleName();
+$_ENV['DB_DATABASE'] = $_ENV['DB_DATABASE'] ?? 'postgres';
+$_ENV['DB_USERNAME'] = $_ENV['DB_USERNAME'] ?? 'postgres';
+$_ENV['DB_PASSWORD'] = $_ENV['DB_PASSWORD'] ?? 'postgres';
+
+// 加载模块
+if ($module = getenv('MODULE_NAME')) {
+    Module::setModule($module);
+    Module::loadModule($loader, 'main');
+    Module::loadModule($loader, Module::getCurrentModuleName());
+    $_ENV['DB_USERNAME'] = Module::getCurrentModuleName();
+    $_ENV['DB_PASSWORD'] = Module::getCurrentModuleName();
+} else {
+    Module::setModule('main');
+    Module::loadModule($loader, 'main');
+}
 
 // 根据不同环境启动不同的运行模式
 $env = Environment::fromGlobals();
@@ -61,14 +69,13 @@ if ($env->getMode() == Mode::MODE_HTTP) { //http
         checkEvents: $_ENV['YII_DEBUG'],
         environment: $_ENV['YII_ENV'],
     ));
-} elseif ($env->getMode() == Mode::MODE_GRPC) { //grpc
-    $runner = (new RoadRunnerGrpcApplicationRunner(
+} elseif ($env->getMode() == Mode::MODE_TCP) {
+    $runner = (new RoadRunnerTcpApplicationRunner(
         rootPath: __DIR__,
         debug: $_ENV['YII_DEBUG'],
         checkEvents: $_ENV['YII_DEBUG'],
         environment: $_ENV['YII_ENV'],
     ));
-    $runner->setServices(Module::getRouterProvider()->getGrpcRouters());
 } else {
     $runner = new ConsoleApplicationRunner(
         rootPath: __DIR__,

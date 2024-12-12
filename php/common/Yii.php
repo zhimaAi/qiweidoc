@@ -9,12 +9,12 @@ namespace Common;
 
 use EasyWeChat\Kernel\Exceptions\InvalidArgumentException;
 use EasyWeChat\Work\Application;
-use Exception;
 use Predis\ClientInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Spiral\Goridge\Relay;
 use Spiral\Goridge\RPC\RPC;
+use Spiral\RoadRunner\Environment;
 use Throwable;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Cache\CacheInterface;
@@ -124,13 +124,14 @@ final class Yii
     public static function getRpcClient() : RPC
     {
         static $relays = [];
-
-        $info = self::getDefaultRpcClient()->call('module.Info', Module::getCurrentModuleName());
-        if (empty($info['rpc_port'])) {
-            throw new Exception("没有找到模块" . Module::getCurrentModuleName() . "的rpc地址");
+        
+        $address = Environment::fromGlobals()->getRPCAddress();
+        if ($address == 'tcp://127.0.0.1:6001') {
+            $cacheKey = Module::getModuleRpcPortCacheKey(Module::getCurrentModuleName());
+            $port = Yii::cache()->psr()->get($cacheKey);
+            $address = "tcp://127.0.0.1:{$port}";
         }
 
-        $address = "tcp://127.0.0.1:{$info['rpc_port']}";
         if (!isset($relays[$address])) {
             $relays[$address] = Relay::create($address);
         }

@@ -14,6 +14,6 @@ class SendEmailConsumer
 
     public function handle(): void
     {
-        echo "aaa\n";
+        echo "sending email to {$this->email}...\n";
     }
 }

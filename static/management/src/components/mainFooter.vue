@@ -12,7 +12,9 @@ onMounted(() => {
     window.addEventListener('resize', adjustFooterPosition);
     setTimeout(() => {
         adjustFooterPosition()
-        document.getElementById('_footer').classList.remove('hide')
+        if (document.getElementById('_footer')) {
+            document.getElementById('_footer').classList.remove('hide')
+        }
     }, 1000)
 })
 

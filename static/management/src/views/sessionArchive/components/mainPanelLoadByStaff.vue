@@ -37,7 +37,7 @@
                     class="center-block"
                     @change="panelBlockWidthChange"
                 >
-                    <a-tabs v-model:active-key="main.contactType"
+                    <a-tabs v-model:activeKey="main.contactType"
                             @change="contactTypeChange"
                             class="zm-customize-tabs">
                         <a-tab-pane key="CUSTOMER" :tab="`客户(${main.contactCustomerCount})`"></a-tab-pane>
@@ -99,8 +99,10 @@ import ContactGroup from "@/views/sessionArchive/components/contacts/group.vue";
 import DragStretchBox from "@/components/dragStretchBox.vue";
 import FilterBoxByStaff from "@/views/sessionArchive/components/filter/filterBoxByStaff.vue";
 import LoadingBox from "@/components/loadingBox.vue";
-import {staffList} from "@/api/company";
+import { staffList } from "@/api/company";
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
 const props = defineProps({
     defaultParams: {
         type: Object,
@@ -154,7 +156,6 @@ const currentContact = computed(() => {
 })
 
 const chatInfo = computed(() => {
-    // console.log('currentContact', currentContact.value)
     if (!currentContact.value || !currentStaff.value) {
         return {}
     }
@@ -210,7 +211,6 @@ const callbackData = ref({})
 const currentMsgCancelCollect = ref(0)
 
 const onChangeCollect = (obj) => {
-    // console.log('items', obj)
     callbackData.value = obj
     currentContact.value.id = obj.conversation_id
     currentContact.value.is_collect = obj.is_collect
@@ -223,6 +223,16 @@ const onCancelCollect = (val) => {
 
 onMounted(() => {
     checkDefaultChat()
+    if (route.query.conversation_type) {
+        if (route.query.conversation_type == '1') {
+            main.contactType = 'CUSTOMER'
+        } else if (route.query.conversation_type == '2') {
+            main.contactType = 'GROUP'
+        } else if (route.query.conversation_type == '3') {
+            main.contactType = 'STAFF'
+        }
+        loadSessionMsg()
+    }
 })
 
 const checkDefaultChat = async () => {

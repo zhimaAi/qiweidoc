@@ -5,7 +5,8 @@ import router from "@/router";
 import store from "@/store";
 import {setAuthToken, setCorpInfo, setUserInfo} from "@/utils/cache";
 import {getCurrentCorp, getCurrentUser} from "@/api/auth-login";
-import {setCookieAcrossSubdomain} from "@/utils/cookie";
+import { setCookieAcrossSubdomain } from "@/utils/cookie";
+import cloneDeep from 'lodash/cloneDeep';
 
 export const loginHandle = async token => {
     setAuthToken(token)
@@ -29,6 +30,16 @@ export const logoutHandle = () => {
     store.commit('RESET_STATE')
     window.localStorage.clear()
     window.location.href = router.resolve({path: '/login'}).href
+}
+
+export const sessionRoleMap = {
+    1: 'Customer',
+    2: 'Staff',
+    3: 'Group'
+}
+
+export const sessionRole2Text = role => {
+    return sessionRoleMap[role] || null
 }
 
 export const copyText = async text => {
@@ -136,6 +147,27 @@ export const formatTime = time => {
     } else {
         return dayjs(time * 1000).format("YYYY-MM-DD HH:mm")
     }
+}
+
+export const secondsToDate = seconds => {
+    let hours = Math.floor(seconds / 3600); // 小时部分
+    let minutes = Math.floor((seconds % 3600) / 60); // 分钟部分
+    seconds = seconds % 60; // 秒部分
+    if (hours > 0) {
+        if (hours < 10) {
+            hours = `0${hours}`
+        }
+        hours += ':'
+    } else {
+        hours = ''
+    }
+    if (minutes < 10) {
+        minutes = `0${minutes}`
+    }
+    if (seconds < 10) {
+        seconds = `0${seconds}`
+    }
+    return `${hours}${minutes}:${seconds}`
 }
 
 export function getFileIcon(ext) {
@@ -281,7 +313,7 @@ export const timeToNumber = (time) => {
 }
 
 export const copyObj = (obj) => {
-    return JSON.parse(JSON.stringify(obj))
+    return cloneDeep(obj)
 }
 
 export const jsonDecode = (jsonStr, nullval = {}) => {

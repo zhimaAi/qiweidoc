@@ -1,9 +1,3 @@
-<!--
- * @Author: Mango
- * @Date: 2022-09-19 12:07:11
- * @LastEditors: Mango
- * @LastEditTime: 2024-03-18 14:33:33
--->
 <template>
 	<div class="framework">
 		<a-input-search

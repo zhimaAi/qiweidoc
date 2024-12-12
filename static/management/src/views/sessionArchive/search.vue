@@ -124,7 +124,7 @@ import {SearchOutlined} from '@ant-design/icons-vue';
 import {message} from 'ant-design-vue';
 import MainLayout from "@/components/mainLayout.vue";
 import {searchSession} from "@/api/session";
-import {getRegex} from "@/utils/tools";
+import {getRegex, sessionRole2Text} from "@/utils/tools";
 
 const router = useRouter()
 const route = useRoute()
@@ -214,7 +214,7 @@ const loadData = () => {
         }
     }
     if (filterData.dates.length) {
-        params.start_time = filterData.dates[0].format('YYYY-MM-DD 00:00:01')
+        params.start_time = filterData.dates[0].format('YYYY-MM-DD 00:00:00')
         params.stop_time = filterData.dates[1].format('YYYY-MM-DD 23:59:59')
     }
     searchSession(params).then(res => {
@@ -224,6 +224,7 @@ const loadData = () => {
             item.msg_content = item.msg_content.replace(getRegex(filterData.keyword), `<span class="search-keyword-text">${filterData.keyword}</span>`)
             item.session_type_text = item.group_info ? '群聊' : '单聊'
             item.msg_time = dayjs(item.msg_time).format('YY/MM/DD HH:mm')
+            item.from_role = sessionRole2Text(item.from_role)
         })
         list.value = items
         pagination.total = Number(total)
@@ -290,6 +291,7 @@ const disabledDate = current => {
 
     :deep(.msg-content-box) {
         word-break: break-all;
+
         .search-keyword-text {
             color: red;
         }

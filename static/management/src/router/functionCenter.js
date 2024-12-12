@@ -17,6 +17,23 @@ export default [
         component: () => import("../views/plug/info.vue"),
     },
     {
+        path: '/module/hint_keywords/index',
+        name: 'hintKeywordsHome',
+        component: () => import('../views/Modules/hint_keywords/index.vue')
+    },
+    {
+        path: "/module/hint_keywords/ruleStore",
+        name: "hintKeywordsRuleStore",
+        meta: {
+            activeMenuKey: 'hintKeywordsHome',
+            links: [
+                {name: "敏感词提醒", to: "/module/hint_keywords/index"},
+                {name: "规则"}
+            ],
+        },
+        component: () => import("../views/Modules/hint_keywords/ruleConfig.vue"),
+    },
+    {
         path: '/module/customer_tag/index',
         name: 'CustomerLabelInex',
         component: () => import('../views/Modules/customer_tag/index.vue')

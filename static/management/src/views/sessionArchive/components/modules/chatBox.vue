@@ -45,7 +45,7 @@
           </div>
           <div class="content">
             <div class="user-name" v-if="item.isSelf">
-              <span class="msg-time">{{ item.msg_time }}</span>
+              <span class="msg-time">{{ item.msg_time_show }}</span>
               <span class="ml8">{{ item.from_detail.name || '...' }}</span>
               <template v-if="item.from_role != 'Staff'">
                 <span v-if="item?.from_detail?.corp_name" class="is-corp-tag">@{{ item.from_detail.corp_name }}</span>
@@ -58,9 +58,13 @@
                 <span v-if="item?.from_detail?.corp_name" class="is-corp-tag">@{{ item.from_detail.corp_name }}</span>
                 <span v-else class="is-wx-tag">@微信</span>
               </template>
-              <span class="msg-time">{{ item.msg_time }}</span>
+              <span class="msg-time">{{ item.msg_time_show }}</span>
             </div>
-            <MessageRender :messageInfo="item" :isSelf="item.isSelf" />
+            <MessageRender
+                @playVoice="playVoice"
+                :voicePlaying="item.msg_id === currentPayVoiceKey"
+                :messageInfo="item"
+                :isSelf="item.isSelf" />
           </div>
         </div>
       </template>
@@ -76,6 +80,7 @@ import { groupMessage, sessionMessage } from "@/api/session";
 import ChatUser from "@/views/sessionArchive/components/modules/childs/chatUser.vue";
 import MessageRender from "@/views/sessionArchive/components/modules/childs/messageRender.vue";
 import ChatCollection from './childs/chatCollection.vue';
+import {VoicePlayHandle} from "@/utils/voicePlay";
 
 const emit = defineEmits('changeCollect')
 const defaultAvatar = require('@/assets/default-avatar.png')
@@ -108,6 +113,7 @@ const props = defineProps({
     type: Number
   }
 })
+const {play, getPlayerKey} = VoicePlayHandle()
 
 const textOverflown = ref(false)
 const list = ref([])
@@ -122,6 +128,7 @@ const pagination = reactive({
   pageSize: 15,
   total: 0,
 })
+const currentPayVoiceKey = getPlayerKey()
 
 const init = () => {
   checkTextOverflow()
@@ -172,7 +179,8 @@ const loadData = () => {
       finished.value = true
     }
     items.map((item, index) => {
-      item.msg_time = dayjs(item.msg_time).format('YY/MM/DD HH:mm')
+      item.msg_time_show = dayjs(item.msg_time).format('YY/MM/DD HH:mm')
+      item.from_role = item.from_role.name
       item.from_detail = item.from_detail || {}
       if (item.from_detail?.external_name) {
         item.from_detail.name = item.from_detail.external_name
@@ -232,6 +240,10 @@ function checkTextOverflow () {
       textOverflown.value = textElement.scrollWidth > container.offsetWidth;
     }
   })
+}
+
+function playVoice(message) {
+    play(message.msg_id, message.msg_content)
 }
 
 onMounted(() => {

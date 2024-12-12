@@ -7,6 +7,7 @@
 
 namespace Modules\Main\Service;
 
+use Carbon\Carbon;
 use Common\Job\Producer;
 use Common\Yii;
 use Exception;
@@ -33,6 +34,7 @@ class ChatSessionPullService
         'video',
         'emotion',
         'file',
+        'meeting_voice_call',
     ];
 
     /**
@@ -49,7 +51,6 @@ class ChatSessionPullService
         $messages = self::fetchMessages();
         $lastSeq = null;
         foreach ($messages as $msg) {
-
             if (!empty($msg['seq'])) {
                 $lastSeq = $msg['seq'];
             }
@@ -96,8 +97,11 @@ class ChatSessionPullService
 
         $sdkFileId = $message->get('raw_content')['sdkfileid'] ?? '';
         $md5 = $message->get('raw_content')['md5sum'] ?? "";
-        if (empty($md5) || empty($sdkFileId)) {
-            throw new Exception("消息不完整，缺少md5或sdkfileid字段");
+        if (empty($sdkFileId)) {
+            throw new Exception("消息不完整, 缺少md5字段");
+        }
+        if (empty($md5)) {
+            $md5 = md5($sdkFileId);
         }
 
         $request = [
@@ -117,13 +121,13 @@ class ChatSessionPullService
         } elseif ($message->get('msg_type') == 'emotion') {
             $type = $message->get('raw_content')['type'] ?? 2;
             $request['origin_file_name'] = Uuid::uuid4() . ($type == 1 ? '.gif' : '.png');
+        } elseif ($message->get('msg_type') == 'meeting_voice_call') {
+            $request['origin_file_name'] = $message->get('raw_content')['voiceid'] . '.amr';
         }
-        $res = Yii::getDefaultRpcClient()->call('wxfinance.FetchMediaData', $request);
-        if (empty($res['url'])) {
-            throw new Exception("下载文件出错，url为空");
+        $res = Yii::getRpcClient()->call('wxfinance.FetchMediaData', $request);
+        if (!empty($res['url'])) {
+            $message->update(['msg_content' => $res['url']]);
         }
-
-        $message->update(['msg_content' => $res['url']]);
     }
 
     private static function initMessageTypeHandlers(): void
@@ -153,8 +157,8 @@ class ChatSessionPullService
             'news' => fn ($data) => ['raw_content' => $data['news']],
             'calendar' => fn ($data) => ['raw_content' => $data['calendar']],
             'mixed' => fn ($data) => ['raw_content' => $data['mixed']],
-            'meeting_voice_call' => fn ($data) => ['raw_content' => array_merge($data['meeting'], ['voiceid' => $data['voiceid']])],
-            'voip_doc_share' => fn ($data) => ['raw_content' => array_merge($data['voip_doc_share'], ['voipid' => $data['voipid']])],
+            'meeting_voice_call' => fn ($data) => ['raw_content' => array_merge($data['meeting_voice_call'], ['voiceid' => $data['voiceid']])],
+            'voip_doc_share' => fn ($data) => ['raw_content' => $data['voip_doc_share']],
             'external_redpacket' => fn ($data) => ['raw_content' => $data['redpacket']],
             'sphfeed' => fn ($data) => ['raw_content' => $data['sphfeed']],
             'voiptext' => fn ($data) => ['raw_content' => $data['info']],
@@ -165,7 +169,7 @@ class ChatSessionPullService
      * 从企微拉取消息
      * 由golang处理并自动解密
      */
-    private static function fetchMessages(): array
+    private static function fetchMessages()
     {
         $request = [
             'corp_id' => self::$corp->get('id'),
@@ -176,7 +180,7 @@ class ChatSessionPullService
             'limit' => self::MESSAGE_LIMIT,
         ];
 
-        return Yii::getDefaultRpcClient()->call('wxfinance.FetchData', $request);
+        return Yii::getRpcClient()->call('wxfinance.FetchData', $request);
     }
 
     /**
@@ -196,7 +200,7 @@ class ChatSessionPullService
         $message = ChatMessageModel::query()
             ->where(['and',
                 ['msg_id' => $msg['msgid']],
-                ['msg_time' => date('Y-m-d H:i:s', $decryptedData['msgtime'] / 1000)],
+                ['msg_time' => Carbon::createFromTimestampMsUTC($decryptedData['msgtime'])->timezone('Asia/Shanghai')->format('Y-m-d H:i:s.v')],
             ])
             ->getOne();
 
@@ -290,7 +294,7 @@ class ChatSessionPullService
             'to_list' => $decryptedData['tolist'] ?? [],
             'msg_type' => $decryptedData['msgtype'] ?? '',
             'roomid' => $decryptedData['roomid'] ?? '',
-            'msg_time' => date('Y-m-d H:i:s', $decryptedData['msgtime'] / 1000),
+            'msg_time' => Carbon::createFromTimestampMsUTC($decryptedData['msgtime'])->timezone('Asia/Shanghai')->format('Y-m-d H:i:s.v'),
         ], $content));
         if (self::hasExternalPrefix($messageData->get('from'))) {
             $messageData->set('from_role', EnumChatMessageRole::Customer);

@@ -52,6 +52,8 @@ services:
     restart: always
     volumes:
       - minio_data:/data
+    ports:
+      - ${EXTERNAL_MINIO_PORT:-9000}:9000
 
   nats:
     build:
@@ -64,6 +66,8 @@ services:
       TZ: Asia/Shanghai
     volumes:
       - nats_data:/data/jetstream
+    ports:
+      - ${EXTERNAL_NATS_PORT:-4222}:4222
 
   main:
     build:
@@ -83,6 +87,5 @@ services:
     ports:
       - ${EXTERNAL_HTTP_PORT:-80}:8080
       - ${EXTERNAL_SSH_PORT:-22}:22
-      - ${EXTERNAL_GRPC_PORT:-9001}:9001
     volumes:
       - main_data:/var/www/

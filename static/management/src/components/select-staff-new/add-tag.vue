@@ -1,12 +1,6 @@
-<!--
- * @Author: Mango
- * @Date: 2023-07-06 16:04:55
- * @LastEditors: Mango
- * @LastEditTime: 2023-07-11 11:38:12
--->
 <template>
 	<a-modal
-		:visible="visible"
+        v-model:open="visible"
 		:confirm-loading="confirmLoading"
 		@ok="handleOk"
 		width="472px"

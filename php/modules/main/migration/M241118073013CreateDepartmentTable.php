@@ -29,7 +29,7 @@ create table main.department
 
 create unique index on main.department using btree ("corp_id", "department_id");
 
-comment on table department is '企微部门';
+comment on table main.department is '企微部门';
 
 comment on column main.department.department_id is '企微的部门id';
 comment on column main.department.corp_id is '企业id';

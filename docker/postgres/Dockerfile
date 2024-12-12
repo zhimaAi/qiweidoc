@@ -29,24 +29,10 @@ RUN git clone --depth 1 --branch v1.2-20240606 https://github.com/pgbigm/pg_bigm
     make USE_PGXS=1 PG_CONFIG=/usr/bin/pg_config && \
     make USE_PGXS=1 PG_CONFIG=/usr/bin/pg_config install
 
-# 编译安装pg_partman插件
-WORKDIR /tmp/
-RUN git clone --depth 1 --branch v5.1.0 https://github.com/pgpartman/pg_partman.git && \
-    cd /tmp/pg_partman && \
-    make && \
-    make install
-
 # 编译安装pg_cron插件
 WORKDIR /tmp/
 RUN git clone --depth 1 --branch v1.6.4 https://github.com/citusdata/pg_cron.git && \
     cd /tmp/pg_cron && \
-    make && \
-    make install
-
-# 编译安装pg_http插件
-WORKDIR /tmp/
-RUN git clone --depth 1 --branch v1.6.1 https://github.com/pramsey/pgsql-http.git && \
-    cd /tmp/pgsql-http && \
     make && \
     make install
 

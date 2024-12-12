@@ -3,14 +3,16 @@ package main
 import (
 	"crypto/tls"
 	"fmt"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/proxy"
-	"golang.org/x/crypto/acme/autocert"
 	"log"
 	"net/url"
 	"os"
-	"session_archive/golang/plugins/module"
+	"session_archive/golang/define"
+	"session_archive/golang/pkg/nats_util"
 	"strings"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/proxy"
+	"golang.org/x/crypto/acme/autocert"
 )
 
 var (
@@ -24,6 +26,9 @@ func startFiberProxy() error {
 
 	// 路由中间件
 	fiberApp.Use(func(c *fiber.Ctx) error {
+
+		c.Request().Header.Add("X-External", "1")
+
 		// 官网域名直接返回
 		if strings.EqualFold(c.Hostname(), mainHost) {
 			return c.Next()
@@ -46,27 +51,36 @@ func startFiberProxy() error {
 				return c.Status(400).SendString("Invalid path")
 			}
 
-			// 从pg获取服务端口
-			moduleName := parts[0]
-			info, err := module.GetRunningPhpModuleInfo(moduleName)
-			if err != nil || info == nil {
+			// 从nats获取服务信息
+			info, err := nats_util.GetNatsServiceInfo(define.NatsConn, parts[0])
+			if err != nil {
 				return c.Status(404).SendString("Module not found")
+			}
+			port, ok := info.Metadata["port"]
+			if !ok {
+				return c.Status(404).SendString(fmt.Sprintf("cannot find http port of module %s", parts[0]))
 			}
 
 			// 构建目标URL
-			targetURL := fmt.Sprintf("http://127.0.0.1:%d/%s", info.HttpPort, parts[1])
+			targetURL := fmt.Sprintf("http://127.0.0.1:%s/%s", port, parts[1])
 			_, err = url.Parse(targetURL)
 			if err != nil {
 				return c.Status(404).SendString("invalid target url")
 			}
+
 			return proxy.Do(c, targetURL)
 		} else {
 			// 默认是main模块
-			info, err := module.GetRunningPhpModuleInfo(`main`)
-			if err != nil || info == nil {
+			info, err := nats_util.GetNatsServiceInfo(define.NatsConn, "main")
+			if err != nil {
 				return c.Status(404).SendString("Module main not found")
 			}
-			return proxy.Do(c, fmt.Sprintf("http://127.0.0.1:%d%s", info.HttpPort, fullURL))
+			port, ok := info.Metadata["port"]
+			if !ok {
+				return c.Status(404).SendString("cannot find http port of module main")
+			}
+
+			return proxy.Do(c, fmt.Sprintf("http://127.0.0.1:%s%s", port, fullURL))
 		}
 	})
 
@@ -100,22 +114,25 @@ func startFiberProxy() error {
 		}
 		ln, err := tls.Listen("tcp", ":443", cfg)
 		if err != nil {
-			log.Printf(err.Error())
+			log.Println(err.Error())
 		} else {
 			go func() {
 				err := fiberApp.Listener(ln)
 				if err != nil {
-					log.Printf(err.Error())
+					log.Println(err.Error())
 				}
 			}()
 		}
 	}
 
-	return fiberApp.Listen(":80")
+	return fiberApp.Listen(":8080")
 }
 
 func stopFiberProxy() {
-	if err := fiberApp.Shutdown(); err != nil {
-		panic(err)
+	log.Println("fiber proxy stopping...")
+	if err := fiberApp.ShutdownWithTimeout(3); err != nil {
+		log.Println(err)
+		return
 	}
+	log.Println("fiber proxy stopped")
 }

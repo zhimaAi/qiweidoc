@@ -30,8 +30,8 @@ modules:
 	npm install --prefix ./static/management/ && \
     npm --prefix ./static/management/ run build:modules
 
-.PHONY: build
-build:
+.PHONY: all
+all:
 	make app
 	make master
 	make php

@@ -3,11 +3,10 @@
 
 declare(strict_types=1);
 
-use Common\Command\GetCurrentModuleInfo;
-use Common\Command\GrpcGenerateCommand;
 use Common\Command\HelloCommand;
+use Common\Command\InitModuleCommand;
+use Common\Command\StartModuleCommand;
 use Common\Command\TestCommand;
-use Common\Command\TestGrpcCommand;
 use Common\Module;
 
 return [
@@ -15,9 +14,8 @@ return [
         'commands' => [
             'hello' => HelloCommand::class,
             'test' => TestCommand::class,
-            'test-grpc' => TestGrpcCommand::class,
-            'get-current-module-info' => GetCurrentModuleInfo::class,
-            'generate-grpc' => GrpcGenerateCommand::class,
+            'start-module' => StartModuleCommand::class,
+            'init-module' => InitModuleCommand::class,
             ...Module::getRouterProvider()->getConsoleRouters(),
         ],
     ],

@@ -2,7 +2,7 @@
   <!-- 添加成员 -->
   <a-modal
     width="820px"
-    :visible="dialogShow"
+    v-model:open="dialogShow"
     centered
     :confirmLoading="addConfirmLoading"
     @ok="addPeopleHandleOk"
@@ -12,12 +12,12 @@
     <template #title>
         <div class="fx-ac">
             <div>{{title || '选择员工'}}</div>
-            <div class="desc ml10" style="color: #999;font-size: 12px;">可快速对已选择员工新建标签</div>
+            <!-- <div class="desc ml10" style="color: #999;font-size: 12px;">可快速对已选择员工新建标签</div> -->
             <a class="modal_a_title ml10" @click="modalATitle" v-if="group_chat">刷新员工数据</a>
         </div>
     </template>
     <template #footer>
-      <a-button @click="createTag" :disabled="addConfirmLoading">新建员工标签</a-button>
+      <!-- <a-button @click="createTag" :disabled="addConfirmLoading">新建员工标签</a-button> -->
       <a-button @click="addPeopleHandleCancel" :disabled="addConfirmLoading">取消</a-button>
       <a-button type="primary" :loading="addConfirmLoading" @click="addPeopleHandleOk">
         确定
@@ -30,7 +30,7 @@
     <a-spin :spinning="big_spinning">
       <div class="add-people flex">
         <div class="add-left">
-          <a-tabs v-model="tabAcitive">
+          <a-tabs v-model:activeKey="tabAcitive">
             <a-tab-pane :key="1" tab="员工">
               <allStaff
                 :selectData="selectDataAll"
@@ -46,8 +46,8 @@
                 :viewAppointPermissions="viewAppointPermissions"
               ></allStaff>
             </a-tab-pane>
-            <a-tab-pane :key="2" tab="组织架构">
-              <!-- <framework
+            <!-- <a-tab-pane :key="2" tab="组织架构">
+              <framework
                 :selectData="selectData"
                 @setSelect="setSelect"
                 ref="tabRef_2"
@@ -57,7 +57,7 @@
                 :group_chat="group_chat"
                 @setLoading="setLoading"
                 :selectType="selectType"
-              ></framework> -->
+              ></framework>
               <newFramework
                 :selectData="selectDataAll"
                 @setSelect="setSelect"
@@ -73,8 +73,8 @@
                 :viewAppointPermissions="viewAppointPermissions"
               >
               </newFramework>
-            </a-tab-pane>
-            <a-tab-pane :key="3" tab="员工分组">
+            </a-tab-pane> -->
+            <!-- <a-tab-pane :key="3" tab="员工分组"> -->
               <!-- <staff-group
                 :selectData="selectData"
                 @setSelect="setSelect"
@@ -87,7 +87,7 @@
                 :selectType="selectType"
               >
               </staff-group> -->
-              <new-staff-group
+              <!-- <new-staff-group
                 :selectData="selectDataAll"
                 @setSelect="setSelect"
                 :isSession="isSession"
@@ -102,8 +102,8 @@
                 :viewAppointPermissions="viewAppointPermissions"
               >
               </new-staff-group>
-            </a-tab-pane>
-            <a-tab-pane :key="4" tab="成员标签">
+            </a-tab-pane> -->
+            <!-- <a-tab-pane :key="4" tab="成员标签">
               <member-tag
                 :selectData="selectDataAll"
                 @setSelect="setSelect"
@@ -120,7 +120,7 @@
                 :viewAppointPermissions="viewAppointPermissions"
               >
               </member-tag>
-            </a-tab-pane>
+            </a-tab-pane> -->
           </a-tabs>
         </div>
         <div class="add-right">
@@ -155,13 +155,13 @@
                   <div class="left flex">
                     <div class="img-wra">
                       <img
-                        :src="item.avatar"
+                        src="@/assets/default-avatar.png"
                         :class="{'img-c': item.avatar == '/static/image/default-avatar.svg'}"
                         alt=""
                       />
-                        <div class="seat-n-bs"></div>
+                        <!-- <div class="seat-n-bs"></div> -->
                     </div>
-                    <div class="name fx-ac">
+                    <!-- <div class="name fx-ac">
                       <WWOpenData
                         style="display: inline-block"
                         type="userName"
@@ -170,7 +170,8 @@
                       >
                         <span class="wk-black-65-text">{{ item.name }}</span>
                       </WWOpenData>
-                    </div>
+                    </div> -->
+                    <span class="name fx-ac">{{ item.name }}</span>
                   </div>
                   <div class="icon">
                     <a-button
@@ -188,7 +189,7 @@
                       alt=""
                       style="width: 36px; height: 36px;"
                     />
-                    <div class="name fx-ac">
+                    <!-- <div class="name fx-ac">
                       <WWOpenData
                         type="departmentName"
                         :showStatus="showStatus"
@@ -198,7 +199,7 @@
                           item.department_name
                         }}</span>
                       </WWOpenData>
-                    </div>
+                    </div> -->
                   </div>
                   <div class="icon">
                     <a-button
@@ -270,11 +271,11 @@ import allStaff from "./all-staff.vue";
 // import framework from "./framework.vue"
 import newFramework from "./new-framework.vue";
 // import staffGroup from "./staff-group.vue"
-import newStaffGroup from "./new-staff-group.vue";
+// import newStaffGroup from "./new-staff-group.vue";
 // import wxInitFunc from "@/utils/initWxConfig.js";
-import WWOpenData from "@/components/wwOpenData/index";
+// import WWOpenData from "@/components/wwOpenData/index";
 // import { getStaffSeatInfo } from "@/api/workplace.js";
-import memberTag from './member-tag.vue'
+// import memberTag from './member-tag.vue'
 import addTag from './add-tag.vue'
 export default {
   name: "selectStaffNew",
@@ -283,9 +284,9 @@ export default {
     // framework,
     newFramework,
     // staffGroup,
-    newStaffGroup,
-    WWOpenData,
-    memberTag,
+    // newStaffGroup,
+    // WWOpenData,
+    // memberTag,
     addTag
   },
   props: {
@@ -409,9 +410,10 @@ export default {
       return this.addPeopleShow || this.funcShow;
     },
     showStatus() {
-      let status =
-        this.$store.state.user.active_corp.setting_status == 0 ||
-        this.$store.state.user.active_corp.setting_status == 3;
+    //   let status =
+    //     this.$store.state.user.active_corp.setting_status == 0 ||
+    //     this.$store.state.user.active_corp.setting_status == 3;
+      let status = true
       if (status) {
         // getAgentConfig({ url: location.pathname }).then((res) => {
         //   wxInitFunc("", res.data);
@@ -447,6 +449,7 @@ export default {
   methods: {
     //刷新员工数据
     modalATitle() {
+      console.log('刷新')
       this.$refs.tabRef_1.addPeopleSearch();
     },
     // getSeatInfo() {
@@ -466,20 +469,18 @@ export default {
         //if (!this.hasSetEditData) {
         let time = Date.now();
         this.hasSetEditData = true;
-        // console.log(staff);
-        // console.log(this.staffNameMap);
         staff.forEach((i) => {
           i.data_type = 1;
           i.id = time++;
         });
-        this.clearParKey()
+        // this.clearParKey()
         this.selectDataAll = staff;
         this.selectData = this.selectDataAll.slice(0,this.pageStaffSize)
         //}
       }
-      if (!staff || !staff.length) {
-        this.initSetKey()
-      }
+      // if (!staff || !staff.length) {
+      //   this.initSetKey()
+      // }
     },
     dragstart(value) {
       this.oldData = value;
@@ -515,8 +516,7 @@ export default {
     dragover(e) {
       e.preventDefault();
     },
-    setSelect(data) {
-      // console.log(data);
+    setSelect (data) {
       let time = Date.now();
       this.selectDataAll = data.map((el) => {
         el.id = time++;
@@ -536,7 +536,7 @@ export default {
     // 滚动条置顶，清空数据
     setScrollbarClear(){
       this.$nextTick(()=>{
-        if(this.$refs.scrollbarRef){
+        if(this.$refs.scrollbarRef && this.$refs.scrollbarRef.wrap){
           this.$refs.scrollbarRef.wrap.scrollTop = 0
         }
       })
@@ -571,24 +571,26 @@ export default {
       let index = this.selectData.findIndex((el) => el.id === item.id);
       if (this.searchSelectData.length) {
         this.searchSelectData.splice(index, 1);
-        let ids = this.selectData.map((i) => i.staff_id);
-        this.selectData.splice(ids.indexOf(item.staff_id), 1);
+        let ids = this.selectData.map((i) => i.userid);
+        this.selectData.splice(ids.indexOf(item.userid), 1);
 
-        this.selectDataAll.splice(ids.indexOf(item.staff_id), 1);
+        this.selectDataAll.splice(ids.indexOf(item.userid), 1);
       } else {
         this.selectData.splice(index, 1);
         this.selectDataAll.splice(index, 1);
       }
+      console.log('ss', item, type)
       this.$refs["tabRef_1"] &&
         this.$refs["tabRef_1"].setCheck(item, index, type);
-      this.$refs["tabRef_2"] &&
-        this.$refs["tabRef_2"].setCheck(item, index, type);
-      this.$refs["tabRef_3"] &&
-        this.$refs["tabRef_3"].setCheck(item, index, type);
-      this.$refs["tabRef_4"] &&
-        this.$refs["tabRef_4"].setCheck(item, index, type);
+      // this.$refs["tabRef_2"] &&
+      //   this.$refs["tabRef_2"].setCheck(item, index, type);
+      // this.$refs["tabRef_3"] &&
+      //   this.$refs["tabRef_3"].setCheck(item, index, type);
+      // this.$refs["tabRef_4"] &&
+      //   this.$refs["tabRef_4"].setCheck(item, index, type);
     },
     deleteAll() {
+      console.log('ss1', this.selectDataAll)
       this.selectDataAll.forEach((item, index) => {
         this.$refs["tabRef_1"] &&
           this.$refs["tabRef_1"].setCheck(item, index, item.data_type);
@@ -596,9 +598,9 @@ export default {
         //   this.$refs["tabRef_2"].setCheck(item, index, item.data_type);
         // this.$refs["tabRef_3"] &&
         //   this.$refs["tabRef_3"].setCheck(item, index, item.data_type);
-        this.$refs["tabRef_2"] && this.$refs["tabRef_2"].clearCheck();
-        this.$refs["tabRef_3"] && this.$refs["tabRef_3"].clearCheck();
-        this.$refs["tabRef_4"] && this.$refs["tabRef_4"].clearCheck();
+        // this.$refs["tabRef_2"] && this.$refs["tabRef_2"].clearCheck();
+        // this.$refs["tabRef_3"] && this.$refs["tabRef_3"].clearCheck();
+        // this.$refs["tabRef_4"] && this.$refs["tabRef_4"].clearCheck();
       });
       this.selectData = [];
       this.selectDataAll = [];
@@ -612,7 +614,7 @@ export default {
       let arr = this.selectDataAll.filter((i) => i.name.indexOf(e) !== -1);
       this.searchSelectData = arr;
     },
-    addPeopleHandleOk() {
+    addPeopleHandleOk () {
       let selectStaff = [];
       this.selectDataAll.forEach((i) => {
         if (i.data_type === 1) {
@@ -625,12 +627,12 @@ export default {
       let ids = [],
         newArr = [];
       selectStaff.forEach((i) => {
-        if (!ids.includes(i.staff_id)) {
-          ids.push(i.staff_id);
+        if (!ids.includes(i.userid)) {
+          ids.push(i.userid);
           newArr.push(i);
         }
       });
-      this.setOldData(newArr);
+      // this.setOldData(newArr);
       this.$emit("selectStaff", newArr);
       this.$emit("change", newArr);
       if (this.emptyCanClose) {
@@ -650,7 +652,7 @@ export default {
         return;
       }
       this.$api
-        .setLatelyChooseUser({ user_id: newArr.map((i) => i.staff_id) })
+        .setLatelyChooseUser({ user_id: newArr.map((i) => i.userid) })
         .then((res) => {
           this.$refs["tabRef_1"] && this.$refs["tabRef_1"].getOldData();
         });
@@ -668,16 +670,16 @@ export default {
       let ids = [],
         newArr = [];
       selectStaff.forEach((i) => {
-        if (!ids.includes(i.staff_id)) {
-          ids.push(i.staff_id);
+        if (!ids.includes(i.userid)) {
+          ids.push(i.userid);
           newArr.push(i);
         }
       });
       if (!newArr.length) {
         return this.$message.warning('请选择员工')
       }
-      if (newArr.some(i => !i.staff_id)) {
-        return this.$message.warning('选择的员工数据staff_id为空')
+      if (newArr.some(i => !i.userid)) {
+        return this.$message.warning('选择的员工数据userid为空')
       }
       this.$refs.addTagRef.show(newArr)
     },
@@ -697,16 +699,16 @@ export default {
         this.$refs["tabRef_4"] && this.$refs["tabRef_4"].$refs.elTreeRef_2.filter(hideTagName)
       }, 500)
     },
-    initSetKey() {
-      this.$refs["tabRef_2"] && this.$refs["tabRef_2"].clearCheck();
-      this.$refs["tabRef_3"] && this.$refs["tabRef_3"].clearCheck();
-      this.$refs["tabRef_4"] && this.$refs["tabRef_4"].clearCheck()
-    },
-    clearParKey() {
-      this.$refs["tabRef_2"] && this.$refs["tabRef_2"].clearParKey();
-      this.$refs["tabRef_3"] && this.$refs["tabRef_3"].clearParKey();
-      this.$refs["tabRef_4"] && this.$refs["tabRef_4"].clearParKey()
-    },
+    // initSetKey() {
+    //   this.$refs["tabRef_2"] && this.$refs["tabRef_2"].clearCheck();
+    //   this.$refs["tabRef_3"] && this.$refs["tabRef_3"].clearCheck();
+    //   this.$refs["tabRef_4"] && this.$refs["tabRef_4"].clearCheck()
+    // },
+    // clearParKey() {
+    //   this.$refs["tabRef_2"] && this.$refs["tabRef_2"].clearParKey();
+    //   this.$refs["tabRef_3"] && this.$refs["tabRef_3"].clearParKey();
+    //   this.$refs["tabRef_4"] && this.$refs["tabRef_4"].clearParKey()
+    // },
     // 已选择的滚动加载
     scrollLoad(){
       if(this.selectData.length == this.selectDataAll.length) return

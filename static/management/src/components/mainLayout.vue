@@ -32,7 +32,7 @@ const props = defineProps({
 
     ._main-right-block {
         //flex: 1;
-        width: calc(100vw - 256px);
+        width: calc(100vw - 274px);
     }
 }
 </style>

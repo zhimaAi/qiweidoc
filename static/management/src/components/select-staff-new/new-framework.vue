@@ -1,9 +1,3 @@
-<!--
- * @Author: Mango
- * @Date: 2022-09-16 16:00:21
- * @LastEditors: Mango
- * @LastEditTime: 2024-03-18 14:33:16
--->
 <template>
 	<div class="framework">
 		<a-input-search
@@ -12,7 +6,7 @@
 			style="margin-top: -8px;"
 		/>
 		<div style="margin-top: 12px;">
-			<a-radio-group
+			<!-- <a-radio-group
 					v-model="local_bind_type"
 					size="small"
 					@change="sessionCheck"
@@ -26,7 +20,7 @@
 					<a-radio-button :value="2">
 						无席位
 					</a-radio-button>
-				</a-radio-group>
+				</a-radio-group> -->
 				<a-popover  placement="bottom">
 					<template v-slot:content>
 						<div class="sess-check-pro-title">
@@ -48,7 +42,7 @@
 							</div>
 						</div>
 					</template>
-					<a-icon type="exclamation-circle" style="margin-left: 4px;" />
+					<!-- <a-icon type="exclamation-circle" style="margin-left: 4px;" /> -->
 				</a-popover>
 		</div>
 		<div class="tree-wraper">
@@ -60,103 +54,103 @@
 				<a-spin />
 			</div>
 			<a-spin :spinning="spinning">
-				<el-tree
-					show-checkbox
+				<a-tree
+                    checkable
 					:props="props"
-					:check-strictly="true"
+					checkStrictly
 					ref="elTreeRef"
-					node-key="department_id"
-					:load="loadNode"
-					@check-change="checkChange"
-					:filter-node-method="filterNode"
-					lazy
-					:expand-on-click-node="false"
+					:load-data="loadNode"
+                    :tree-data="treeData"
+					v-model:checkedKey="checkChange"
+					:filter-tree-node="filterNode"
 					v-if="showTree"
 				>
-					<div class="custom-tree-node" slot-scope="{node, data}" :class="{'tree-node-30': data.show_more}">
-						<div v-if="!data.is_staff" @click="itemTap(node, data)">{{data.department_name}} ({{data.staff_count}})</div>
-						<div v-else class="staff-wrape" :class="{'padd-b-30': data.show_more}" @click="itemTap(node, data)">
-							<div class="staff-list fx-ac">
-								<div class="i-left fx-ac">
-									<img
-										:src="data.avatar"
-										alt=""
-										class="img"
-										:class="{'img-c': data.avatar == '/static/image/default-avatar.svg'}"
-									>
-									<!-- <div class="seat-bs" v-if="data.is_bind_license"></div>
-									<div class="seat-n-bs" v-else></div> -->
-								</div>
-								<div class="i-right flex">
-									<div class="ri-top fx-ac">
-										<div class="name eliOne fx-ac" style="white-space: normal;">
-											<!-- <WWOpenData style="display:inline-block" type='userName' :showStatus="showStatus" :openid='data.user_id'>
-												<span class="wk-black-65-text">{{ data.name }}</span>
-											</WWOpenData> -->
-											<a-tooltip placement="topLeft">
-												<template v-slot:title>
-													<WWOpenData
-														style="display:inline-block"
-														type='userName'
-														:showStatus="showStatus"
-														:openid='data.user_id'
-													>
-														<span>{{ data.name }}</span>
-													</WWOpenData>
-												</template>
-												<WWOpenData
-													style="display:inline-block;"
-													type='userName'
-													:showStatus="showStatus"
-													:openid='data.user_id'
-												>
-													<span class="eliOne">{{ data.name }}</span>
-												</WWOpenData>
-											</a-tooltip>
-										</div>
-										<div class="nums fx-ac">
-											<div style="color: rgba(0, 0,0 ,.45)">客户数：</div>
-											<div style="color: rgba(0, 0,0 ,.65); font-weight: 500;">{{data.external_total}}</div>
-										</div>
-										<!-- <div class="c-j flex" v-if="data.role == 1">超级管理员</div>
-										<div class="p-t flex" v-if="data.role == 2">普通员工</div> -->
-									</div>
-									<div class="ri-bot fx-ac">
-										<!-- <div style="color: rgba(0, 0,0 .45)">客户数：</div>
-										<div style="color: rgba(0, 0,0 .65)">{{data.external_total}}</div> -->
-                    <div class="seat-bind-box mr5">
-                      <div class="bind-no" v-if="!data.is_bind_license"></div>
-                      <div class="interflow-bind" v-else-if="data.license_type == 2"></div>
-                      <div class="foundation-bind" v-else-if="data.license_type == 1"></div>
-                    </div>
-										<div class="bm eliOne">{{data.alias ? data.alias : '' }}</div>
-										<div class="c-j flex" v-if="data.role == 1">超级管理员</div>
-										<div class="p-t flex" v-if="data.role == 2">普通员工</div>
-									</div>
-								</div>
-							</div>
-							<div class="loading-btn" v-if="data.show_more">
-								<a-button
-									type="dashed"
-									:ref="'loading_id' + data.loading_id"
-									icon="redo"
-									@click.stop="loadMoreTap(node, data)"
-								>
-									点击加载更多
-								</a-button>
-							</div>
-						</div>
-					</div>
-				</el-tree>
+                    <template #title="{ node, data }">
+                        <div class="custom-tree-node" :class="{'tree-node-30': data.show_more}">
+                            <div v-if="!data.is_staff" @click="itemTap(node, data)">{{data.department_name}} ({{data.staff_count}})</div>
+                            <div v-else class="staff-wrape" :class="{'padd-b-30': data.show_more}" @click="itemTap(node, data)">
+                                <div class="staff-list fx-ac">
+                                    <div class="i-left fx-ac">
+                                        <img
+                                            :src="data.avatar"
+                                            alt=""
+                                            class="img"
+                                            :class="{'img-c': data.avatar == '/static/image/default-avatar.svg'}"
+                                        >
+                                        <!-- <div class="seat-bs" v-if="data.is_bind_license"></div>
+                                        <div class="seat-n-bs" v-else></div> -->
+                                    </div>
+                                    <div class="i-right flex">
+                                        <div class="ri-top fx-ac">
+                                            <div class="name eliOne fx-ac" style="white-space: normal;">
+                                                <!-- <WWOpenData style="display:inline-block" type='userName' :showStatus="showStatus" :openid='data.user_id'>
+                                                    <span class="wk-black-65-text">{{ data.name }}</span>
+                                                </WWOpenData> -->
+                                                <!-- <a-tooltip placement="topLeft">
+                                                    <template v-slot:title>
+                                                        <WWOpenData
+                                                            style="display:inline-block"
+                                                            type='userName'
+                                                            :showStatus="showStatus"
+                                                            :openid='data.user_id'
+                                                        >
+                                                            <span>{{ data.name }}</span>
+                                                        </WWOpenData>
+                                                    </template>
+                                                    <WWOpenData
+                                                        style="display:inline-block;"
+                                                        type='userName'
+                                                        :showStatus="showStatus"
+                                                        :openid='data.user_id'
+                                                    >
+                                                        <span class="eliOne">{{ data.name }}</span>
+                                                    </WWOpenData>
+                                                </a-tooltip> -->
+                                            </div>
+                                            <div class="nums fx-ac">
+                                                <div style="color: rgba(0, 0,0 ,.45)">客户数：</div>
+                                                <div style="color: rgba(0, 0,0 ,.65); font-weight: 500;">{{data.external_total}}</div>
+                                            </div>
+                                            <!-- <div class="c-j flex" v-if="data.role == 1">超级管理员</div>
+                                            <div class="p-t flex" v-if="data.role == 2">普通员工</div> -->
+                                        </div>
+                                        <div class="ri-bot fx-ac">
+                                            <!-- <div style="color: rgba(0, 0,0 .45)">客户数：</div>
+                                            <div style="color: rgba(0, 0,0 .65)">{{data.external_total}}</div> -->
+                        <div class="seat-bind-box mr5">
+                        <div class="bind-no" v-if="!data.is_bind_license"></div>
+                        <div class="interflow-bind" v-else-if="data.license_type == 2"></div>
+                        <div class="foundation-bind" v-else-if="data.license_type == 1"></div>
+                        </div>
+                                            <div class="bm eliOne">{{data.alias ? data.alias : '' }}</div>
+                                            <div class="c-j flex" v-if="data.role == 1">超级管理员</div>
+                                            <div class="p-t flex" v-if="data.role == 2">普通员工</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="loading-btn" v-if="data.show_more">
+                                    <a-button
+                                        type="dashed"
+                                        :ref="'loading_id' + data.loading_id"
+                                        icon="redo"
+                                        @click.stop="loadMoreTap(node, data)"
+                                    >
+                                        点击加载更多
+                                    </a-button>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+				</a-tree>
 			</a-spin>
 		</div>
 	</div>
 </template>
 
 <script>
-import api from "@api/staff-manage/index.js";
+// import api from "@api/staff-manage/index.js";
 // import wxInitFunc from "@/utils/initWxConfig.js"
-import WWOpenData from "@/components/wwOpenData/index"
+// import WWOpenData from "@/components/wwOpenData/index"
 export default {
 	name:'',
 	props: [
@@ -171,7 +165,8 @@ export default {
 		'viewAppointPermissions',
 	],
 	data() {
-		return {
+        return {
+            treeData: [],
 			searchParams: {
 				keyword: ''
 			},
@@ -187,7 +182,7 @@ export default {
 				size: 20,
 				department_type: 1,
 			},
-			local_bind_type: 0, //席位绑定状态
+			// local_bind_type: 0, //席位绑定状态
 			staff_list_Loading: false,//全部员工列表
 			staff_list_nomore: true,//全部员工列表没有更多了
 
@@ -222,12 +217,10 @@ export default {
     },
 	},
 	components: {
-		WWOpenData,
+		// WWOpenData,
 	},
 	watch: {
 		// currSelectKeys() {
-		// 	// console.log(this.currSelectKeys);
-		// 	// console.log(this.$refs.elTreeRef.getCheckedNodes());
 		// },
 		'searchParams.keyword'() {
 			this.$refs.elTreeRef.filter(this.searchParams.keyword);
@@ -242,7 +235,8 @@ export default {
 			})
 		},
 	},
-	created() {
+    created () {
+        this.initNode()
 	},
 	methods: {
 		clearCheck() {
@@ -273,13 +267,12 @@ export default {
 			}
 		},
 		//节点筛选
-		filterNode(value, data) {
-			if (!value) return true;
+		filterNode(data) {
 			if (data.department_name) {
-				return data.department_name.indexOf(value) !== -1
+				return data.department_name
 			}
 			if (data.name) {
-				return data.name.indexOf(value) !== -1
+				return data.name
 			}
 		},
 		//节点一项的点击
@@ -296,7 +289,6 @@ export default {
 				//多选
         if (this.currSelectKeys.includes(department_id)) {
           let flag = this.currSelectKeys.findIndex(i => i === department_id)
-          // console.log(flag,'flag');
           if (flag !== -1) {
             this.currSelectKeys.splice(flag, 1)
             this.setTreeKeys()
@@ -309,8 +301,6 @@ export default {
 			// this.setCheckData()
 		},
 		checkChange(item, status) {
-			// console.log(item);
-			// console.log(status);
 			if (status) {
 				if (!this.currSelectKeys.includes(item.department_id)) {
 					this.currSelectKeys.push(item.department_id)
@@ -381,7 +371,9 @@ export default {
 			if (this.isAuthMode) {
 				params.is_auth_mode = 1
 			}
-			return api.getDepartmentList(params).then(res => {
+            // return api.getDepartmentList(params).then(res => {
+            // return setTimeout(() => {
+                let res = {"msg":"成功","res":0,"data":{"list":[{"department_id":"1","department_order":"100000000","department_parent_id":"0","department_name":"武汉铁杵磨针网络科技有限公司","staff_count":26,"child":[{"department_id":"2","department_order":"100000000","department_parent_id":"1","department_name":"测试","child":[{"department_id":"4","department_order":"100000000","department_parent_id":"2","department_name":"测试1","child":[{"department_id":"5","department_order":"100000000","department_parent_id":"4","department_name":"测试11","child":[],"staff_count":1}],"staff_count":2}],"staff_count":4},{"department_id":"3","department_order":"99999000","department_parent_id":"1","department_name":"开发","child":[],"staff_count":9}]}]}}
 				this.spinning = false
 				if (res && res.data && res.data.list) {
 					this.textures_list = res.data.list
@@ -402,16 +394,17 @@ export default {
 					this.department_ids = ids
 					return Promise.resolve(res.data.list)
 				}
-			}).catch(err => {
-				this.spinning = false
-				return Promise.resolve([])
-			})
+            // }, 100);
+			// }).catch(err => {
+			// 	this.spinning = false
+			// 	return Promise.resolve([])
+			// })
 		},
 		//设置最后一个节点的样式
 		setNodeSty() {
 			this.$nextTick(() => {
 				//先重置
-				let conts = document.querySelectorAll('.el-tree-node__content')
+				let conts = document.querySelectorAll('.a-tree-node__content')
 				conts.forEach(i => {
 					i.getElementsByTagName('label')[0].style.marginTop = 0
 				})
@@ -446,33 +439,39 @@ export default {
 			let all_arr = [...data_arr, ...res]
 			this.$refs.elTreeRef.updateKeyChildren(data.par_department_id, all_arr)
 			this.setNodeSty()
-		},
+        },
+        async initNode () {
+            let res = await this.getFrameWorkList()
+            this.treeData = res
+        },
 		//加载更多节点
-		async loadNode(node, resolve) {
-			if (node.level === 0) {
-				let res = await this.getFrameWorkList()
-				return resolve(res);
-			} else {
+        async loadNode (node, resolve) {
+			// if (node.level === 0) {
+            //     let res = await this.getFrameWorkList()
+            //     this.treeData = res
+			// 	return resolve(res);
+			// } else {
 				this.staff_list_nomore = false
-				this.staff_list_params.department_id = node.data.department_id
+				this.staff_list_params.department_id = node.department_id
 
-				this.staff_list_params.page = 1
+                this.staff_list_params.page = 1
 				let res = await this.getUser_get_staff_list()
 				res.forEach((i, index) => {
 					i.child = []
 					i.is_staff = true
-					i.par_department_id = node.data.department_id
+					i.par_department_id = node.department_id
 					i.cur_page = 1
-					i.department_id = node.data.department_id + '_' + i.staff_id
+					i.department_id = node.department_id + '_' + i.staff_id
 					i.loading_id = i.staff_id
 				})
-				let child = node.data.child || []
+				let child = node.child || []
 				if (res[res.length -1]) {
 					res[res.length -1].show_more = !this.staff_list_nomore
 				}
-				resolve([...child, ...res])
+                this.treeData = [...child, ...res]
+				// resolve([...child, ...res])
 				this.setNodeSty()
-			}
+			// }
 		},
 		//获取员工列表
     getUser_get_staff_list() {
@@ -488,7 +487,7 @@ export default {
 			if (this.bind_type) {
 				this.staff_list_params.bind_type = this.bind_type
 			} else {
-				this.staff_list_params.bind_type = this.local_bind_type
+				// this.staff_list_params.bind_type = this.local_bind_type
 			}
 			if (this.group_chat) {
 				this.staff_list_params.group_chat = this.group_chat
@@ -497,7 +496,8 @@ export default {
       if(this.viewAppointPermissions){
         this.staff_list_params.permission_staff_ids = this.viewAppointPermissions
       }
-      return this.$api.user_get_staff_list(this.staff_list_params).then(res => {
+    //   return this.$api.user_get_staff_list(this.staff_list_params).then(res => {
+        let res = {"msg":"成功","res":0,"data":{"pagination":{"curPage":1,"pageSize":20,"total":13,"totalCount":13,"hasNextPage":false},"list":[{"staff_id":"3587","name":"黄思龙","user_id":"woX2IKEAAAstH9Dx0LRajnJjSgmPDbyw","avatar":"/static/image/default-avatar.svg","role":"2","encry_user_id":"","external_total":"0","alias":"","is_bind_license":false,"group":[],"ready_to_bind":1,"license_type":2},{"staff_id":"3451","name":"Felix余鑫","user_id":"woX2IKEAAAm_uUslSAymm573gATC43vw","avatar":"/static/image/default-avatar.svg","role":"2","encry_user_id":"woX2IKEAAAm_uUslSAymm573gATC43vw","external_total":"0","alias":"","is_bind_license":true,"group":[],"ready_to_bind":0,"license_type":"2"},{"staff_id":"3450","name":"stone","user_id":"woX2IKEAAAtvHwkoi2laqJTkWSdSi_cw","avatar":"/static/image/default-avatar.svg","role":"2","encry_user_id":"woX2IKEAAAtvHwkoi2laqJTkWSdSi_cw","external_total":"0","alias":"","is_bind_license":false,"group":[],"ready_to_bind":1,"license_type":2},{"staff_id":"3432","name":"彭建龙1","user_id":"woX2IKEAAAsNjcTJgudtY18D4eeB-GBA","avatar":"/static/image/default-avatar.svg","role":"2","encry_user_id":"woX2IKEAAAsNjcTJgudtY18D4eeB-GBA","external_total":"0","alias":"","is_bind_license":false,"group":[],"ready_to_bind":1,"license_type":2},{"staff_id":"3167","name":"zhanglong","user_id":"woX2IKEAAAKnG6KFdxwZAqi-TJdnADSA","avatar":"/static/image/default-avatar.svg","role":"2","encry_user_id":"woX2IKEAAAKnG6KFdxwZAqi-TJdnADSA","external_total":"0","alias":"","is_bind_license":false,"group":[],"ready_to_bind":1,"license_type":2},{"staff_id":"3149","name":"colson","user_id":"woX2IKEAAA9Y1ZmvLwKCQQe8rYQqd2aQ","avatar":"/static/image/default-avatar.svg","role":"2","encry_user_id":"woX2IKEAAA9Y1ZmvLwKCQQe8rYQqd2aQ","external_total":"0","alias":"","is_bind_license":false,"group":[],"ready_to_bind":1,"license_type":2},{"staff_id":"3100","name":"sizz","user_id":"woX2IKEAAAEN39PCRL-cxrsgBhqdUmMg","avatar":"/static/image/default-avatar.svg","role":"2","encry_user_id":"","external_total":"0","alias":"sizz","is_bind_license":false,"group":[],"ready_to_bind":1,"license_type":2},{"staff_id":"3084","name":"fred","user_id":"woX2IKEAAAcN5qt6p6gBLbFMC0i8VFuQ","avatar":"/static/image/default-avatar.svg","role":"2","encry_user_id":"","external_total":"0","alias":"","is_bind_license":false,"group":[],"ready_to_bind":1,"license_type":2},{"staff_id":"3083","name":"王小鹏测试机","user_id":"woX2IKEAAALLtiAkJFasYV_FiYsCxGEw","avatar":"/static/image/default-avatar.svg","role":"2","encry_user_id":"woX2IKEAAALLtiAkJFasYV_FiYsCxGEw","external_total":"0","alias":"","is_bind_license":false,"group":[],"ready_to_bind":1,"license_type":2},{"staff_id":"2481","name":"钱楚","user_id":"woX2IKEAAAIeC_R9U1gvkb-iAHM9hdcg","avatar":"/static/image/default-avatar.svg","role":"2","encry_user_id":"woX2IKEAAAIeC_R9U1gvkb-iAHM9hdcg","external_total":"0","alias":"","is_bind_license":false,"group":[],"ready_to_bind":1,"license_type":2},{"staff_id":"1893","name":"老贾","user_id":"woX2IKEAAAFNWOLr07oLgsdR5OCJgCkQ","avatar":"/static/image/default-avatar.svg","role":"2","encry_user_id":"woX2IKEAAAFNWOLr07oLgsdR5OCJgCkQ","external_total":"0","alias":"","is_bind_license":false,"group":[],"ready_to_bind":1,"license_type":2},{"staff_id":"1889","name":"王进华","user_id":"woX2IKEAAAzc9fAQaEkE63j_g5SeXo6Q","avatar":"/static/image/default-avatar.svg","role":"2","encry_user_id":"","external_total":"0","alias":"Fox","is_bind_license":false,"group":[],"ready_to_bind":1,"license_type":2},{"staff_id":"1888","name":"时光","user_id":"woX2IKEAAAe7bfgnclYNTM512bBfODtg","avatar":"/static/image/default-avatar.svg","role":"2","encry_user_id":"","external_total":"0","alias":"","is_bind_license":false,"group":[],"ready_to_bind":1,"license_type":2}]}}
         this.staff_list_Loading = false
 				//判断是否有数据
         if (res.data && res.data.list && res.data.list.length) {
@@ -514,13 +514,13 @@ export default {
 					let setCheck = (arr) => {
             res.data.list.forEach(i => {
               if (arr.includes(i.staff_id)) {
-								this.department_ids.forEach(it => {
-									let id = it + '_' + i.staff_id
-									if (!this.currSelectKeys.includes(id)) {
-                		this.currSelectKeys.push(id)
-									}
-								})
-								this.setTreeKeys()
+                this.department_ids.forEach(it => {
+                  let id = it + '_' + i.staff_id
+                  if (!this.currSelectKeys.includes(id)) {
+                      this.currSelectKeys.push(id)
+                  }
+                })
+                this.setTreeKeys()
               }
             })
           }
@@ -530,9 +530,9 @@ export default {
         } else {
 					return Promise.resolve([])
 				}
-      }).catch(err => {
-				return Promise.resolve([])
-			})
+    //   }).catch(err => {
+	// 			return Promise.resolve([])
+	// 		})
     },
 		getCurrStaffList(item) {
       let params = {
@@ -549,7 +549,7 @@ export default {
 			if (this.bind_type) {
 				params.bind_type = this.bind_type
 			} else {
-				params.bind_type = this.local_bind_type
+				// params.bind_type = this.local_bind_type
 			}
 			if (this.group_chat) {
 				params.group_chat = this.group_chat
@@ -740,7 +740,7 @@ export default {
 		bottom: 8px;
 	}
 }
-/deep/.el-tree-node__content{
+/deep/.a-tree-node__content{
 	height: auto;
 	min-height: 26px;
 	width: 100%;

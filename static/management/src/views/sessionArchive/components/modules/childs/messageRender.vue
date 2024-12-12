@@ -14,29 +14,6 @@
                 <img src="@/assets/image/session/load-img-run.png" style="width: 120px;"/>
             </a-tooltip>
         </template>
-        <!--语音-->
-        <template v-else-if="messageInfo.msg_type === 'voice'">
-            <div @click="playingVoice(messageInfo)" class="message-box voice zm-pointer">
-<!--                <a-popover placement="right" overlayClassName="zm-tooltip-popover">-->
-<!--                    <template #content>-->
-<!--                        <div class="pointer" @click="voice2text(message)">转文字</div>-->
-<!--                    </template>-->
-                    <div>
-                        <span> [语音消息] </span>
-                        <img style="width: 16px;" src="@/assets/image/icon-voice.png"/>
-                        <span>{{ formatSeconds(messageInfo.raw_content.play_length) }}</span>
-                    </div>
-<!--                </a-popover>-->
-            </div>
-<!--            <div v-if="messageInfo.vioce2textLoading || messageInfo.vioce_text">-->
-<!--                <div v-if="messageInfo.vioce2textLoading"-->
-<!--                     class="voice-text-show"-->
-<!--                     style="text-align: center;">-->
-<!--                    <a-spin size="small"></a-spin>-->
-<!--                </div>-->
-<!--                <div v-else class="voice-text-show">{{ messageInfo.vioce_text }}</div>-->
-<!--            </div>-->
-        </template>
         <!-- 链接 -->
         <div v-else-if="messageInfo.msg_type === 'link'" class="message-box">
             <span v-if="messageInfo.hasOwnProperty('link_url')">
@@ -64,13 +41,7 @@
                     <a-tooltip v-if="messageInfo.file_is_remove" title="文件已清除">
                         <DownloadOutlined style="color: #CCC;"/>
                     </a-tooltip>
-<!--                    <a-tooltip v-else-if="remaining_size <= 0" :title="getTotalStorageSizeTitle()">-->
-<!--                        <DownloadOutlined style="color: #FB363F;" @click="showBuyFileStorage()"/>-->
-<!--                    </a-tooltip>-->
-<!--                    <a-tooltip v-else-if="downloadFileLimit(messageInfo.msg_content)" title="仅支持下载100M以内的文件">-->
-<!--                        <DownloadOutlined style="color: #FB363F;"/>-->
-<!--                    </a-tooltip>-->
-                    <a v-else-if="messageInfo.msg_content" @click="downloadMsgFile(messageInfo)">
+                    <a v-else-if="messageInfo.msg_content" @click="downloadMsgFile">
                         <DownloadOutlined/>
                     </a>
                     <a-tooltip v-else title="系统正在下载中，稍后再试！">
@@ -83,11 +54,56 @@
         <div v-else-if="messageInfo.msg_type == 'voip_doc_share'" class="message-box">[语音存档]</div>
         <!-- 语音通话 -->
         <div v-else-if="messageInfo.msg_type == 'meeting_voice_call'"
-             class="message-box pointer"
-             @click="playingVoice(messageInfo.msg_content, messageInfo.play_length)">
-            [语音通话]
-            <img style="width: 16px;" src="@/assets/image/icon-voice.png"/>
-            <span>{{ formatSeconds(messageInfo.play_length) }}</span>
+             class="message-box pointer">
+            <div class="zm-flex-center">
+                <template v-if="voicePlaying">
+                    <img src="@/assets/image/icon-voice.gif" class="voice-play-icon"/>
+                    <span class="ml8">语音通话 {{getVoiceCallDuration}}</span>
+                    <a-divider type="vertical"/>
+                    <a-tooltip title="停止播放">
+                        <PauseCircleOutlined @click="playingVoice(messageInfo)" class="icon-btn"/>
+                    </a-tooltip>
+                </template>
+                <template v-else>
+                    <PhoneOutlined class="voice-phone-icon"/>
+                    <span class="ml8">语音通话 {{getVoiceCallDuration}}</span>
+                    <a-divider type="vertical"/>
+                    <a-tooltip title="播放通话">
+                        <PlayCircleOutlined @click="playingVoice(messageInfo)" class="icon-btn"/>
+                    </a-tooltip>
+                </template>
+                <DownloadOutlined @click="downloadMsgFile" class="icon-btn ml8"/>
+            </div>
+        </div>
+        <div v-else-if="messageInfo.msg_type == 'voiptext'"
+             class="message-box">
+            <div class="zm-flex-center">
+                <PhoneOutlined class="voice-phone-icon"/>
+                <span class="ml8">语音通话 {{secondsToDate(messageInfo.raw_content.callduration)}}</span>
+            </div>
+        </div>
+        <!-- 语音消息-->
+        <div v-else-if="messageInfo.msg_type == 'voice'"
+             class="message-box pointer">
+            <div class="zm-flex-center">
+                <template v-if="voicePlaying">
+                    <img src="@/assets/image/icon-voice.gif" class="voice-play-icon"/>
+                    <span class="ml8">语音消息 {{formatSeconds(messageInfo.raw_content.play_length)}}</span>
+                    <a-divider type="vertical"/>
+                    <a-tooltip title="停止播放">
+                        <PauseCircleOutlined @click="playingVoice(messageInfo)" class="icon-btn"/>
+                    </a-tooltip>
+                </template>
+                <template v-else>
+                    <img class="icon-14" src="@/assets/image/icon-voice.png"/>
+                    <span class="ml8">语音消息 {{formatSeconds(messageInfo.raw_content.play_length)}}</span>
+                    <a-divider type="vertical"/>
+                    <a-tooltip title="播放语音">
+                        <PlayCircleOutlined @click="playingVoice(messageInfo)" class="icon-btn"/>
+                    </a-tooltip>
+                </template>
+                <DownloadOutlined @click="downloadMsgFile" class="icon-btn ml8"/>
+            </div>
         </div>
         <!-- 混合消息 -->
         <div v-else class="message-box">[{{ MessageTypeTextMap[messageInfo.msg_type] }}]</div>
@@ -96,10 +112,11 @@
 </template>
 
 <script setup>
-import {ref} from 'vue';
+import {ref, computed} from 'vue';
+import dayjs from 'dayjs';
 import {Modal, message} from 'ant-design-vue';
-import {DownloadOutlined} from '@ant-design/icons-vue';
-import {downloadFile, formatBytes, formatSeconds, getFileIcon, MessageTypeTextMap} from "@/utils/tools";
+import {DownloadOutlined, PlayCircleOutlined, PauseCircleOutlined, PhoneOutlined} from '@ant-design/icons-vue';
+import {downloadFile, formatBytes, secondsToDate, formatSeconds, getFileIcon, MessageTypeTextMap} from "@/utils/tools";
 import BenzAMRRecorder from 'benz-amr-recorder';
 
 const props = defineProps({
@@ -112,57 +129,59 @@ const props = defineProps({
     isSelf: {
         type: Boolean,
         default: false
+    },
+    voicePlaying: {
+        // 播放语音
+        type: Boolean,
+        default: false
     }
 })
 
-const currentAmrMsgId = ref(null)
+const emit = defineEmits(['playVoice'])
 const amrPlayer = ref(null)
 const totalStorage = ref(10)
-const voice2text = (messageInfo) => {
-    messageInfo.vioce2textLoading = true
-    // voice2text({
-    //     crop_int_id: this.corpInterId,
-    //     voice_url: messageInfo.content.content,
-    // }).then(res => {
-    //     messageInfo.vioce_text = res.data || "语音转文字失败"
-    // }).finally(() => {
-    //     messageInfo.vioce2textLoading = false
-    // })
-}
+
+const getVoiceCallDuration = computed(() => {
+    const msg = props.messageInfo
+    if (msg.msg_type === 'meeting_voice_call') {
+        try {
+            let endtime = dayjs(msg?.raw_content?.endtime * 1000)
+            let msgtime = dayjs(msg?.msg_time)
+            let diffInSeconds = endtime.diff(msgtime, 'second'); // 差异的秒数
+            return secondsToDate(diffInSeconds)
+        } catch
+            (e) {
+            console.log('Err:', e)
+        }
+    }
+    return '00:00'
+})
 
 const playingVoice = (msg) => {
     if (!msg.msg_content) {
+        message.error('播放失败，缺少文件！')
         return;
     }
-    try {
-        if (currentAmrMsgId.value === msg.msg_id && amrPlayer.value) {
-            amrPlayer.value.stop()
-            currentAmrMsgId.value = null
-            amrPlayer.value = null
-            return
-        }
-        currentAmrMsgId.value = msg.msg_id
-        amrPlayer.value = new BenzAMRRecorder();
-        amrPlayer.value.initWithUrl(msg.msg_content).then(res => {
-            amrPlayer.value.play()
-        })
-
-    } catch (err) {
-        console.error('播放失败:', err);
-        message.error('播放失败，请检查文件！')
-    }
-}
-
-const stopPlayVoice = () => {
-
+    emit('playVoice', props.messageInfo)
 }
 
 const getTotalStorageSizeTitle = () => {
     return "当前文件存储已超过" + totalStorage + "G，无法下载"
 }
 
-const downloadMsgFile = msg => {
-    downloadFile(msg.msg_content, msg.raw_content.filename)
+const downloadMsgFile = () => {
+    const msg = props.messageInfo
+    switch (msg.msg_type) {
+        case 'file':
+            downloadFile(msg.msg_content, msg.raw_content.filename)
+            break
+        case 'meeting_voice_call':
+            downloadFile(msg.msg_content, `语音通话-${msg.msg_id}.amr`)
+            break
+        case 'voice':
+            downloadFile(msg.msg_content, `语音消息-${msg.msg_id}.amr`)
+            break
+    }
 }
 
 const downloadFileLimit = fileCont => {
@@ -209,7 +228,7 @@ const showBuyFileStorage = () => {
 .message-box {
     display: inline-block;
     background: #FFFFFF;
-    padding: 4px 8px;
+    padding: 8px;
     max-width: 40vw;
     white-space: normal;
     word-break: break-all;
@@ -298,6 +317,21 @@ const showBuyFileStorage = () => {
                 text-align: right;
             }
         }
+    }
+}
+.voice-phone-icon {
+    transform: rotate(90deg);
+    font-size: 14px;
+}
+.voice-play-icon {
+    width: 14px;
+    height: 12px;
+}
+.icon-btn {
+    font-size: 16px;
+    cursor: pointer;
+    &:hover {
+        color: #2475FC;
     }
 }
 </style>

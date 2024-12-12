@@ -27,6 +27,7 @@ return [
                 Group::create()->routes(
                     Route::get('/ping')->action([PublicController::class, 'ping']),
                     Route::get('/info')->action([PublicController::class, 'info']),
+                    Route::post('/broadcast')->action([PublicController::class, 'broadcast']),
                     Route::get('/')->action([PublicController::class, 'frontBuild']),
                     ...Module::getRouterProvider()->getHttpRouters()
                 ),

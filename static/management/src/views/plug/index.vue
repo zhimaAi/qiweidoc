@@ -5,7 +5,8 @@
       <div class="plug-box">
         <div class="plug-item" v-for="(item, index) in lists" :key="index">
           <div class="plug-item-top">
-            <img class="customer-label" :src="defaultImg" alt="">
+            <img class="customer-label" v-if="item.name === 'hint_keywords'" :src="defaultSensitiveWordsImg" alt="">
+            <img class="customer-label" v-else :src="defaultImg" alt="">
             <div class="status-box" v-if="item.enable">
               <img class="enable" src="../../assets/svg/enable.svg" alt="">
               已启用
@@ -42,6 +43,7 @@ import { Modal, message } from 'ant-design-vue'
 import { useRouter } from 'vue-router';
 import { getModules, enableModules, disableModules } from "@/api/company";
 import defaultImg from '@/assets/customer-label.png'
+import defaultSensitiveWordsImg from '@/assets/sensitive-words.png'
 
 const store = useStore()
 const router = useRouter()
@@ -120,7 +122,7 @@ onMounted(() => {
     .plug-item {
       font-family: "PingFang SC";
       width: 358px;
-      height: 150px;
+      height: 170px;
       border-radius: 2px;
       border: 1px solid var(--06, #D9D9D9);
       background: #FFF;
@@ -229,6 +231,12 @@ onMounted(() => {
           font-style: normal;
           font-weight: 400;
           line-height: 22px;
+          word-break: break-all;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
         }
       }
     }

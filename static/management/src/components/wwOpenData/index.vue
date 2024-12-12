@@ -1,22 +1,16 @@
-<!--
- * @Author: Mango
- * @Date: 2022-09-06 15:56:00
- * @LastEditors: Mango
- * @LastEditTime: 2023-05-31 19:28:53
--->
 <template>
-	<div 
-		class="flex" 
+	<div
+		class="flex"
 		:class="{
 			'margin-top-2': showMarginTop2 && !isHttps,
 			'margin-top-4': showMarginTop4 && !isHttps,
 		}"
 	>
 		<ww-open-data
-			:id="id" 
+			:id="id"
 			class="flex"
 			:class="{'eliOne': showEliOne}"
-			:type='type' 
+			:type='type'
 			v-if="showStatus || show"
 			:openid="openid"
 			:style="{width}"
@@ -32,9 +26,9 @@ export default {
 	name:'',
 	props: [
 		'showStatus',
-		'type', 
-		'openid', 
-		'minHeight', 
+		'type',
+		'openid',
+		'minHeight',
 		'showMarginTop2',
 		'showMarginTop4',
 		"showEliOne"
@@ -70,7 +64,7 @@ export default {
 			let ifa = ele.getElementsByTagName('iframe')[0]
 			let width = parseInt(this.width)
 			if (width && width > 0 && this.width !== '100%') {
-				ifa.style.minWidth = parseInt(ifa.style.width) > 0 ? ifa.style.width : this.width 
+				ifa.style.minWidth = parseInt(ifa.style.width) > 0 ? ifa.style.width : this.width
 				ifa.style.minHeight = '19px'
 				if (parseInt(ifa.style.width) > 0) {
 					this.width = ifa.style.width

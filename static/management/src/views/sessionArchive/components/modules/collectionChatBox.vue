@@ -58,7 +58,7 @@
                     </div>
                     <div class="content">
                         <div class="user-name" v-if="item.isSelf">
-                            <span class="msg-time">{{ item.msg_time }}</span>
+                            <span class="msg-time">{{ item.msg_time_show }}</span>
                             <span class="ml8">{{ item.from_detail.name || '...' }}</span>
                             <template v-if="item.from_role != 'Staff'">
                         <span v-if="item?.from_detail?.corp_name"
@@ -73,7 +73,7 @@
                               class="is-corp-tag">@{{ item.from_detail.corp_name }}</span>
                                 <span v-else class="is-wx-tag">@微信</span>
                             </template>
-                            <span class="msg-time">{{ item.msg_time }}</span>
+                            <span class="msg-time">{{ item.msg_time_show }}</span>
                         </div>
                         <MessageRender :messageInfo="item" :isSelf="item.isSelf"/>
                     </div>
@@ -91,6 +91,7 @@ import {groupMessage, sessionMessage} from "@/api/session";
 import ChatUser from "@/views/sessionArchive/components/modules/childs/chatUser.vue";
 import MessageRender from "@/views/sessionArchive/components/modules/childs/messageRender.vue";
 import ChatCollection from './childs/chatCollection.vue';
+import {sessionRole2Text} from "@/utils/tools";
 
 const emit = defineEmits('changeCollect')
 const defaultAvatar = require('@/assets/default-avatar.png')
@@ -188,8 +189,9 @@ const loadData = () => {
             finished.value = true
         }
         items.map((item, index) => {
-            item.msg_time = dayjs(item.msg_time).format('YY/MM/DD HH:mm')
+            item.msg_time_show = dayjs(item.msg_time).format('YY/MM/DD HH:mm')
             item.from_detail = item.from_detail || {}
+            item.from_role = item.from_role.name
             if (item.from_detail?.external_name) {
                 item.from_detail.name = item.from_detail.external_name
             }

@@ -61,6 +61,7 @@ onMounted(() => {
     /**
      * 检测queru参数是否携带指定聊天信息
      */
+    console.log('route.query', route.query)
     if (route.query.group_chat_id) {
         // 跳转指定群聊
         BASE_TYPE.value = 'LOAD_BY_GROUP'

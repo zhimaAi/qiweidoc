@@ -11,34 +11,10 @@ logs:
 rpc:
   listen: tcp://127.0.0.1:6001
 
-nats:
-  listen: nats://nats:4222
-
-# 封装minio上传的插件
-minio:
-  server_address: minio:9000
-  bucket_name: download
-  access_key_id: minioadmin
-  secret_access_key: minioadmin
-
-postgres:
-  host: db
-  port: 5432
-  username: postgres
-  password: postgres
-  database: postgres
-
 # 管理进程的插件
 service:
-  hello:
-    command: echo hello
+  start-module:
+    command: php php/yii start-module
     service_name_in_logs: true
     remain_after_exit: false
-
-  pull-chat-session-message:
-    command: php php/yii pull-chat-session-message
-    service_name_in_logs: true
-    remain_after_exit: true
-    restart_sec: 5
-
 
