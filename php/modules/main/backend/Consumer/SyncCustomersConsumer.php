@@ -49,7 +49,7 @@ class SyncCustomersConsumer
     {
         $limit = 100;
 
-        $staffInfoList = StaffModel::query()->where(['corp_id' => $this->corp->get('id')])->getAll();
+        $staffInfoList = StaffModel::query()->where(['corp_id' => $this->corp->get('id')])->andWhere(["!=", "status", 5])->getAll();
         $staffInfoSplit = arraySplit($staffInfoList->toArray(), 50);
 
         foreach ($staffInfoSplit as $item) {
@@ -111,7 +111,7 @@ class SyncCustomersConsumer
 
                         //所有客户需要更新到标签表
                         foreach ($node["follow_info"]["tag_id"] as $tagNode) {
-                            CustomerTagModel::addCustomerTag($this->corp, $tagNode['id'], $customerModel->get('id'));
+                            CustomerTagModel::addCustomerTag($this->corp, $tagNode, $customerModel->get('id'));
                         }
                     } else {
                         //客户标签更新
@@ -120,11 +120,11 @@ class SyncCustomersConsumer
                         $addTag = array_values(array_diff($newTagList, $customerModel->get('staff_tag_id_list')));
 
                         foreach ($addTag as $tagNode) {
-                            CustomerTagModel::addCustomerTag($this->corp, [$tagNode]['id'] ?? 0, $customerModel->get('id'));
+                            CustomerTagModel::addCustomerTag($this->corp, $tagNode, $customerModel->get('id'));
                         }
 
                         foreach ($removeTag as $tagNode) {
-                            CustomerTagModel::removeCustomerTag($this->corp, [$tagNode]['id'] ?? 0, $customerModel->get('id'));
+                            CustomerTagModel::removeCustomerTag($this->corp, $tagNode, $customerModel->get('id'));
                         }
 
                         $data['add_status'] = 2;

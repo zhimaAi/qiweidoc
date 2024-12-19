@@ -181,7 +181,7 @@ const selectedHandle = async () => {
             .avatar {
                 width: 24px;
                 height: 24px;
-                border-radius: 2px;
+                border-radius: 6px;
                 margin-right: 8px;
             }
         }

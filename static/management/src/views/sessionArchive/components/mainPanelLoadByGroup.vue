@@ -19,7 +19,12 @@
                           @change="groupChange"
                           @totalReport="totalReport"/>
             </DragStretchBox>
-            <ChatBox ref="chatRef" class="session-right-block" :chatInfo="chatInfo" @changeCollect="onChangeCollect" loadType="group"/>
+            <ChatBox ref="chatRef"
+                     mainTab="LOAD_BY_GROUP"
+                     class="session-right-block"
+                     :chatInfo="chatInfo"
+                     @changeCollect="onChangeCollect"
+                     sessionType="group"/>
         </div>
     </div>
 </template>
@@ -107,6 +112,7 @@ const onChangeCollect = (obj) => {
     display: flex;
     flex-direction: column;
     height: calc(100vh - 126px); // 窗口 - 顶部菜单 - 面包屑 - padding（24）
+    border-radius: 6px;
 
     .filter-block {
         flex-shrink: 0;

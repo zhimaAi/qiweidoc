@@ -39,7 +39,11 @@
                             @totalReport="contactTotalReport"/>
                     </DragStretchBox>
                     <div class="right-block">
-                        <ChatBox ref="chatRef" :chatInfo="chatInfo" @changeCollect="onChangeCollect" style="height: 100%;"/>
+                        <ChatBox ref="chatRef"
+                                 mainTab="LOAD_BY_CUSTOMER"
+                                 :chatInfo="chatInfo"
+                                 @changeCollect="onChangeCollect"
+                                 style="height: 100%;"/>
                     </div>
                 </div>
             </div>
@@ -158,6 +162,7 @@ const onChangeCollect = (obj) => {
     display: flex;
     flex-direction: column;
     height: calc(100vh - 126px); // 窗口 - 顶部菜单 - 面包屑 - padding（24）
+    border-radius: 6px;
 
     .filter-block {
         flex-shrink: 0;
@@ -232,6 +237,10 @@ const onChangeCollect = (obj) => {
         :deep(.zm-customize-tabs) {
             .ant-tabs-nav-wrap {
                 height: 42px;
+            }
+            & >.ant-tabs-nav::before {
+                content: '';
+                border-bottom: none;
             }
         }
     }

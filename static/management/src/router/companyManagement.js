@@ -5,13 +5,14 @@ export default [
         component: () => import('../views/companyManagement/staff.vue')
     },
     {
+        //暂未使用
         path: '/companyManagement/seat',
         name: 'companyManagementSeat',
         component: () => import('../views/companyManagement/seat.vue')
     },
     {
-        path: '/groupManagement/index',
-        name: 'groupManagementHome',
-        component: () => import('../views/groupManagement/index.vue')
+        path: '/companyManagement/accounts',
+        name: 'companyManagementAccounts',
+        component: () => import('../views/companyManagement/accounts.vue')
     }
 ]

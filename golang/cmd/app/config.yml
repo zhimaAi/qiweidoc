@@ -21,6 +21,10 @@ http:
       ttl: 300s # 每隔5分钟自动重启进程（不会终止正在处理的请求）
       exec_ttl: 30s  # 请求最长执行时间为30秒，超过就自动重启进程以便结束请求
   middleware: ["headers", "gzip", "static"]
+  uploads:
+    dir: "/tmp"
+    forbid: [".php", ".exe", ".bat", ".sh"]
+    allow: [".png", ".jpeg", ".jpg", ".svg", ".txt"]
   headers:
     response:
       "Cache-Control": "no-cache"

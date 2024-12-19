@@ -143,7 +143,7 @@ class IndexService
     {
         $query = RuleModel::query()->where(['corp_id' => $corp->get('id')]);
 
-        $res = $query->orderBy(['id' => SORT_DESC])->paginate($data['page'] ?? 1, $data['limit'] ?? 10);
+        $res = $query->orderBy(['id' => SORT_DESC])->paginate($data['page'] ?? 1, $data['size'] ?? 10);
 
 
         $allStaffUserIds = [];

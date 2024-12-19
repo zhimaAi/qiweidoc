@@ -4,6 +4,7 @@
 namespace Modules\Main\Model;
 
 use Common\DB\BaseModel;
+use Modules\Main\Enum\EnumUserRoleType;
 use Throwable;
 
 class StaffModel extends BaseModel
@@ -37,6 +38,8 @@ class StaffModel extends BaseModel
             'cst_total' => 'int',
             'chat_status' => 'int',
             'has_conversation' => 'boolean',
+            "role_id" => EnumUserRoleType::class,
+            'can_login' => 'int',
         ];
     }
 

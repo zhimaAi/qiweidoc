@@ -63,6 +63,10 @@ const state = reactive({
         'SessionStatistics'
     ],
 });
+const userInfo = computed(() => {
+    return store.getters.getUserInfo
+})
+
 const lists = computed(() => {
     return store.getters.getModules
 })
@@ -173,6 +177,35 @@ onMounted(() => {
     // const query = route.query
     // state.selectedKeys = [query._key || route?.meta?.selectNav || route.name]
     state.selectedKeys = [route.meta.activeMenuKey || route.name]
+    switch (Number(userInfo.value?.role_id?.value || 0)) {
+        case 1:
+            // 普通员工
+            menus.value = [
+                {
+                    key: 'SessionQualityInspection',
+                    title: '会话质检',
+                    icon: h(MessageOutlined),
+                    subs: [
+                        {key: 'sessionArchiveHome', title: '会话质检', route: '/sessionArchive/index'},
+                        {key: 'sessionArchiveSearch', title: '会话搜索', route: '/sessionArchive/search'}
+                    ]
+                },
+                {
+                    key: 'Systemctl',
+                    title: '系统设置',
+                    icon: h(SettingOutlined),
+                    subs: [
+                        {key: 'systemctlAccount', title: '账号管理', route: '/systemctl/account'},
+                    ]
+                },
+            ]
+            break
+        case 4:
+            // 游客不支持查看系统设置
+            let index = menus.value.findIndex(i => i.key === 'Systemctl')
+            menus.value.splice(index, 1)
+            break
+    }
 })
 </script>
 

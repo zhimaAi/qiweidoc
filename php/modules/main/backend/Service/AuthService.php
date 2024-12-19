@@ -9,6 +9,7 @@ use Firebase\JWT\JWT;
 use LogicException;
 use Modules\Main\DTO\CodeLoginBaseDTO;
 use Modules\Main\DTO\PasswordLoginBaseDTO;
+use Modules\Main\Enum\EnumUserRoleType;
 use Modules\Main\Model\CorpModel;
 use Modules\Main\Model\UserModel;
 use Throwable;
@@ -65,15 +66,30 @@ class AuthService
             throw new LogicException('获取用户登录身份信息失败');
         }
 
+        $accountData = [
+            'corp_id' => $codeLoginDTO->corpId,
+            'userid' => $wechatUserInfo['userid'],
+            'account' => mb_substr($corpInfo->get('id') . "_" . $wechatUserInfo['userid'], 0, 32), //生成一个默认登录用户名
+            'role_id' => EnumUserRoleType::NORMAL_STAFF,
+            'can_login' => 0
+        ];
+
+        //如果当前企业没有超级管理员，把当前创建的账号设置为超级管理员账户
+        $superAdminUser = UserModel::query()->where(['corp_id' => $codeLoginDTO->corpId, "role_id" => EnumUserRoleType::SUPPER_ADMIN->value])->getOne();
+        if (empty($superAdminUser)) {
+            $accountData["role_id"] = EnumUserRoleType::SUPPER_ADMIN->value;
+            $accountData["can_login"] = 1;
+        }
+
         // 获取或创建新用户
         $userInfo = UserModel::firstOrCreate(['and',
             ['corp_id' => $codeLoginDTO->corpId],
             ['userid' => $wechatUserInfo['userid']],
-        ], [
-            'corp_id' => $codeLoginDTO->corpId,
-            'userid' => $wechatUserInfo['userid'],
-            'account' => mb_substr($corpInfo->get('id') . "_" . $wechatUserInfo['userid'], 0, 32), //生成一个默认登录用户名
-        ]);
+        ], $accountData);
+
+        if ($userInfo->get("can_login") == 0) {
+            throw new LogicException("当前账户无登陆权限");
+        }
 
         //生成jwt key
         $jwtKey = self::getJwtKey();
@@ -99,9 +115,19 @@ class AuthService
             throw new LogicException('用户名或密码错误');
         }
 
+        //账户是否可以登陆验证
+        if ($userInfo->get("can_login") == 0) {
+            throw new LogicException("当前账户无登陆权限");
+        }
+
         //验证密码
         if (!password_verify($passwordLoginDTO->password, $userInfo->get('password'))) {
             throw new LogicException('用户名或密码错误');
+        }
+
+        //如果是游客账户登陆，继续验证一下登陆有效期
+        if ($userInfo->get("role_id") == EnumUserRoleType::VISITOR && $userInfo->get("exp_time") > 0 && $userInfo->get("exp_time") < time()) {
+            throw new LogicException('当前账户超过可登陆有效期');
         }
 
         //生成jwt key

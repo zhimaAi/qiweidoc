@@ -13,7 +13,7 @@
             <a-dropdown v-if="loginInfo.id > 0">
                 <div class="user-info-box">
                     <img src="@/assets/default-avatar.png" class="avatar"/>
-                    <span class="ml4">{{ loginInfo.userid }}</span>
+                    <span class="ml4">{{ loginInfo.account || loginInfo.userid }}</span>
                     <DownOutlined class="ml4"/>
                 </div>
                 <template #overlay>

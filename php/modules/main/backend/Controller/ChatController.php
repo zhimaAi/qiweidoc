@@ -6,6 +6,7 @@ namespace Modules\Main\Controller;
 use Common\Controller\BaseController;
 use Exception;
 use Modules\Main\DTO\ChatSession\CollectDTO;
+use Modules\Main\Enum\EnumUserRoleType;
 use Modules\Main\Model\CorpModel;
 use Modules\Main\Service\ChatSessionService;
 use Psr\Http\Message\ResponseInterface;
@@ -22,13 +23,14 @@ class ChatController extends BaseController
     public function getCustomerConversationListByStaff(ServerRequestInterface $request): ResponseInterface
     {
         $currentCorp = $request->getAttribute(CorpModel::class);
+        $currentUserInfo = $request->getAttribute(Authentication::class);
 
         $params = $request->getQueryParams();
         $page = max($params['page'] ?? 1, 1);
         $size = max($params['size'] ?? 10, 1);
         $staffUserid = $params['staff_userid'] ?? '';
 
-        $result = ChatSessionService::getCustomerConversationListByStaff($page, $size, $currentCorp, $staffUserid, $params);
+        $result = ChatSessionService::getCustomerConversationListByStaff($page, $size, $currentCorp,$currentUserInfo, $staffUserid, $params);
 
         return $this->jsonResponse($result);
     }
@@ -165,12 +167,15 @@ class ChatController extends BaseController
     {
         $currentCorp = $request->getAttribute(CorpModel::class);
 
+        $currentUserInfo = $request->getAttribute(Authentication::class);
+
         $params = $request->getQueryParams();
         $page = max($params['page'] ?? 1, 1);
         $size = max($params['size'] ?? 10, 1);
         $conversationId = ($params['conversation_id'] ?? '');
+        $params["users_id"] = $currentUserInfo->get("id");
 
-        $result = ChatSessionService::getMessageListByConversation($page, $size, $currentCorp, $conversationId);
+        $result = ChatSessionService::getMessageListByConversation($page, $size, $currentCorp, $conversationId, $params);
 
         return $this->jsonResponse($result);
     }
@@ -187,7 +192,7 @@ class ChatController extends BaseController
         $size = max($params['size'] ?? 10, 1);
         $groupChatId = ($params['group_chat_id'] ?? '');
 
-        $result = ChatSessionService::getMessageListByGroup($page, $size, $currentCorp, $groupChatId);
+        $result = ChatSessionService::getMessageListByGroup($page, $size, $currentCorp, $groupChatId, $params);
 
         return $this->jsonResponse($result);
     }
@@ -201,7 +206,7 @@ class ChatController extends BaseController
      * @return ResponseInterface
      * @throws Throwable
      */
-    public function getSearch(ServerRequestInterface $request):ResponseInterface
+    public function getSearch(ServerRequestInterface $request): ResponseInterface
     {
         $currentUserInfo = $request->getAttribute(Authentication::class);
 
@@ -209,4 +214,41 @@ class ChatController extends BaseController
 
         return $this->jsonResponse($res);
     }
+
+
+    /**
+     * @param ServerRequestInterface $request
+     * Notes: 获取会话存档展示配置
+     * User: rand
+     * Date: 2024/12/10 16:40
+     * @return ResponseInterface
+     * @throws Throwable
+     */
+    public function getChatConfigInfo(ServerRequestInterface $request): ResponseInterface
+    {
+        $currentCorp = $request->getAttribute(CorpModel::class);
+
+        $res = ChatSessionService::getChatConfigInfo($currentCorp);
+
+        return $this->jsonResponse($res);
+    }
+
+    /**
+     * @param ServerRequestInterface $request
+     * Notes: 设置会话存档展示配置
+     * User: rand
+     * Date: 2024/12/10 16:52
+     * @return ResponseInterface
+     * @throws Throwable
+     */
+    public function saveChatConfig(ServerRequestInterface $request): ResponseInterface
+    {
+        $currentCorp = $request->getAttribute(CorpModel::class);
+
+        ChatSessionService::saveChatConfig($currentCorp, $request->getParsedBody());
+
+        return $this->jsonResponse();
+    }
+
+
 }

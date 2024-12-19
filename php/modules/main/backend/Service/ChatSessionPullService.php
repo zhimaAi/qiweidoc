@@ -122,7 +122,7 @@ class ChatSessionPullService
             $type = $message->get('raw_content')['type'] ?? 2;
             $request['origin_file_name'] = Uuid::uuid4() . ($type == 1 ? '.gif' : '.png');
         } elseif ($message->get('msg_type') == 'meeting_voice_call') {
-            $request['origin_file_name'] = $message->get('raw_content')['voiceid'] . '.amr';
+            $request['origin_file_name'] = $message->get('raw_content')['voiceid'] . '.mp3';
         }
         $res = Yii::getRpcClient()->call('wxfinance.FetchMediaData', $request);
         if (!empty($res['url'])) {

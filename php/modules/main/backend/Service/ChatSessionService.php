@@ -15,10 +15,12 @@ use Modules\Main\Model\ChatConversationsModel;
 use Modules\Main\Model\ChatMessageModel;
 use Modules\Main\Model\CorpModel;
 use Modules\Main\Model\CustomersModel;
+use Modules\Main\Model\CustomerTagModel;
 use Modules\Main\Model\DepartmentModel;
 use Modules\Main\Model\GroupModel;
 use Modules\Main\Model\StaffModel;
 use Modules\Main\Model\UserModel;
+use Modules\Main\Model\UserReadChatDetailModel;
 use Throwable;
 use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -26,11 +28,15 @@ use Yiisoft\Db\Expression\Expression;
 
 class ChatSessionService
 {
+    //可以筛选的消息类型，文本，语音，文件，图片，音视频通话
+    const FilterMsgType = ["text" => "text", "voice" => "voice", "file" => "file", "image" => "image", "voiptext" => ["voiptext", "meeting_voice_call"]];
     /**
      *  按员工查询与客户的会话列表
      */
-    public static function getCustomerConversationListByStaff(int $page, int $size, CorpModel $corp, string $staffUserId, array $search): array
+    public static function getCustomerConversationListByStaff(int $page, int $size, CorpModel $corp,UserModel $user, string $staffUserId, array $search): array
     {
+
+        $arrayCorpInfo = $corp->toArray();
         // 拼接客户信息查询sql
         $customerWhere = "";
         if (!empty($search['keyword'])) {
@@ -51,11 +57,32 @@ class ChatSessionService
             $fromWhere = " and v.from = '{$staffUserId}' ";
         }
 
+        //存在标签筛选，通过标签找一下客户
+        if (!empty($search["tag_ids"])) {
+            //先找符合标签条件的客户ID列表
+            $cstIds = CustomerTagModel::query()->select(["tag_id","rb_iterate(external_userid) as external_userid"])->where(["corp_id"=>$corp->get("id")])->andWhere(["in","tag_id",$search["tag_ids"]])->getAll()->toArray();
+            $external_userids = [];
+            if (!empty($cstIds)) {
+                $external_userids = array_values(array_unique(array_column($cstIds,"external_userid")));
+            }
+            if (!empty($external_userids)) {
+                $allCstList = CustomersModel::query()->select(["external_userid"])->where(["corp_id"=>$corp->get("id")])->andWhere(["in","id",$external_userids])->getAll()->toArray();
+                $whereSql .= " and c.external_userid in ('".implode("','",array_column($allCstList,"external_userid"))."')";
+            }
+        }
+
+        $fields = " v.id, v.last_msg_time, v.updated_at,v.type,v.is_collect,v.collect_reason,v.collect_time, c.external_userid, c.external_name, c.avatar, c.staff_remark, c.corp_name ";
+
+        //查询客户标签列表
+        if (!empty($arrayCorpInfo["show_customer_tag"])) {
+            $fields .= ",c.staff_tag_id_list ";
+        }
+
         // 拼接基础sql
         $offset = ($page - 1) * $size;
         $type = EnumChatConversationType::Single->value;
         $baseSql = /** @lang sql */ <<<SQL
-select v.id, v.last_msg_time, v.updated_at,v.type,v.is_collect,v.collect_reason,v.collect_time, c.external_userid, c.external_name, c.avatar, c.staff_remark, c.corp_name
+select {$fields}
 from main.chat_conversations as v
 inner join main.customers as c on v."from" = c.external_userid and c.corp_id = '{$corp->get('id')}' and c.staff_userid = '{$staffUserId}' {$customerWhere}
 where v.corp_id = '{$corp->get('id')}'
@@ -63,7 +90,7 @@ where v.corp_id = '{$corp->get('id')}'
 
 union all
 
-select v.id, v.last_msg_time, v.updated_at,v.type,v.is_collect,v.collect_reason,v.collect_time, c.external_userid, c.external_name, c.avatar, c.staff_remark, c.corp_name
+select {$fields}
 from main.chat_conversations as v
 inner join main.customers as c on v."to" = c.external_userid and c.corp_id = '{$corp->get('id')}' and c.staff_userid = '{$staffUserId}' {$customerWhere}
 where v.corp_id = '{$corp->get('id')}'
@@ -74,6 +101,58 @@ SQL;
 
         $totalRes = Yii::db()->createCommand($countSql)->queryColumn()[0];
         $listRes = Yii::db()->createCommand($listSql)->queryAll();
+
+        //拿到客户之后，需要获取配置检查一下是否需要展示标签和已读标识
+        if (!empty($arrayCorpInfo["show_is_read"])) {
+            //查询已读标记
+            $readDetailList = UserReadChatDetailModel::query()->where(["users_id"=>$user->get("id")])->andWhere(["in","conversation_id",array_column($listRes,"id")])->getAll()->toArray();
+            $readDetailListIndex = ArrayHelper::index($readDetailList,"conversation_id");
+
+            foreach ($listRes as &$item) {
+                if (array_key_exists($item["id"] ?? 0, $readDetailListIndex)) {
+                    $item["is_read"] = 1;
+                } else {
+                    $item["is_read"] = 0;
+                }
+            }
+        }
+
+        //展示标签
+        if (!empty($arrayCorpInfo["show_customer_tag"]) ) {
+            $allTagGroups = TagsService::customer($corp);
+
+            $allTags = [];
+            foreach ($allTagGroups as $allTagGroup) {
+                foreach ($allTagGroup["tag"] as &$item) {
+                    $item["group_id"] = $allTagGroup["group_id"];
+                }
+                $allTags = array_merge($allTags,$allTagGroup["tag"]??[]);
+            }
+            $allTagIndex = ArrayHelper::index($allTags,"id");
+
+            foreach ($listRes as &$item) {
+
+                $preTag = [];
+                $lastTag = [];
+
+
+                $staff_tag_id_list = json_decode($item["staff_tag_id_list"],true);
+                foreach ($staff_tag_id_list as $tag_id) {
+                    $tagInfo = $allTagIndex[$tag_id]??[];
+                    if (empty($tagInfo)) {
+                        continue;
+                    }
+
+                    if (in_array($tagInfo["group_id"],$arrayCorpInfo["show_customer_tag_config"]["group_ids"])){
+                        $preTag[] = $tagInfo;
+                    } else if (in_array($tagInfo["id"],$arrayCorpInfo["show_customer_tag_config"]["tag_ids"])){
+                        $lastTag[] = $tagInfo;
+                    }
+
+                }
+                $item["tag_data"] = array_merge($preTag,$lastTag);
+            }
+        }
 
         return BaseModel::buildPaginate($page, $size, $totalRes, $listRes);
     }
@@ -365,7 +444,7 @@ SQL;
      * 获取聊天内容
      * @throws Throwable
      */
-    public static function getMessageListByConversation(int $page, int $size, CorpModel $corp, string $conversationId): array
+    public static function getMessageListByConversation(int $page, int $size, CorpModel $corp, string $conversationId,array $params = []): array
     {
         if (empty($conversationId)) {
             throw new LogicException("会话id不能为空");
@@ -377,72 +456,68 @@ SQL;
             throw new LogicException("会话id不合法");
         }
 
-        // 分页获取聊天消息
-        $result = ChatMessageModel::query()
+        $query = ChatMessageModel::query()
             ->where(['and',
                 ['corp_id' => $corp->get('id')],
                 ['conversation_id' => $conversation->get('id')],
-            ])
-            ->orderBy(['seq' => SORT_DESC])
+            ]);
+
+        //存在消息类型过滤
+        if (!empty($params["msg_type"]) && in_array($params["msg_type"], array_keys(self::FilterMsgType))) {
+            if ($params["msg_type"] == "voiptext") {
+                $query->andWhere(["in", "msg_type", self::FilterMsgType[$params["msg_type"] ?? ""] ?? ["_"]]);
+            } else {
+                $query->andWhere(["msg_type" => self::FilterMsgType[$params["msg_type"] ?? ""] ?? "_"]);
+            }
+        }
+
+        //存在消息内容关键字搜索
+        if (!empty($params["msg_content"])){
+            $query->andWhere(["ilike","msg_content",$params["msg_content"]]);
+        }
+
+        // 分页获取聊天消息
+        $result = $query->orderBy(['msg_time' => SORT_DESC])
             ->paginate($page, $size);
         if ($result['items']->isEmpty()) {
             return $result;
         }
 
-        $userA = $userB = [];
-        if ($conversation->get('from_role') == EnumChatMessageRole::Customer) {
-            $userA = CustomersModel::query()
-                ->select(['id', 'avatar', 'gender', 'external_userid', 'external_name', 'staff_remark', 'corp_name'])
-                ->where(['external_userid' => $conversation->get('from')])
-                ->getOne();
-            if (empty($userA)) {
-                $userA = [];
-            } else {
-                $userA = $userA->toArray();
-            }
-
-        } else {
-            $userA = StaffModel::query()
-                ->select(['id', 'name', 'status', 'enable', 'alias', 'main_department'])
-                ->where(['userid' => $conversation->get('from')])
-                ->getOne();
-            $department = DepartmentModel::query()->where(['department_id' => $userA->get('main_department')])->getOne();
-            $userA->append('department_name', $department->get('name'));
-            if (empty($userA)) {
-                $userA = [];
-            } else {
-                $userA = $userA->toArray();
+        $fromUser = [];
+        foreach ($result['items'] as $item) {
+            if ($item->get('from_role') == EnumChatMessageRole::Customer && !array_key_exists($item->get("from"), $fromUser)) {
+                $customer = CustomersModel::query()
+                    ->select(['id', 'avatar', 'gender', 'external_userid', 'external_name', 'staff_remark', 'corp_name'])
+                    ->where(['external_userid' => $item->get('from')])
+                    ->getOne();
+                if (!empty($customer)) {
+                    $fromUser[$customer->get("external_userid")] = $customer->toArray();
+                }
+            } else if ($item->get('from_role') == EnumChatMessageRole::Staff && !array_key_exists($item->get("from"), $fromUser)) {
+                $staff = StaffModel::query()
+                    ->select(['id', 'name', 'status', 'enable', 'alias', 'main_department', 'userid'])
+                    ->where(['userid' => $item->get('from')])
+                    ->getOne();
+                $department = DepartmentModel::query()->where(['department_id' => $staff->get('main_department')])->getOne();
+                $staff->append('department_name', $department->get('name'));
+                if (!empty($staff)) {
+                    $fromUser[$staff->get("userid")] = $staff->toArray();
+                }
             }
         }
 
-        if ($conversation->get('to_role') == EnumChatMessageRole::Customer) {
-            $userB = CustomersModel::query()
-                ->select(['id', 'avatar', 'gender', 'external_userid', 'external_name', 'staff_remark', 'corp_name'])
-                ->where(['external_userid' => $conversation->get('to')])
-                ->getOne();
-            if (empty($userB)) {
-                $userB = [];
-            } else {
-                $userB = $userB->toArray();
-            }
-        } elseif ($conversation->get('to_role') == EnumChatMessageRole::Staff) {
-            $userB = StaffModel::query()
-                ->select(['id', 'name', 'status', 'enable', 'alias', 'main_department'])
-                ->where(['userid' => $conversation->get('to')])
-                ->getOne();
-            $department = DepartmentModel::query()->where(['department_id' => $userB->get('main_department')])->getOne();
-            $userB->append('department_name', $department->get('name'));
-            if (empty($userB)) {
-                $userB = [];
-            } else {
-                $userB = $userB->toArray();
-            }
-        }
 
         // 把相关员工、客户、群聊等信息拼接到消息列表中
         foreach ($result['items'] as $message) {
             /** @var ChatMessageModel $message */
-            $message->append('from_detail',  ($message->get('from') == $conversation->get('from') ? $userA : $userB));
+            $message->set("msg_time", date("Y-m-d H:i:s", strtotime($message->get("msg_time"))));
+            $message->append('from_detail',  $fromUser[$message->get("from")]??[]);
+        }
+
+        //如果开启已读标记
+        if (!empty($corp->get("show_is_read"))) {
+            $filter = ["corp_id"=>$corp->get("id"),"users_id"=>$params["users_id"],"conversation_id"=>$conversationId];
+            UserReadChatDetailModel::firstOrCreate($filter,$filter);
         }
 
         return $result;
@@ -452,7 +527,7 @@ SQL;
      * 根据群聊获取聊天内容
      * @throws Throwable
      */
-    public static function getMessageListByGroup(int $page, int $size, CorpModel $corp, string $groupChatId): array
+    public static function getMessageListByGroup(int $page, int $size, CorpModel $corp, string $groupChatId, array $params): array
     {
         // 判断群聊id
         if (empty($groupChatId)) {
@@ -465,13 +540,29 @@ SQL;
             throw new LogicException('群聊不存在');
         }
 
-        // 根据群聊查找所有相关的聊天记录
-        $result = ChatMessageModel::query()
+        $query = ChatMessageModel::query()
             ->where(['and',
                 ['corp_id' => $corp->get('id')],
-                ['roomid' => $groupChatId],
-            ])
-            ->orderBy(['seq' => SORT_DESC])
+                ['roomid' => $groupChatId]
+            ]);
+
+        //存在消息类型过滤
+        if (!empty($params["msg_type"]) && in_array($params["msg_type"], array_keys(self::FilterMsgType))) {
+            if ($params["msg_type"] == "voiptext") {
+                $query->andWhere(["in", "msg_type", self::FilterMsgType[$params["msg_type"] ?? ""] ?? ["_"]]);
+            } else {
+                $query->andWhere(["msg_type" => self::FilterMsgType[$params["msg_type"] ?? ""] ?? "_"]);
+            }
+        }
+
+        //存在消息内容关键字搜索
+        if (!empty($params["msg_content"])){
+            $query->andWhere(["ilike","msg_content",$params["msg_content"]]);
+        }
+
+
+        // 根据群聊查找所有相关的聊天记录
+        $result = $query->orderBy(['msg_time' => SORT_DESC])
             ->paginate($page, $size);
 
         // 根据聊天记录提取出所有发送者的id集合
@@ -536,6 +627,7 @@ SQL;
 
         // 把消息发送者信息拼接到结果集中
         foreach ($result['items'] as $message) {
+            $message->set("msg_time", date("Y-m-d H:i:s", strtotime($message->get("msg_time"))));
             /** @var ChatMessageModel $message */
             if ($message->get('from_role') == EnumChatMessageRole::Customer) {
                 $t = $customerListMap[$message->get('from')] ?? [];
@@ -839,5 +931,38 @@ SQL;
         }
 
         return $res;
+    }
+
+    /**
+     * @param CorpModel $corp
+     * Notes: 获取会话存档展示配置
+     * User: rand
+     * Date: 2024/12/10 16:50
+     * @return array
+     * @throws Throwable
+     */
+    public static function getChatConfigInfo(CorpModel $corp)
+    {
+        return CorpModel::query()->select(["show_customer_tag", "show_customer_tag_config", "show_is_read"])->where(["id" => $corp->get("id")])->getOne()->toArray();
+    }
+
+    /**
+     * @param CorpModel $corp
+     * @param $data
+     * Notes: 保存会话存档展示配置
+     * User: rand
+     * Date: 2024/12/10 16:54
+     * @return int
+     * @throws Throwable
+     */
+    public static function saveChatConfig(CorpModel $corp, $data)
+    {
+        return CorpModel::query()->where([
+            "id" => $corp->get("id")
+        ])->update([
+            "show_customer_tag" => $data["show_customer_tag"] ?? 0,
+            "show_customer_tag_config" => $data["show_customer_tag_config"] ?? [],
+            "show_is_read" => $data["show_is_read"] ?? 1,
+        ]);
     }
 }

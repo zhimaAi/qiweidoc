@@ -11,6 +11,7 @@ use Common\DB\BaseModel;
 use Common\Yii;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
+use Modules\Main\Enum\EnumUserRoleType;
 use Modules\Main\Service\AuthService;
 use Yiisoft\Auth\IdentityInterface;
 use Yiisoft\Auth\IdentityWithTokenRepositoryInterface;
@@ -32,6 +33,10 @@ class UserModel extends BaseModel implements IdentityInterface, IdentityWithToke
             "password" => 'string',
             "created_at" => 'string',
             "updated_at" => 'string',
+            "role_id" => EnumUserRoleType::class,
+            "exp_time" => 'int',
+            "can_login" => 'int',
+            "description" => 'string',
         ];
     }
 

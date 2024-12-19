@@ -179,7 +179,7 @@ const downloadMsgFile = () => {
             downloadFile(msg.msg_content, `语音通话-${msg.msg_id}.amr`)
             break
         case 'voice':
-            downloadFile(msg.msg_content, `语音消息-${msg.msg_id}.amr`)
+            downloadFile(msg.msg_content, `语音消息-${msg.msg_id}.mp3`)
             break
     }
 }

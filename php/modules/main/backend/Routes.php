@@ -7,6 +7,8 @@ use Common\Job\Consumer;
 use Common\Job\Producer;
 use Common\RouterProvider;
 use Common\Yii;
+use GRPC\Pinger\PingerInterface;
+use Modules\CustomerTag\Controller\TagController;
 use Modules\Main\Command\PullChatSessionMessageCommand;
 use Modules\Main\Consumer\DownloadChatSessionMediasConsumer;
 use Modules\Main\Consumer\QwOpenPushConsumer;
@@ -27,8 +29,12 @@ use Modules\Main\Controller\OpenPushController;
 use Modules\Main\Controller\StaffController;
 use Modules\Main\Controller\TagsController;
 use Modules\Main\Controller\UserController;
+use Modules\Main\Enum\EnumUserRoleType;
 use Modules\Main\Library\Middlewares\CurrentCorpInfoMiddleware;
+use Modules\Main\Library\Middlewares\UserRoleMiddleware;
+use Modules\Main\Model\UserRoleModel;
 use Psr\Http\Message\ServerRequestInterface;
+use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Auth\Middleware\Authentication;
 use Yiisoft\DataResponse\DataResponseFactoryInterface;
 use Yiisoft\DataResponse\Formatter\PlainTextDataResponseFormatter;
@@ -45,15 +51,42 @@ class Routes extends RouterProvider
     public function init(): void
     {
         Producer::dispatchCron(SyncSessionMessageConsumer::class, [], '5 seconds');
-        
+
+        $userRole = UserRoleModel::query()->getAll()->toArray();
+        $userRoleId = array_column($userRole,"id");
+
+        $roleList = [
+            [
+                "id"=>EnumUserRoleType::NORMAL_STAFF->value,
+                "role_name"=>"普通员工"
+            ],[
+                "id"=>EnumUserRoleType::ADMIN->value,
+                "role_name"=>"管理员"
+            ],[
+                "id"=>EnumUserRoleType::SUPPER_ADMIN->value,
+                "role_name"=>"超级管理员"
+            ],[
+                "id"=>EnumUserRoleType::VISITOR->value,
+                "role_name"=>"游客账号"
+            ],
+        ];
+
+        foreach ($roleList as $item) {
+            if (!in_array($item["id"],$userRoleId)){
+                $sql = "INSERT INTO \"main\".\"user_role\" (\"id\",  \"role_name\", \"permission_config\") VALUES ('".$item["id"]."', '".$item["role_name"]."', '[]')";
+                Yii::db()->createCommand($sql)->execute();
+            }
+        }
+
+
         return;
     }
-    
+
     public function getBroadcastRouters(): array
     {
         return [
             Broadcast::event('test')->from('main')->handle(function (string $payload) {
-            
+
             }),
         ];
     }
@@ -129,6 +162,7 @@ class Routes extends RouterProvider
             Group::create("/api")
                 ->middleware(Authentication::class)
                 ->middleware(CurrentCorpInfoMiddleware::class)
+                ->middleware(UserRoleMiddleware::class)
                 ->routes(
                     // 企业相关接口
                     Route::get("/corps/current")->action([CorpController::class, "getCurrentCorpInfo"]),
@@ -136,11 +170,19 @@ class Routes extends RouterProvider
                     Route::post("/corps/session/saveConfig")->action([CorpController::class, "saveConfig"]),
                     Route::put("/corps/current")->action([CorpController::class, "updateConfig"]),
                     Route::get("/corps/callback/event/token/generate")->action([CorpController::class, "generateCallbackEventToken"]),
-                    Route::put("/corps/callback/event/token/save")->action([CorpController::class, "saveCallbackEventToken"]),
+                    Route::put("/corps/callback/event/token/save")->action([CorpController::class, "saveCallbackEventToken"])->disableMiddleware(UserRoleMiddleware::class),
 
                     // 用户相关接口
                     Route::get("/users/current")->action([UserController::class, "getCurrentUserInfo"]),
                     Route::put("/users/current")->action([UserController::class, "updateCurrentUserInfo"]),
+                    Route::get("/demo/users/list")->action([UserController::class, "demoUserList"]),
+                    Route::post("/demo/users/save")->action([UserController::class, "demoUserSave"]),
+                    Route::post("/demo/users/change")->action([UserController::class, "demoUserChangeLogin"]),
+                    Route::post("/demo/users/delete")->action([UserController::class, "demoUserDelete"]),
+
+                    Route::get("/users/role/list")->action([UserController::class, "userRoleList"]),
+
+
 
                     // 群相关的接口
                     Route::get("/groups/sync")->action([GroupController::class, "sync"]),
@@ -153,6 +195,8 @@ class Routes extends RouterProvider
 
                     // 员工相关接口
                     Route::get("/staff/list")->action([StaffController::class, "list"]),
+                    Route::post("/staff/change/login")->action([StaffController::class, "changeLogin"]),
+                    Route::post("/staff/change/role")->action([StaffController::class, "changeRole"]),
 
                     // 部门相关接口
                     Route::get("/department/sync")->action([DepartmentController::class, "sync"]),
@@ -160,12 +204,16 @@ class Routes extends RouterProvider
 
                     // 标签相关的接口
                     Route::get("/tags/staff")->action([TagsController::class, "staff"]),
+                    Route::get('/tags/customer')->action([TagsController::class, "customer"]),
 
                     // 会话存档相关的接口
                     Route::get("/chats/by/staff/customer/conversation/list")->action([ChatController::class, "getCustomerConversationListByStaff"]),
                     Route::get("/chats/by/staff/staff/conversation/list")->action([ChatController::class, "getStaffConversationListByStaff"]),
                     Route::get("/chats/by/staff/room/conversation/list")->action([ChatController::class, "getRoomConversationListByStaff"]),
                     Route::get("/chats/by/customer/staff/conversation/list")->action([ChatController::class, "getStaffConversationListByCustomer"]),
+                    Route::get("/chats/config/info")->action([ChatController::class, "getChatConfigInfo"]),
+                    Route::post("/chats/config/save")->action([ChatController::class, "saveChatConfig"]),
+
 
                     //会话存档 消息相关接口
                     Route::get('/chats/by/conversation/message/list')->action([ChatController::class, 'getMessageListByConversation']),

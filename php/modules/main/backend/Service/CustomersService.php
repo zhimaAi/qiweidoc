@@ -48,7 +48,7 @@ class CustomersService
         }
 
         $query->orderBy(['add_time' => SORT_DESC]);
-        $res = $query->orderBy(['add_time' => SORT_DESC])->paginate($data["page"] ?? 1, $data["limit"] ?? 10);
+        $res = $query->orderBy(['add_time' => SORT_DESC])->paginate($data["page"] ?? 1, $data["size"] ?? 10);
 
         if (!$res["items"]->isEmpty()) {
 
@@ -93,7 +93,7 @@ class CustomersService
                     ];
                 }
                 $item->append("tag_data", $allTagData);
-                $item->append("staff_user_name", $staffUserInfoIndex[$item->get('staff_userid')]['name']);
+                $item->append("staff_user_name", $staffUserInfoIndex[$item->get('staff_userid')]['name'] ?? "");
             }
         }
 

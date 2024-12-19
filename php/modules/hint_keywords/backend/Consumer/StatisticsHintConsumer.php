@@ -143,7 +143,6 @@ class StatisticsHintConsumer
             $page++;
         }
 
-        ddump($statistics_msg_time);
         if (!empty($statistics_msg_time)) {
             //跑完了，更新一下消息时间
             NoticeConfig::query()->where(["corp_id" => $this->corp->get("id")])->update([
@@ -352,7 +351,7 @@ SQL;
         } else if ($msg["msg_type"] === "image" && in_array("qr_code", $rule["target_msg_type"])) {//图片类型，验证一下是否存在二维码
 
             //验证是否为二维码
-            $isQrcode = checkImgIsQrcode("http://127.0.0.1" . $msg["msg_content"]);
+            $isQrcode = checkImgIsQrcode($_ENV['MINIO_URL'] . $msg["msg_content"]);
 
             if ($isQrcode["is_qrcode"]) {
                 $is_checked = 1;
@@ -462,7 +461,7 @@ SQL;
                 $memberList = ArrayHelper::index($groupInfo->toArray()["member_list"]??[],"userid");
 
                 if (array_key_exists($msgInfo["from"],$memberList)) {
-                    $send_msg = "群成员【".$memberList[$msgInfo["from"]]["name"]."】";
+                    $send_msg = "群成员【" . ($memberList[$msgInfo["from"] ?? ""]["name"] ?? "未知昵称") . "】";
                 } else {
                     $send_msg = "群成员";
                 }
@@ -490,6 +489,12 @@ SQL;
                 if (!empty($cstInfo)) {
                     $send_msg .= "与客户【" . ($cstInfo->get("external_name")) . "】";
                 }
+            }
+            $send_msg .= "聊天中发送了" . $hintTypeTitle;
+        } else if ($msgInfo["conversation_type"] == EnumChatConversationType::Internal) {//同事会话
+            $staffInfo = StaffModel::query()->where(["corp_id" => $this->corp->get("id"), "userid" => $msgInfo["to_list"][0] ?? "_"])->getOne();
+            if (!empty($staffInfo)) {
+                $send_msg .= "与员工【" . ($staffInfo->get("name")) . "】";
             }
             $send_msg .= "聊天中发送了" . $hintTypeTitle;
         }

@@ -9,11 +9,13 @@ use Modules\Main\DTO\Corp\InitCorpInfoBaseDTO;
 use Modules\Main\DTO\Corp\SaveCallbackEventTokenBaseDTO;
 use Modules\Main\DTO\Corp\SaveCorpInfoBaseDTO;
 use Modules\Main\DTO\Corp\UpdateCorpConfigBaseDTO;
+use Modules\Main\Enum\EnumUserRoleType;
 use Modules\Main\Model\CorpModel;
 use Modules\Main\Service\CorpService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
+use Yiisoft\Auth\Middleware\Authentication;
 use Yiisoft\DataResponse\DataResponse;
 
 class CorpController extends BaseController

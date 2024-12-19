@@ -5,10 +5,13 @@ namespace Modules\Main\Service;
 
 use Common\Job\Producer;
 use Modules\Main\Consumer\SyncStaffChatConsumer;
+use Modules\Main\Enum\EnumUserRoleType;
 use Modules\Main\Model\CorpModel;
 use Modules\Main\Model\DepartmentModel;
 use Modules\Main\Model\StaffModel;
 use Modules\Main\Model\StaffTagModel;
+use Modules\Main\Model\UserModel;
+use Modules\Main\Model\UserRoleModel;
 use Throwable;
 use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Db\Exception\Exception;
@@ -95,6 +98,10 @@ class StaffService
 
         if (!$res['items']->isEmpty()) {
 
+            //员工角色列表
+            $userRoleList = UserRoleModel::query()->select(["id","role_name"])->getAll()->toArray();
+            $userRoleListIndex = ArrayHelper::index($userRoleList,"id");
+
             // 获取员工标签列表
             $allTagsId = [];
             foreach ($res["items"] as $item) {
@@ -126,6 +133,7 @@ class StaffService
                     }
                 }
                 $item->append('tag_name', $tagName);
+                $item->append('role_info', $userRoleListIndex[$item->get("role_id")->value]);
             }
 
             // 获取部门id和名称的映射
@@ -151,5 +159,96 @@ class StaffService
         $res['last_sync_time'] = $corp->get('sync_staff_time');
 
         return $res;
+    }
+
+    /**
+     * @param CorpModel $corp
+     * @param UserModel $user
+     * @param $data
+     * Notes: 变更账户可登陆状态
+     * User: rand
+     * Date: 2024/12/11 19:46
+     * @return void
+     */
+    public static function changeLogin(CorpModel $corp, UserModel $user, $data): void
+    {
+
+        if (!in_array($user->get("role_id"), [EnumUserRoleType::ADMIN, EnumUserRoleType::SUPPER_ADMIN])) {
+            throw new \Exception("您不是管理员，不可进行此操作");
+        }
+
+        $staffInfo = StaffModel::query()->where(["corp_id" => $corp->get("id"), "id" => $data["id"]])->getOne();
+
+        if (empty($staffInfo)) {
+            throw new \Exception("账号不存在");
+        }
+
+        if ($staffInfo->get("role_id") == EnumUserRoleType::SUPPER_ADMIN && $data["can_login"] == 0) {
+            throw new \Exception("超级管理员不可关闭登陆权限");
+        }
+
+        StaffModel::query()->where(["corp_id" => $corp->get("id"), "id" => $data["id"]])->update([
+            "can_login" => $data["can_login"]
+        ]);
+
+        //继续变更一下用户表
+        $where = ["corp_id" => $corp->get("id"), "userid" => $staffInfo->get("userid")];
+        $update = [
+            "can_login" => $data["can_login"],
+            "role_id"=>$staffInfo->get("role_id")->value
+        ];
+
+        $changeRes = UserModel::query()->where($where)->update($update);
+
+        if (empty($changeRes)) {
+            $update["account"] = $staffInfo->get("userid");
+            UserModel::firstOrCreate($where,array_merge($where,$update));
+        }
+
+        return;
+    }
+
+
+    /**
+     * @param CorpModel $corp
+     * @param UserModel $user
+     * @param $data
+     * Notes: 变更账户角色
+     * User: rand
+     * Date: 2024/12/11 19:46
+     * @return void
+     */
+    public static function changeRole(CorpModel $corp, UserModel $user, $data): void
+    {
+
+        if ($user->get("role_id") !=  EnumUserRoleType::SUPPER_ADMIN) {
+            throw new \Exception("您不是超级管理员，不可进行此操作");
+        }
+
+        $staffInfo = StaffModel::query()->where(["corp_id" => $corp->get("id"), "id" => $data["id"]])->getOne();
+
+        if (empty($staffInfo)) {
+            throw new \Exception("账号不存在");
+        }
+
+        StaffModel::query()->where(["corp_id" => $corp->get("id"), "id" => $data["id"]])->update([
+            "role_id" => $data["role_id"]
+        ]);
+
+        //继续变更一下用户表
+        $where = ["corp_id" => $corp->get("id"), "userid" => $staffInfo->get("userid")];
+        $update = [
+            "can_login" => $staffInfo->get("can_login"),
+            "role_id" => $data["role_id"],
+        ];
+
+        $changeRes = UserModel::query()->where($where)->update($update);
+
+        if (empty($changeRes)) {
+            $update["account"] = $staffInfo->get("userid");
+            UserModel::firstOrCreate($where,array_merge($where,$update));
+        }
+
+        return;
     }
 }

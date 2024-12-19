@@ -76,7 +76,7 @@ import {useStore} from 'vuex';
 import MainHeader from "@/components/mainHeader.vue";
 import MainFooter from "@/components/mainFooter.vue";
 import {checkInit, getCurrentCorp, getCurrentUser, loginByCode, loginByAccount} from "@/api/auth-login";
-import {setAuthToken, setCorpInfo, setUserInfo} from "@/utils/cache";
+import {setAuthToken, setCorpInfo} from "@/utils/cache";
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue';
 import {setCookieAcrossSubdomain} from "@/utils/cookie";
 import {loginHandle} from "@/utils/tools";
@@ -99,7 +99,7 @@ onMounted(async () => {
 })
 
 const localLoginTest = () => {
-    loginAfterHandle('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MywidXNlcmlkIjoiTHVvWWluZ0JpbkZlbiIsImNvcnBfaWQiOiJ3dzVmNDMyYjNhMjRhOWI5ZjEiLCJleHAiOjE3MzQwNTUwMjl9.YSJ8vvmKdk7QbTZsJiqJoERPniOo25n8GviXwauRAX0')
+    loginAfterHandle('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MywidXNlcmlkIjoiTHVvWWluZ0JpbkZlbiIsImNvcnBfaWQiOiJ3dzVmNDMyYjNhMjRhOWI5ZjEiLCJleHAiOjE3MzQxNDUyMjJ9.eBxcd-FtjcB2HJyqxF12WWVYyA4idjeawTR7d3aEkO0')
 }
 
 const onChangeLogin = (type) => {

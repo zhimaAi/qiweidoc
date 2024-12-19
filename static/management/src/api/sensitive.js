@@ -1,11 +1,11 @@
 import request from "@/api/request";
 
 export const keywordsDelete = (data) => {
-    return request.get('/modules/hint_keywords/api/hint/keywords/delete', {params: data})
+    return request.post('/modules/hint_keywords/api/hint/keywords/delete', data)
 }
 
 export const keywordsRuleDelete = (data) => {
-    return request.get('/modules/hint_keywords/api/hint/keywords/rule/delete', {params: data})
+    return request.post('/modules/hint_keywords/api/hint/keywords/rule/delete', data)
 }
 
 export const ruleDetail = (data) => {

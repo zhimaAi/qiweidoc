@@ -59,3 +59,31 @@ export const customersList = (data) => {
 export const customersSync = (data) => {
     return request.get('/api/customers/sync', {params: data})
 }
+
+export const roleList = (data) => {
+    return request.get('/api/users/role/list', {params: data})
+}
+
+export const staffLoginPermChange = (data) => {
+    return request.post('/api/staff/change/login', data)
+}
+
+export const staffRoleChange = (data) => {
+    return request.post('/api/staff/change/role', data)
+}
+
+export const loginAccountList = (data) => {
+    return request.get('/api/demo/users/list', {params: data})
+}
+
+export const saveLoginAccount = (data) => {
+    return request.post('/api/demo/users/save', data)
+}
+
+export const permLoginAccount = (data) => {
+    return request.post('/api/demo/users/change', data)
+}
+
+export const delLoginAccount = (data) => {
+    return request.post('/api/demo/users/delete', data)
+}

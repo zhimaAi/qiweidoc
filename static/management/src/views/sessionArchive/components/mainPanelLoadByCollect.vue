@@ -34,10 +34,12 @@
         </DragStretchBox>
         <div class="session-right-block">
             <div class="content-block">
-                <ChatBox ref="chatRef" class="right-block"
+                <ChatBox ref="chatRef"
+                         mainTab="LOAD_BY_COLLECT"
+                         class="right-block"
                          :chatInfo="chatInfo"
                          @changeCollect="onChangeCollect"
-                         :loadType="main.staffType === 'GROUP_CHAT' ? 'group' : 'session'"/>
+                         :sessionType="main.staffType === 'GROUP_CHAT' ? 'group' : 'session'"/>
             </div>
         </div>
 
@@ -48,7 +50,7 @@
 import {onMounted, reactive, computed, ref, nextTick} from 'vue';
 import {panelWinHandle} from "@/views/sessionArchive/components/panelWinHandle";
 import StaffBox from "@/views/sessionArchive/components/modules/staffAndCustomerBox.vue";
-import ChatBox from "@/views/sessionArchive/components/modules/collectionChatBox.vue";
+import ChatBox from "@/views/sessionArchive/components/modules/chatBox.vue";
 import ContactGroup from "@/views/sessionArchive/components/contacts/collectGroup.vue";
 import DragStretchBox from "@/components/dragStretchBox.vue";
 import {staffList} from "@/api/company";
@@ -212,12 +214,17 @@ const onChangeCollect = (obj) => {
     margin: 12px;
     display: flex;
     height: calc(100vh - 126px); // 窗口 - 顶部菜单 - 面包屑 - padding（24）
+    border-radius: 6px;
 
     > div {
         height: 100%;
     }
 
     :deep(.zm-customize-tabs) {
+        & >.ant-tabs-nav::before {
+            content: '';
+            border-bottom: none;
+        }
         .ant-tabs-nav-wrap {
             height: 42px;
 

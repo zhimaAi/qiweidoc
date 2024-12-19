@@ -13,6 +13,7 @@ use Modules\HintKeywords\Model\NoticeConfig;
 use Modules\HintKeywords\Model\RuleModel;
 use Modules\Main\Consumer\SyncSessionMessageConsumer;
 use Modules\Main\Library\Middlewares\CurrentCorpInfoMiddleware;
+use Modules\Main\Library\Middlewares\UserRoleMiddleware;
 use Modules\Main\Model\CorpModel;
 use Yiisoft\Auth\Middleware\Authentication;
 use Yiisoft\Router\Group;
@@ -31,16 +32,17 @@ class Routes extends RouterProvider
             Group::create("/api/hint/keywords")
                 ->middleware(Authentication::class)
                 ->middleware(CurrentCorpInfoMiddleware::class)
+                ->middleware(UserRoleMiddleware::class)
                 ->routes(
                     Route::get('/list')->action([IndexController::class, 'list']),
-                    Route::get('/delete')->action([IndexController::class, 'delete']),
+                    Route::post('/delete')->action([IndexController::class, 'delete']),
                     Route::post('/save')->action([IndexController::class, 'save']),
                     Route::get('/rule/list')->action([IndexController::class, 'ruleList']),
                     Route::post('/rule/save')->action([IndexController::class, 'ruleSave']),
                     Route::get('/rule/statistics')->action([IndexController::class, 'ruleStatistic']),
                     Route::get('/rule/info')->action([IndexController::class, 'ruleInfo']),
                     Route::get('/rule/detail')->action([IndexController::class, 'ruleDetail']),
-                    Route::get('/rule/delete')->action([IndexController::class, 'ruleDelete']),
+                    Route::post('/rule/delete')->action([IndexController::class, 'ruleDelete']),
                     Route::post('/rule/change/status')->action([IndexController::class, 'changeStatus']),
                     Route::get('/notice/info')->action([IndexController::class, 'noticeInfo']),
                     Route::post('/notice/save')->action([IndexController::class, 'noticeSave']),
@@ -64,7 +66,7 @@ class Routes extends RouterProvider
     {
         // TODO: Implement init() method.
         $corp = CorpModel::query()->getOne();
-        Producer::dispatchCron(StatisticsHintConsumer::class, ["corp"=>$corp], '30 seconds');//敏感词触发统计，30秒一次
+        Producer::dispatchCron(StatisticsHintConsumer::class, ["corp" => $corp], '30 seconds');//敏感词触发统计，30秒一次
 
         return;
     }

@@ -171,7 +171,7 @@ const change = (item) => {
             .avatar {
                 width: 24px;
                 height: 24px;
-                border-radius: 2px;
+                border-radius: 6px;
             }
         }
 

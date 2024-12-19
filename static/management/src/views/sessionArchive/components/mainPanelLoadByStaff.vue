@@ -28,7 +28,11 @@
                       :type="2"/>
         </DragStretchBox>
         <div class="session-right-block">
-            <FilterBoxByStaff class="filter-box" @change="search" :type="main.contactType"/>
+            <FilterBoxByStaff
+                class="filter-box"
+                @change="search"
+                :type="main.contactType"
+                @show-setting-change="showSettingChange"/>
             <div class="content-block">
                 <DragStretchBox
                     :max-width="panelWin.centerMaxWidth"
@@ -64,6 +68,7 @@
                         :default="defaultParams"
                         :callbackData="callbackData"
                         :key="contactCompKey * 100"
+                        :showSettings="showSettings"
                         class="main-content-box"
                     />
                     <ContactGroup
@@ -77,11 +82,13 @@
                         class="main-content-box"
                     />
                 </DragStretchBox>
-                <ChatBox ref="chatRef" class="right-block"
+                <ChatBox ref="chatRef"
+                         class="right-block"
+                         mainTab="LOAD_BY_STAFF"
                          :chatInfo="chatInfo"
                          :currentMsgCancelCollect="currentMsgCancelCollect"
                          @changeCollect="onChangeCollect"
-                         :loadType="main.contactType === 'GROUP' ? 'group' : 'session'"/>
+                         :sessionType="main.contactType === 'GROUP' ? 'group' : 'session'"/>
             </div>
         </div>
 
@@ -90,6 +97,7 @@
 
 <script setup>
 import {onMounted, reactive, computed, ref, nextTick} from 'vue';
+import {useRoute} from 'vue-router'
 import {panelWinHandle} from "@/views/sessionArchive/components/panelWinHandle";
 import StaffBox from "@/views/sessionArchive/components/modules/staffBox.vue";
 import ChatBox from "@/views/sessionArchive/components/modules/chatBox.vue";
@@ -99,8 +107,9 @@ import ContactGroup from "@/views/sessionArchive/components/contacts/group.vue";
 import DragStretchBox from "@/components/dragStretchBox.vue";
 import FilterBoxByStaff from "@/views/sessionArchive/components/filter/filterBoxByStaff.vue";
 import LoadingBox from "@/components/loadingBox.vue";
-import { staffList } from "@/api/company";
-import { useRoute } from 'vue-router'
+import {staffList} from "@/api/company";
+import {getChatConfig} from "@/api/session";
+import {assignData} from "@/utils/tools";
 
 const route = useRoute()
 const props = defineProps({
@@ -129,6 +138,14 @@ const filterData = ref(null)
 const loading = ref(null)
 const defaultStaff = ref(null)
 const contactCompKey = ref(1)
+const showSettings = reactive({
+    show_customer_tag: 0,
+    show_is_read: 0,
+    show_customer_tag_config: {
+        tag_ids: [],
+        group_ids: []
+    }
+})
 const CONTACT_TYPES = [
     'STAFF',
     'CUSTOMER',
@@ -223,6 +240,7 @@ const onCancelCollect = (val) => {
 
 onMounted(() => {
     checkDefaultChat()
+    getShowSettings()
     if (route.query.conversation_type) {
         if (route.query.conversation_type == '1') {
             main.contactType = 'CUSTOMER'
@@ -271,6 +289,13 @@ const checkDefaultChat = async () => {
     }
 }
 
+const getShowSettings = () => {
+    getChatConfig().then(res => {
+        let data = res.data || {}
+        assignData(showSettings, data)
+    })
+}
+
 const search = val => {
     filterData.value = val
     main.contactStaff = null
@@ -316,6 +341,12 @@ const staffTypeChange = () => {
 
 const contactTypeChange = () => {
     loadSessionMsg()
+
+}
+
+const showSettingChange = config => {
+    assignData(showSettings, config)
+    contactCompKey.value += 1
 }
 
 const loadSessionMsg = () => {
@@ -346,6 +377,7 @@ const contactTotalReport = (val, type) => {
     margin: 12px;
     display: flex;
     height: calc(100vh - 126px); // 窗口 - 顶部菜单 - 面包屑 - padding（24）
+    border-radius: 6px;
 
     > div {
         height: 100%;
@@ -354,6 +386,10 @@ const contactTotalReport = (val, type) => {
     :deep(.zm-customize-tabs) {
         .ant-tabs-nav-wrap {
             height: 42px;
+        }
+        & >.ant-tabs-nav::before {
+            content: '';
+            border-bottom: none;
         }
     }
 

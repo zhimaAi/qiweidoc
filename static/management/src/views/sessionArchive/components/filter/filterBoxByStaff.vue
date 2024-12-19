@@ -1,63 +1,69 @@
 <template>
     <div id="session-filter-box"
-         :class="['filter-box',{expand: expand}]"
+         class="filter-box"
     >
-<!--        <a class="expand-box" @click="expandChange">-->
-<!--            <template v-if="expand">-->
-<!--                <UpOutlined />-->
-<!--                <span class="ml4">收起</span>-->
-<!--            </template>-->
-<!--            <template v-else>-->
-<!--                <DownOutlined />-->
-<!--                <span class="ml4">展开</span>-->
-<!--            </template>-->
-<!--        </a>-->
-<!--        <div class="filter-item">-->
-<!--            <span class="filter-item-label">客户标签：</span>-->
-<!--            <div class="filter-item-content">-->
-<!--                <a-popover placement="right">-->
-<!--                    <template #content>-->
-<!--                        <div v-if="filterData.tags.length" style="max-width: 400px;">-->
-<!--                            <a-tag v-for="tag in filterData.tags" :key="tag.id" class="mt8">{{ tag.name }}</a-tag>-->
-<!--                        </div>-->
-<!--                        <div v-else>无</div>-->
-<!--                    </template>-->
-<!--                    <a-input-->
-<!--                        v-model="filterData.keyword"-->
-<!--                        @search="change"-->
-<!--                        allowClear-->
-<!--                        placeholder="请选择客户标签"-->
-<!--                        size="small"/>-->
-<!--                </a-popover>-->
-<!--            </div>-->
-<!--        </div>-->
-        <div class="filter-item">
-            <span class="filter-item-label">{{keywordInfo?.title}}：</span>
-            <div class="filter-item-content">
-                <a-input-search
-                    v-model:value="filterData.keyword"
-                    @search="change"
-                    allowClear
-                    :placeholder="keywordInfo?.placeholder"
-                    size="small"/>
+        <div class="left-block">
+            <div v-if="type === 'CUSTOMER'" class="filter-item">
+                <span class="filter-item-label">客户标签：</span>
+                <div class="filter-item-content">
+                    <a-select
+                        v-model:value="filterData.tag_ids"
+                        @change="change"
+                        @dropdownVisibleChange="showTagModal"
+                        class="tag-select"
+                        mode="multiple"
+                        :open="false"
+                        :max-tag-count="1"
+                        allowClear
+                        placeholder="请选择客户标签"
+                        size="small">
+                        <a-select-option
+                            v-for="tag in filterData.tags"
+                            :key="tag.id"
+                            :value="tag.id">{{tag.name}}</a-select-option>
+                    </a-select>
+                </div>
+            </div>
+            <div class="filter-item">
+                <span class="filter-item-label">{{keywordInfo?.title}}：</span>
+                <div class="filter-item-content">
+                    <a-input-search
+                        v-model:value="filterData.keyword"
+                        @search="change"
+                        allowClear
+                        :placeholder="keywordInfo?.placeholder"
+                        size="small"/>
+                </div>
             </div>
         </div>
+        <div class="right-block">
+            <a-button size="small" @click="showSetting">显示设置</a-button>
+        </div>
+
+        <ShowSettingModal ref="settingRef" @change="showSettingChange"/>
+        <SelectTagModal ref="cstTagRef" @change="filterTagChange" :keys="filterData.tag_ids"/>
     </div>
 </template>
 
 <script setup>
 import {ref, reactive, computed} from 'vue';
 import {UpOutlined, DownOutlined} from '@ant-design/icons-vue';
+import ShowSettingModal from "@/views/sessionArchive/components/modules/childs/showSettingModal.vue";
+import SelectTagModal from "@/components/select-customer-tag/selectTagModal.vue";
 
 const props = defineProps({
     type: {
         type: String, // STAFF CUSTOMER GROUP
     }
 })
-const emit = defineEmits(['change'])
+const emit = defineEmits(['change', 'showSettingChange'])
 const expand = ref(false)
+const settingRef = ref(null)
+const cstTagRef = ref(null)
 const filterData = reactive({
     keyword: '',
+    tags: [],
+    tag_ids: [],
 })
 
 const keywordInfo = computed(() => {
@@ -97,21 +103,48 @@ const ExpandInit = () => {
         expand.value = (val == 1)
     }
 }
+
+const showSetting = () => {
+    settingRef.value.show()
+}
+
+const showSettingChange = config => {
+    emit('showSettingChange', config)
+}
+
+const showTagModal = () => {
+    cstTagRef.value.show()
+}
+
+const filterTagChange = ({tagKeys, tags}) => {
+    filterData.tag_ids = tagKeys
+    filterData.tags = tags
+    change()
+}
 </script>
 
 <style scoped lang="less">
 .filter-box {
     padding-top: 8px;
-    padding-right: 60px;
-    border-bottom: 1px solid rgba(5, 5, 5, 0.06);
+    padding-right: 12px;
+    //border-bottom: 1px solid rgba(5, 5, 5, 0.06);
     background: #FFFFFF;
-    top: 0;
-    left: 57px;
     display: flex;
-    flex-wrap: wrap;
-    z-index: 99;
+    justify-content: space-between;
     height: 42px;
     overflow: hidden;
+
+    > div {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .tag-select {
+        :deep(.ant-select-selection-item-content) {
+            max-width: 66px;
+        }
+    }
+
 
     &.expand {
         height: unset;
@@ -119,6 +152,11 @@ const ExpandInit = () => {
 
     &.labour-session-search {
         padding: 12px 0 4px 0;
+    }
+
+    :deep(.ant-btn) {
+        font-size: 12px;
+        color: #595959;
     }
 
     .filter-item {

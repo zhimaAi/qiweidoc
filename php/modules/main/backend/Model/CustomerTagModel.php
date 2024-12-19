@@ -42,12 +42,15 @@ class CustomerTagModel extends BaseModel
     {
         $tag = self::query()->where(['tag_id' => $tagId])->getOne();
         if (empty($tag)) {
-            self::create(['corp_id' => $corp->get('id'), 'tag_id' => $tagId]);
+            $InsertSql = /** @lang sql */
+                "INSERT INTO main.customer_tag
+(\"corp_id\",\"tag_id\",\"external_userid\") VALUES
+('" . $corp->get('id') . "','{$tagId}',rb_build('{}'))";
+            Yii::db()->createCommand($InsertSql)->execute();
         }
 
         $updateTagCstSql = /** @lang sql */
-            "
-UPDATE customer_tag
+            "UPDATE main.customer_tag
 SET external_userid = rb_or(external_userid, '{" . $customerId . "}'::roaringbitmap)
 WHERE tag_id = '{$tagId}' and corp_id = '{$corp->get('id')}'";
         Yii::db()->createCommand($updateTagCstSql)->execute();
@@ -66,8 +69,7 @@ WHERE tag_id = '{$tagId}' and corp_id = '{$corp->get('id')}'";
     public static function removeCustomerTag(CorpModel $corp, $tagId, $customerId): void
     {
         $updateTagCstSql = /** @lang sql */
-            "
-UPDATE customer_tag
+            "UPDATE main.customer_tag
 set external_userid = rb_remove(external_userid,'{$customerId}')
 WHERE tag_id = '{$tagId}' and corp_id = '{$corp->get('id')}'";
         Yii::db()->createCommand($updateTagCstSql)->execute();

@@ -11,6 +11,7 @@
             </a-tabs>
         </template>
         <div id="session-panel">
+            <SelectTagModal/>
             <LoadingBox v-if="loading"/>
             <Component v-else :is="mainPanelComponent" :defaultParams="defaultParams"/>
         </div>
@@ -27,12 +28,12 @@ import MainPanelLoadByGroup from "./components/mainPanelLoadByGroup.vue";
 import {useRouter, useRoute} from 'vue-router';
 import LoadingBox from "@/components/loadingBox.vue";
 import {copyObj} from "@/utils/tools";
-
+import SelectTagModal from "@/components/select-customer-tag/selectTagModal.vue";
 
 const router = useRouter()
 const route = useRoute()
 const BASE_TYPE = ref('LOAD_BY_STAFF')
-const MAIN_TBBS = [
+const MAIN_TABS = [
     'LOAD_BY_STAFF',
     'LOAD_BY_CUSTOMER',
     'LOAD_BY_GROUP',
@@ -55,7 +56,7 @@ const mainPanelComponent = computed(() => {
 
 onMounted(() => {
     let query = copyObj(route.query)
-    if (route.query.tab && MAIN_TBBS.includes(route.query.tab)) {
+    if (route.query.tab && MAIN_TABS.includes(route.query.tab)) {
         BASE_TYPE.value = route.query.tab
     }
     /**
@@ -128,7 +129,8 @@ const rsetRouteQuery = queryParams => {
         margin-bottom: 0;
     }
 
-    :deep(.ant-input) {
+    :deep(.ant-input),
+    :deep(.ant-select-selection-placeholder){
         font-size: 12px;
     }
 }

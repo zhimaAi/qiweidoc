@@ -3,11 +3,13 @@
 
 namespace Modules\Main\Consumer;
 
+use Modules\Main\Enum\EnumUserRoleType;
 use Modules\Main\Model\ChatConversationsModel;
 use Modules\Main\Model\CorpModel;
 use Modules\Main\Model\DepartmentModel;
 use Modules\Main\Model\StaffModel;
 use Modules\Main\Model\StaffTagModel;
+use Modules\Main\Model\UserModel;
 use Throwable;
 
 /**
@@ -51,7 +53,7 @@ class SyncDepartmentConsumer
     public function syncDepartmentList(): void
     {
         // 查询库里面所有的部门列表
-        $dbDepartmentIds = DepartmentModel::query()->getAll()->map(fn ($item) => $item->get('department_id'))->toArray();
+        $dbDepartmentIds = DepartmentModel::query()->getAll()->map(fn($item) => $item->get('department_id'))->toArray();
 
         $res = $this->corp->getWechatApi("/cgi-bin/department/simplelist");
         if (empty($res['department_id'])) {
@@ -87,6 +89,16 @@ class SyncDepartmentConsumer
                 ['in', 'department_id', $diffDepartment],
             ])
             ->deleteAll();
+
+    //    同步完了，把当前企业的超管账户更新一下
+        $userInfo = UserModel::query()->where(["corp_id"=>$this->corp->get("id"),"role_id"=>EnumUserRoleType::SUPPER_ADMIN->value])->getOne();
+        if (!empty($userInfo)) {
+            StaffModel::query()->where(["corp_id"=>$this->corp->get("id"),"userid"=>$userInfo->get("userid")])->update([
+                "role_id"=>$userInfo->get("role_id")->value,
+                "can_login"=>$userInfo->get("can_login")
+            ]);
+        }
+
     }
 
 
@@ -106,11 +118,13 @@ class SyncDepartmentConsumer
             return;
         }
 
+        //当前部门下的所有员工状态变更一下
+        StaffModel::query()->where(["corp_id" => $this->corp->get('id'), "main_department" => $departmentId])->update([
+            "status" => 0
+        ]);
+
         foreach ($res["userlist"] as $userInfo) {
-            StaffModel::updateOrCreate(['and',
-                ['corp_id' => $this->corp->get('id')],
-                ['userid' => $userInfo['userid']],
-            ], [
+            $updateData = [
                 'corp_id' => $this->corp->get('id'),
                 "userid" => $userInfo["userid"] ?? "",
                 "name" => $userInfo["name"] ?? "",
@@ -126,7 +140,18 @@ class SyncDepartmentConsumer
                 "is_leader_in_dept" => $userInfo["is_leader_in_dept"] ?? [],
                 "direct_leader" => $userInfo["direct_leader"] ?? [],
                 "tag_ids" => $userInfo["tag_ids"] ?? [],
-            ]);
+            ];
+
+            $whereData = ['corp_id' => $this->corp->get('id'),'userid' => $userInfo['userid']];
+            $hisData = StaffModel::query()->where($whereData)->getOne();
+            if (empty($hisData)) {
+                //同步新增的账户，没有登陆权限，普通员工角色
+                $updateData["can_login"] = 0;
+                $updateData["role_id"] = EnumUserRoleType::NORMAL_STAFF;
+                StaffModel::create($updateData);
+            } else {
+                StaffModel::query()->where($whereData)->update($updateData);
+            }
 
             // 从会话数据中查找该客户有没有会话记录
             $conversation = ChatConversationsModel::query()
@@ -140,6 +165,11 @@ class SyncDepartmentConsumer
                 StaffModel::hasConversationSave($this->corp, $userInfo['userid']);
             }
         }
+
+        //状态为0 的变更为已离职
+        StaffModel::query()->where(["corp_id" => $this->corp->get('id'), "main_department" => $departmentId, "status" => 0])->update([
+            "status" => 5
+        ]);
     }
 
     /**

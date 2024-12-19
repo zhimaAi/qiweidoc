@@ -187,6 +187,7 @@ const search = () => {
         padding: 8px 16px;
         display: flex;
         align-items: center;
+        margin-bottom: 2px;
         //border-bottom: 1px solid rgba(0, 0, 0, 0.04);
 
         .left {
@@ -196,7 +197,7 @@ const search = () => {
             .avatar {
                 width: 24px;
                 height: 24px;
-                border-radius: 2px;
+                border-radius: 6px;
                 margin-right: 8px;
             }
         }
@@ -207,7 +208,7 @@ const search = () => {
             .staff-name {
                 font-size: 12px;
                 font-weight: 400;
-                color: rgba(0, 0, 0, 0.85);
+                color: #262626;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;

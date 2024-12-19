@@ -3,7 +3,7 @@ import {message} from 'ant-design-vue';
 import useClipboard from 'vue-clipboard3';
 import router from "@/router";
 import store from "@/store";
-import {setAuthToken, setCorpInfo, setUserInfo} from "@/utils/cache";
+import {getAuthToken, setAuthToken, setCorpInfo, setUserInfo} from "@/utils/cache";
 import {getCurrentCorp, getCurrentUser} from "@/api/auth-login";
 import { setCookieAcrossSubdomain } from "@/utils/cookie";
 import cloneDeep from 'lodash/cloneDeep';
@@ -24,6 +24,11 @@ export const loginHandle = async token => {
         userInfo,
         corpInfo
     }
+}
+
+export const updateUserInfo = () => {
+    const token = getAuthToken()
+    token && loginHandle(token)
 }
 
 export const logoutHandle = () => {

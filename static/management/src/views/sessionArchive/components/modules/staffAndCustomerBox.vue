@@ -272,7 +272,7 @@ const search = () => {
             .avatar {
                 width: 40px;
                 height: 40px;
-                border-radius: 2px;
+                border-radius: 6px;
                 margin-right: 8px;
             }
         }

@@ -364,9 +364,6 @@ const handleOk = async() => {
             params.id = statusId.value;
         }
         let res = await noticeSave(params)
-        if (res.status !== 'success') {
-            return;
-        }
         message.success("已保存")
         emit("update", {
             notice_switch: notice_switch.value,
@@ -374,7 +371,7 @@ const handleOk = async() => {
         await getConfig()
         visible.value = false;
     } catch (error) {
-        message.error(error);
+        typeof error === "string" && message.error(error);
     }
 }
 

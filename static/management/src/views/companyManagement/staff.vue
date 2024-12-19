@@ -1,26 +1,31 @@
 <template>
-    <MainLayout title="员工管理">
+    <MainLayout>
+        <template #navbar>
+            <ZmNavTabs :tabs="StaffAccountsTabs" active="staff"/>
+        </template>
         <div class="container">
             <div class="left-block">
                 <div class="header-box">
                     <div class="operate-box">
-                        <a-button type="primary" :loading="syncing" :icon="h(SyncOutlined)" @click="syncStaff">同步员工和部门</a-button>
+                        <a-button type="primary" :loading="syncing" :icon="h(SyncOutlined)" @click="syncStaff">
+                            同步员工和部门
+                        </a-button>
                     </div>
                     <div class="zm-flex-between mt8">
                         <div>总员工数：<strong>{{ pagination.total }}</strong></div>
                         <div class="zm-filter-box">
-<!--                            <div class="zm-filter-item">-->
-<!--                                <div class="zm-filter-label">授权状态：</div>-->
-<!--                                <a-select-->
-<!--                                    style="width: 90px;" v-model:value="filterData.auth_status" @change="search"-->
-<!--                                >-->
-<!--                                    <a-select-option-->
-<!--                                        v-for="item in authStatus"-->
-<!--                                        :key="item.value"-->
-<!--                                        :value="item.value">{{ item.title }}-->
-<!--                                    </a-select-option>-->
-<!--                                </a-select>-->
-<!--                            </div>-->
+                            <!--                            <div class="zm-filter-item">-->
+                            <!--                                <div class="zm-filter-label">授权状态：</div>-->
+                            <!--                                <a-select-->
+                            <!--                                    style="width: 90px;" v-model:value="filterData.auth_status" @change="search"-->
+                            <!--                                >-->
+                            <!--                                    <a-select-option-->
+                            <!--                                        v-for="item in authStatus"-->
+                            <!--                                        :key="item.value"-->
+                            <!--                                        :value="item.value">{{ item.title }}-->
+                            <!--                                    </a-select-option>-->
+                            <!--                                </a-select>-->
+                            <!--                            </div>-->
                             <div class="zm-filter-item">
                                 <div class="zm-filter-label">搜索员工：</div>
                                 <a-input-search
@@ -48,16 +53,28 @@
                                 <span class="name">{{ record.name }}</span>
                             </div>
                         </template>
+                        <template v-else-if="'role_name' === column.dataIndex">
+                            {{ text }}
+                            <a v-if="showEditRole(record)" @click="showStaffRole(record)" class="ml8">修改</a>
+                        </template>
+                        <template v-else-if="'login_perm' === column.dataIndex">
+                            <a-switch
+                                v-if="record.role_id.value != 3"
+                                v-model:checked="record.login_perm"
+                                @change="loginPermChange(record)"
+                                checked-children="开"
+                                un-checked-children="关"/>
+                        </template>
                         <template v-else-if="'tag_name' === column.dataIndex">
                             <a-popover v-if="text?.length > 3">
                                 <template #content>
-                                    <div v-for="(name, i) in text" :key="i">{{name}}</div>
+                                    <div v-for="(name, i) in text" :key="i">{{ name }}</div>
                                 </template>
-                                <a-tag v-for="(name, i) in text.slice(0, 3)" :key="i">{{name}}</a-tag>
-                                <span>+{{text.length - 3}}</span>
+                                <a-tag v-for="(name, i) in text.slice(0, 3)" :key="i">{{ name }}</a-tag>
+                                <span>+{{ text.length - 3 }}</span>
                             </a-popover>
                             <template v-else>
-                                <a-tag v-for="(name, i) in text" :key="i">{{name}}</a-tag>
+                                <a-tag v-for="(name, i) in text" :key="i">{{ name }}</a-tag>
                             </template>
                         </template>
                     </template>
@@ -71,24 +88,45 @@
                 </a-tabs>
             </div>
         </div>
+
+        <a-modal title="修改角色"
+                 v-model:open="roleModal.visible"
+                 :confirm-loading="roleModal.saving"
+                 @ok="saveStaffRole"
+                 width="500px">
+            <a-form>
+                <a-form-item label="选择角色">
+                    <a-select
+                        v-model:value="roleModal.role"
+                        placeholder="请选择角色">
+                        <template v-for="role in roles">
+                            <a-select-option
+                                v-if="!['游客账号', '超级管理员'].includes(role.role_name)"
+                                :key="role.id">
+                                {{ role.role_name }}
+                            </a-select-option>
+                        </template>
+                    </a-select>
+                </a-form-item>
+            </a-form>
+        </a-modal>
     </MainLayout>
 </template>
 
 <script setup>
-import {onMounted, ref, reactive, h} from 'vue';
+import {onMounted, ref, reactive, h, computed} from 'vue';
+import {useStore} from 'vuex';
 import dayjs from 'dayjs';
-import {message} from 'ant-design-vue';
+import {message, Modal} from 'ant-design-vue';
 import {SyncOutlined} from '@ant-design/icons-vue';
 import MainLayout from "@/components/mainLayout.vue";
-import {staffList, syncDepartmentStaff} from "@/api/company";
+import {roleList, staffList, staffLoginPermChange, staffRoleChange, syncDepartmentStaff} from "@/api/company";
 import StaffDepartmentStruct from "@/components/company/staffDepartmentStruct.vue";
-import {set,get} from "@/utils/cache";
+import {set, get} from "@/utils/cache";
+import ZmNavTabs from "@/components/zmNavTabs.vue";
+import {StaffAccountsTabs} from "@/views/companyManagement/const";
 
-const authStatus = [
-    {title: '全部', value: '',},
-    {title: '未授权', value: 0,},
-    {title: '已授权', value: 1,},
-]
+const store = useStore()
 const columns = [
     {
         dataIndex: 'name',
@@ -115,12 +153,22 @@ const columns = [
         width: 135,
         title: "员工标签",
     },
+    {
+        dataIndex: "role_name",
+        width: 135,
+        title: "角色",
+    },
+    {
+        dataIndex: "login_perm",
+        width: 135,
+        title: "登录",
+    },
 ]
-
 const loading = ref(false)
 const syncing = ref(false)
 const activeKey = ref(1)
 const list = ref([])
+const roles = ref([])
 const pagination = reactive({
     total: 0,
     current: 1,
@@ -133,6 +181,16 @@ const filterData = reactive({
     auth_status: '',
     department_id: '',
 })
+const roleModal = reactive({
+    visible: false,
+    saving: false,
+    record: null,
+    role: null,
+})
+
+const userInfo = computed(() => {
+    return store.getters.getUserInfo
+})
 
 onMounted(() => {
     autoSync()
@@ -140,7 +198,7 @@ onMounted(() => {
 })
 
 const autoSync = () => {
-    if (get('zm:sync:staff:last:day') !=  dayjs().format('YYYYMMDD')) {
+    if (get('zm:sync:staff:last:day') != dayjs().format('YYYYMMDD')) {
         syncStaff()
         set('zm:sync:staff:last:day', dayjs().format('YYYYMMDD'))
     }
@@ -178,7 +236,12 @@ const loadData = () => {
         params.department_id = filterData.department_id
     }
     staffList(params).then(res => {
-        list.value = res.data.items || []
+        let items = res.data.items || []
+        items.map(item => {
+            item.login_perm = (item?.can_login == 1)
+            item.role_name = item?.role_info?.role_name
+        })
+        list.value = items
         pagination.total = Number(res.data.total)
     }).finally(() => {
         loading.value = false
@@ -198,6 +261,65 @@ const departmentChange = select => {
         filterData.department_id = ids.slice(-1)[0]
     }
     search()
+}
+
+const loadRoles = () => {
+    roleList().then(res => {
+        roles.value = res.data || []
+    })
+}
+
+const loginPermChange = record => {
+    let status = record.login_perm ? '开启' : '关闭'
+    const cancel = () => {
+        record.login_perm = !record.login_perm
+    }
+    Modal.confirm({
+        title: '提示',
+        content: `确认${status}该员工登录权限？`,
+        onOk: () => {
+            staffLoginPermChange({
+                id: record.id,
+                can_login: Number(record.login_perm)
+            }).then(() => {
+                message.success(`已${status}`)
+            }).catch(() => {
+                cancel()
+            })
+        },
+        onCancel: () => {
+            cancel()
+        }
+    })
+}
+
+const showStaffRole = record => {
+    if (!roles.value.length) {
+        loadRoles()
+    }
+    roleModal.visible = true
+    roleModal.record = record
+    roleModal.role = record.role_id
+}
+
+const saveStaffRole = () => {
+    roleModal.saving = true
+    staffRoleChange({
+        id: roleModal.record.id,
+        role_id: roleModal.role
+    }).then(() => {
+        loadData()
+        message.success('操作完成')
+        roleModal.visible = false
+    }).finally(() => {
+        roleModal.saving = false
+    })
+}
+
+const showEditRole = record => {
+    // 超级管理员拥有此权限
+    // 且超级管理员不能被修改
+    return userInfo.value?.role_id?.value == 3 && record.role_id.value != 3
 }
 </script>
 

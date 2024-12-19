@@ -99,7 +99,6 @@ import defaultAvatar from "@/assets/customer-label.png"
 import defaultSensitiveWordsAvatar from "@/assets/sensitive-words.png"
 import defaultImg1 from "@/assets/image/func-plug-1.png"
 import defaultImg2 from "@/assets/image/func-plug-2.png"
-import defaultImg3 from "@/assets/image/func-plug-3.png"
 import defaultImg21 from "@/assets/image/func-plug-2-1.png"
 import defaultImg22 from "@/assets/image/func-plug-2-2.png"
 import defaultImg23 from "@/assets/image/func-plug-2-3.png"
@@ -107,8 +106,7 @@ import defaultImg24 from "@/assets/image/func-plug-2-4.png"
 
 const defaultImgs = ref([
     defaultImg1,
-    defaultImg2,
-    defaultImg3
+    defaultImg2
 ])
 const store = useStore()
 const route = useRoute()

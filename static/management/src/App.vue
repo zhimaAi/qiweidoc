@@ -5,11 +5,17 @@
 </template>
 
 <script setup>
+import {onMounted} from 'vue';
 import zhCN from 'ant-design-vue/es/locale/zh_CN';
 import dayjs from 'dayjs';
 import 'dayjs/locale/zh-cn';
+import {updateUserInfo} from "@/utils/tools";
 
 dayjs.locale('zh-cn');
+
+onMounted(() => {
+    updateUserInfo()
+})
 </script>
 <script >
 // 解决ERROR ResizeObserver loop completed with undelivered notifications.

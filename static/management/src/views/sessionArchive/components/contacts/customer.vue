@@ -15,28 +15,40 @@
                 <img v-else class="avatar" src="@/assets/default-avatar.png"/>
             </div>
             <div class="right">
-                <div class="flex-between" :title="item.external_name+'@'+(item.corp_name || '微信')">
+                <div class="zm-flex-between" :title="item.external_name+'@'+(item.corp_name || '微信')">
                     <div class="userinfo">
-                        <div class="user-info-left">
-                            <span v-if="item.is_new_user == 1" class="is-new-tag">新</span>
-                            <div class="user-name">
-                                {{ item.external_name || '...' }}
-                            </div>
-                            <div :class="['corp-name ml4',{'is-wx': ! item.corp_name ||  item.corp_name === '微信'}]">
-                                @{{ item.corp_name || '微信' }}
-                            </div>
+                        <span v-if="item.is_new_user == 1" class="is-new-tag">新</span>
+                        <div class="user-name">
+                            {{ item.external_name || '...' }}
                         </div>
-                        <div class="collection" v-if="item.is_collect">
-                            <img class="chat-collection-icon" :src="require('@/assets/svg/is_collect.svg')" @click="onCollection(item)" />
+                        <div :class="['corp-name ml4',{'is-wx': ! item.corp_name ||  item.corp_name === '微信'}]">
+                            @{{ item.corp_name || '微信' }}
                         </div>
                     </div>
+                    <img v-if="item.is_collect" class="icon-12" src="@/assets/svg/is_collect.svg" @click="onCollection(item)" />
                 </div>
-                <div class="flex-between">
+                <div class="zm-flex-between">
                     <div class="last-msg">
                         <img class="icon-14" src="@/assets/image/icon-message.png"/>
                         <span class="ml4">{{ item.last_msg_date }}</span>
                     </div>
+                    <a-tooltip
+                        v-if="showSettings?.show_is_read == 1 && item.is_read > 0"
+                        title="客户的消息已读后，给客户的会话加一个已读的标识">
+                       <div class="zm-flex-center">
+                           <img class="icon-12" src="@/assets/image/icon-read.png"/>
+                           <span class="ml4">已读</span>
+                       </div>
+                    </a-tooltip>
                 </div>
+                <a-tooltip v-if="showSettings?.show_customer_tag == 1 && item.tag_data.length > 0">
+                    <template #title>
+                        <a-tag v-for="tag in item.tag_data" :key="tag.id" style="color: #FFF;margin: 4px;">{{ tag.name }}</a-tag>
+                    </template>
+                    <div class="cst-tag-list mt4">
+                        <a-tag v-for="tag in item.tag_data.slice(0, 5)" :key="tag.id">{{ tag.name }}</a-tag>
+                    </div>
+                </a-tooltip>
             </div>
         </div>
         <a-empty v-if="finished && list.length < 1" description="暂无数据" style="margin-top: 60px;"/>
@@ -64,6 +76,9 @@ const props = defineProps({
         type: Object,
     },
     callbackData: {
+        type: Object
+    },
+    showSettings: {
         type: Object
     }
 })
@@ -140,6 +155,9 @@ const loadData = () => {
     if (props.filterData?.keyword) {
         params.keyword = props.filterData.keyword
     }
+    if (props.filterData?.tag_ids && props.filterData.tag_ids.length > 0) {
+        params.tag_ids = props.filterData.tag_ids
+    }
     staffCstSessions(params).then(res => {
         let data = res.data || {}
         let {items, total} = data
@@ -211,6 +229,7 @@ const change = (item) => {
     if (isSelected(item)) {
         return
     }
+    item && (item.is_read = 1)
     selected.value = item
     emit("change", item)
 }
@@ -222,7 +241,6 @@ const change = (item) => {
         .userinfo {
             display: flex;
             align-items: center;
-            justify-content: space-between;
             overflow: hidden;
             width: 100%;
 
@@ -240,9 +258,15 @@ const change = (item) => {
             }
         }
     }
-}
-.collection {
-    width: 12px;
-    margin-right: 8px;
+
+    .cst-tag-list {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        :deep(.ant-tag) {
+            color: #000000a6;
+            font-size: 10px;
+        }
+    }
 }
 </style>

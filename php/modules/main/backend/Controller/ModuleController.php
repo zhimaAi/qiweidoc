@@ -6,6 +6,7 @@ use Common\Broadcast;
 use Common\Controller\BaseController;
 use Common\Module;
 use LogicException;
+use Modules\Main\Enum\EnumUserRoleType;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Yiisoft\Auth\Middleware\Authentication;

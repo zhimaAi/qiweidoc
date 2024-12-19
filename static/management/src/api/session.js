@@ -55,3 +55,11 @@ export const chatCollect = (data) => {
 export const chatUnCollect = (data) => {
     return request.get("/sessionArchive/chat/chat-un-collect", {params: data})
 }
+
+export const getChatConfig = (data) => {
+    return request.get("/api/chats/config/info", {params: data})
+}
+
+export const setChatConfig = (data) => {
+    return request.post("/api/chats/config/save", data)
+}

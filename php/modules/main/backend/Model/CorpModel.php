@@ -44,6 +44,9 @@ class CorpModel extends BaseModel
             "sync_staff_time" => 'string',
             "sync_group_time" => 'string',
             "sync_customer_time" => 'string',
+            "show_customer_tag" => 'int',
+            "show_customer_tag_config" => 'array',
+            "show_is_read" => 'int'
         ];
     }
 
@@ -250,6 +253,6 @@ class CorpModel extends BaseModel
             $request['params'] = $params;
         }
 
-        return Yii::getDefaultRpcClient()->call('httpbatch.Request', $input);
+        return Yii::getRpcClient()->call('httpbatch.Request', $input);
     }
 }

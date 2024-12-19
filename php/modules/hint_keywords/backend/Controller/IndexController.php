@@ -49,7 +49,7 @@ class IndexController extends BaseController
     {
         $corp = $request->getAttribute(CorpModel::class);
 
-        IndexService::delete($corp, $request->getQueryParams());
+        IndexService::delete($corp, $request->getParsedBody());
 
         return $this->jsonResponse();
     }
@@ -196,7 +196,7 @@ class IndexController extends BaseController
     {
         $corp = $request->getAttribute(CorpModel::class);
 
-        $params = $request->getQueryParams();
+        $params = $request->getParsedBody();
 
         IndexService::ruleDelete($corp, $params);
 
