@@ -19,6 +19,12 @@ const ModuleConfig = {
     group_chat_stat: {
         buildOutputPath: '/php/modules/group_chat_stat/public/build/',
     },
+    timeout_reply_single: {
+        buildOutputPath: '/php/modules/timeout_reply_single/public/build/',
+    },
+    timeout_reply_group: {
+        buildOutputPath: '/php/modules/timeout_reply_group/public/build/',
+    },
 }
 
 module.exports = ModuleConfig;

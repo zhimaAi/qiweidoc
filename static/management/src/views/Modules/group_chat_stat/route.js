@@ -5,7 +5,7 @@ export default [
     },
     {
         path: '/module/group-chat-stat/index',
-        name: 'GroupChatStatInex',
+        name: 'GroupChatStatIndex',
         component: () => import('@/views/Modules/group_chat_stat/index.vue')
     },
     {

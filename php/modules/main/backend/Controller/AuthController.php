@@ -4,6 +4,7 @@
 namespace Modules\Main\Controller;
 
 use Common\Controller\BaseController;
+use Common\Yii;
 use LogicException;
 use Modules\Main\DTO\CodeLoginBaseDTO;
 use Modules\Main\DTO\PasswordLoginBaseDTO;
@@ -24,6 +25,8 @@ class AuthController extends BaseController
 
         $jwtToken = AuthService::generateJwtByCallbackAuthCode($codeLoginDTO);
 
+        AuthService::saveLoginDomain($request);
+
         return $this->jsonResponse(['token' => $jwtToken]);
     }
 
@@ -35,6 +38,8 @@ class AuthController extends BaseController
         $passwordLoginDTO = new PasswordLoginBaseDTO($request->getParsedBody());
 
         $jwtToken = AuthService::generateJwtByPassword($passwordLoginDTO);
+
+        AuthService::saveLoginDomain($request);
 
         return $this->jsonResponse(['token' => $jwtToken]);
     }

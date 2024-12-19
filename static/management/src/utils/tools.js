@@ -26,15 +26,49 @@ export const loginHandle = async token => {
     }
 }
 
-export const updateUserInfo = () => {
-    const token = getAuthToken()
-    token && loginHandle(token)
+export const updateUserInfo = async () => {
+    try {
+        const token = getAuthToken()
+        if (token) {
+            const userInfo = await getCurrentUser()
+            const corpInfo = await getCurrentCorp()
+            if (!userInfo.data || !corpInfo.data) {
+                throw '用户信息异常'
+            }
+            setUserInfo(userInfo.data)
+            setCorpInfo(corpInfo.data)
+            store.commit('setLoginInfo', userInfo.data)
+            store.commit('setCorpInfo', corpInfo.data)
+            return {
+                userInfo,
+                corpInfo
+            }
+        }
+    } catch (e) {
+        console.log('Err:',e)
+        message.error(e)
+        return null
+    }
+}
+
+
+function clearLocalStorageWithPrefix(prefix) {
+    for (var i = 0; i < localStorage.length; i++) {
+        var key = localStorage.key(i);
+        if (key.startsWith(prefix)) {
+            localStorage.removeItem(key);
+            i--; // 因为数组长度已经变小，所以索引要回退一位
+        }
+    }
 }
 
 export const logoutHandle = () => {
+    const company = JSON.parse(JSON.stringify(store.getters.getCompany))
     store.commit('RESET_STATE')
-    window.localStorage.clear()
-    window.location.href = router.resolve({path: '/login'}).href
+    // 企业信息不能清了
+    store.commit('setCompany', company)
+    clearLocalStorageWithPrefix('zm:session:archive:login:')
+    window.location.href = router.resolve({ path: '/login' }).href
 }
 
 export const sessionRoleMap = {
@@ -678,4 +712,31 @@ export function escapeRegExp(string) {
 
 export function getRegex(variable) {
     return  new RegExp(escapeRegExp(variable), 'g');
+}
+
+// 是否企业微信运行环境
+export function isWorkWxEnv() {
+    return /wxwork/i.test(navigator.userAgent);
+}
+
+export function  currentEnv(){
+    let isMobile = window.navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i); // 是否手机端
+    let isWx = /micromessenger/i.test(navigator.userAgent); // 是否微信
+    let isComWx = isWorkWxEnv();
+
+    if (isComWx && isMobile) { //手机端企业微信
+        return 'com-wx-mobile'
+    }
+    else if (isComWx && !isMobile) { //PC端企业微信
+        return 'com-wx-pc'
+    }
+    else if (isWx && isMobile) { // 手机端微信
+        return 'wx-mobile';
+    }
+    else if (isWx && !isMobile) { // PC端微信
+        return 'wx-pc';
+    }
+    else {
+        return 'other';
+    }
 }

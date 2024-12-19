@@ -80,6 +80,8 @@ services:
     image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/chat_session_archive_main_dev:latest
     restart: always
     command: "/usr/sbin/sshd -D"
+    cpu_count: 2
+    cpuset: "0,1"
     environment:
       TZ: Asia/Shanghai
     depends_on:

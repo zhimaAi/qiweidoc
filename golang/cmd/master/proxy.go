@@ -68,6 +68,8 @@ func startFiberProxy() error {
 				return c.Status(404).SendString("invalid target url")
 			}
 
+			// 添加原始域名信息到请求头
+			c.Request().Header.Set("X-Forwarded-Host", c.Hostname())
 			return proxy.Do(c, targetURL)
 		} else {
 			// 默认是main模块
@@ -80,6 +82,8 @@ func startFiberProxy() error {
 				return c.Status(404).SendString("cannot find http port of module main")
 			}
 
+			// 添加原始域名信息到请求头
+			c.Request().Header.Set("X-Forwarded-Host", c.Hostname())
 			return proxy.Do(c, fmt.Sprintf("http://127.0.0.1:%s%s", port, fullURL))
 		}
 	})

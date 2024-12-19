@@ -26,8 +26,10 @@
           </div>
           <div class="plug-item-bottom">
             <div class="bottom-label">{{ item.description }}</div>
-            <a-switch v-model:checked="item.enable" checked-children="开" un-checked-children="关"
-              @change="statusChange(item)" />
+            <a-switch v-model:checked="item.enable_bool"
+                      checked-children="开"
+                      un-checked-children="关"
+                      @change="statusChange(item)" />
           </div>
         </div>
       </div>
@@ -48,23 +50,33 @@ import defaultSensitiveWordsImg from '@/assets/sensitive-words.png'
 const store = useStore()
 const router = useRouter()
 const loading = ref(false)
-const lists = computed(() => {
+const modules = computed(() => {
     return store.getters.getModules
+})
+const lists = computed(() => {
+    let _modules = modules.value || []
+    if (Array.isArray(_modules)) {
+        _modules.map(m => {
+            m.enable_bool = m.enable
+        })
+        return _modules
+    }
+    return []
 })
 
 const statusChange = (item) => {
-  let key = item.enable ? '开启' : '关闭'
+  let key = item.enable_bool ? '开启' : '关闭'
   const cancel = () => {
-    item.enable = !item.enable
+    item.enable_bool = !item.enable_bool
   }
   Modal.confirm({
     title: `确认${key}么`,
-    content: item.enable ? '启用后，可到功能插件-客户标签使用该功能' : '禁用后，功能不可再使用，禁用后可重新启用',
+    content: item.enable_bool ? '启用后，可到功能插件-客户标签使用该功能' : '禁用后，功能不可再使用，禁用后可重新启用',
     okText: '确定',
     cancelText: '取消',
     onOk: () => {
       const loadClose = message.loading(`正在${key}`)
-      let apiUrl = item.enable ? enableModules : disableModules
+      let apiUrl = item.enable_bool ? enableModules : disableModules
       apiUrl({
         name: item.name
       }).then(() => {

@@ -441,7 +441,7 @@ SQL;
     }
 
     /**
-     * 获取聊天内容
+     * 获取聊天内容（不包括群聊）
      * @throws Throwable
      */
     public static function getMessageListByConversation(int $page, int $size, CorpModel $corp, string $conversationId,array $params = []): array
@@ -477,48 +477,68 @@ SQL;
         }
 
         // 分页获取聊天消息
-        $result = $query->orderBy(['msg_time' => SORT_DESC])
-            ->paginate($page, $size);
+        $result = $query->orderBy(['msg_time' => SORT_DESC])->paginate($page, $size);
         if ($result['items']->isEmpty()) {
             return $result;
         }
 
-        $fromUser = [];
-        foreach ($result['items'] as $item) {
-            if ($item->get('from_role') == EnumChatMessageRole::Customer && !array_key_exists($item->get("from"), $fromUser)) {
-                $customer = CustomersModel::query()
-                    ->select(['id', 'avatar', 'gender', 'external_userid', 'external_name', 'staff_remark', 'corp_name'])
-                    ->where(['external_userid' => $item->get('from')])
-                    ->getOne();
-                if (!empty($customer)) {
-                    $fromUser[$customer->get("external_userid")] = $customer->toArray();
-                }
-            } else if ($item->get('from_role') == EnumChatMessageRole::Staff && !array_key_exists($item->get("from"), $fromUser)) {
-                $staff = StaffModel::query()
-                    ->select(['id', 'name', 'status', 'enable', 'alias', 'main_department', 'userid'])
-                    ->where(['userid' => $item->get('from')])
-                    ->getOne();
+        if ($conversation->get('from_role') == EnumChatMessageRole::Customer) {
+            $fromDetail = CustomersModel::query()
+                ->select(['id', 'avatar', 'gender', 'external_userid', 'external_name', 'staff_remark', 'corp_name'])
+                ->where(['external_userid' => $conversation->get('from')])
+                ->getOne()?->toArray();
+        } else {
+            $staff = StaffModel::query()
+                ->select(['id', 'name', 'status', 'enable', 'alias', 'main_department'])
+                ->where(['userid' => $conversation->get('from')])
+                ->getOne();
+            if (empty($staff)) {
+                $fromDetail = [];
+            } else {
                 $department = DepartmentModel::query()->where(['department_id' => $staff->get('main_department')])->getOne();
                 $staff->append('department_name', $department->get('name'));
-                if (!empty($staff)) {
-                    $fromUser[$staff->get("userid")] = $staff->toArray();
-                }
+                $fromDetail = $staff->toArray();
             }
         }
 
+        if ($conversation->get('to_role') == EnumChatMessageRole::Customer) {
+            $toDetail = CustomersModel::query()
+                ->select(['id', 'avatar', 'gender', 'external_userid', 'external_name', 'staff_remark', 'corp_name'])
+                ->where(['external_userid' => $conversation->get('to')])
+                ->getOne()?->toArray();
+        } else {
+            $staff = StaffModel::query()
+                ->select(['id', 'name', 'status', 'enable', 'alias', 'main_department'])
+                ->where(['userid' => $conversation->get('to')])
+                ->getOne();
+            if (empty($staff)) {
+                $toDetail = [];
+            } else {
+                $department = DepartmentModel::query()->where(['department_id' => $staff->get('main_department')])->getOne();
+                $staff->append('department_name', $department->get('name'));
+                $toDetail = $staff->toArray();
+            }
+        }
 
         // 把相关员工、客户、群聊等信息拼接到消息列表中
         foreach ($result['items'] as $message) {
             /** @var ChatMessageModel $message */
             $message->set("msg_time", date("Y-m-d H:i:s", strtotime($message->get("msg_time"))));
-            $message->append('from_detail',  $fromUser[$message->get("from")]??[]);
+
+            $message->append('from_detail', ($message->get('from') == $conversation->get('from') ? $fromDetail : $toDetail));
+            $message->append('to_detail',  ($message->get('from') == $conversation->get('from') ? $toDetail : $fromDetail));
         }
 
         //如果开启已读标记
-        if (!empty($corp->get("show_is_read"))) {
+        if (!empty($corp->get("show_is_read")) && !empty($params['users_id'])) {
             $filter = ["corp_id"=>$corp->get("id"),"users_id"=>$params["users_id"],"conversation_id"=>$conversationId];
             UserReadChatDetailModel::firstOrCreate($filter,$filter);
         }
+
+        $result['from_detail'] = $fromDetail;
+        $result['to_detail'] = $toDetail;
+        $result['from_role'] = $conversation->get('from_role');
+        $result['to_role'] = $conversation->get('to_role');
 
         return $result;
     }
@@ -665,7 +685,6 @@ SQL;
             'is_collect' => EnumChatCollectStatus::Collect->value,
             'collect_reason' => $collectReason,
             'collect_time' => now(),
-            'updated_at' => now(),
         ]);
 
         return ['conversation_id' => $conversationId,'is_collect' => EnumChatCollectStatus::Collect->value,'collect_reason' => $collectReason];
@@ -690,7 +709,6 @@ SQL;
         //修改会话收藏状态 Exception
         $conversation->update([
             'is_collect' => EnumChatCollectStatus::NoCollect->value,
-            'updated_at' => now(),
         ]);
 
         return ['conversation_id' => $conversationId,'is_collect' => EnumChatCollectStatus::NoCollect->value];

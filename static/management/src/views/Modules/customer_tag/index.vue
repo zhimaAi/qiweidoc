@@ -1,5 +1,6 @@
 <template>
-  <MainLayout title="标签管理">
+  <div>
+    <MainNavbar title="标签管理"/>
     <div class="zm-main-content lexicon-box">
       <!-- <a-alert show-icon message="提前预设标签组和标签，方便管理和选择"></a-alert> -->
       <div class="statistic-box">
@@ -82,16 +83,16 @@
         </a-form>
       </a-modal>
     </div>
-  </MainLayout>
+  </div>
 </template>
 
 <script setup>
 import { onMounted, ref, reactive, h } from 'vue';
-import MainLayout from "@/components/mainLayout.vue";
 import { RedoOutlined, PlusOutlined } from '@ant-design/icons-vue';
 import { Modal, message } from 'ant-design-vue'
 import { debounce } from "@/utils/tools";
 import { apiTags, updateTags, deleteGroupTags, deleteTags } from "@/api/company";
+import MainNavbar from "@/components/mainNavbar.vue";
 
 const last_sync_time = ref('') // 更新数据
 const updateLoading = ref(false)

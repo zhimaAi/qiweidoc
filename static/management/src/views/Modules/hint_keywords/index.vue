@@ -1,22 +1,19 @@
 <template>
-  <MainLayout>
-    <template #navbar>
-      <a-tabs v-model:activeKey="activeKey" @change="onChangeType" class="nav-tabs">
+  <div>
+    <a-tabs v-model:activeKey="activeKey" @change="onChangeType" class="nav-tabs">
         <a-tab-pane key="LOAD_BY_RULE" tab="敏感词规则" force-render></a-tab-pane>
         <a-tab-pane key="LOAD_BY_DETAIL" tab="触发明细"></a-tab-pane>
         <a-tab-pane key="LOAD_BY_LEXICON" tab="敏感词库"></a-tab-pane>
-      </a-tabs>
-    </template>
+    </a-tabs>
     <div class="sensitive-panel">
         <LoadingBox v-if="loading"/>
         <Component v-else :is="mainPanelComponent" :defaultParams="defaultParams"/>
     </div>
-  </MainLayout>
+  </div>
 </template>
 
 <script setup>
 import { onMounted, ref, computed } from 'vue';
-import MainLayout from "@/components/mainLayout.vue";
 import { useRouter, useRoute } from 'vue-router';
 import LoadingBox from "@/components/loadingBox.vue";
 import MainPanelLoadRule from "./components/rule.vue";

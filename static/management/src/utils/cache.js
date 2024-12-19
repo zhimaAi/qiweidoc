@@ -10,6 +10,8 @@ const USER_AUTH_TOKEN = 'zm:session:archive:login:token';
 const USER_INFO_KEY = 'zm:session:archive:login:user';
 const CORP_INFO_KEY = 'zm:session:archive:login:corp';
 
+const H5_AUTH_TOKEN = 'zm:session:archive:h5:token';
+
 export function setAuthToken(token) {
     set(USER_AUTH_TOKEN, {token: token})
 }
@@ -32,6 +34,14 @@ export function setCorpInfo(data) {
 
 export function getCorpInfo(data) {
     return get(CORP_INFO_KEY)
+}
+
+export function setH5AuthToken(token) {
+    set(H5_AUTH_TOKEN, {token: token})
+}
+
+export function getH5AuthToken() {
+    return get(H5_AUTH_TOKEN)?.token || ''
 }
 
 /**

@@ -5,7 +5,7 @@ export default [
     },
     {
         path: '/module/private-chat-stat/index',
-        name: 'PrivateChatStatInex',
+        name: 'PrivateChatStatIndex',
         component: () => import('@/views/Modules/single_chat_stat/index.vue')
     },
     {

@@ -57,6 +57,27 @@ class CorpService
         $corpModel->saveOrFail();
     }
 
+    /**
+     * 获取基础信息
+     * @return array|string[]
+     * @throws Throwable
+     */
+    public static function getBaseNameAndLogo()
+    {
+        //获取最后一个登录的企业名和logo
+        $corp = CorpModel::query()->orderBy(['id' => SORT_DESC])->getOne();
+        $result= [
+            'corp_name'=>'',
+            'corp_logo'=>'',
+        ];
+        if (!empty($corp)){
+            $result= [
+                'corp_name'=>$corp->get('corp_name'),
+                'corp_logo'=>$corp->get('corp_logo'),
+            ];
+        }
+        return $result;
+    }
 
     /**
      * Notes: 获取RSA加密密钥对
@@ -127,6 +148,12 @@ class CorpService
         if (!empty($dto->callbackEventAesKey)) {
             $corpModel->set('callback_event_aes_key', $dto->callbackEventAesKey);
         }
+        if (!empty($dto->corpName)) {
+            $corpModel->set('corp_name', $dto->corpName);
+        }
+        if (!empty($dto->corpLogo)) {
+            $corpModel->set('corp_logo', $dto->corpLogo);
+        }
 
         // 检查应用密钥是否正确
         try {
@@ -149,6 +176,64 @@ class CorpService
         $corpModel->saveOrFail();
     }
 
+    /**
+     * 更新企业名称和logo
+     * @param CorpModel $corp
+     * @param UpdateCorpConfigBaseDTO $dto
+     * @return array
+     * @throws Throwable
+     */
+    public static function SaveNameOrLogo(CorpModel $corp, UpdateCorpConfigBaseDTO $dto): array
+    {
+        $data = [];
+
+        if (!empty($dto->corpName)) {
+            $data['corp_name'] = $dto->corpName;
+        }
+
+        if (!empty($dto->corpLogo)) {
+            $data['corp_logo'] = $dto->corpLogo;
+        }
+
+        $corp->update($data);
+
+        return $data;
+    }
+
+    public static function uploadLogo(CorpModel $corp,$files)
+    {
+        $result=[];
+        foreach ($files as $file) {
+            //只取第一个
+            if (empty($file)){
+                throw new LogicException('请上传文件');
+            }
+
+            /** @var \HttpSoft\Message\UploadedFile $file */
+            $filepath = '/tmp/' . $file->getClientFilename();
+
+            if ($file->getSize() > 1024 * 1024 * 50) {
+
+                throw new LogicException('文件不能超过50M');
+            }
+            if (stripos($file->getClientMediaType(), 'jpeg') === false && stripos($file->getClientMediaType(), 'png') === false) {
+                throw new LogicException('请上传jpg或png图片logo');
+            }
+
+            $file->moveTo($filepath);
+            $result = Yii::getRpcClient()->call('minio.UploadFile', ['file_path' => $filepath]);
+            unlink($filepath);
+            break;
+        }
+
+        //
+        // array(2) {
+        //         ["url"] => string(64) "/minio-default/2024/12/17/d41d8cd98f00b204e9800998ecf8427e/a.txt"
+        //         ["md5"] => string(32) "d41d8cd98f00b204e9800998ecf8427e"
+        // }
+        return $result;
+    }
+
     public static function saveCallbackEventToken(CorpModel $corp, SaveCallbackEventTokenBaseDTO $dto)
     {
         $corp->update([
@@ -156,4 +241,6 @@ class CorpService
             'callback_event_aes_key' => $dto->callbackEventAesKey,
         ]);
     }
+
+
 }

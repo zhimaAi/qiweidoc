@@ -133,7 +133,8 @@ const statusChange = (item) => {
         name: query.name
       }).then(() => {
         message.success('操作完成')
-        loadData()
+        detailData.value.enable = item.enable
+        store.dispatch('updateModules')
       }).finally(() => {
         loadClose()
       }).catch(() => cancel())
@@ -151,7 +152,7 @@ const loadData = () => {
       let data = res.data
       data.enable = !data.paused
       detailData.value = data
-      store.commit('setModules', [data])
+     // store.commit('setModules', [data])
     }
 
     if (query.name === 'hint_keywords') {

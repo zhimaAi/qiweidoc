@@ -1,13 +1,18 @@
 <template>
     <div class="_main-header" :style="style">
         <div class="logo-box">
-            <img src="@/assets/logo.png" class="logo"/>
+            <img :src="company.corp_logo || DEFAULT_ZH_LOGO" class="logo"/>
+            <div class="system-name-box">
+                <div class="default-system-name">芝麻会话存档</div>
+                <div v-if="company.corp_name" class="system-line"></div>
+                <div v-if="company.corp_name" class="system-name">{{ company.corp_name }}</div>
+            </div>
         </div>
         <div class="right-header-nav">
-            <div v-if="showMenus" class="my-shadow"></div>
+            <!-- <div v-if="showMenus" class="my-shadow"></div> -->
             <div>
                 <div v-if="showMenus" class="menus-box">
-                    <div class="menu-item active">会话质检</div>
+                    <!-- <div class="menu-item active">会话质检</div> -->
                 </div>
             </div>
             <a-dropdown v-if="loginInfo.id > 0">
@@ -33,11 +38,13 @@
 </template>
 
 <script setup>
-import {computed} from 'vue';
+import {computed, onMounted} from 'vue';
 import {useStore} from 'vuex';
 import {Modal, message} from 'ant-design-vue';
 import {DownOutlined} from '@ant-design/icons-vue';
 import {logoutHandle} from "@/utils/tools";
+import {getNameLogo} from "@/api/auth-login";
+import {DEFAULT_ZH_LOGO} from "@/constants";
 
 const props = defineProps({
     background: String,
@@ -48,6 +55,7 @@ const props = defineProps({
 })
 
 const store = useStore()
+const company = computed(() => store.getters.getCompany)
 const loginInfo = computed(() => {
     return store.getters.getUserInfo
 })
@@ -71,6 +79,17 @@ const logout = () => {
         }
     })
 }
+
+onMounted(() => {
+    const defaultCompany = store.getters.getCompany
+    if (!defaultCompany.corp_name) {
+        getNameLogo().then((res) => {
+            if (res.status === 'success') {
+                store.commit('setCompany', res.data)
+            }
+        })
+    }
+})
 </script>
 
 <style scoped lang="less">
@@ -87,12 +106,49 @@ const logout = () => {
 
     .logo-box {
         display: flex;
-        width: 256px;
+        align-items: center;
+        max-width: 365px;
+        min-width: 256px;
         flex-shrink: 0;
+        height: 52px;
+        padding: 20px;
 
         .logo {
-            height: 52px;
+            height: 32px;
+            margin-right: 8px;
         }
+    }
+
+    .system-name-box {
+        display: flex;
+        align-items: center;
+        font-family: "PingFang SC";
+        font-style: normal;
+    }
+
+    .system-line {
+        width: 1px;
+        height: 16px;
+        border-radius: 1px;
+        background: #D9D9D9;
+        margin: 0 8px;
+    }
+
+    .default-system-name {
+        white-space: nowrap;
+        color: #000000;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .system-name{
+        white-space: nowrap;
+        color: #262626;
+        font-size: 14px;
+        font-weight: 400;
+        max-width: 230px;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .right-header-nav {

@@ -1,5 +1,8 @@
 import {createStore} from 'vuex'
 import {getAuthToken, getCorpInfo, getUserInfo} from "@/utils/cache";
+import {getModules} from "@/api/company";
+import { DEFAULT_ZH_LOGO } from '@/constants/index'
+import createPersistedState from 'vuex-persistedstate';
 
 const getState = () => {
     return {
@@ -8,6 +11,10 @@ const getState = () => {
         user_info: {},
         modules: {},
         corp_info: {},
+        company: {
+            corp_name: '',
+            corp_logo: DEFAULT_ZH_LOGO
+        }, // 企业
     }
 }
 
@@ -18,6 +25,7 @@ export default createStore({
         getAgentId: state => state.agent_id,
         getCorpInfo: state => state.corp_info,
         getUserInfo: state => state.user_info,
+        getCompany: state => state.company,
         getModules: state => state.modules
     },
     mutations: {
@@ -35,6 +43,9 @@ export default createStore({
             state.corp_id = corp_info.id
             state.agent_id = corp_info.agent_id
         },
+        setCompany(state, info) {
+            state.company = info
+        }
     },
     actions: {
         checkLogin({state, commit}) {
@@ -52,7 +63,19 @@ export default createStore({
                 }
             }
             return true
+        },
+        updateModules({state, commit}) {
+            getModules().then(res => {
+                let data = res.data || []
+                data.map(item => {
+                    item.enable = !item.paused
+                })
+                commit('setModules', data)
+            })
         }
     },
-    modules: {}
+    modules: {},
+    plugins: [createPersistedState({
+        storage: window.localStorage, // 或者 sessionStorage
+    })]
 })

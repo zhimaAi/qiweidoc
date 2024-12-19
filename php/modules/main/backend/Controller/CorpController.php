@@ -49,6 +49,16 @@ class CorpController extends BaseController
     }
 
     /**
+     * 获取最后一个企业的名称和logo
+     * @return DataResponse
+     * @throws Throwable
+     */
+    public function getBaseNameAndLogo(){
+       $result= CorpService::getBaseNameAndLogo();
+        return $this->jsonResponse($result);
+    }
+
+    /**
      * 获取当前企业信息
      */
     public function getCurrentCorpInfo(ServerRequestInterface $request): ResponseInterface
@@ -103,6 +113,18 @@ class CorpController extends BaseController
         return $this->jsonResponse();
     }
 
+
+    public function updateNameOrLogo(ServerRequestInterface $request): ResponseInterface
+    {
+        $currentCorpInfo = $request->getAttribute(CorpModel::class);
+
+        $updateCorpConfigDTO = new UpdateCorpConfigBaseDTO($request->getParsedBody());
+
+        CorpService::updateConfig($currentCorpInfo, $updateCorpConfigDTO);
+
+        return $this->jsonResponse();
+    }
+
     /**
      * 生成回调事件token
      *
@@ -129,4 +151,36 @@ class CorpController extends BaseController
 
         return $this->jsonResponse();
     }
+
+    /**
+     * 保存企业名称和logo
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
+     * @throws Throwable
+     */
+    public function SaveNameOrLogo(ServerRequestInterface $request): ResponseInterface
+    {
+        $corp = $request->getAttribute(CorpModel::class);
+
+        $dto = new UpdateCorpConfigBaseDTO($request->getParsedBody());
+
+        CorpService::SaveNameOrLogo($corp, $dto);
+
+        return $this->jsonResponse();
+    }
+
+    /**
+     * 上传logo 返回链接
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
+     */
+    public function UploadLogo(ServerRequestInterface $request): ResponseInterface
+    {
+        $corp = $request->getAttribute(CorpModel::class);
+        $files = $request->getUploadedFiles();
+        $result= CorpService::uploadLogo($corp,$files );
+
+        return $this->jsonResponse($result);
+    }
+
 }

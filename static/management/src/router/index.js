@@ -6,6 +6,14 @@ import {loginHandle} from "@/utils/tools";
 const routes = []
 
 if (process.env.VUE_APP_MODULE && process.env.VUE_APP_MODULE != 'main') {
+    routes.push({
+        path: '/login',
+        name: 'login',
+        component: () => import('../views/login.vue'),
+        meta: {
+            ignoreLogin: true
+        },
+    })
     const files = require.context('@/views/Modules/' + process.env.VUE_APP_MODULE, true, /route\.js$/);
     files.keys().forEach(item => {
         routes.push(...files(item).default)

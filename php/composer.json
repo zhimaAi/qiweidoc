@@ -33,6 +33,7 @@
     "prefer-stable": true,
     "require": {
         "php": "^8.2",
+        "ext-curl": "*",
         "ext-openssl": "*",
         "ext-pdo": "*",
         "cebe/markdown": "^1.2@dev",

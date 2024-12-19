@@ -12,6 +12,7 @@ use Modules\Main\DTO\PasswordLoginBaseDTO;
 use Modules\Main\Enum\EnumUserRoleType;
 use Modules\Main\Model\CorpModel;
 use Modules\Main\Model\UserModel;
+use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 use Yiisoft\Security\Random;
 
@@ -24,13 +25,9 @@ class AuthService
      */
     public static function getJwtKey(): string
     {
-        $jwtKey = Yii::cache()->psr()->get('jwt_key');
-        if (empty($jwtKey)) {
-            $jwtKey = Random::string();
-            Yii::cache()->psr()->set('jwt_key', $jwtKey);
-        }
-
-        return $jwtKey;
+        return Yii::cache()->getOrSet('jwt_key', function () {
+            return Random::string();
+        });
     }
 
     /**
@@ -140,5 +137,21 @@ class AuthService
         ];
 
         return JWT::encode($payload, $jwtKey, 'HS256');
+    }
+
+    public static function saveLoginDomain(ServerRequestInterface $request): void
+    {
+        $server = $request->getServerParams();
+        $proto = $server['HTTP_X_FORWARDED_PROTO'] ?? 'http';
+        $host = $server['HTTP_X_FORWARDED_HOST'] ?? '127.0.0.1';
+
+        Yii::cache()->psr()->set("login_domain", "{$proto}://{$host}");
+    }
+
+    public static function getLoginDomain(): string
+    {
+        return Yii::cache()->getOrSet('login_domain', function () {
+            return "http://127.0.0.1";
+        });
     }
 }

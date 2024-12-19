@@ -148,7 +148,7 @@
 </template>
 
 <script>
-// import api from "@api/staff-manage/index.js";
+// import api from "@api/staff-manage/timeout-reply-single.js";
 // import wxInitFunc from "@/utils/initWxConfig.js"
 // import WWOpenData from "@/components/wwOpenData/index"
 export default {

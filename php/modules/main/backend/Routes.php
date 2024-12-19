@@ -7,9 +7,6 @@ use Common\Job\Consumer;
 use Common\Job\Producer;
 use Common\RouterProvider;
 use Common\Yii;
-use GRPC\Pinger\PingerInterface;
-use Modules\CustomerTag\Controller\TagController;
-use Modules\Main\Command\PullChatSessionMessageCommand;
 use Modules\Main\Consumer\DownloadChatSessionMediasConsumer;
 use Modules\Main\Consumer\QwOpenPushConsumer;
 use Modules\Main\Consumer\SendEmailConsumer;
@@ -96,9 +93,7 @@ class Routes extends RouterProvider
      */
     public function getConsoleRouters(): array
     {
-        return [
-            "pull-chat-session-message" => PullChatSessionMessageCommand::class,
-        ];
+        return [];
     }
 
     /**
@@ -152,7 +147,9 @@ class Routes extends RouterProvider
             // 接入流程
             Group::create("/api/corps")->routes(
                 Route::post("/init/check")->action([CorpController::class, "checkInit"]),
-                Route::post("/basic")->action([CorpController::class, "initCorpInfo"])
+                Route::post("/basic")->action([CorpController::class, "initCorpInfo"]),
+                //登录页可以调用的
+                Route::get("/name-logo/get")->action([CorpController::class, "getBaseNameAndLogo"]),
             ),
 
             // 企微事件推送回调
@@ -171,6 +168,9 @@ class Routes extends RouterProvider
                     Route::put("/corps/current")->action([CorpController::class, "updateConfig"]),
                     Route::get("/corps/callback/event/token/generate")->action([CorpController::class, "generateCallbackEventToken"]),
                     Route::put("/corps/callback/event/token/save")->action([CorpController::class, "saveCallbackEventToken"])->disableMiddleware(UserRoleMiddleware::class),
+                        //企业名称和logo修改
+                    Route::put("/corps/name-logo/save")->action([CorpController::class, "SaveNameOrLogo"]),
+                    Route::post("/corps/upload/logo")->action([CorpController::class, "UploadLogo"]),
 
                     // 用户相关接口
                     Route::get("/users/current")->action([UserController::class, "getCurrentUserInfo"]),
@@ -204,7 +204,6 @@ class Routes extends RouterProvider
 
                     // 标签相关的接口
                     Route::get("/tags/staff")->action([TagsController::class, "staff"]),
-                    Route::get('/tags/customer')->action([TagsController::class, "customer"]),
 
                     // 会话存档相关的接口
                     Route::get("/chats/by/staff/customer/conversation/list")->action([ChatController::class, "getCustomerConversationListByStaff"]),

@@ -1,3 +1,10 @@
+html {
+    font-size: 10px !important;
+    // h5页面采用rem
+}
+body {
+    font-size: 14px;
+}
 /**
  * 常用样式部分
  */
@@ -63,6 +70,10 @@
 
 .text-center {
     text-align: center;
+}
+
+.text-right {
+    text-align: right;
 }
 
 .is-wx-tag {
@@ -165,6 +176,10 @@ a {
         left: 12px;
         width: calc(100% - 24px);
     }
+}
+
+.zm-nowrap {
+    white-space: nowrap;
 }
 
 .ant-tag.zm-customize-tag {
@@ -340,6 +355,31 @@ a {
 
     .ant-tabs-ink-bar {
         display: none;
+    }
+}
+
+.zm-tip-popover.ant-popover {
+
+    .ant-popover-inner {
+        background: #2475FC;
+        color: #FFFFFF;
+
+        .ant-popover-title {
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            color: #FFFFFF;
+        }
+
+        .ant-popover-inner-content {
+            font-weight: 400;
+            font-size: 14px;
+            color: #D3E3FE;
+        }
+    }
+
+    .ant-popover-content > .ant-popover-arrow::after {
+        background: #2475FC;
     }
 }
 

@@ -2,162 +2,164 @@
     <div>
         <MainNav active="rule"/>
         <div class="zm-main-box">
-        <a-card :bordered="false">
-            <template #title>
-                <div class="card-title">
-                    <span class="title">工作时间段设置</span>
-                    <span class="desc">设置工作时间段后，则仅对设定的时间段内对开启会话存档的员工进行工作质量检测，单聊和群聊均使用此规则</span>
-                </div>
-            </template>
-            <TimesRange ref="timeRangeRef" @change="configChange"/>
-        </a-card>
-        <a-card :bordered="false">
-            <template #title>
-                <div class="card-title">
-                    <span class="title">消息回复率</span>
-                    <span class="desc">设置消息回复率后，单聊/群聊中的消息回复率将根据此处设置的时间进行统计</span>
-                </div>
-            </template>
-            <a-form-item label="消息回复率" style="margin-bottom: 0;">
-                <div class="zm-flex-center">
-                    <a-input-number v-model:value="config.msg_reply_sec" :min="1" :max="20" @change="configChange"/>
-                    <span class="ml4">分钟</span>
-                </div>
-                <div class="notice">
-                    注意：消息回复率修改后，只会对修改后的数据生效，历史数据不生效，为防止数据出现误差，请谨慎操作
-                </div>
-                <a-checkbox
-                    class="mt10"
-                    v-model:checked="config.group_other_effect"
-                    @change="configChange">
-                    群内其他员工{{ config.msg_reply_sec || '-' }}分钟内回复了，也算作{{
-                        config.msg_reply_sec || '-'
-                    }}分钟回复率
-                </a-checkbox>
-                <div class="select-user mt10" v-if="config.group_other_effect">
-                    <a-radio-group v-model:value="config.satff_radio" @change="configChange">
-                        <a-radio :value="1">指定员工</a-radio>
-                        <a-radio :value="2">全部群内员工</a-radio>
-                    </a-radio-group>
-                    <div class="tips">
-                        指定员工算作{{ config.msg_reply_sec || '-' }}分钟回复率，其他未设置的群内员工回复了，不计入。该设置仅对群内成员生效
+            <a-card :bordered="false">
+                <template #title>
+                    <div class="card-title">
+                        <span class="title">工作时间段设置</span>
+                        <span
+                            class="desc">设置工作时间段后，则仅对设定的时间段内对开启会话存档的员工进行工作质量检测，单聊和群聊均使用此规则</span>
                     </div>
-                    <div v-if="config.satff_radio == 1" class="mt10">
-                        <a-button @click="selectStaff">选择员工</a-button>
-                        <div class="fx-ac" style="flex-wrap: wrap;width: 891px;">
-                            <a-tag
-                                style="margin-top: 10px;padding: 4px;"
-                                closable
-                                @close="staffDel(index)"
-                                v-for="(item, index) in staffList"
-                                :key="item.staff_id"
-                            >
-                                {{ item.name }}
-                            </a-tag>
+                </template>
+                <TimesRange ref="timeRangeRef" @change="configChange"/>
+            </a-card>
+            <a-card :bordered="false">
+                <template #title>
+                    <div class="card-title">
+                        <span class="title">消息回复率</span>
+                        <span class="desc">设置消息回复率后，单聊/群聊中的消息回复率将根据此处设置的时间进行统计</span>
+                    </div>
+                </template>
+                <a-form-item label="消息回复率" style="margin-bottom: 0;">
+                    <div class="zm-flex-center">
+                        <a-input-number v-model:value="config.msg_reply_sec" :min="1" :max="20" @change="configChange"/>
+                        <span class="ml4">分钟</span>
+                    </div>
+                    <div class="notice">
+                        注意：消息回复率修改后，只会对修改后的数据生效，历史数据不生效，为防止数据出现误差，请谨慎操作
+                    </div>
+                    <a-checkbox
+                        class="mt10"
+                        v-model:checked="config.group_other_effect"
+                        @change="configChange">
+                        群内其他员工{{ config.msg_reply_sec || '-' }}分钟内回复了，也算作{{
+                            config.msg_reply_sec || '-'
+                        }}分钟回复率
+                    </a-checkbox>
+                    <div class="select-user mt10" v-if="config.group_other_effect">
+                        <a-radio-group v-model:value="config.satff_radio" @change="configChange">
+                            <a-radio :value="1">指定员工</a-radio>
+                            <a-radio :value="2">全部群内员工</a-radio>
+                        </a-radio-group>
+                        <div class="tips">
+                            指定员工算作{{ config.msg_reply_sec || '-' }}分钟回复率，其他未设置的群内员工回复了，不计入。该设置仅对群内成员生效
+                        </div>
+                        <div v-if="config.satff_radio == 1" class="mt10">
+                            <a-button @click="selectStaff">选择员工</a-button>
+                            <div class="fx-ac" style="flex-wrap: wrap;width: 891px;">
+                                <a-tag
+                                    style="margin-top: 10px;padding: 4px;"
+                                    closable
+                                    @close="staffDel(index)"
+                                    v-for="(item, index) in staffList"
+                                    :key="item.staff_id"
+                                >
+                                    {{ item.name }}
+                                </a-tag>
+                            </div>
                         </div>
                     </div>
+                </a-form-item>
+            </a-card>
+            <a-card :bordered="false">
+                <template #title>
+                    <div class="card-title">
+                        <span class="title">单聊未回复规则</span>
+                        <span
+                            class="desc">设置未回复规则后，单聊中未回复聊天数和未回复聊天占比将根据此规则进行统计</span>
+                    </div>
+                </template>
+                <div class="main-body">
+                    <a-alert type="info"
+                             :show-icon="false"
+                             banner
+                             message="客户关键字：单聊时，客户发送的最后一条消息匹配到关键词或消息类型匹配为选中类型，且员工没有回复，不算作未回复消息"></a-alert>
+                    <a-form-item label="全匹配" class="mt24">
+                        <a-input placeholder="请输入自定义匹配关键词"
+                                 :max-length="20"
+                                 v-model:value="input.single_keywords_full"
+                                 @keydown.enter="inputHandle('single_keywords','full')"
+                                 @blur="inputHandle('single_keywords','full')"
+                                 style="width: 360px"/>
+                        <div class="keyword-tags">
+                            <a-tag v-for="(keyword,i) in config.single_keywords.full"
+                                   class="zm-customize-tag"
+                                   style="margin: 8px 8px 0 0;"
+                                   closable
+                                   @close="(e) => removeTag('single_keywords','full',i,e)"
+                                   :key="i">{{ keyword }}
+                            </a-tag>
+                        </div>
+                    </a-form-item>
+                    <a-form-item label="半匹配">
+                        <a-input placeholder="请输入自定义匹配关键词"
+                                 :max-length="20"
+                                 v-model:value="input.single_keywords_half"
+                                 @keydown.enter="inputHandle('single_keywords','half')"
+                                 @blur="inputHandle('single_keywords','half')"
+                                 style="width: 360px"/>
+                        <div class="keyword-tags">
+                            <a-tag v-for="(keyword,i) in config.single_keywords.half"
+                                   class="zm-customize-tag"
+                                   style="margin: 8px 8px 0 0;"
+                                   closable
+                                   @close="(e) => removeTag('single_keywords','half',i,e)"
+                                   :key="i">{{ keyword }}
+                            </a-tag>
+                        </div>
+                    </a-form-item>
+                    <a-form-item label="消息类型" style="margin-bottom: 0;">
+                        <a-checkbox-group v-model:checked="config.single_keywords.msg_type_filter"
+                                          @change="configChange">
+                            <a-checkbox value="image">图片</a-checkbox>
+                            <a-checkbox value="emoji_preg">emoji</a-checkbox>
+                            <a-checkbox value="emotion">表情包</a-checkbox>
+                        </a-checkbox-group>
+                    </a-form-item>
+                    <a-alert type="info"
+                             class="mt24"
+                             :show-icon="false"
+                             banner
+                             message="员工关键字：员工客户聊天时，员工发送的最后一条消息匹配到关键词，将不算作回复消息"></a-alert>
+                    <a-form-item label="全匹配" class="mt24">
+                        <a-input placeholder="请输入自定义匹配关键词"
+                                 :max-length="20"
+                                 v-model:value="input.staff_single_keywords_full"
+                                 @keydown.enter="inputHandle('staff_single_keywords','full')"
+                                 @blur="inputHandle('staff_single_keywords','full')"
+                                 style="width: 360px"/>
+                        <div class="keyword-tags">
+                            <a-tag v-for="(keyword,i) in config.staff_single_keywords.full"
+                                   class="zm-customize-tag"
+                                   style="margin: 8px 8px 0 0;"
+                                   :closable="MODE != 2"
+                                   @close="(e) => removeTag('staff_single_keywords','full',i,e)"
+                                   :key="i">{{ keyword }}
+                            </a-tag>
+                        </div>
+                    </a-form-item>
+                    <a-form-item label="半匹配">
+                        <a-input placeholder="请输入自定义匹配关键词"
+                                 :max-length="20"
+                                 v-model:value="input.staff_single_keywords_half"
+                                 @keydown.enter="inputHandle('staff_single_keywords','half')"
+                                 @blur="inputHandle('staff_single_keywords','half')"
+                                 style="width: 360px"/>
+                        <div class="keyword-tags">
+                            <a-tag v-for="(keyword,i) in config.staff_single_keywords.half"
+                                   class="zm-customize-tag"
+                                   style="margin: 8px 8px 0 0;"
+                                   closable
+                                   @close="(e) => removeTag('staff_single_keywords','half',i,e)"
+                                   :key="i">{{ keyword }}
+                            </a-tag>
+                        </div>
+                    </a-form-item>
+                    <div class="zm-fixed-bottom-box in-module">
+                        <a-button type="primary">保 存</a-button>
+                    </div>
                 </div>
-            </a-form-item>
-        </a-card>
-        <a-card :bordered="false">
-            <template #title>
-                <div class="card-title">
-                    <span class="title">单聊未回复规则</span>
-                    <span
-                        class="desc">设置未回复规则后，单聊中未回复聊天数和未回复聊天占比将根据此规则进行统计</span>
-                </div>
-            </template>
-            <div class="main-body">
-                <a-alert type="info"
-                         :show-icon="false"
-                         banner
-                         message="客户关键字：单聊时，客户发送的最后一条消息匹配到关键词或消息类型匹配为选中类型，且员工没有回复，不算作未回复消息"></a-alert>
-                <a-form-item label="全匹配" class="mt24">
-                    <a-input placeholder="请输入自定义匹配关键词"
-                             :max-length="20"
-                             v-model:value="input.single_keywords_full"
-                             @keydown.enter="inputHandle('single_keywords','full')"
-                             @blur="inputHandle('single_keywords','full')"
-                             style="width: 360px"/>
-                    <div class="keyword-tags">
-                        <a-tag v-for="(keyword,i) in config.single_keywords.full"
-                               class="zm-customize-tag"
-                               style="margin: 8px 8px 0 0;"
-                               closable
-                               @close="(e) => removeTag('single_keywords','full',i,e)"
-                               :key="i">{{ keyword }}
-                        </a-tag>
-                    </div>
-                </a-form-item>
-                <a-form-item label="半匹配">
-                    <a-input placeholder="请输入自定义匹配关键词"
-                             :max-length="20"
-                             v-model:value="input.single_keywords_half"
-                             @keydown.enter="inputHandle('single_keywords','half')"
-                             @blur="inputHandle('single_keywords','half')"
-                             style="width: 360px"/>
-                    <div class="keyword-tags">
-                        <a-tag v-for="(keyword,i) in config.single_keywords.half"
-                               class="zm-customize-tag"
-                               style="margin: 8px 8px 0 0;"
-                               closable
-                               @close="(e) => removeTag('single_keywords','half',i,e)"
-                               :key="i">{{ keyword }}
-                        </a-tag>
-                    </div>
-                </a-form-item>
-                <a-form-item label="消息类型" style="margin-bottom: 0;">
-                    <a-checkbox-group v-model:checked="config.single_keywords.msg_type_filter" @change="configChange">
-                        <a-checkbox value="image">图片</a-checkbox>
-                        <a-checkbox value="emoji_preg">emoji</a-checkbox>
-                        <a-checkbox value="emotion">表情包</a-checkbox>
-                    </a-checkbox-group>
-                </a-form-item>
-                <a-alert type="info"
-                         class="mt24"
-                         :show-icon="false"
-                         banner
-                         message="员工关键字：员工客户聊天时，员工发送的最后一条消息匹配到关键词，将不算作回复消息"></a-alert>
-                <a-form-item label="全匹配" class="mt24">
-                    <a-input placeholder="请输入自定义匹配关键词"
-                             :max-length="20"
-                             v-model:value="input.staff_single_keywords_full"
-                             @keydown.enter="inputHandle('staff_single_keywords','full')"
-                             @blur="inputHandle('staff_single_keywords','full')"
-                             style="width: 360px"/>
-                    <div class="keyword-tags">
-                        <a-tag v-for="(keyword,i) in config.staff_single_keywords.full"
-                               class="zm-customize-tag"
-                               style="margin: 8px 8px 0 0;"
-                               :closable="MODE != 2"
-                               @close="(e) => removeTag('staff_single_keywords','full',i,e)"
-                               :key="i">{{ keyword }}
-                        </a-tag>
-                    </div>
-                </a-form-item>
-                <a-form-item label="半匹配">
-                    <a-input placeholder="请输入自定义匹配关键词"
-                             :max-length="20"
-                             v-model:value="input.staff_single_keywords_half"
-                             @keydown.enter="inputHandle('staff_single_keywords','half')"
-                             @blur="inputHandle('staff_single_keywords','half')"
-                             style="width: 360px"/>
-                    <div class="keyword-tags">
-                        <a-tag v-for="(keyword,i) in config.staff_single_keywords.half"
-                               class="zm-customize-tag"
-                               style="margin: 8px 8px 0 0;"
-                               closable
-                               @close="(e) => removeTag('staff_single_keywords','half',i,e)"
-                               :key="i">{{ keyword }}
-                        </a-tag>
-                    </div>
-                </a-form-item>
-                <div class="zm-fixed-bottom-box in-module">
-                    <a-button type="primary">保 存</a-button>
-                </div>
-            </div>
-        </a-card>
-    </div>
+            </a-card>
+        </div>
     </div>
 </template>
 

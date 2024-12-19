@@ -20,6 +20,11 @@ class UpdateCorpConfigBaseDTO extends BaseDTO
 
     public ?string $callbackEventAesKey = null;
 
+    public ?string $corpName = null;
+
+    public ?string $corpLogo = null;
+
+
     public function getRules(): array
     {
         return [
@@ -42,6 +47,17 @@ class UpdateCorpConfigBaseDTO extends BaseDTO
                     notExactlyMessage: '回调事件aes_key字段应该是43字符长度',
                     skipOnEmpty: true,
                 ),
+            ],
+            'corpName' => [
+                new StringType(message: '企业名称字段格式错误', skipOnEmpty: true),
+                new Length(
+                    max: 12,
+                    greaterThanMaxMessage: '企业名称最大长度为12个字',
+                    skipOnEmpty: true,
+                ),
+            ],
+            'corpLogo' => [
+                new StringType(message: '企业logo格式错误', skipOnEmpty: true),
             ],
         ];
     }

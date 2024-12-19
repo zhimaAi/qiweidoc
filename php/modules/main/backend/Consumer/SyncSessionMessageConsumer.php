@@ -11,7 +11,7 @@ class SyncSessionMessageConsumer
 {
     public function __construct()
     {
-        
+
     }
 
     /**
@@ -19,6 +19,7 @@ class SyncSessionMessageConsumer
      */
     public function handle(): void
     {
+        /** @var CorpModel $corp */
         $corp = CorpModel::query()->getOne();
 
         if (!empty($corp) && !empty($corp->get('chat_private_key'))) {

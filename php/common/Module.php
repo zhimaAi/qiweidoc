@@ -42,7 +42,7 @@ class Module
 
         return new $class();
     }
-    
+
     /**
     * 获取所有模块目录，并确保main模块在第一位
     *
@@ -62,27 +62,32 @@ class Module
 
         return $dirs;
     }
-    
+
     public static function getModuleConfigCacheKey(string $moduleName)
     {
         return "module_{$moduleName}_config";
     }
-    
-    public static function getModuleRunningCacheKey(string $moduleName)
+
+    public static function getModuleRunningCacheKey(string $moduleName): string
     {
         return "module_{$moduleName}_paused_status";
     }
-    
-    public static function getModuleHttpPortCacheKey($moduleName)
+
+    public static function getModuleHttpPortCacheKey($moduleName): string
     {
         return "module_{$moduleName}_http_port";
     }
-    
-    public static function getModuleRpcPortCacheKey($moduleName)
+
+    public static function getModuleRpcPortCacheKey($moduleName): string
     {
         return "module_{$moduleName}_rpc_port";
     }
-    
+
+    public static function getModuleStartedAtCacheKey($moduleName): string
+    {
+        return "module_{$moduleName}_started_at";
+    }
+
     /**
      * 获取指定模块的配置信息
      */
@@ -92,10 +97,11 @@ class Module
         $result['paused'] = Yii::cache()->psr()->get(self::getModuleRunningCacheKey($moduleName));
         $result['http_port'] = Yii::cache()->psr()->get(self::getModuleHttpPortCacheKey($moduleName));
         $result['rpc_port'] = Yii::cache()->psr()->get(self::getModuleRpcPortCacheKey($moduleName));
-        
+        $result['started_at'] = Yii::cache()->psr()->get(self::getModuleStartedAtCacheKey($moduleName));
+
         return $result;
     }
-    
+
     /**
     * 启动模块
     */
@@ -113,51 +119,53 @@ class Module
             // http
             'MODULE_HTTP_PORT' => $httpPort,
             'MODULE_STATIC_DIR' => $moduleConfig['public_dir'],
-            
+
             // 数据库
             'DB_HOST' => $_ENV['DB_HOST'],
             'DB_PORT' => $_ENV['DB_PORT'],
             'DB_DATABASE' => $_ENV['DB_DATABASE'],
             'DB_USERNAME' => $name,
             'Db_PASSWORD' => $name,
-            
+
             // 消费者配置
             ...$moduleConfig['consumer_route_list'],
         ];
-        
+
         (new Manager(Yii::getDefaultRpcClient()))->create(
             name: $name,
-            serviceNameInLogs: true,
             command: "golang/build/app {$name}",
+            processNum: 1,
             remainAfterExit: true,
             env: $env,
-            processNum: 1,
             restartSec: 5,
+            serviceNameInLogs: true,
         );
-        
+
         Yii::cache()->psr()->setMultiple([
             self::getModuleRunningCacheKey($name) => false,
             self::getModuleHttpPortCacheKey($name) => $httpPort,
             self::getModuleRpcPortCacheKey($name) => $rpcPort,
+            self::getModuleStartedAtCacheKey($name) => now(),
         ]);
     }
-    
+
     /**
      * 禁用模块
      */
     public static function disable(string $name)
     {
         (new Manager(Yii::getDefaultRpcClient()))->terminate($name);
-       
+
         $cacheKey = self::getModuleRunningCacheKey($name);
         Yii::cache()->psr()->set($cacheKey, true);
-        
+
         Yii::cache()->psr()->deleteMultiple([
             self::getModuleHttpPortCacheKey($name),
             self::getModuleRpcPortCacheKey($name),
+            self::getModuleStartedAtCacheKey($name),
         ]);
     }
-    
+
     private static function findAvailablePorts(int $start, int $end, int $count): array
     {
         $ports = [];
@@ -182,7 +190,7 @@ class Module
             fclose($connection);
             return true; // 端口未被占用
         }
-        
+
         return false; // 端口被占用
     }
 

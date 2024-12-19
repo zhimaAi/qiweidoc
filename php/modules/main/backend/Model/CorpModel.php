@@ -46,7 +46,9 @@ class CorpModel extends BaseModel
             "sync_customer_time" => 'string',
             "show_customer_tag" => 'int',
             "show_customer_tag_config" => 'array',
-            "show_is_read" => 'int'
+            "show_is_read" => 'int',
+            "corp_name"=>'string',
+            "corp_logo"=>'string',
         ];
     }
 

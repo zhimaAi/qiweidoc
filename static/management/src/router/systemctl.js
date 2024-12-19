@@ -10,6 +10,11 @@ export default [
         component: () => import('../views/systemctl/account.vue')
     },
     {
+        path: '/systemctl/firm',
+        name: 'systemctlFirm',
+        component: () => import('../views/systemctl/firm.vue')
+    },
+    {
         path: '/systemctl/fileExport',
         name: 'systemctlFileExport',
         component: () => import('../views/systemctl/fileExport.vue')

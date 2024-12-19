@@ -8,7 +8,7 @@
                     @click="remove(i)"/>
             </div>
             <div class="time-range-body">
-                <a-checkbox-group v-model:checked="item.week" :disabled="disabled" @change="change">
+                <a-checkbox-group v-model:value="item.week" :disabled="disabled" @change="change">
                     <a-checkbox
                         v-for="week in weeks"
                         :key="week.value"
@@ -22,18 +22,17 @@
                     <div class="time-item"
                          v-for="(range,index) in item.ranges"
                          :key="index">
-                        <a-range-picker
+                        <a-time-range-picker
                             v-model:value="range.times"
                             :disabled="disabled"
                             @change="change"
-                            popupClassName="customize-time-range"
                             style="width: 300px"
                             format="HH:mm"
                             value-format="HH:mm"
                             :show-time="{format:'HH:mm'}"
                             :placeholder="['开始时间','结束时间']"
-                            :mode="['time','time']">
-                        </a-range-picker>
+                        >
+                        </a-time-range-picker>
                         <div class="operator-box ml8">
                             <PlusCircleOutlined
                                 :class="['add',{disabled: disabled || item.ranges.length >= timeLimit}]"
@@ -87,7 +86,7 @@ const timeItemStruct = {
 const dataItemStruct = {
     week: [],
     ranges: [
-        timeItemStruct
+        copyObj(timeItemStruct),
     ],
 }
 const data = ref([
@@ -186,6 +185,12 @@ function input(value) {
 function change() {
     emit('change')
 }
+
+defineExpose({
+    input,
+    output,
+    verify,
+})
 </script>
 
 <style scoped lang="less">

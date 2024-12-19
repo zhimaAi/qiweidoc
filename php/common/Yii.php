@@ -124,7 +124,7 @@ final class Yii
     public static function getRpcClient() : RPC
     {
         static $relays = [];
-        
+
         $address = Environment::fromGlobals()->getRPCAddress();
         if ($address == 'tcp://127.0.0.1:6001') {
             $cacheKey = Module::getModuleRpcPortCacheKey(Module::getCurrentModuleName());

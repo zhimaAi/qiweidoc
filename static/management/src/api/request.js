@@ -1,7 +1,9 @@
 import axios from 'axios';
 import {message} from 'ant-design-vue';
-import {getAuthToken} from "@/utils/cache";
+import {getAuthToken, getH5AuthToken} from "@/utils/cache";
 import {logoutHandle} from "@/utils/tools";
+
+export const H5RequestHeader = {'H5-Special-Request': true}
 
 const request = axios.create({
     headers: {
@@ -17,10 +19,12 @@ const request = axios.create({
 // request拦截器
 request.interceptors.request.use(
     config => {
+        // h5请求
+        let tokenFn = config.headers['H5-Special-Request'] ? getH5AuthToken : getAuthToken
         // 获取 token
-        const token = getAuthToken();
+        const token = tokenFn();
         if (token) {
-            config.headers.Authorization = `Bearer ${getAuthToken()}`;
+            config.headers.Authorization = `Bearer ${token}`;
         }
         return config; // 返回修改后的 config
     },

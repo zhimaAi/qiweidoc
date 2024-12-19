@@ -92,6 +92,11 @@ const formState = reactive({
   remember: true
 })
 
+const getCUrrentCorpData = async() => {
+  const currentCorp = await getCurrentCorp()
+  store.commit('setCompany', currentCorp.data)
+}
+
 onMounted(async () => {
     // console.log('ww', ww)
     // console.log('SDK_VERSION', ww.SDK_VERSION)
@@ -99,7 +104,7 @@ onMounted(async () => {
 })
 
 const localLoginTest = () => {
-    loginAfterHandle('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MywidXNlcmlkIjoiTHVvWWluZ0JpbkZlbiIsImNvcnBfaWQiOiJ3dzVmNDMyYjNhMjRhOWI5ZjEiLCJleHAiOjE3MzQxNDUyMjJ9.eBxcd-FtjcB2HJyqxF12WWVYyA4idjeawTR7d3aEkO0')
+    loginAfterHandle('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MTEsInVzZXJpZCI6Ikx1b1lpbmdCaW5GZW4iLCJjb3JwX2lkIjoid3c1ZjQzMmIzYTI0YTliOWYxIiwiZXhwIjoxNzM0Njc2MzY5fQ.2zvZzt7YyQe09H7rzwyeJ6BDR0-sGid9w9Fc9q8ZbYU')
 }
 
 const onChangeLogin = (type) => {
@@ -189,10 +194,11 @@ const loginAfterHandle = async token => {
         const {corpInfo} = await loginHandle(token)
         proxy.$message.success('登录成功，正在跳转主页')
         setTimeout(() => {
+            getCUrrentCorpData()
             // chat_public_key_version > 0表示已经配置会话存档
             // 否则去配置
             if (corpInfo.data?.chat_public_key_version > 0) {
-                router.push({path: '/index'})
+                router.push({path: '/'})
             } else {
                 router.push({path: '/authorizedAccess/guide'})
             }

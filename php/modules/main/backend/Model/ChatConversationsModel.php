@@ -23,19 +23,20 @@ class ChatConversationsModel extends BaseModel
     protected function casts(): array
     {
         return [
-            "id" => 'string',
-            "created_at" => 'string',
-            "updated_at" => 'string',
-            "corp_id" => 'string',
-            "from" => 'string',
-            "to" => 'string',
-            "type" => EnumChatConversationType::class,
-            "from_role" => EnumChatMessageRole::class,
-            "to_role" => EnumChatMessageRole::class,
-            "last_msg_time" => 'string',
-            "is_collect" => EnumChatCollectStatus::class,
-            "collect_reason" => 'string',
-            "collect_time" => 'string',
+            "id"                    => 'string',
+            "created_at"            => 'string',
+            "updated_at"            => 'string',
+            "corp_id"               => 'string',
+            "from"                  => 'string',
+            "to"                    => 'string',
+            "type"                  => EnumChatConversationType::class,
+            "from_role"             => EnumChatMessageRole::class,
+            "to_role"               => EnumChatMessageRole::class,
+            "last_msg_time"         => 'string',
+            "is_collect"            => EnumChatCollectStatus::class,
+            "collect_reason"        => 'string',
+            "collect_time"          => 'string',
+            'staff_last_reply_time' => 'string',
         ];
     }
 }

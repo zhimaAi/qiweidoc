@@ -1,5 +1,5 @@
 const {defineConfig} = require('@vue/cli-service')
-const dev_host = process.env.VUE_APP_HOST || 'http://hhdev2.xiaokefu.cn';
+const dev_host = process.env.VUE_APP_HOST || 'http://hhdev3.xiaokefu.cn';
 const path = require("path");
 const webpack = require('webpack');
 const ModuleConfig = require('./module-config');
@@ -9,9 +9,12 @@ const Module = process.env.VUE_APP_MODULE || 'main'
 if (Module && ModuleConfig[Module]) {
     outputDir = RootPath + ModuleConfig[Module].buildOutputPath
 }
-let publicPath = '/build/'
+let publicPath
 if (process.env.NODE_ENV === 'development') {
     publicPath = '/'
+} else {
+    publicPath = ModuleConfig[Module].buildOutputPath.replace('/php', '')
+    publicPath = publicPath.replace('/public', '')
 }
 
 module.exports = defineConfig({

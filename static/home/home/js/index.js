@@ -224,6 +224,23 @@ document.addEventListener('DOMContentLoaded', function() {
   // setUserInfo({"id":3,"corp_id":"ww5f432b3a24a9b9f1","userid":"LuoYingBinFen","account":"ww5f432b3a24a9b9f1_LuoYingBinFen","password":"","created_at":"2024-11-19 16:38:36","updated_at":"2024-11-19 16:38:36","cacheTimestamp":-1})
   $('#tabParent .main-title-item').hover(handleClick)
 
+function deleteCookieForDomain(name, domain) {
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; domain=${domain}; path=/`;
+}
+
+function formatLocation (domain=null) {
+    // zhimahuihua.com
+    // demo.zhimahuihua.com
+    !domain && (domain = window.location.host)
+    if (/^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z0-9]{2,}$/.test(domain)) {
+        // 如果是一级域名，则添加点
+        return '.' + domain;
+    } else {
+        // 取第二个.后面的内容
+        return domain.match(/^[^.]*(.*)/)[1]
+    }
+}
+
 
 function isJsonThenParse(str) {
     try {
@@ -248,9 +265,10 @@ function isJsonThenParse(str) {
   }
 
   $('#loginOut').on('click', function () {
-    Cookie.remove(USER_AUTH_TOKEN); // 删除cookie
-    Cookie.remove(USER_INFO_KEY); // 删除cookie
-    Cookie.remove(CORP_INFO_KEY); // 删除cookie
+    // Cookie.remove(USER_AUTH_TOKEN); // 删除cookie
+    // Cookie.remove(USER_INFO_KEY); // 删除cookie
+    // Cookie.remove(CORP_INFO_KEY); // 删除cookie
+    deleteCookieForDomain(USER_INFO_KEY, formatLocation())
     del(USER_AUTH_TOKEN)
     del(USER_INFO_KEY)
     del(CORP_INFO_KEY)

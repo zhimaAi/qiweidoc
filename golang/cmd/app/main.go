@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/roadrunner-server/app-logger/v5"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -63,6 +64,7 @@ func startEndureApp() error {
 		&rpc.Plugin{},
 		&server.Plugin{},
 		&service.Plugin{},
+		&app.Plugin{},
 
 		// http
 		&httpPlugin.Plugin{},

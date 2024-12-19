@@ -17,9 +17,20 @@
                         :key="menu.key"
                         :icon="menu.icon"
                         :title="menu.title">
-                        <a-menu-item v-for="sub in menu.subs" :key="sub.key" :class="{'menus-hide': sub.hide}">
+                        <a-menu-item v-for="sub in menu.subs" :key="sub.key">
                             <router-link :to="{path: sub.route}">{{ sub.title }}</router-link>
                         </a-menu-item>
+                        <!---插件菜单时--->
+                        <template v-if="menu.key === 'FunctionCenter'">
+                            <template v-for="plugin in lists">
+                                <a-menu-item
+                                    v-if="plugin.enable"
+                                    @click="pluginSwitch(plugin)"
+                                    :key="`zm-plugin-${plugin.name}`">
+                                    {{ plugin.title }}
+                                </a-menu-item>
+                            </template>
+                        </template>
                     </a-sub-menu>
                     <a-menu-item
                         v-else
@@ -43,7 +54,7 @@ import {
     SettingOutlined,
     MessageOutlined
 } from '@ant-design/icons-vue';
-import { getModules } from "@/api/company";
+import {getModules} from "@/api/company";
 
 const store = useStore()
 const route = useRoute();
@@ -63,6 +74,7 @@ const state = reactive({
         'SessionStatistics'
     ],
 });
+
 const userInfo = computed(() => {
     return store.getters.getUserInfo
 })
@@ -93,8 +105,8 @@ const menus = ref([
         icon: h(AppstoreOutlined),
         subs: [
             {key: 'plugManagementHome', title: '功能插件', route: '/plug/index'},
-            {key: 'hintKeywordsHome', title: '敏感词提醒', route: '/module/hint_keywords/index'},
-            {key: 'CustomerLabelInex', title: '客户标签', route: '/module/customer_tag/index'},
+            // {key: 'hintKeywordsHome', title: '敏感词提醒', route: '/module/hint_keywords/index'},
+            // {key: 'CustomerLabelInex', title: '客户标签', route: '/module/customer_tag/index'},
         ]
     },
     {
@@ -102,7 +114,7 @@ const menus = ref([
         title: '客户管理',
         icon: h(TeamOutlined),
         subs: [
-            { key: 'customerManagementHome', title: '客户管理', route: '/customerManagement/index' }
+            {key: 'customerManagementHome', title: '客户管理', route: '/customerManagement/index'}
             // ,
             // {key: 'customerManagementTag', title: '客户标签', route: '/customerManagement/tag'}
         ]
@@ -122,61 +134,47 @@ const menus = ref([
         icon: h(SettingOutlined),
         subs: [
             {key: 'systemctlAuthConfig', title: '配置信息', route: '/systemctl/authConfig'},
+            {key: 'systemctlFirm', title: '企业设置', route: '/systemctl/firm'},
             {key: 'systemctlAccount', title: '账号管理', route: '/systemctl/account'},
             // {key: 'systemctlFileExport', title: '文件导出记录', route: '/systemctl/fileExport'},
         ]
     },
 ])
 
-function formatData (data) {
-  menus.value.map((item) => {
-    if (item.key === 'FunctionCenter') {
-      item.subs.map(ctem => {
-        if (ctem.key === 'CustomerLabelInex') {
-          data.map(dtem => {
-            if (dtem.name === 'customer_tag') {
-              ctem.hide = !dtem.enable
-            }
-          })
-        }
-        if (ctem.key === 'hintKeywordsHome') {
-          data.map(dtem => {
-            if (dtem.name === 'hint_keywords') {
-              ctem.hide = !dtem.enable
-            }
-          })
-        }
-      })
-    }
-  })
-}
-
 const loadData = () => {
-  loading.value = true
-  let params = {}
-  getModules(params).then(res => {
-    if (res.status === 'success') {
-      let data = JSON.parse(JSON.stringify(res.data))
-      data.map(dtem => {
-        dtem.enable = !dtem.paused
-      })
-      formatData(data)
-      store.commit('setModules', data)
-    }
-  }).finally(() => {
-    loading.value = false
-  })
+    loading.value = true
+    let params = {}
+    getModules(params).then(res => {
+        let modules = res.data || []
+        modules.map(item => {
+            item.enable = !item.paused
+        })
+        store.commit('setModules', modules)
+    }).finally(() => {
+        loading.value = false
+    })
 }
 
-watch(() => lists.value, (data) => {
-  formatData(data)
-})
+const pluginSwitch = plugin => {
+    let link = `/modules/${plugin.name}/`
+    if (process.env.NODE_ENV === 'development') {
+        let host = process.env.VUE_APP_HOST || 'http://hhdev2.xiaokefu.cn'
+        link = host + link
+    }
+    router.push({
+        path: '/plug/render',
+        query: {
+            _key: `zm-plugin-${plugin.name}`,
+            link: encodeURIComponent(link)
+        }
+    })
+}
 
 onMounted(() => {
     loadData()
-    // const query = route.query
+    const query = route.query
     // state.selectedKeys = [query._key || route?.meta?.selectNav || route.name]
-    state.selectedKeys = [route.meta.activeMenuKey || route.name]
+    state.selectedKeys = [query._key || route.meta.activeMenuKey || route.name]
     switch (Number(userInfo.value?.role_id?.value || 0)) {
         case 1:
             // 普通员工

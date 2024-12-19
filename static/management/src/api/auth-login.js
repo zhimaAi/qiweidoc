@@ -1,5 +1,18 @@
 import request from "@/api/request";
 
+export const uploadImage = (data) => {
+    return request.post('/api/corps/upload/logo', data, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        },
+        transformRequest: {}
+    })
+}
+
+export const setNameLogoSave = (data = {}) => {
+    return request.put('/api/corps/name-logo/save', data)
+}
+
 export const saveAccount = (data = {}) => {
     return request.put('/api/users/current', data)
 }
@@ -10,6 +23,10 @@ export const loginByAccount = (data = {}) => {
 
 export const checkInit = (data = {}) => {
     return request.post('/api/corps/init/check', data)
+}
+
+export const getNameLogo = (data = {}) => {
+    return request.get('/api/corps/name-logo/get', {params: data})
 }
 
 export const getCurrentCorp = (data = {}) => {

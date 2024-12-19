@@ -8,12 +8,14 @@
 namespace Modules\Main\Service;
 
 use Carbon\Carbon;
+use Common\Broadcast;
 use Common\Job\Producer;
 use Common\Yii;
 use Exception;
 use Modules\Main\Consumer\DownloadChatSessionMediasConsumer;
 use Modules\Main\Enum\EnumChatConversationType;
 use Modules\Main\Enum\EnumChatMessageRole;
+use Modules\Main\Enum\EnumMessageType;
 use Modules\Main\Model\ChatConversationsModel;
 use Modules\Main\Model\ChatMessageModel;
 use Modules\Main\Model\CorpModel;
@@ -26,7 +28,6 @@ use Throwable;
 class ChatSessionPullService
 {
     private const MESSAGE_LIMIT = 1000;
-    private static array $messageTypeHandlers;
     private static CorpModel $corp;
     const ValidMediaType = [
         'image',
@@ -45,7 +46,6 @@ class ChatSessionPullService
     public static function handleMessage(CorpModel $corp): void
     {
         self::$corp = $corp;
-        self::initMessageTypeHandlers();
 
         // 拉取消息
         $messages = self::fetchMessages();
@@ -55,7 +55,7 @@ class ChatSessionPullService
                 $lastSeq = $msg['seq'];
             }
 
-            // 过滤掉不能识别的消息
+            // 过滤掉不能识别和重复的消息
             if (!self::isValidMessage($msg)) {
                 continue;
             }
@@ -76,6 +76,9 @@ class ChatSessionPullService
             if (in_array($messageData->get('msg_type'), self::ValidMediaType)) {
                 Producer::dispatch(DownloadChatSessionMediasConsumer::class, ['corp' => $corp, 'message' => $messageData]);
             }
+
+            // 广播
+            Broadcast::event('chat-session-pull')->send(json_encode([$messageData->toArray()]));
         }
 
         // 更新消息序号
@@ -128,41 +131,6 @@ class ChatSessionPullService
         if (!empty($res['url'])) {
             $message->update(['msg_content' => $res['url']]);
         }
-    }
-
-    private static function initMessageTypeHandlers(): void
-    {
-        self::$messageTypeHandlers = [
-            'text' => fn ($data) => ['raw_content' => $data['text'], 'msg_content' => $data['text']['content']],
-            'image' => fn ($data) => ['raw_content' => $data['image']],
-            'revoke' => fn ($data) => ['raw_content' => $data['revoke']],
-            'disagree' => fn ($data) => ['raw_content' => $data['agree']],
-            'voice' => fn ($data) => ['raw_content' => $data['voice']],
-            'video' => fn ($data) => ['raw_content' => $data['video']],
-            'card' => fn ($data) => ['raw_content' => $data['card']],
-            'location' => fn ($data) => ['raw_content' => $data['location']],
-            'emotion' => fn ($data) => ['raw_content' => $data['emotion']],
-            'file' => fn ($data) => ['raw_content' => $data['file']],
-            'link' => fn ($data) => ['raw_content' => $data['link']],
-            'weapp' => fn ($data) => ['raw_content' => $data['weapp']],
-            'chatrecord' => fn ($data) => ['raw_content' => $data['chatrecord']],
-            'todo' => fn ($data) => ['raw_content' => $data['todo']],
-            'vote' => fn ($data) => ['raw_content' => $data['vote']],
-            'collect' => fn ($data) => ['raw_content' => $data['collect']],
-            'redpacket' => fn ($data) => ['raw_content' => $data['redpacket']],
-            'meeting' => fn ($data) => ['raw_content' => $data['meeting']],
-            'meeting_notification' => fn ($data) => ['raw_content' => $data['info']],
-            'docmsg' => fn ($data) => ['raw_content' => $data['doc']],
-            'markdown' => fn ($data) => ['raw_content' => $data['info']],
-            'news' => fn ($data) => ['raw_content' => $data['news']],
-            'calendar' => fn ($data) => ['raw_content' => $data['calendar']],
-            'mixed' => fn ($data) => ['raw_content' => $data['mixed']],
-            'meeting_voice_call' => fn ($data) => ['raw_content' => array_merge($data['meeting_voice_call'], ['voiceid' => $data['voiceid']])],
-            'voip_doc_share' => fn ($data) => ['raw_content' => $data['voip_doc_share']],
-            'external_redpacket' => fn ($data) => ['raw_content' => $data['redpacket']],
-            'sphfeed' => fn ($data) => ['raw_content' => $data['sphfeed']],
-            'voiptext' => fn ($data) => ['raw_content' => $data['info']],
-        ];
     }
 
     /**
@@ -252,7 +220,7 @@ class ChatSessionPullService
                 }
             }
 
-            $conversation = ChatConversationsModel::create([
+            $data = [
                 'id' => $id,
                 'corp_id' => self::$corp->get('id'),
                 'type' => $type,
@@ -261,9 +229,17 @@ class ChatSessionPullService
                 'to' => $type == EnumChatConversationType::Group ? $messageData->get('roomid') : $messageData->get('to_list')[0],
                 'to_role' => $toRole,
                 'last_msg_time' => $messageData->get('msg_time'),
-            ]);
+            ];
+            if ($data['from_role'] == EnumChatMessageRole::Staff) {
+                $data['staff_last_reply_time'] = Carbon::now()->format('Y-m-d H:i:s.v');
+            }
+            $conversation = ChatConversationsModel::create($data);
         } else {
-            $conversation->update(['last_msg_time' => $messageData->get('msg_time')]);
+            $data = ['last_msg_time' => $messageData->get('msg_time')];
+            if ($messageData->get('from_role') == EnumChatMessageRole::Staff) {
+                $data['staff_last_reply_time'] = Carbon::now()->format('Y-m-d H:i:s.v');
+            }
+            $conversation->update($data);
         }
 
         return $conversation;
@@ -276,13 +252,10 @@ class ChatSessionPullService
      */
     private static function processMessage(array $msg): ChatMessageModel
     {
-        $content = [];
-
         $decryptedData = json_decode($msg['decrypted_data'], true);
         $msgType = $decryptedData['msgtype'] ?? '';
-        if (isset(self::$messageTypeHandlers[$msgType])) {
-            $content = (self::$messageTypeHandlers[$msgType])($decryptedData);
-        }
+        $enumMsgType = EnumMessageType::from($msgType);
+        $content = $enumMsgType->getMessageHandler()($decryptedData);
 
         $messageData = ChatMessageModel::create(array_merge([
             'corp_id' => self::$corp->get('id'),
@@ -316,7 +289,7 @@ class ChatSessionPullService
         return $messageData;
     }
 
-    public static function hasExternalPrefix($id)
+    public static function hasExternalPrefix($id): bool
     {
         $prefixList = ['wo', 'wm'];
         foreach ($prefixList as $prefix) {

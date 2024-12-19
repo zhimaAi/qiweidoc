@@ -48,7 +48,7 @@ class UserModel extends BaseModel implements IdentityInterface, IdentityWithToke
         return 'id';
     }
 
-    public function getUserInfoById(int $id): UserModel
+    public function getUserInfoById(int $id): ?UserModel
     {
         $key = "user:{$id}";
 

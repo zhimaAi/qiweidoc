@@ -1,6 +1,7 @@
 <?php
 // Copyright © 2016- 2024 Sesame Network Technology all right reserved
 
+use Carbon\Carbon;
 use Yiisoft\Db\Migration\MigrationBuilder;
 use Zxing\QrReader;
 
@@ -88,9 +89,13 @@ function migrate_exec(MigrationBuilder $b, string $statements)
 /**
  * 获取当前时间
  */
-function now()
+function now(bool $ms = false)
 {
-    return date('Y-m-d H:i:s');
+    $format = "Y-m-d H:i:s";
+    if ($ms) {
+        $format .= ".v";
+    }
+    return Carbon::now()->format($format);
 }
 
 /**
@@ -162,7 +167,7 @@ function requestByPost($url, $json,$time_out=0,$header=null)
     }
     $result = curl_exec($ch);
     if (curl_errno($ch)) {
-        wkLog("curl错误：".curl_error($ch),'requestByPost');
+        ddump("curl错误：".curl_error($ch));
     }
     curl_close($ch);
     return $result;
@@ -186,3 +191,17 @@ function checkImgIsQrcode($img_url)
     }
 }
 
+/**
+ * 判断是否是微信emoji表情（支持连续多个）
+ */
+function isWeChatEmoji(string $content): bool
+{
+    if (ctype_digit($content)) {
+        return false;
+    }
+
+    $bracketPattern = '/^\[[\x{4e00}-\x{9fa5}a-zA-Z\p{P}]+\]$/u'; // 修改后的正则表达式
+    $emojiPattern = '/^[\p{Emoji}]+$/u';
+
+    return (preg_match($bracketPattern, trim($content)) === 1) || (preg_match($emojiPattern, trim($content)) === 1);
+}

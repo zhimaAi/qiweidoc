@@ -64,10 +64,14 @@ abstract class BaseModel
     /**
      * @throws Throwable
      */
-    public static function query(): DBQuery
+    public static function query(string $alias = ''): DBQuery
     {
         $model = new static();
-        $query = (new DBQuery(Yii::db()))->from($model->getTableName());
+        $table = $model->getTableName();
+        if (!empty($alias)) {
+            $table .= " as {$alias}";
+        }
+        $query = (new DBQuery(Yii::db()))->from($table);
         $query->setModel($model);
 
         if ($model->usesSoftDelete) {

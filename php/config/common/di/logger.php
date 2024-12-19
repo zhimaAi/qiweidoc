@@ -4,7 +4,7 @@
 declare(strict_types=1);
 
 use Common\Module;
-use Common\RoadRunnerLogTarget;
+use Common\RoadRunnerAppLogTarget;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Spiral\RoadRunner\Environment;
@@ -40,21 +40,19 @@ return [
     'custom.logger' => static function (ContainerInterface $container) {
         return function (string $business = '') use ($container) {
             $module = Module::getCurrentModuleName();
-            $context = [
-                'env' => $_ENV['YII_ENV'],
-                'mode' => Environment::fromGlobals()->getMode() ?: 'cli',
-                'module' => $module,
-                'business' => $business,
-            ];
+            $context = [];
+            if (!empty($business)) {
+                $context = ['category' => $business];
+            }
 
             $aliases = $container->get(Aliases::class);
-            $logName = $aliases->get("@runtime/logs/{$module}/{$business}/" . date('Y-m-d') . '.log');
+            $logName = $aliases->get("@runtime/logs/{$module}/{$business}/" . date('Y-m-d') . ".log");
             $fileTarget = new FileTarget($logName);
 
             $logger = new Logger(
-                [$fileTarget, new RoadRunnerLogTarget()],
+                [$fileTarget, new RoadRunnerAppLogTarget()],
                 contextProvider: new CompositeContextProvider(
-                    new SystemContextProvider(traceLevel: 3, excludedTracePaths: ['vendor/yiisoft/di']),
+                    new SystemContextProvider(traceLevel: 5, excludedTracePaths: ['vendor/yiisoft/di']),
                     new CommonContextProvider($context),
                 )
             );
@@ -69,13 +67,8 @@ return [
         $aliases = $container->get(Aliases::class);
         $logName = $aliases->get('@runtime/logs/db.log');
         $fileTarget = new FileTarget($logName);
-        $context = [
-            'env' => $_ENV['YII_ENV'],
-            'mode' => Environment::fromGlobals()->getMode() ?: 'cli',
-        ];
-        $logger = new Logger([$fileTarget], new CommonContextProvider($context));
+        $logger = new Logger([$fileTarget], new CommonContextProvider([]));
         $logger->setFlushInterval(3);
-
         return $logger;
     },
 ];

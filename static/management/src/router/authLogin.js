@@ -34,15 +34,9 @@ export default [
         name: 'authHome',
         component: () => import('../views/authorizedAccess/auth.vue')
     },
-
-    {
-        path: '/module/test',
-        name: 'moduleTest',
-        component: () => import('../views/moduleTest.vue')
-    },
     {
         path: '/module/group-chat-stat/index',
-        name: 'GroupChatStatInex',
+        name: 'GroupChatStatIndex',
         component: () => import('@/views/Modules/group_chat_stat/index.vue')
     },
     {

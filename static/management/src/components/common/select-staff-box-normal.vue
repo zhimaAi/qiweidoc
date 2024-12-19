@@ -97,7 +97,6 @@ const deleteStaff = (index) => {
 }
 
 const onShowStaff = () => {
-    console.log('selectedStaff222.value', selectStaff.value)
     setStaff.value.show(selectStaff.value)
 }
 
