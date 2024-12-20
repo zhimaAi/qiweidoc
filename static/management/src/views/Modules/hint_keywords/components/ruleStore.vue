@@ -60,10 +60,10 @@
         </a-checkbox-group>
       </a-form-item>
       <a-form-item></a-form-item>
-      <Foot style="padding-left: 130px;">
+      <div class="zm-fixed-bottom-box in-module" style="padding-left: 130px;">
         <a-button @click="cancel">取 消</a-button>
         <a-button @click="save" :loading="saving" class="ml8" type="primary">保 存</a-button>
-      </Foot>
+      </div>
     </a-form>
     <!-- <WhitelistModal ref="whitelistRef" @ok="whitelistChange" /> -->
 
@@ -76,7 +76,6 @@
 import { ref, reactive, onMounted } from 'vue'
 import SelectChatBox from "@/components/common/select-chat-box.vue";
 // import SelectStaffBoxNormal from "../../../components/common/select-staff-box-normal.vue";
-import Foot from "@/components/common/foot";
 import { copyObj, assignData } from "@/utils/tools";
 // import {ruleInfo, ruleSave, whiteList} from "../../../api/auth-mode/sensitive-words";
 // import SelectStaffBox from "../../../components/common/select-staff-box.vue";
@@ -253,7 +252,7 @@ const verify = () => {
     // formState.staff_list = []
     selectedStaffs.value = []
   }
-  if (!formState.hint_keywords.length && !formState.target_msg_type.length) throw "敏感词或敏感行为至少完善一项"
+  if (!(formState.hint_keywords.length || formState.hint_group_ids.length || formState.target_msg_type.length)) throw "敏感词或敏感行为至少完善一项"
 }
 
 const save = () => {
@@ -316,10 +315,9 @@ onMounted(() => {
 
 .container {
   background: #FFFFFF;
-  padding-bottom: 80px;
-  margin: 16px;
+  margin: 12px;
   padding: 24px 0;
-  min-height: calc(100vh - 180px);
+  min-height: 100vh;
 
   /deep/ .ant-card-head {
     padding: 0 24px;

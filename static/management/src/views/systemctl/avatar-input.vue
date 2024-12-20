@@ -16,14 +16,14 @@
         <img alt="example" style="width: 100%" :src="previewImage" />
       </a-modal>
     </div>
-    <img class="avatar" v-if="value" :src="value" alt="avatar" />
+    <img class="avatar" :src="value || DEFAULT_ZH_LOGO" alt="avatar" />
   </div>
 </template>
 
 <script setup>
 import { ref, watch } from 'vue'
 import { message, Form } from 'ant-design-vue'
-import { LoadingOutlined, UploadOutlined } from '@ant-design/icons-vue'
+import {DEFAULT_ZH_LOGO} from "@/constants";
 
 function getBase64 (file) {
   return new Promise((resolve, reject) => {

@@ -1,31 +1,22 @@
 <template>
-    <MainLayout>
-      <template #navbar>
-        <a-breadcrumb v-if="links.length > 1" class="nav-tabs">
-            <a-breadcrumb-item v-for="(item, index) in links" :key="item.name">
-                <template v-if="index !== links.length - 1">
-                    <router-link v-if="item.to" :to="{ path: item.to }">
-                    {{ item.name }}
-                    </router-link>
-                    <a v-else @click="$router.back(-1)">{{ item.name }}</a>
-                </template>
-                <span v-else>{{ query.task_id ? `编辑${item.name}`: `新建${item.name}` }}</span>
-            </a-breadcrumb-item>
-        </a-breadcrumb>
-      </template>
+    <div>
+      <MainNavbar :title="[
+           {name: '敏感词提醒', route: '/module/hint_keywords/index'},
+           {name: query.task_id ? '编辑规则' : '新建规则'}
+      ]"/>
       <div class="sensitive-panel">
           <LoadingBox v-if="loading"/>
           <MainPanelLoadRuleAdd />
       </div>
-    </MainLayout>
+    </div>
   </template>
 
   <script setup>
   import { onMounted, ref, computed } from 'vue';
-  import MainLayout from "@/components/mainLayout.vue";
   import { useRoute } from 'vue-router';
   import LoadingBox from "@/components/loadingBox.vue";
   import MainPanelLoadRuleAdd from "./components/ruleStore.vue";
+  import MainNavbar from "@/components/mainNavbar.vue";
 
   const route = useRoute()
   const query = route.query

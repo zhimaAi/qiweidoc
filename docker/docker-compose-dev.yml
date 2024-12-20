@@ -95,3 +95,9 @@ services:
       - ${EXTERNAL_SSH_PORT:-22}:22
     volumes:
       - main_data:/var/www/
+
+  main-prod:
+    build:
+      context: ..
+      dockerfile: docker/main/DockerfileProd
+    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/chat_session_archive_main_prod:latest

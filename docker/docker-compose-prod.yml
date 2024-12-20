@@ -13,8 +13,6 @@ volumes:
 services:
   db:
     image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/chat_session_archive_db:latest
-    labels:
-      - "io.containers.autoupdate=image"
     restart: always
     shm_size: 256mb
     command: "postgres -c 'config_file=/etc/postgresql/postgresql.conf'"
@@ -34,8 +32,6 @@ services:
 
   redis:
     image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/chat_session_archive_redis:latest
-    labels:
-      - "io.containers.autoupdate=image"
     command: [ "redis-server", "/etc/redis/redis.conf" ]
     restart: always
     environment:
@@ -51,8 +47,6 @@ services:
 
   minio:
     image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/chat_session_archive_minio:latest
-    labels:
-      - "io.containers.autoupdate=image"
     command: "server /data"
     environment:
       TZ: Asia/Shanghai
@@ -68,8 +62,6 @@ services:
 
   nats:
     image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/chat_session_archive_nats:latest
-    labels:
-      - "io.containers.autoupdate=image"
     command: "-js -c /etc/nats/nats-server.conf"
     restart: always
     environment:
@@ -84,13 +76,7 @@ services:
           memory: 128M
 
   main:
-    build:
-      context: ..
-      dockerfile: docker/main/DockerfileProd
-    platform: linux/amd64
     image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/chat_session_archive_main_prod:latest
-    labels:
-      - "io.containers.autoupdate=image"
     restart: always
     logging:
       options:

@@ -1,7 +1,6 @@
 import {createStore} from 'vuex'
 import {getAuthToken, getCorpInfo, getUserInfo} from "@/utils/cache";
 import {getModules} from "@/api/company";
-import { DEFAULT_ZH_LOGO } from '@/constants/index'
 import createPersistedState from 'vuex-persistedstate';
 
 const getState = () => {
@@ -13,7 +12,7 @@ const getState = () => {
         corp_info: {},
         company: {
             corp_name: '',
-            corp_logo: DEFAULT_ZH_LOGO
+            corp_logo: ''
         }, // 企业
     }
 }

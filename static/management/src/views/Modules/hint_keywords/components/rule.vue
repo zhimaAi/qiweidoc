@@ -167,7 +167,7 @@ const pagination = reactive({
 
 function formatMsgType (array, record) {
   let newArray = []
-  if (record.hint_keywords.length) {
+  if (record.hint_keywords.length || record.hint_group_ids.length) {
       newArray.push('发送敏感词')
   }
   for (let i = 0; i < array.length; i++) {
