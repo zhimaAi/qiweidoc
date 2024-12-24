@@ -94,6 +94,9 @@ class CorpModel extends BaseModel
             if ($e->getCode() == '40068') {
                 $message = "操作失败，标签组不存在";
             }
+            if ($e->getCode() == '40071') {
+                $message = "标签名字已经存在";
+            }
 
             throw new LogicException($message, $e->getCode(), $e);
         }

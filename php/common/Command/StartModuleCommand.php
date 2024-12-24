@@ -20,6 +20,13 @@ class StartModuleCommand extends Command
 {
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $output->writeln("Waiting for database to be ready...");
+        if (!$this->waitForDatabase($output)) {
+            $output->writeln("Failed to connect to the database after multiple attempts.");
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
+        $output->writeln("Database is ready.");
+
         // 获取所有模块目录
         $modules = Module::getModuleDirectories();
 
@@ -137,5 +144,22 @@ SQL;
         Yii::cache()->psr()->set(Module::getModuleConfigCacheKey($moduleName), $result);
 
         return $result;
+    }
+
+    private function waitForDatabase(OutputInterface $output, int $maxAttempts = 10, int $delay = 5): bool
+    {
+        for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
+            try {
+                Yii::db()->open();
+                return true;
+            } catch (\Exception $e) {
+                $output->writeln("Database connection attempt {$attempt} failed: {$e->getMessage()}");
+                if ($attempt < $maxAttempts) {
+                    $output->writeln("Retrying in {$delay} seconds...");
+                    sleep($delay);
+                }
+            }
+        }
+        return false;
     }
 }

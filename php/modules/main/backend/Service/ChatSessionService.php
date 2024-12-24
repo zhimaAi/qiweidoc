@@ -68,6 +68,8 @@ class ChatSessionService
             if (!empty($external_userids)) {
                 $allCstList = CustomersModel::query()->select(["external_userid"])->where(["corp_id"=>$corp->get("id")])->andWhere(["in","id",$external_userids])->getAll()->toArray();
                 $whereSql .= " and c.external_userid in ('".implode("','",array_column($allCstList,"external_userid"))."')";
+            } else {
+                $whereSql .= " and c.external_userid = '_' ";
             }
         }
 

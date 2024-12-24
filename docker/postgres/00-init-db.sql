@@ -19,8 +19,5 @@ CREATE EXTENSION IF NOT EXISTS pg_cron;
 -- pg_buffercache 扩展，用于查看共享缓冲区中缓存的数据，帮助分析数据库缓存的利用情况
 CREATE EXTENSION IF NOT EXISTS pg_buffercache;
 
--- hstore 扩展，用于存储键值对的轻量级数据类型，适合非结构化数据或元数据存储。
-CREATE EXTENSION IF NOT EXISTS hstore;
-
 -- 设置时区
 SET timezone TO 'Asia/Shanghai';
