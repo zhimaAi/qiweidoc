@@ -17,10 +17,10 @@ use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Throwable;
 
-class QwOpenPushConsumer
+readonly class QwOpenPushConsumer
 {
-    private readonly CorpModel $corp;
-    private readonly Message $message;
+    private CorpModel $corp;
+    private Message $message;
 
     public function __construct(CorpModel $corp, Message $message)
     {

@@ -36,15 +36,9 @@ all:
 	make master
 	make php
 	make docs
-	make modules
+#	make modules
 
 .PHONY: exec
 exec:
-	@PID=$$(pgrep $(PROCESS_NAME)); \
-    if [ -n "$$PID" ]; then \
-        echo "Stopping process $(PROCESS_NAME) (PID: $$PID)"; \
-        kill $$PID || true; \
-    else \
-        echo "No running $(PROCESS_NAME) process found"; \
-    fi; \
-    LD_LIBRARY_PATH=$(LIBRARY_PATH) ./golang/build/$(PROCESS_NAME)
+	-pkill -f golang
+	LD_LIBRARY_PATH=$(LIBRARY_PATH) ./golang/build/$(PROCESS_NAME)

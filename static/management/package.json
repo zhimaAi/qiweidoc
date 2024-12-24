@@ -6,8 +6,8 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "build:modules": "npm-run-all --parallel build build:customer_tag build:hint_keywords build:timeout_reply_single",
-    "build:customer_tag": "cross-env VUE_APP_MODULE=customer_tag vue-cli-service build",
+    "build:modules": "npm-run-all --parallel build:main build:hint_keywords build:timeout_reply_single",
+    "build:main": "cross-env VUE_APP_MODULE=main vue-cli-service build",
     "build:hint_keywords": "cross-env VUE_APP_MODULE=hint_keywords vue-cli-service build",
     "build:timeout_reply_single": "cross-env VUE_APP_MODULE=timeout_reply_single vue-cli-service build"
   },

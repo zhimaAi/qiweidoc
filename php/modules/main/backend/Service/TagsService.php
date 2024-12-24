@@ -35,7 +35,7 @@ class TagsService
         $tagListResp = $corp->postWechatApi("/cgi-bin/externalcontact/get_corp_tag_list");
         $tagGroups = $tagListResp['tag_group'] ?? [];
 
-        // 排序函数，根据'order'和'create_time'进行排序
+        // 排序函数，根据order和create_time进行排序
         $sortFunction = function ($a, $b) {
             if ($a['order'] === $b['order']) {
                 return $a['create_time'] <=> $b['create_time'];

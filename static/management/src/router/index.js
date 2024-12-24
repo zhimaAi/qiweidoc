@@ -2,6 +2,7 @@ import {createRouter, createWebHashHistory} from 'vue-router';
 import store from "@/store";
 import {checkInit} from "@/api/auth-login";
 import {loginHandle} from "@/utils/tools";
+import {getCookieUserInfo} from '@/utils/cookie';
 
 const routes = []
 
@@ -32,31 +33,37 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-    let login = await store.dispatch('checkLogin')
-    if (!login && !to.meta.ignoreLogin) {
-        /**
-         * 携带auth_token时自动登录
-         */
+    if (!to.meta.ignoreLogin) {
+        let login = await store.dispatch('checkLogin')
         if (to.query?.auth_token) {
+            // 携带auth_token时自动登录
             try {
                 await loginHandle(to.query.auth_token)
-                next()
-                return
             } catch (e) {
                 console.log('login err:',e)
             }
-        }
-        const {data} = await checkInit()
-        if (data.init) {
-            // 存在企业去登陆
-            next({ path: '/login' });
+        } else if (login) {
+            if (!getCookieUserInfo()) {
+                // 已登录但官网退出登录时（网退出会清除cookie）
+                // 官网和demo登录态同步
+                next({ path: '/login' });
+                return
+            }
         } else {
-            // 企业信息不存在去绑定企业信息
-            next({ path: '/authorizedAccess/index' });
+            // 未登录时
+            // 检测是否存在企业信息
+            const {data} = await checkInit()
+            if (data.init) {
+                // 存在企业去登陆
+                next({ path: '/login' });
+            } else {
+                // 企业信息不存在去绑定企业信息
+                next({ path: '/authorizedAccess/index' });
+            }
+            return
         }
-    } else {
-        next();
     }
+    next();
 });
 
 export default router

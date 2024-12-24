@@ -55,3 +55,9 @@ function formatLocation (domain) {
 export function setCookieAcrossSubdomain(data) {
     Cookie.setCookieAcrossSubdomains(USER_INFO_KEY, data, 1, formatLocation(window.location.host))
 }
+
+export function getCookieUserInfo() {
+    return Cookie.get(USER_INFO_KEY)
+}
+
+export default Cookie

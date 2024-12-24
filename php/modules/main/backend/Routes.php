@@ -7,6 +7,8 @@ use Common\Job\Consumer;
 use Common\Job\Producer;
 use Common\RouterProvider;
 use Common\Yii;
+use Modules\CustomerTag\Controller\TagController;
+use Modules\Main\Consumer\DownloadChatSessionBitMediasConsumer;
 use Modules\Main\Consumer\DownloadChatSessionMediasConsumer;
 use Modules\Main\Consumer\QwOpenPushConsumer;
 use Modules\Main\Consumer\SendEmailConsumer;
@@ -19,6 +21,7 @@ use Modules\Main\Controller\AuthController;
 use Modules\Main\Controller\ChatController;
 use Modules\Main\Controller\CorpController;
 use Modules\Main\Controller\CustomersController;
+use Modules\Main\Controller\CustomerTagController;
 use Modules\Main\Controller\DepartmentController;
 use Modules\Main\Controller\GroupController;
 use Modules\Main\Controller\ModuleController;
@@ -112,7 +115,8 @@ class Routes extends RouterProvider
             Consumer::name("qw_open_push")->count(5)->action(QwOpenPushConsumer::class),
 
             Consumer::name("sync_session_message")->count(1)->action(SyncSessionMessageConsumer::class),
-            Consumer::name("download_session_medias")->count(5)->action(DownloadChatSessionMediasConsumer::class)->reserveOnStop(),
+            Consumer::name("download_session_medias")->count(2)->action(DownloadChatSessionBitMediasConsumer::class)->reserveOnStop(),
+            Consumer::name("download_session_big_medias")->count(1)->action(DownloadChatSessionMediasConsumer::class)->reserveOnStop(),
         ];
     }
 
@@ -168,7 +172,6 @@ class Routes extends RouterProvider
                     Route::put("/corps/current")->action([CorpController::class, "updateConfig"]),
                     Route::get("/corps/callback/event/token/generate")->action([CorpController::class, "generateCallbackEventToken"]),
                     Route::put("/corps/callback/event/token/save")->action([CorpController::class, "saveCallbackEventToken"])->disableMiddleware(UserRoleMiddleware::class),
-                        //企业名称和logo修改
                     Route::put("/corps/name-logo/save")->action([CorpController::class, "SaveNameOrLogo"]),
                     Route::post("/corps/upload/logo")->action([CorpController::class, "UploadLogo"]),
 
@@ -179,10 +182,7 @@ class Routes extends RouterProvider
                     Route::post("/demo/users/save")->action([UserController::class, "demoUserSave"]),
                     Route::post("/demo/users/change")->action([UserController::class, "demoUserChangeLogin"]),
                     Route::post("/demo/users/delete")->action([UserController::class, "demoUserDelete"]),
-
                     Route::get("/users/role/list")->action([UserController::class, "userRoleList"]),
-
-
 
                     // 群相关的接口
                     Route::get("/groups/sync")->action([GroupController::class, "sync"]),
@@ -192,6 +192,12 @@ class Routes extends RouterProvider
                     Route::get("/customers/sync")->action([CustomersController::class, "sync"]),
                     Route::get("/customers/list")->action([CustomersController::class, "list"]),
                     Route::get("/customers/has-conversation/list")->action([CustomersController::class, "hasConversationList"]),
+
+                    // 客户标签相关的接口
+                    Route::get('/customer-tags')->action([CustomerTagController::class, 'list']),
+                    Route::post('/customer-tags')->action([CustomerTagController::class, 'updateOrCreate']),
+                    Route::delete('/customer-tags/group/{group_id:.+}')->action([CustomerTagController::class, 'destroyGroup']),
+                    Route::delete('/customer-tags/{tag_id:.+}')->action([CustomerTagController::class, 'destroyTag']),
 
                     // 员工相关接口
                     Route::get("/staff/list")->action([StaffController::class, "list"]),
@@ -212,7 +218,6 @@ class Routes extends RouterProvider
                     Route::get("/chats/by/customer/staff/conversation/list")->action([ChatController::class, "getStaffConversationListByCustomer"]),
                     Route::get("/chats/config/info")->action([ChatController::class, "getChatConfigInfo"]),
                     Route::post("/chats/config/save")->action([ChatController::class, "saveChatConfig"]),
-
 
                     //会话存档 消息相关接口
                     Route::get('/chats/by/conversation/message/list')->action([ChatController::class, 'getMessageListByConversation']),

@@ -75,8 +75,8 @@
 <script setup>
 import {onMounted, ref, reactive} from 'vue';
 import {CaretDownOutlined, CaretRightOutlined} from '@ant-design/icons-vue';
-import {customerTags} from "@/api/main";
 import LoadingBox from "@/components/loadingBox.vue";
+import {apiTags} from "@/api/company";
 
 const emit = defineEmits(['change'])
 const props = defineProps({
@@ -168,7 +168,7 @@ function emitChange() {
 
 async function loadData() {
     loading.value = true
-    await customerTags().then(res => {
+    await apiTags().then(res => {
         let data = res.data || []
         tagKeyMap.value = []
         let formatTagData = item => {

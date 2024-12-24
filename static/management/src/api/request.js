@@ -3,6 +3,20 @@ import {message} from 'ant-design-vue';
 import {getAuthToken, getH5AuthToken} from "@/utils/cache";
 import {logoutHandle} from "@/utils/tools";
 
+let resErrorAbort = false
+
+// 避免出现多条提示
+// 如登录过期时
+const showGlobalError = (content, type = 'error') => {
+    if (!resErrorAbort) {
+        resErrorAbort = true
+        setTimeout(() => {
+            resErrorAbort = false
+        }, 2000)
+        message[type](content)
+    }
+}
+
 export const H5RequestHeader = {'H5-Special-Request': true}
 
 const request = axios.create({
@@ -58,22 +72,21 @@ request.interceptors.response.use(
                 break
             default:
                 // 写入错误信息
-                message.error(res?.error_message || ('网络连接出错, error_code: ' + status))
+                showGlobalError(res?.error_message || ('网络连接出错, error_code: ' + status))
                 return Promise.reject(res)
         }
     },
     error => {
-        const res = error.response.data
-        if (error.response && error.response.status >= 400 && error.response.status < 500) {
-            switch (error.response.status) {
-                case 401:
-                    message.warn(res?.error_message || '登录过期，请重新登录！');
-                    logoutHandle()
-                    return
-                default:
-            }
+        const res = error?.response?.data
+        switch (error?.response?.status) {
+            case 401:
+                showGlobalError(res?.error_message || '登录过期，请重新登录！', 'warn');
+                logoutHandle()
+                break
+            default:
+                showGlobalError(res?.error_message || '网络连接出错');
+                break
         }
-        message.error(res?.error_message || '网络连接出错')
         return Promise.reject(error)
     }
 )

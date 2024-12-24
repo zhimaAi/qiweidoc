@@ -19,26 +19,12 @@ class DownloadChatSessionMediasConsumer
     private readonly CorpModel $corp;
     private readonly ChatMessageModel $message;
 
-    private const LARGE_FILE_THRESHOLD = 20 * 1024 * 1024; // 20MB
     private const MAX_RETRY_COUNT = 3;
-
-    protected string $queue = "download_session_medias";
-    private const LARGE_FILE_QUEUE = "download_session_big_file";
 
     public function __construct(CorpModel $corp, ChatMessageModel $message)
     {
         $this->corp = $corp;
         $this->message = $message;
-
-        if ($this->isLargeFile()) {
-            $this->queue = self::LARGE_FILE_QUEUE;
-        }
-    }
-
-    private function isLargeFile(): bool
-    {
-        return $this->message->get('msg_type') === 'file'
-            && $this->message->get('raw_content')['filesize'] > self::LARGE_FILE_THRESHOLD;
     }
 
     /**

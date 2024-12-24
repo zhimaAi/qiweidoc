@@ -12,9 +12,7 @@ import (
 	"github.com/roadrunner-server/errors"
 	"go.uber.org/zap"
 	"os"
-	"runtime"
 	"session_archive/golang/plugins/minio"
-	"sync"
 )
 
 type FetchDataRequest struct {
@@ -110,68 +108,52 @@ func (p *Plugin) FetchData(input *FetchDataRequest) ([]ChatMsg, error) {
 
 	output := make([]ChatMsg, len(res.ChatDataList))
 
-	// 使用协程加速
-	maxWorkers := runtime.NumCPU()
-	guard := make(chan struct{}, maxWorkers)
-	var wg sync.WaitGroup
-
 	// 循环获取消息
-	for i, msg := range res.ChatDataList {
-		wg.Add(1)
-		guard <- struct{}{}
-		go func(index int, encryptedMsg ChatDataItem) {
-			defer wg.Done()
-			defer func() {
-				<-guard
-			}()
+	for index, encryptedMsg := range res.ChatDataList {
+		chatMsg := ChatMsg{
+			Seq:           encryptedMsg.Seq,
+			MsgID:         encryptedMsg.MsgID,
+			EncryptedData: encryptedMsg.EncryptChatMsg,
+		}
 
-			chatMsg := ChatMsg{
-				Seq:           encryptedMsg.Seq,
-				MsgID:         encryptedMsg.MsgID,
-				EncryptedData: encryptedMsg.EncryptChatMsg,
-			}
-
-			// 检查密钥版本号是否匹配
-			if encryptedMsg.PublicKeyVer != input.ChatPublicKeyVersion {
-				chatMsg.DecryptFailedReason = fmt.Sprintf(
-					`期待的版本号是%d,提供的版本号是%d`,
-					encryptedMsg.PublicKeyVer,
-					input.ChatPublicKeyVersion,
-				)
-				output[index] = chatMsg
-				return
-			}
-
-			// base64 decode
-			str1, err := base64.StdEncoding.DecodeString(encryptedMsg.EncryptRandomKey)
-			if err != nil {
-				chatMsg.DecryptFailedReason = fmt.Sprintf(`对%s decode base64失败 %v`, encryptedMsg.EncryptRandomKey, err)
-				output[index] = chatMsg
-				return
-			}
-
-			// rsa解密
-			str2, err := rsa.DecryptPKCS1v15(nil, privateKey, str1)
-			if err != nil {
-				chatMsg.DecryptFailedReason = fmt.Sprintf(`使用PSA PKCS1算法对%s解密失败: %v`, str1, err)
-				output[index] = chatMsg
-				return
-			}
-
-			// 使用解密后的密钥解密消息内容
-			decryptedData, err := sdk.DecryptData(string(str2), chatMsg.EncryptedData)
-			if err != nil {
-				chatMsg.DecryptFailedReason = fmt.Sprintf(`通过企微sdk解密消息失败: %v`, err)
-				output[index] = chatMsg
-				return
-			}
-
-			chatMsg.DecryptedData = decryptedData
+		// 检查密钥版本号是否匹配
+		if encryptedMsg.PublicKeyVer != input.ChatPublicKeyVersion {
+			chatMsg.DecryptFailedReason = fmt.Sprintf(
+				`期待的版本号是%d,提供的版本号是%d`,
+				encryptedMsg.PublicKeyVer,
+				input.ChatPublicKeyVersion,
+			)
 			output[index] = chatMsg
-			return
-		}(i, msg)
+			continue
+		}
+
+		// base64 decode
+		str1, err := base64.StdEncoding.DecodeString(encryptedMsg.EncryptRandomKey)
+		if err != nil {
+			chatMsg.DecryptFailedReason = fmt.Sprintf(`对%s decode base64失败 %v`, encryptedMsg.EncryptRandomKey, err)
+			output[index] = chatMsg
+			continue
+		}
+
+		// rsa解密
+		str2, err := rsa.DecryptPKCS1v15(nil, privateKey, str1)
+		if err != nil {
+			chatMsg.DecryptFailedReason = fmt.Sprintf(`使用PSA PKCS1算法对%s解密失败: %v`, str1, err)
+			output[index] = chatMsg
+			continue
+		}
+
+		// 使用解密后的密钥解密消息内容
+		decryptedData, err := sdk.DecryptData(string(str2), chatMsg.EncryptedData)
+		if err != nil {
+			chatMsg.DecryptFailedReason = fmt.Sprintf(`通过企微sdk解密消息失败: %v`, err)
+			output[index] = chatMsg
+			continue
+		}
+
+		chatMsg.DecryptedData = decryptedData
+		output[index] = chatMsg
 	}
-	wg.Wait()
 
 	// 释放SDK资源
 	sdk.Close()

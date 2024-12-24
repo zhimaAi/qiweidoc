@@ -37,7 +37,7 @@ enum EnumMessageType: string
     case VoipDocShare           = 'voip_doc_share';
     case ExternalRedpacket      = 'external_redpacket';
     case SphFeed                = 'sphfeed';
-    case VoipText               = 'voiptest';
+    case VoipText               = 'voiptext';
 
     public function getLabel(): string
     {

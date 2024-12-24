@@ -12,6 +12,8 @@ use Common\Broadcast;
 use Common\Job\Producer;
 use Common\Yii;
 use Exception;
+use LogicException;
+use Modules\Main\Consumer\DownloadChatSessionBitMediasConsumer;
 use Modules\Main\Consumer\DownloadChatSessionMediasConsumer;
 use Modules\Main\Enum\EnumChatConversationType;
 use Modules\Main\Enum\EnumChatMessageRole;
@@ -28,6 +30,7 @@ use Throwable;
 class ChatSessionPullService
 {
     private const MESSAGE_LIMIT = 1000;
+    private const LARGE_FILE_THRESHOLD = 20 * 1024 * 1024; // 20MB
     private static CorpModel $corp;
     const ValidMediaType = [
         'image',
@@ -74,7 +77,11 @@ class ChatSessionPullService
 
             // 下载资源
             if (in_array($messageData->get('msg_type'), self::ValidMediaType)) {
-                Producer::dispatch(DownloadChatSessionMediasConsumer::class, ['corp' => $corp, 'message' => $messageData]);
+                if (self::isLargeFile($messageData)) { // 大文件到单独的队列中处理
+                    Producer::dispatch(DownloadChatSessionBitMediasConsumer::class, ['corp' => $corp, 'message' => $messageData]);
+                } else {
+                    Producer::dispatch(DownloadChatSessionMediasConsumer::class, ['corp' => $corp, 'message' => $messageData]);
+                }
             }
 
             // 广播
@@ -87,6 +94,11 @@ class ChatSessionPullService
         }
     }
 
+    private static function isLargeFile(ChatMessageModel $message): bool
+    {
+        return $message->get('msg_type') === 'file' && $message->get('raw_content')['filesize'] > self::LARGE_FILE_THRESHOLD;
+    }
+
     /**
      * 下载并保存资源
      *
@@ -95,13 +107,13 @@ class ChatSessionPullService
     public static function handleMedia(CorpModel $corp, ChatMessageModel $message)
     {
         if (!in_array($message->get('msg_type'), self::ValidMediaType)) {
-            throw new Exception("消息类型不正确");
+            throw new LogicException("消息类型不正确");
         }
 
         $sdkFileId = $message->get('raw_content')['sdkfileid'] ?? '';
         $md5 = $message->get('raw_content')['md5sum'] ?? "";
         if (empty($sdkFileId)) {
-            throw new Exception("消息不完整, 缺少md5字段");
+            throw new LogicException("消息不完整, 缺少md5字段");
         }
         if (empty($md5)) {
             $md5 = md5($sdkFileId);

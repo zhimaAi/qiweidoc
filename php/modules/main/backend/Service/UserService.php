@@ -94,7 +94,7 @@ class UserService
             //检查一下有没有相同登陆账户名的账号
             $hisData = UserModel::query()->where(["corp_id" => $corp->get("id"), "role_id" => EnumUserRoleType::VISITOR->value, "account" => $data->account])->getOne();
             if (!empty($hisData)) {
-                throw new \Exception("存在相同的账户名");
+                throw new LogicException("存在相同的账户名");
             }
 
             UserModel::create($updateData);

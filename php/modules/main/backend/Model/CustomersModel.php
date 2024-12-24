@@ -5,6 +5,7 @@ namespace Modules\Main\Model;
 
 use Common\DB\BaseModel;
 use Exception;
+use LogicException;
 use Throwable;
 
 class CustomersModel extends BaseModel
@@ -63,7 +64,7 @@ class CustomersModel extends BaseModel
         $externalContact = $res['external_contact'] ?? [];
         $followUsers = $res['follow_user'] ?? [];
         if (empty($externalContact) || empty($followUsers)) {
-            throw new Exception('请求企微获取客户详情数据失败');
+            throw new LogicException('请求企微获取客户详情数据失败');
         }
 
         $followUser = [];
@@ -75,7 +76,7 @@ class CustomersModel extends BaseModel
             }
         }
         if (empty($followUser)) {
-            throw new Exception('未找到添加此外部联系人的企业成员');
+            throw new LogicException('未找到添加此外部联系人的企业成员');
         }
 
         CustomersModel::updateOrCreate(['and',

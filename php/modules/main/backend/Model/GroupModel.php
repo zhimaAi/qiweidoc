@@ -5,6 +5,7 @@ namespace Modules\Main\Model;
 
 use Common\DB\BaseModel;
 use Exception;
+use LogicException;
 use Throwable;
 
 class GroupModel extends BaseModel
@@ -61,7 +62,7 @@ class GroupModel extends BaseModel
     {
         $res = $corp->postWechatApi('/cgi-bin/externalcontact/groupchat/get', ['chat_id' => $chatID], 'json');
         if (empty($res['group_chat'])) {
-            throw new Exception('请求企微获取客户群详情数据失败');
+            throw new LogicException('请求企微获取客户群详情数据失败');
         }
 
         $staffUserNum = count(array_filter($res['group_chat']["member_list"], function ($item) {

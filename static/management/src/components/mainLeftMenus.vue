@@ -1,6 +1,6 @@
 <template>
     <div class="_main-left-block">
-        <div class="_menu-box">
+        <div class="_menu-box hide-scrollbar">
             <!--        <div class="search-menu-box">-->
             <!--            <a-input-search placeholder="请输入功能名称搜索"/>-->
             <!--        </div>-->
@@ -105,8 +105,6 @@ const menus = ref([
         icon: h(AppstoreOutlined),
         subs: [
             {key: 'plugManagementHome', title: '功能插件', route: '/plug/index'},
-            // {key: 'hintKeywordsHome', title: '敏感词提醒', route: '/module/hint_keywords/index'},
-            // {key: 'CustomerLabelInex', title: '客户标签', route: '/module/customer_tag/index'},
         ]
     },
     {
@@ -114,9 +112,8 @@ const menus = ref([
         title: '客户管理',
         icon: h(TeamOutlined),
         subs: [
-            {key: 'customerManagementHome', title: '客户管理', route: '/customerManagement/index'}
-            // ,
-            // {key: 'customerManagementTag', title: '客户标签', route: '/customerManagement/tag'}
+            {key: 'customerManagementHome', title: '客户管理', route: '/customerManagement/index'},
+            {key: 'customerManagementTag', title: '客户标签', route: '/customerManagement/tag'}
         ]
     },
     {
@@ -145,7 +142,7 @@ const loadData = () => {
     loading.value = true
     let params = {}
     getModules(params).then(res => {
-        let modules = res.data || []
+        let modules = res?.data || []
         modules.map(item => {
             item.enable = !item.paused
         })

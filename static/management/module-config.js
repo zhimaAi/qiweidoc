@@ -7,9 +7,6 @@ const ModuleConfig = {
     main: {
         buildOutputPath: '/php/modules/main/public/build/',
     },
-    customer_tag: {
-        buildOutputPath: '/php/modules/customer_tag/public/build/',
-    },
     hint_keywords: {
         buildOutputPath: '/php/modules/hint_keywords/public/build/',
     },

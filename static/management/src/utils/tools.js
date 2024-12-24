@@ -5,14 +5,14 @@ import router from "@/router";
 import store from "@/store";
 import {getAuthToken, setAuthToken, setCorpInfo, setUserInfo} from "@/utils/cache";
 import {getCurrentCorp, getCurrentUser} from "@/api/auth-login";
-import { setCookieAcrossSubdomain } from "@/utils/cookie";
+import {setCookieAcrossSubdomain} from "@/utils/cookie";
 import cloneDeep from 'lodash/cloneDeep';
 
 export const loginHandle = async token => {
     setAuthToken(token)
     const userInfo = await getCurrentUser()
     const corpInfo = await getCurrentCorp()
-    if (!userInfo.data || !corpInfo.data) {
+    if (!userInfo?.data || !corpInfo?.data) {
         throw '用户信息异常'
     }
     setUserInfo(userInfo.data)
@@ -32,22 +32,22 @@ export const updateUserInfo = async () => {
         if (token) {
             const userInfo = await getCurrentUser()
             const corpInfo = await getCurrentCorp()
-            if (!userInfo.data || !corpInfo.data) {
-                throw '用户信息异常'
+            if (!userInfo?.data || !corpInfo?.data) {
+                throw '登录过期，请重新登录'
             }
             setUserInfo(userInfo.data)
             setCorpInfo(corpInfo.data)
             store.commit('setLoginInfo', userInfo.data)
             store.commit('setCorpInfo', corpInfo.data)
             return {
+                error: null,
                 userInfo,
                 corpInfo
             }
         }
     } catch (e) {
         console.log('Err:',e)
-        message.error(e)
-        return null
+        return {error: e}
     }
 }
 

@@ -1,19 +1,19 @@
 import request from "@/api/request";
 
 export const deleteGroupTags = (data) => {
-    return request.delete(`/modules/customer_tag/api/tags/group/${data.group_id}`)
+    return request.delete(`/api/customer-tags/group/${data.group_id}`)
 }
 
 export const deleteTags = (data) => {
-    return request.delete(`/modules/customer_tag/api/tags/${data.tag_id}`)
+    return request.delete(`/api/customer-tags/${data.tag_id}`)
 }
 
 export const updateTags = (data) => {
-    return request.post('/modules/customer_tag/api/tags', data)
+    return request.post('/api/customer-tags', data)
 }
 
 export const apiTags = (data) => {
-    return request.get('/modules/customer_tag/api/tags', {params: data})
+    return request.get('/api/customer-tags', {params: data})
 }
 
 export const getModulesInfo = (data) => {

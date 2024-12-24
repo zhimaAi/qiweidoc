@@ -1,1732 +1,719 @@
 <template>
-    <MainLayout title="客户标签">
-        <div class="tag-manage">
-            <div class="content">
-                <div class="mb18">
-                企微标签数：<b class="mr24">{{ labelNum }}</b> 企微标签组：<b>{{
-                    dataArr.length
-                }}</b>
+    <MainLayout title="标签管理">
+        <div class="zm-main-content lexicon-box">
+            <!-- <a-alert show-icon message="提前预设标签组和标签，方便管理和选择"></a-alert> -->
+            <div class="statistic-box">
+                <div class="statistic-item">
+                    <div class="statistic-title">企微标签数</div>
+                    <div class="statistic-num">{{ tagLength }}</div>
                 </div>
-                <div class="list">
-                    <div>
-                        <a-button
-                            class="mb10"
-                            @click="updateLabel"
-                            :loading="Refresh"
-                        >
-                            <template #icon><RedoOutlined /></template>
-                            更新标签数据
-                        </a-button>
-                    </div>
-                    <div class="lefts item fx-ac mb10">
-                        <a-input-search
-                            v-model="searchValue"
-                            placeholder="请输入标签名称"
-                            style="width: 200px"
-                            :allowClear="true"
-                            @search="onSearchChange"
-                        />
-                    </div>
-                    <div><a-button class="lefts mb10" @click="exportTo">导出</a-button></div>
-                </div>
-
-                <div class="label_list" v-for="(item, index) in dataArr" :key="index" style="display:flex;">
-                <div class="label_list_width" >
-                    <div class="label_list_head" >
-                    <div v-html="getSearName(item,1)"></div>
-                    <div class="label-num">标签数：{{ item.tag.length }}</div>
-                    </div>
-                    <div>
-                    <ul class="label_list_li">
-                        <li
-                        v-for="(items, indexs) in item.tag"
-                        :key="indexs"
-                        @click="showDrawer(items)"
-                        >
-                        <span v-html="getSearName(items,2)"></span>
-                        </li>
-                    </ul>
-                    </div>
-                </div>
+                <div class="statistic-item">
+                    <div class="statistic-title">企微标签组</div>
+                    <div class="statistic-num">{{ list.length }}</div>
                 </div>
             </div>
+            <div class="header mt16">
+                <a-button type="primary" @click="linkAdd">
+                    <template #icon>
+                        <PlusOutlined />
+                    </template>
+                    新建标签组
+                </a-button>
+                <!-- <div class="fx-ac update-box">
+                  <div>
+                    <span class="lefts_sizes" v-if="last_sync_time">
+                      上次更新时间：{{ timeContrast(last_sync_time) }}
+                    </span>
+                  </div>
+                  <a-button :loading="updateLoading" class="lefts btn-update" @click="Update">
+                    <template #icon>
+                      <RedoOutlined class="update-icon" />
+                    </template>
+                    {{ updateLoading ? "更新中" : "更新标签数据" }}
+                  </a-button>
+                </div> -->
+            </div>
+            <div class="tag-main">
+                <div class="tag-item" v-for="item in list" :key="item.group_id">
+                    <div class="tag-label-box">
+                        <div class="tag-label-title">{{ item.group_name }}</div>
+                        <div class="tag-label-info">标签数：{{ item.tag.length }}</div>
+                    </div>
+                    <div class="tag-content-box">
+                        <div v-for="ctem in item.tag" :key="ctem.id" class="tag">{{ ctem.name }}</div>
+                    </div>
+                    <div class="tag-options-box">
+                        <div class="tag-options" @click="edit(item)">
+                            <img class="options-icon" src="@/assets/svg/set.svg" alt="">
+                            <img class="options-icon active" src="@/assets/svg/set-active.svg" alt="">
+                            编辑
+                        </div>
+                        <div class="tag-options tag-options-delete" @click="onDelete(item)">
+                            <img class="options-icon" src="@/assets/svg/delete.svg" alt="">
+                            <img class="options-icon active" src="@/assets/svg/delete-active.svg" alt="">
+                            删除
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <a-modal v-model:open="addLexiconOpen" :title="`${isEdit ? '编辑' : '新建'}标签组`" @ok="debounceHandleOk">
+                <a-form class="login-form" :model="formState" name="lexicon" autocomplete="off" @finish="debounceHandleOk"
+                        :label-col="{ span: 4 }">
+                    <a-form-item label="标签组：">
+                        <a-input placeholder="请输入标签组名称" v-model:value="formState.group_name"></a-input>
+                    </a-form-item>
+                    <a-form-item label="标签：" style="max-height: 300px; overflow: auto;">
+                        <div class="list-item" v-for="(item, index) in formState.keyword_list" :key="index">
+                            <a-input-group compact>
+                                <a-input placeholder="请输入标签名称" v-model:value="item.name" />
+                            </a-input-group>
+                            <div class="tag-icon-box">
+                                <div class="tag-icon-add">
+                                    <img class="tag-icon" src="@/assets/svg/tag-add.svg" alt="">
+                                    <img @click="onTagAdd(index)" class="tag-icon tag-icon-active" src="@/assets/svg/tag-add-active.svg" alt="">
+                                </div>
+                                <div class="tag-icon-delete">
+                                    <img v-if="formState.keyword_list.length > 1" @click="onTagDelete(item, index)" class="tag-icon" src="@/assets/svg/tag-delete.svg" alt="">
+                                    <img v-if="formState.keyword_list.length > 1" @click="onTagDelete(item, index)" class="tag-icon tag-icon-active" src="@/assets/svg/tag-delete-active.svg" alt="">
+                                </div>
+                            </div>
+                        </div>
+                    </a-form-item>
+                </a-form>
+            </a-modal>
         </div>
     </MainLayout>
-  </template>
+</template>
+
 <script setup>
-import { onMounted, ref, reactive } from 'vue';
-import {RedoOutlined, SyncOutlined} from '@ant-design/icons-vue';
+import { onMounted, ref, reactive, h } from 'vue';
+import { RedoOutlined, PlusOutlined } from '@ant-design/icons-vue';
+import { Modal, message } from 'ant-design-vue'
+import { debounce } from "@/utils/tools";
+import { apiTags, updateTags, deleteGroupTags, deleteTags } from "@/api/company";
 import MainLayout from "@/components/mainLayout.vue";
 
-const dataArr = ref([])
-const allData = ref([]) //全部数据
-// const label_list = ref([])
-const ranges = ref([]) //选择可见范围
-const rangesValue = ref([])
-const searchValue = ref('') //标签名称
-const labelNum = ref(0) //总标签数
-const collectTag = reactive({
-    flag: false,
-    list: []
+const last_sync_time = ref('') // 更新数据
+const updateLoading = ref(false)
+const isEdit = ref(false)
+const tagLength = ref(0)
+const formState = reactive({
+    group_name: '',
+    keyword_list: [
+        {
+            id: '',
+            name: '',
+            order: 1
+        }
+    ],
+    group_id: void 0,
+    order: 1
 })
 
-const onShow = () => {
-    let list = []
-    // collectTags().then((res) => {
-    //   let list = res.data || []
-    //   list.map((item) => {
-    //     item.id = item.tag_id
-    //   })
-      collectTag.list = list
-    //   collectTag.flag = true
-    // })
+const loading = ref(false)
+const list = ref([])
+
+const addLexiconOpen = ref(false);
+
+function forMatTag(array) {
+    let newArr = []
+    for (let index = 0; index < array.length; index++) {
+        const item = array[index];
+        newArr.push({
+            id: item.id,
+            name: item.name,
+            order: item.order
+        })
+    }
+    return newArr
 }
 
-// 搜索
-const onSearchChange = () => {
-    if (!searchValue.value.trim()) {
-        dataArr.value = allData.value
+function checkTagEmpty (array) {
+    return array.filter(item => item.name && item.name.trim() !== '')
+}
+
+const onTagAdd = (index) => {
+    // 有空的则不能新建了
+    if (checkTagEmpty(formState.keyword_list).length === formState.keyword_list.length) {
+        formState.keyword_list.push({ id: '', name: '', order: index + 2 })
+    } else {
+        message.error('请输入标签名称')
+    }
+}
+
+const handleOk = () => {
+    // 保持之前要判断是否有空的标签，有则不能保持
+    if (checkTagEmpty(formState.keyword_list).length === formState.keyword_list.length - 1) {
+        message.error('请输入标签名称')
+        return false
+    }
+    let key = isEdit.value ? '编辑' : '新建'
+    const loadClose = message.loading(`正在${key}`)
+    let params = {
+        group_name: formState.group_name,
+        tag: formState.keyword_list,
+        order: formState.order
+    }
+    if (isEdit.value) {
+        params.group_id = formState.group_id
+        params.tag = forMatTag(formState.keyword_list)
+    }
+    updateTags(params).then((res) => {
+        if (res.status === 'success') {
+            message.success(`${key}完成`)
+            loadData()
+            addLexiconOpen.value = false;
+            // 清空数据
+            initData()
+        }
+    }).finally(() => {
+        loadClose()
+    }).catch(err => {
+        // console.log('err', err)
+        // 失败也刷新，数据是双向绑定的
+        loadData()
+    })
+}
+
+const debounceHandleOk = debounce(handleOk, 500)
+
+const loadData = async() => {
+    loading.value = true
+    let params = {}
+    await apiTags(params).then(res => {
+        if (res.status === 'success') {
+            list.value = res.data || []
+            tagLength.value = res.data.reduce((accumulator, current) => accumulator + current.tag.length, 0)
+        }
+    }).finally(() => {
+        loading.value = false
+    })
+}
+
+const edit = (record) => {
+//   console.log(record)
+    formState.group_name = record.group_name
+    formState.keyword_list = record.tag
+    formState.group_id = record.group_id
+    formState.order = record.order
+    // 打开编辑弹窗
+    isEdit.value = true
+    addLexiconOpen.value = true;
+}
+
+function forMatUpperOrder (array) {
+    // 找到最大的order
+    return array.reduce((prev, cur) => {
+        return Math.max(prev, cur.order)
+    }, 0)
+}
+
+function initData () {
+    formState.group_name = '',
+        formState.keyword_list = [
+            {
+                id: '',
+                name: '',
+                order: 1
+            }
+        ]
+    formState.group_id = void 0
+    formState.order = 1
+}
+
+const linkAdd = () => {
+    // 打开新建弹窗
+    // 初始化数据
+    initData()
+    isEdit.value = false
+    formState.order = forMatUpperOrder(list.value) + 1
+    // console.log('formState.order', formState.order)
+    addLexiconOpen.value = true;
+}
+
+function timeContrast (time) {
+    // 当前时间
+    let new_time = parseInt(new Date().getTime() / 1000) + ''
+    let result = ''
+    let diffTime = ''
+
+    // 同步时间差
+    diffTime = new_time * 1 - +time
+    if (diffTime <= 60) {
+        result = diffTime + '秒前 '
+    } else if (diffTime > 60 && diffTime <= 3660) {
+        result = parseInt(diffTime / 60) + '分钟前 '
+    } else if (diffTime > 3660 && diffTime <= 86400) {
+        result = parseInt(diffTime / 3600) + '小时前 '
+    } else if (diffTime > 86400) {
+        result = parseInt(diffTime / 86400) + '天前 '
+    }
+    return result
+}
+
+const refresh = ref(0)
+const Update = async() => {
+    //更新数据
+    if (refresh.value == 0) {
+        refresh.value = 1;
+        updateLoading.value = true;
+        await loadData()
+        refresh.value = 0;
+        updateLoading.value = false;
+        message.success('更新成功')
+    }
+}
+
+const onDelete = (item) => {
+    Modal.confirm({
+        // title: `确认${key}么`,
+        content: '删除后，已添加到客户信息的标签也一起删除',
+        okText: '确定',
+        cancelText: '取消',
+        onOk: () => {
+            const loadClose = message.loading(`正在删除`)
+            deleteGroupTags({
+                group_id: item.group_id
+            }).then(() => {
+                message.success('操作完成')
+                loadData()
+            }).finally(() => {
+                loadClose()
+            })
+        }
+    })
+}
+
+const onTagDelete = (item, index) => {
+    // 移除
+    // console.log('item', item)
+    if (formState.keyword_list.length === 1) {
+        message.error('请至少保留一个')
         return
     }
 
-    // allData.value.map((item) => {
-    //   item.tag.map((query) => {
-    //     if (query.name.indexOf(searchValue.value) > -1 && !dataArr.value.includes(item)) {
-    //       dataArr.value.push(item)
-    //     }
-    //   })
-    // })
+    Modal.confirm({
+        // title: `确认${key}么`,
+        content:h("div", null, [
+            h("span", {
+                style:
+                    "display: inline-block; margin-top: 22px;"
+            },'删除后，已添加到客户信息的标签也一起删除'),
+            h(
+                "span",
+                {
+                    style:
+                        "color: red; display: block; margin-top: 4px;"
+                },
+                "（若标签组内只有1个标签时，删除标签会连带标签组一起删除）"
+            )
+        ]),
+        okText: '确定',
+        style: 'width: 520px;',
+        cancelText: '取消',
+        onOk: () => {
+            const loadClose = message.loading(`正在删除`)
+            // 如果是新增的则不用调接口
+            if (!item.id) {
+                formState.keyword_list.splice(index, 1)
+                loadClose()
+                return false
+            }
+            deleteTags({
+                tag_id: item.id
+            }).then(() => {
+                message.success('操作完成')
+                formState.keyword_list.splice(index, 1)
+            }).finally(() => {
+                loadClose()
+            }).catch(err => {
 
-    dataArr.value = []
-    let list = []
-    for (let i = 0; i < allData.value.length; i++) {
-        let item = allData.value[i]
-        list[i] = {
-        ...item,
-        tag: [],
-        }
-        for (let j = 0; j < item.tag.length; j++) {
-        let ele = allData.value[i].tag[j]
-        if (ele.name.indexOf(searchValue.value) > -1) {
-            list[i].tag.push({
-            ...ele,
-            pid: item.group_id,
             })
         }
-        }
-    }
+    })
 
-    let arr = []
-    for (let i = 0; i < list.length; i++) {
-        let item = list[i]
-        item.is_open = true
-        // 分组优先
-        if (item.group_name.indexOf(searchValue.value) > -1){
-        let filsub = allData.value.filter(
-            (sub) => sub.group_id == item.group_id
-        )[0]
-        arr.push(filsub)
-        }else if(item.tag.length > 0){
-        arr.push(item)
-        }
-    }
-
-    dataArr.value = arr
-}
-
-const tags_lists = () => {
-    // let obj = {}
-    if (rangesValue.value.length > 0) {
-        ranges.value.map((el) => {
-        if (el.data_type == 2) {
-            el.type = 2
-            el._id = el.department_id
-        } else if (el.data_type == 1) {
-            el.type = 3;
-            el._id = el.staff_id;
-        } else {
-            el.type = 1;
-        }
-        })
-    }
-    // getTagList(obj).then((res) => {
-    //     //获取列表
-    //     let data = res.data
-    //     allData.value = res.data
-    //     labelNum.value = 0
-
-    //     dataArr.value = data
-            dataArr.value = [
-                {
-                    "group_id": "etX2IKEAAA48ogTzU5leH2qSzMuD4jJA",
-                    "group_name": "类型",
-                    "create_time": 1639388003,
-                    "tag": [
-                        {
-                            "id": "etX2IKEAAAeWCDSGAF2PcKFi3p2BQg0A",
-                            "name": "渠道活码打标签",
-                            "create_time": 1667543350,
-                            "order": 16,
-                            "cst_num": "3",
-                            "repeat_cst_num": "6"
-                        },
-                        {
-                            "id": "etX2IKEAAAMknu2JDRIPd-sywqst2VsQ",
-                            "name": "都看2",
-                            "create_time": 1660029314,
-                            "order": 15,
-                            "cst_num": "34",
-                            "repeat_cst_num": "50"
-                        },
-                        {
-                            "id": "etX2IKEAAAvV-swLppsrjwEWoF_zhvsg",
-                            "name": "Andy测试",
-                            "create_time": 1642141016,
-                            "order": 14,
-                            "cst_num": "5",
-                            "repeat_cst_num": "8"
-                        },
-                        {
-                            "id": "etX2IKEAAACgTwWNGQY1hQHbDRbV2_kA",
-                            "name": "都看",
-                            "create_time": 1660029283,
-                            "order": 13,
-                            "cst_num": "42",
-                            "repeat_cst_num": "62"
-                        },
-                        {
-                            "id": "etX2IKEAAAWratRUXDb989Ump2vKwZvg",
-                            "name": "裂变测试",
-                            "create_time": 1642387536,
-                            "order": 12,
-                            "cst_num": "3",
-                            "repeat_cst_num": "3"
-                        },
-                        {
-                            "id": "etX2IKEAAAyuMxNCzkVsc9eMowRjPwLw",
-                            "name": "lacy测试",
-                            "create_time": 1648107159,
-                            "order": 11,
-                            "cst_num": "2",
-                            "repeat_cst_num": "2"
-                        },
-                        {
-                            "id": "etX2IKEAAAxrItUfTHoVCNR00f50bc9A",
-                            "name": "2131231231",
-                            "create_time": 1655179781,
-                            "order": 10,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        },
-                        {
-                            "id": "etX2IKEAAAWip_8Ar-bL2iVJZRBVG3HA",
-                            "name": "zan测试",
-                            "create_time": 1662708560,
-                            "order": 9,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        },
-                        {
-                            "id": "etX2IKEAAAH3Fe0nH1-N1ZdsFJjUAr4w",
-                            "name": "只看客户",
-                            "create_time": 1660027204,
-                            "order": 8,
-                            "cst_num": "0",
-                            "repeat_cst_num": "0"
-                        },
-                        {
-                            "id": "etX2IKEAAA8gJIyJs1Q2QiVEk5ycXhSg",
-                            "name": "咕咕咕",
-                            "create_time": 1642140716,
-                            "order": 7,
-                            "cst_num": "2",
-                            "repeat_cst_num": "2"
-                        },
-                        {
-                            "id": "etX2IKEAAASsqzQbryBDKTSVdU9jSIKw",
-                            "name": "只看员工",
-                            "create_time": 1660028687,
-                            "order": 6,
-                            "cst_num": "0",
-                            "repeat_cst_num": "0"
-                        },
-                        {
-                            "id": "etX2IKEAAAwXFC-a1a4nBXEG3rUrCStQ",
-                            "name": "普通",
-                            "create_time": 1639388003,
-                            "order": 5,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        },
-                        {
-                            "id": "etX2IKEAAAekVrCzW-9DBg1Mi8uamgBQ",
-                            "name": "股改股",
-                            "create_time": 1642140722,
-                            "order": 4,
-                            "cst_num": "4",
-                            "repeat_cst_num": "4"
-                        },
-                        {
-                            "id": "etX2IKEAAAc2R0gPJjijIMa_kgjg8Mmw",
-                            "name": "重要",
-                            "create_time": 1639388003,
-                            "order": 3,
-                            "cst_num": "10",
-                            "repeat_cst_num": "11"
-                        },
-                        {
-                            "id": "etX2IKEAAA5H7BIssksM3mDmpnGg1IMA",
-                            "name": "标准",
-                            "create_time": 1639388003,
-                            "order": 2,
-                            "cst_num": "28",
-                            "repeat_cst_num": "34"
-                        },
-                        {
-                            "id": "etX2IKEAAA1vDvA14TEvBhLDtPH_5D8g",
-                            "name": "一般",
-                            "create_time": 1639388003,
-                            "order": 1,
-                            "cst_num": "13",
-                            "repeat_cst_num": "18"
-                        },
-                        {
-                            "id": "etX2IKEAAAA0nQkiJsxxkTqiXSzjKDNQ",
-                            "name": "关键词打标签-客户单聊",
-                            "create_time": 1689238783,
-                            "order": 1,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAAWiQEtlg6ElubY_c5hJFpNw",
-                            "name": "关键词打标签-客户单聊2",
-                            "create_time": 1689238827,
-                            "order": 1,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAA1XhHxyYcOZ2yWG31r_rIwQ",
-                            "name": "测试111",
-                            "create_time": 1689239829,
-                            "order": 1,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAA7xKHxgbFeZUGR-Smv7_cPA",
-                            "name": "产品测试-员工未联系客户1",
-                            "create_time": 1698833295,
-                            "order": 1,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAAQXiASUM3wKutbEOuvA4esg",
-                            "name": "产品测试-客户未联系员工1",
-                            "create_time": 1698833313,
-                            "order": 1,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAAEZCSc4CbmeZL_0u6QF3PPw",
-                            "name": "产品测试-客户未联系员工2",
-                            "create_time": 1698833322,
-                            "order": 1,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAA4bL0uvLXIw_sm52A4YYOUg",
-                            "name": "产品测试-员工未联系客户2",
-                            "create_time": 1698833338,
-                            "order": 1,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAA4GiApSck_hszmO5kbn_raA",
-                            "name": "客户1",
-                            "create_time": 1698833559,
-                            "order": 1,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAAXX5z80phXXOmxJO9ygwLKg",
-                            "name": "客户2",
-                            "create_time": 1698833565,
-                            "order": 1,
-                            "cst_num": "13",
-                            "repeat_cst_num": "13"
-                        },
-                        {
-                            "id": "etX2IKEAAAycoGMagtfeVEtd960y7AHw",
-                            "name": "客户2-2",
-                            "create_time": 1698833570,
-                            "order": 1,
-                            "cst_num": "13",
-                            "repeat_cst_num": "13"
-                        },
-                        {
-                            "id": "etX2IKEAAAtWvOp_GGgbyeLtPanJ_9UA",
-                            "name": "客户3",
-                            "create_time": 1698833575,
-                            "order": 1,
-                            "cst_num": "13",
-                            "repeat_cst_num": "13"
-                        },
-                        {
-                            "id": "etX2IKEAAAThqTNNt7s8MZ1a9zGkUdzA",
-                            "name": "员工1",
-                            "create_time": 1698833775,
-                            "order": 1,
-                            "cst_num": "34",
-                            "repeat_cst_num": "34"
-                        },
-                        {
-                            "id": "etX2IKEAAAEzfgjXa3__dFBNTQ2Julcw",
-                            "name": "员工2",
-                            "create_time": 1698833780,
-                            "order": 1,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        },
-                        {
-                            "id": "etX2IKEAAAHIiOIB882u024l0aak7VLA",
-                            "name": "员工3",
-                            "create_time": 1698833789,
-                            "order": 1,
-                            "cst_num": "34",
-                            "repeat_cst_num": "34"
-                        },
-                        {
-                            "id": "etX2IKEAAA-axm62H8x79n0btykk_M7A",
-                            "name": "员工4",
-                            "create_time": 1698833795,
-                            "order": 1,
-                            "cst_num": "35",
-                            "repeat_cst_num": "35"
-                        },
-                        {
-                            "id": "etX2IKEAAAPmRgOqJHB_nxhUk8YYlRAw",
-                            "name": "客户5",
-                            "create_time": 1698835777,
-                            "order": 1,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAAv4RMQVo6mK77mgN0oUbYHQ",
-                            "name": "变标签1",
-                            "create_time": 1698910277,
-                            "order": 1,
-                            "cst_num": "12",
-                            "repeat_cst_num": "12"
-                        },
-                        {
-                            "id": "etX2IKEAAASQyvPN_HsE-fOQKTPn4PfA",
-                            "name": "便标签2",
-                            "create_time": 1698910285,
-                            "order": 1,
-                            "cst_num": "12",
-                            "repeat_cst_num": "12"
-                        },
-                        {
-                            "id": "etX2IKEAAAoE3tYxB_GsMDHm5ysw18gA",
-                            "name": "变标签3",
-                            "create_time": 1698910302,
-                            "order": 1,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAABhWkrbZF11-7MY0Sy44rGg",
-                            "name": "员工变标签1",
-                            "create_time": 1698910333,
-                            "order": 1,
-                            "cst_num": "35",
-                            "repeat_cst_num": "35"
-                        },
-                        {
-                            "id": "etX2IKEAAA-uzMoOPlpRAX14wlzl_aZQ",
-                            "name": "员工变标签2",
-                            "create_time": 1698910343,
-                            "order": 1,
-                            "cst_num": "33",
-                            "repeat_cst_num": "33"
-                        },
-                        {
-                            "id": "etX2IKEAAAoC8iqI61MecYDj1EXBCbMA",
-                            "name": "员工变标签3",
-                            "create_time": 1698910352,
-                            "order": 1,
-                            "cst_num": "33",
-                            "repeat_cst_num": "33"
-                        },
-                        {
-                            "id": "etX2IKEAAAZ-ZBq_v-SXypOMPa2GX3lA",
-                            "name": "员工变标签5",
-                            "create_time": 1698910361,
-                            "order": 1,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAA0oUBuJPs-3NU5IFl_-KPKg",
-                            "name": "rand",
-                            "create_time": 1727346160,
-                            "order": 1,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        }
-                    ],
-                    "order": 9999909,
-                    "inner_tag": false,
-                    "visible_range_list": [],
-                    "editable_range_list": [],
-                    "cannt_edit": false
-                },
-                {
-                    "group_id": "etX2IKEAAAjGvUcSaMXWSqNSQwDaY8Aw",
-                    "group_name": "测试组1",
-                    "create_time": 1639388011,
-                    "tag": [
-                        {
-                            "id": "etX2IKEAAAAZKYM252v7MIOMdT8hC_jw",
-                            "name": "企微数据互通",
-                            "create_time": 1646039172,
-                            "order": 8,
-                            "cst_num": "22",
-                            "repeat_cst_num": "24"
-                        },
-                        {
-                            "id": "etX2IKEAAAxyZxWl_MBrCPicL3mnjJEw",
-                            "name": "jkjh ",
-                            "create_time": 1656389917,
-                            "order": 7,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        },
-                        {
-                            "id": "etX2IKEAAA27fo7qgWc6miNJDc6h1Sow",
-                            "name": "标签1",
-                            "create_time": 1661141367,
-                            "order": 6,
-                            "cst_num": "28",
-                            "repeat_cst_num": "30"
-                        },
-                        {
-                            "id": "etX2IKEAAAwdwLdPGqxNbrWaJ8Q3XmlQ",
-                            "name": "滚滚滚",
-                            "create_time": 1640654108,
-                            "order": 5,
-                            "cst_num": "5",
-                            "repeat_cst_num": "5"
-                        },
-                        {
-                            "id": "etX2IKEAAAwBcmemT9ZrEVo6WkyIxHGA",
-                            "name": "标签2",
-                            "create_time": 1661141372,
-                            "order": 4,
-                            "cst_num": "29",
-                            "repeat_cst_num": "31"
-                        },
-                        {
-                            "id": "etX2IKEAAAkk8rqZ9Wl3ozNkcFfFvMOw",
-                            "name": "11",
-                            "create_time": 1639388011,
-                            "order": 3,
-                            "cst_num": "21",
-                            "repeat_cst_num": "24"
-                        },
-                        {
-                            "id": "etX2IKEAAAWibUg5kpTX8ncPZa_egctg",
-                            "name": "33",
-                            "create_time": 1639388011,
-                            "order": 2,
-                            "cst_num": "34",
-                            "repeat_cst_num": "37"
-                        },
-                        {
-                            "id": "etX2IKEAAARDmz_SidVRl8URdZ18bH5g",
-                            "name": "22",
-                            "create_time": 1639388011,
-                            "order": 1,
-                            "cst_num": "44",
-                            "repeat_cst_num": "50"
-                        },
-                        {
-                            "id": "etX2IKEAAAAmQIcqXwwwePc6y0oQullw",
-                            "name": "关键词打标签-群聊测试1",
-                            "create_time": 1689230170,
-                            "order": 1,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        },
-                        {
-                            "id": "etX2IKEAAAohAeBYNhRtSSLyZUBEyaGQ",
-                            "name": "关键词打标签-群聊测试2",
-                            "create_time": 1689230231,
-                            "order": 1,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        },
-                        {
-                            "id": "etX2IKEAAAQADZYwbLZljK2AFD8BPBGg",
-                            "name": "关键词打标签-群聊测试3",
-                            "create_time": 1689230254,
-                            "order": 1,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        },
-                        {
-                            "id": "etX2IKEAAAf7T9RCGl2Z1mHbXnWfKqWA",
-                            "name": "测试23",
-                            "create_time": 1689238061,
-                            "order": 1,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        },
-                        {
-                            "id": "etX2IKEAAALx3FsgpycRghwpaFf0TmFQ",
-                            "name": "标签33",
-                            "create_time": 1689238083,
-                            "order": 1,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAAnpDvb8taFUUlnCQMDhCD4w",
-                            "name": "测试55",
-                            "create_time": 1689238531,
-                            "order": 1,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAAWCyFwc4uWYJDZ2uWGRr5pw",
-                            "name": "测试66",
-                            "create_time": 1689239315,
-                            "order": 1,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAA943X6kMXqSJjl6QnLBd7jQ",
-                            "name": "测试77",
-                            "create_time": 1689239325,
-                            "order": 1,
-                            "cst_num": "34",
-                            "repeat_cst_num": "34"
-                        },
-                        {
-                            "id": "etX2IKEAAAgGZItqQsQLCRmfnTHE--NA",
-                            "name": "测试名字很长很长很长很长很长很长很长",
-                            "create_time": 1698394284,
-                            "order": 1,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        }
-                    ],
-                    "order": 9999908,
-                    "inner_tag": false,
-                    "visible_range_list": [],
-                    "editable_range_list": [],
-                    "cannt_edit": false
-                },
-                {
-                    "group_id": "etX2IKEAAAlnQDB6SKgqgEBzJXtZLncQ",
-                    "group_name": "标签组1",
-                    "create_time": 1640654095,
-                    "tag": [
-                        {
-                            "id": "etX2IKEAAARoA5SfC-OIPjiDZzyFJKsw",
-                            "name": "客户苹果",
-                            "create_time": 1660187392,
-                            "order": 9999907,
-                            "cst_num": "2",
-                            "repeat_cst_num": "5"
-                        },
-                        {
-                            "id": "etX2IKEAAAuTlWgE1H-Z5C85lCmw3bSg",
-                            "name": "员工猕猴桃",
-                            "create_time": 1660190501,
-                            "order": 9999906,
-                            "cst_num": "1",
-                            "repeat_cst_num": "4"
-                        },
-                        {
-                            "id": "etX2IKEAAAVn6WzOSijp554OzX-OhDxQ",
-                            "name": "员工桃子",
-                            "create_time": 1660189730,
-                            "order": 9999905,
-                            "cst_num": "1",
-                            "repeat_cst_num": "4"
-                        },
-                        {
-                            "id": "etX2IKEAAAtPfABe5f9HCJHYS-xQW1mA",
-                            "name": "客户葡萄",
-                            "create_time": 1660190990,
-                            "order": 9999903,
-                            "cst_num": "1",
-                            "repeat_cst_num": "4"
-                        },
-                        {
-                            "id": "etX2IKEAAAkrYCb6i3soRBl0pG2BUGUQ",
-                            "name": "员工香蕉",
-                            "create_time": 1660188015,
-                            "order": 9999902,
-                            "cst_num": "1",
-                            "repeat_cst_num": "4"
-                        },
-                        {
-                            "id": "etX2IKEAAAbZDjCFWwCxYS0iNASR1EqQ",
-                            "name": "关键词打标签-单聊测试1",
-                            "create_time": 1689231980,
-                            "order": 1,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        },
-                        {
-                            "id": "etX2IKEAAAjjoEC88jIZwlaNqX4xlFTg",
-                            "name": "关键词打标签-单聊测试2",
-                            "create_time": 1689231997,
-                            "order": 1,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        },
-                        {
-                            "id": "etX2IKEAAAOd3Z50lExpV5GAqdhQADIA",
-                            "name": "关键词打标签-单聊测试3",
-                            "create_time": 1689232019,
-                            "order": 1,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        },
-                        {
-                            "id": "etX2IKEAAACRIwx71B-NtztR5cKV7OBg",
-                            "name": "会话标签1",
-                            "create_time": 1698748687,
-                            "order": 1,
-                            "cst_num": "35",
-                            "repeat_cst_num": "35"
-                        },
-                        {
-                            "id": "etX2IKEAAASoApz5af8jPsnvvNQNcZ4A",
-                            "name": "会话标签2",
-                            "create_time": 1698748700,
-                            "order": 1,
-                            "cst_num": "34",
-                            "repeat_cst_num": "34"
-                        },
-                        {
-                            "id": "etX2IKEAAAWKQa-YHAHskjcfPd9eiJDw",
-                            "name": "会话标签3",
-                            "create_time": 1698748707,
-                            "order": 1,
-                            "cst_num": "34",
-                            "repeat_cst_num": "34"
-                        },
-                        {
-                            "id": "etX2IKEAAAOqwDEQhzLL7HXgDPgV5RTQ",
-                            "name": "会话标签4",
-                            "create_time": 1698748713,
-                            "order": 1,
-                            "cst_num": "41",
-                            "repeat_cst_num": "45"
-                        },
-                        {
-                            "id": "etX2IKEAAAxoM_YBvg5L8FK4Jwg5RemQ",
-                            "name": "会话标签5",
-                            "create_time": 1698748880,
-                            "order": 1,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAAH4BRiPkKVmw1e2FywzKgYg",
-                            "name": "会话标签6",
-                            "create_time": 1698748886,
-                            "order": 1,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAAMKj7rJ8gTThn8YBlZbL3nQ",
-                            "name": "11",
-                            "create_time": 1640654095,
-                            "order": 0,
-                            "cst_num": "34",
-                            "repeat_cst_num": "37"
-                        },
-                        {
-                            "id": "etX2IKEAAAiNenoqO9Si6LPW_AYCbxaQ",
-                            "name": "22",
-                            "create_time": 1640654095,
-                            "order": 0,
-                            "cst_num": "1",
-                            "repeat_cst_num": "4"
-                        }
-                    ],
-                    "order": 9999907,
-                    "inner_tag": false,
-                    "visible_range_list": [],
-                    "editable_range_list": [],
-                    "cannt_edit": false
-                },
-                {
-                    "group_id": "etX2IKEAAA2iqUmhINeWBKayqFdFsbnw",
-                    "group_name": "跟进阶段",
-                    "create_time": 1683168652,
-                    "tag": [
-                        {
-                            "id": "etX2IKEAAAR-oo9r6_jiFoFCow4_AQaw",
-                            "name": "产品演示",
-                            "create_time": 1683168652,
-                            "order": 9999908,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAAkD3zydNT9TTzbpNOPTJCyA",
-                            "name": "合同报价",
-                            "create_time": 1683168652,
-                            "order": 9999907,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAA9SJeSwSadEkuKJ4zTBcRGg",
-                            "name": "已加微信",
-                            "create_time": 1683168652,
-                            "order": 9999906,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAAkXtVDWGfy35X_OXiQDK1CA",
-                            "name": "新线索",
-                            "create_time": 1683168652,
-                            "order": 9999905,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAAeTlionqhUMKGxYOcb4u8nw",
-                            "name": "无效",
-                            "create_time": 1683168652,
-                            "order": 9999904,
-                            "cst_num": "1",
-                            "repeat_cst_num": "4"
-                        },
-                        {
-                            "id": "etX2IKEAAAEEHhV96nLUHvLWAAGKVA7w",
-                            "name": "成交",
-                            "create_time": 1683168652,
-                            "order": 9999903,
-                            "cst_num": "1",
-                            "repeat_cst_num": "4"
-                        },
-                        {
-                            "id": "etX2IKEAAAcA-itbznVSgMcZQ7qLhGpA",
-                            "name": "电话沟通",
-                            "create_time": 1683168652,
-                            "order": 9999902,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAARVzZQ05cj_oQeBfhibhWHg",
-                            "name": "输单",
-                            "create_time": 1683168652,
-                            "order": 9999901,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        }
-                    ],
-                    "order": 9999906,
-                    "inner_tag": false,
-                    "visible_range_list": [],
-                    "editable_range_list": [],
-                    "cannt_edit": false
-                },
-                {
-                    "group_id": "etX2IKEAAAe50ZV-LEKTrtYF8XS8rVsQ",
-                    "group_name": "行业",
-                    "create_time": 1683168652,
-                    "tag": [
-                        {
-                            "id": "etX2IKEAAACsQJ2X31YWC9265dzuidVg",
-                            "name": "IT服务",
-                            "create_time": 1683168652,
-                            "order": 9999909,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAAOmsbJJpnhZx5GO3xbEw2-A",
-                            "name": "互联网\/IT",
-                            "create_time": 1683168652,
-                            "order": 9999908,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAANYqKPyUq3qXwXNuXOhp4lw",
-                            "name": "企业服务",
-                            "create_time": 1683168652,
-                            "order": 9999907,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAA-yT5EyWBf9lBt8Q-AZjpXg",
-                            "name": "其他行业",
-                            "create_time": 1683168652,
-                            "order": 9999906,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAAOjIeBVi6LYM-8zW-oeIdAA",
-                            "name": "医美",
-                            "create_time": 1683168652,
-                            "order": 9999905,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAAe0pHO97tOPiVQnbtLBFIhg",
-                            "name": "教育",
-                            "create_time": 1683168652,
-                            "order": 9999904,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAA2AH7anYO8Mbvg5iGwRo0Qg",
-                            "name": "家装",
-                            "create_time": 1683168652,
-                            "order": 9999903,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAABQiStMiIJNPAacxszD5wWQ",
-                            "name": "金融",
-                            "create_time": 1683168652,
-                            "order": 9999902,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAANmdXMo-iaNig331QAw7kug",
-                            "name": "房地产",
-                            "create_time": 1683168652,
-                            "order": 9999901,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        }
-                    ],
-                    "order": 9999905,
-                    "inner_tag": false,
-                    "visible_range_list": [],
-                    "editable_range_list": [],
-                    "cannt_edit": false
-                },
-                {
-                    "group_id": "etX2IKEAAA-hlzJcEfyjF5svy85dHugg",
-                    "group_name": "标签",
-                    "create_time": 1683168653,
-                    "tag": [
-                        {
-                            "id": "etX2IKEAAAWSPeZ774w5vuLunNJlvdIA",
-                            "name": "A类",
-                            "create_time": 1683168653,
-                            "order": 9999904,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAAp7rEhM4GhVRe3c8xmTxrlA",
-                            "name": "B类",
-                            "create_time": 1683168653,
-                            "order": 9999903,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAApajZ499in9SRtfWM6JX10g",
-                            "name": "C类",
-                            "create_time": 1683168653,
-                            "order": 9999902,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAA2QvjKpl9S8LRMSzUxgKLGg",
-                            "name": "D类",
-                            "create_time": 1683168653,
-                            "order": 9999901,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        }
-                    ],
-                    "order": 9999904,
-                    "inner_tag": false,
-                    "visible_range_list": [],
-                    "editable_range_list": [],
-                    "cannt_edit": false
-                },
-                {
-                    "group_id": "etX2IKEAAAzJwGj5l2VMkyLujijrCyJA",
-                    "group_name": "来源",
-                    "create_time": 1683168654,
-                    "tag": [
-                        {
-                            "id": "etX2IKEAAAN7r3fjzYrGpqFrZ0vEiWbA",
-                            "name": "其它",
-                            "create_time": 1683168654,
-                            "order": 9999905,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAAXAJYuN62a0qV_1iTUsxeYA",
-                            "name": "官网注册",
-                            "create_time": 1683168654,
-                            "order": 9999904,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAA-HUrJZGstlLFRCOUDPWQLA",
-                            "name": "采购线索",
-                            "create_time": 1683168654,
-                            "order": 9999903,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAAsdvDXr6ZxPiFTMT78oTpng",
-                            "name": "线下活动",
-                            "create_time": 1683168654,
-                            "order": 9999902,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAAm4yMb2pjwiGPlT-JWflx5A",
-                            "name": "销售自拓",
-                            "create_time": 1683168654,
-                            "order": 9999901,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAAzOMFCnYrCJ6Gt8M-U5LuqQ",
-                            "name": "企搜宝",
-                            "create_time": 1683505728,
-                            "order": 0,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        }
-                    ],
-                    "order": 9999903,
-                    "inner_tag": false,
-                    "visible_range_list": [],
-                    "editable_range_list": [],
-                    "cannt_edit": false
-                },
-                {
-                    "group_id": "etX2IKEAAA53rMkOKDpdYR3xt1tIrR_A",
-                    "group_name": "年龄范围",
-                    "create_time": 1683168655,
-                    "tag": [
-                        {
-                            "id": "etX2IKEAAAN3dJ5v7lrzcG7B68-yis5A",
-                            "name": "中老年",
-                            "create_time": 1683168655,
-                            "order": 9999903,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAAaRFD8wD2bToVJ1TNUmnxrg",
-                            "name": "中青年",
-                            "create_time": 1683168655,
-                            "order": 9999902,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAAZTcIkv-RmTguJnqevQACAQ",
-                            "name": "青少年",
-                            "create_time": 1683168655,
-                            "order": 9999901,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        }
-                    ],
-                    "order": 9999902,
-                    "inner_tag": false,
-                    "visible_range_list": [],
-                    "editable_range_list": [],
-                    "cannt_edit": false
-                },
-                {
-                    "group_id": "etX2IKEAAAmbJOKmhhGvas-tMbNte-IA",
-                    "group_name": "性别",
-                    "create_time": 1683168656,
-                    "tag": [
-                        {
-                            "id": "etX2IKEAAAZXundaXlTzlggSGGe_NwPA",
-                            "name": "女",
-                            "create_time": 1683168656,
-                            "order": 9999901,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAAq1RF3IbWD0sPKwHATFB3nA",
-                            "name": "23-05-17",
-                            "create_time": 1684312487,
-                            "order": 1,
-                            "cst_num": "2",
-                            "repeat_cst_num": "4"
-                        },
-                        {
-                            "id": "etX2IKEAAAnBkHq_5P62Hsb6uRJf3BtQ",
-                            "name": "23-05-15",
-                            "create_time": 1684719968,
-                            "order": 1,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        },
-                        {
-                            "id": "etX2IKEAAAMTNzfQlq2prhZPzZpq35Aw",
-                            "name": "23-05-23",
-                            "create_time": 1684832580,
-                            "order": 1,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAA6tTGl85nbV31D3uM32-wVg",
-                            "name": "23-05-24",
-                            "create_time": 1684894828,
-                            "order": 1,
-                            "cst_num": "3",
-                            "repeat_cst_num": "4"
-                        },
-                        {
-                            "id": "etX2IKEAAAUXNf8q_RXEZOdxT8manEww",
-                            "name": "22-09-29",
-                            "create_time": 1684902614,
-                            "order": 1,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        },
-                        {
-                            "id": "etX2IKEAAAL40d4E-0X4XVo7XoDrSxzg",
-                            "name": "23-06-02",
-                            "create_time": 1685702993,
-                            "order": 1,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        },
-                        {
-                            "id": "etX2IKEAAAS-02j9u7JJ-wLpFTOkjYxQ",
-                            "name": "23-06-05",
-                            "create_time": 1685946934,
-                            "order": 1,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        },
-                        {
-                            "id": "etX2IKEAAABTM1HF8wilpLv65VpolaoA",
-                            "name": "23-06-06",
-                            "create_time": 1686045994,
-                            "order": 1,
-                            "cst_num": "2",
-                            "repeat_cst_num": "2"
-                        },
-                        {
-                            "id": "etX2IKEAAAKcYEiBWLxW221jm6BJ4vfQ",
-                            "name": "23-06-21",
-                            "create_time": 1687340388,
-                            "order": 1,
-                            "cst_num": "2",
-                            "repeat_cst_num": "2"
-                        },
-                        {
-                            "id": "etX2IKEAAAvt6AigslNud4VX5Q5r1zgg",
-                            "name": "23-07-06",
-                            "create_time": 1688613646,
-                            "order": 1,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        },
-                        {
-                            "id": "etX2IKEAAA_b3fufbCARfGIPhb3S8PDg",
-                            "name": "23-07-12",
-                            "create_time": 1689153153,
-                            "order": 1,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        },
-                        {
-                            "id": "etX2IKEAAAvTvfsp_6jnReXu57Sw1E7Q",
-                            "name": "23-07-13",
-                            "create_time": 1689238988,
-                            "order": 1,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        },
-                        {
-                            "id": "etX2IKEAAAu1uLhWa5mQAcLgNwaNv7gg",
-                            "name": "23-07-28",
-                            "create_time": 1690538220,
-                            "order": 1,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        },
-                        {
-                            "id": "etX2IKEAAAb1cgXNePdoMpL9wtQSnZZg",
-                            "name": "23-08-01",
-                            "create_time": 1690858042,
-                            "order": 1,
-                            "cst_num": "2",
-                            "repeat_cst_num": "2"
-                        },
-                        {
-                            "id": "etX2IKEAAAeqaHZFn79zUeL41zitq_xw",
-                            "name": "23-08-07",
-                            "create_time": 1691392390,
-                            "order": 1,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        },
-                        {
-                            "id": "etX2IKEAAAZ8mzWxSIlsJ7yk5K3qzy6w",
-                            "name": "男",
-                            "create_time": 1683168656,
-                            "order": 0,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        }
-                    ],
-                    "order": 9999901,
-                    "inner_tag": false,
-                    "visible_range_list": [],
-                    "editable_range_list": [],
-                    "cannt_edit": false
-                },
-                {
-                    "group_id": "etX2IKEAAAacko0hoclN28pUzCdPrD-w",
-                    "group_name": "测试2",
-                    "create_time": 1639388019,
-                    "tag": [
-                        {
-                            "id": "etX2IKEAAAltNVTqW5o0k0SozpurVaEQ",
-                            "name": "进入表单",
-                            "create_time": 1683865509,
-                            "order": 1,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAAokHAs83b5m8h8OhWimVTGQ",
-                            "name": "提交表单",
-                            "create_time": 1683865517,
-                            "order": 1,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAAkTOu-7Zd-nQNl5mtIvnsnQ",
-                            "name": "小店自动打标签",
-                            "create_time": 1684998385,
-                            "order": 1,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        },
-                        {
-                            "id": "etX2IKEAAAWa6_UexB2-WzYQT14aq49w",
-                            "name": "44",
-                            "create_time": 1639388019,
-                            "order": 0,
-                            "cst_num": "27",
-                            "repeat_cst_num": "37"
-                        },
-                        {
-                            "id": "etX2IKEAAAjwKe9cLY2uvFRezd6BflAw",
-                            "name": "55",
-                            "create_time": 1639388019,
-                            "order": 0,
-                            "cst_num": "22",
-                            "repeat_cst_num": "32"
-                        },
-                        {
-                            "id": "etX2IKEAAAtxtvrzw7tID9nSnK7v4VFw",
-                            "name": "66",
-                            "create_time": 1639388019,
-                            "order": 0,
-                            "cst_num": "3",
-                            "repeat_cst_num": "3"
-                        }
-                    ],
-                    "order": 1,
-                    "inner_tag": false,
-                    "visible_range_list": [],
-                    "editable_range_list": [],
-                    "cannt_edit": false
-                },
-                {
-                    "group_id": "etX2IKEAAAoH--M9pT5Wqj4Ji7RnPMcQ",
-                    "group_name": "test",
-                    "create_time": 1684736227,
-                    "tag": [
-                        {
-                            "id": "etX2IKEAAAcvyu-v31GwYQELPsT8v80w",
-                            "name": "parker1417",
-                            "create_time": 1684736227,
-                            "order": 1,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAAXr5N4rrWFDntjdZSF9fcdA",
-                            "name": "Andy测试",
-                            "create_time": 1685090878,
-                            "order": 1,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAAWwdCP6XGKAqZ34x2CmRqqg",
-                            "name": "lacy红包测试",
-                            "create_time": 1705041102,
-                            "order": 1,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAAMYlxyi6bvbruL1L0Wz5KHw",
-                            "name": "lacy红包测试2",
-                            "create_time": 1705288754,
-                            "order": 1,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        },
-                        {
-                            "id": "etX2IKEAAAfdkQJpKU6Q8KJAKepYU6VQ",
-                            "name": "lacy红包测试3",
-                            "create_time": 1705305057,
-                            "order": 1,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        }
-                    ],
-                    "order": 0,
-                    "inner_tag": false,
-                    "visible_range_list": [],
-                    "editable_range_list": [],
-                    "cannt_edit": false
-                },
-                {
-                    "group_id": "etX2IKEAAAOEipu_zenzdUJ5tDuENdcA",
-                    "group_name": "11",
-                    "create_time": 1672797659,
-                    "tag": [
-                        {
-                            "id": "etX2IKEAAAGvKIKzjmkfkUmbK4H-giPA",
-                            "name": "11",
-                            "create_time": 1672797659,
-                            "order": 1,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        }
-                    ],
-                    "order": 0,
-                    "inner_tag": false,
-                    "visible_range_list": [],
-                    "editable_range_list": [],
-                    "cannt_edit": false
-                },
-                {
-                    "group_id": "etX2IKEAAA2mrc2olowgRnINzFXMXjeA",
-                    "group_name": "芝麻微客标签",
-                    "create_time": 1666083349,
-                    "tag": [
-                        {
-                            "id": "etX2IKEAAAip67QTJO3BKA6YvO53zTXw",
-                            "name": "流失客户-芝麻",
-                            "create_time": 1666083349,
-                            "order": 1,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        },
-                        {
-                            "id": "etX2IKEAAAsvMEmyCLcie1tH6Iw6xb7Q",
-                            "name": "重复客户",
-                            "create_time": 1714992237,
-                            "order": 1,
-                            "cst_num": 0,
-                            "repeat_cst_num": 0
-                        }
-                    ],
-                    "order": 0,
-                    "inner_tag": true,
-                    "visible_range_list": [],
-                    "editable_range_list": [],
-                    "cannt_edit": false
-                },
-                {
-                    "group_id": "etX2IKEAAAkq_9QQD9jmSl7CruH00BWA",
-                    "group_name": "数据互通",
-                    "create_time": 1658981624,
-                    "tag": [
-                        {
-                            "id": "etX2IKEAAAVtr-t7RdWsnhsaYuWMJieQ",
-                            "name": "默认腾讯广告规则",
-                            "create_time": 1658992280,
-                            "order": 1,
-                            "cst_num": "4",
-                            "repeat_cst_num": "10"
-                        },
-                        {
-                            "id": "etX2IKEAAAUfbs9tLXRPTbAdRlFv4xaw",
-                            "name": "腾讯广告",
-                            "create_time": 1658981624,
-                            "order": 0,
-                            "cst_num": "20",
-                            "repeat_cst_num": "30"
-                        },
-                        {
-                            "id": "etX2IKEAAALB3mPzAib5QzlnkPN22X7g",
-                            "name": "腾讯广告2",
-                            "create_time": 1658982168,
-                            "order": 0,
-                            "cst_num": "20",
-                            "repeat_cst_num": "30"
-                        }
-                    ],
-                    "order": 0,
-                    "inner_tag": false,
-                    "visible_range_list": [],
-                    "editable_range_list": [],
-                    "cannt_edit": false
-                },
-                {
-                    "group_id": "etX2IKEAAAGP6crxDlGGGAmoYnyF7DtQ",
-                    "group_name": "芝麻-公众号粉丝",
-                    "create_time": 1657008946,
-                    "tag": [
-                        {
-                            "id": "etX2IKEAAAttCo21QmTcvMpFSNid6nTg",
-                            "name": "虎秀的粉丝",
-                            "create_time": 1657008946,
-                            "order": 1,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        }
-                    ],
-                    "order": 0,
-                    "inner_tag": false,
-                    "visible_range_list": [],
-                    "editable_range_list": [],
-                    "cannt_edit": false
-                },
-                {
-                    "group_id": "etX2IKEAAAB7beVrEAxSbuuYaVXRaoMA",
-                    "group_name": "日期标签",
-                    "create_time": 1655263912,
-                    "tag": [
-                        {
-                            "id": "etX2IKEAAAe5GHzovBjkQLzf9uJzi4Ww",
-                            "name": "2022\/06\/16",
-                            "create_time": 1655265184,
-                            "order": 1,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        },
-                        {
-                            "id": "etX2IKEAAAFUMorpafjSmT79pw93RCOg",
-                            "name": "2022-09-09",
-                            "create_time": 1662708488,
-                            "order": 1,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        },
-                        {
-                            "id": "etX2IKEAAAyE_jFZH_BWQ4wB0LNqRL8g",
-                            "name": "2022-09-27",
-                            "create_time": 1664262184,
-                            "order": 1,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        },
-                        {
-                            "id": "etX2IKEAAAmY1VgAWCecrPlxYAyeRX2Q",
-                            "name": "2023-3-6",
-                            "create_time": 1678089563,
-                            "order": 1,
-                            "cst_num": "2",
-                            "repeat_cst_num": "3"
-                        },
-                        {
-                            "id": "etX2IKEAAA-XgY6BsfIPqnqE2cZ2zY0A",
-                            "name": "2023-04-26",
-                            "create_time": 1682486598,
-                            "order": 1,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        },
-                        {
-                            "id": "etX2IKEAAALWiWdQx88Z5GcwKGHZC9-A",
-                            "name": "2022年06月15日",
-                            "create_time": 1655263912,
-                            "order": 0,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        },
-                        {
-                            "id": "etX2IKEAAAdhfDTBXVlIG4e6hsWaW4RA",
-                            "name": "44444",
-                            "create_time": 1655264965,
-                            "order": 0,
-                            "cst_num": "1",
-                            "repeat_cst_num": "1"
-                        }
-                    ],
-                    "order": 0,
-                    "inner_tag": true,
-                    "visible_range_list": [],
-                    "editable_range_list": [],
-                    "cannt_edit": false
-                }
-            ]
-            labelNum.value = 1
-
-    //     dataArr.value.map((el) => {
-    //     labelNum.value += el.tag.length
-    //     })
-    // })
-}
-//导出
-const exportTo = () => {
-    window.location.href = '/tag/export-cst-tag-data'
-}
-
-const Refresh = ref(false)
-
-//更新标签数据
-const updateLabel = () => {
-    // Refresh.value = true
-    // tagRefreshCstNum()
-    // .finally(() => {
-    //     Refresh.value = false
-    // })
-    // .then((res) => {
-        tags_lists()
-    // })
-}
-
-const showDrawer = (item) => {
-
-}
-
-const getSearName = (item, type) => {
-    let name = item.group_name || item.name
-    let count = item.repeat_cst_num || 0
-    let str = searchValue.value
-    let names = name.split(str)
-    let nameStr = ''
-    if (names.length > 1) {
-        nameStr = names.join(`<span style="color: #ED744A;">${str}</span>`)
-    }
-    if(type == 1){
-        return searchValue.value && nameStr ? nameStr : name
-    }
-    return (searchValue.value && nameStr ? nameStr : name ) + `(${count})`
 }
 
 onMounted(() => {
-    tags_lists()
+    loadData()
 })
 </script>
-<style lang="less">
-  .tag-manage {
-    margin: 12px;
 
-    .explain {
-      margin-bottom: 8px;
-      font-size: 14px;
-      color: rgba(0, 0, 0, 0.45);
-      span {
+<style scoped lang="less">
+.header {
+    display: flex;
+    gap: 16px;
+
+    .operate-box {
+        display: flex;
+
+        .filter-item {
+            display: flex;
+            align-items: center;
+
+            .filter-item-label {
+                white-space: nowrap;
+            }
+        }
+    }
+}
+
+.list {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 16px;
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-weight: 400;
+    color: #000000;
+    line-height: 24px;
+
+    .wz {
+        font-size: 14px;
         color: rgba(0, 0, 0, 0.65);
-      }
     }
-    .ant-modal-body {
-      padding: 19px 32px;
-      max-height: 500px;
-      overflow-y: auto;
+
+    .fl-fc {
+        display: flex;
+        flex-direction: column;
     }
-    .ant-btn > .anticon + span,
-    .ant-btn > span + .anticon {
-      margin-left: 2px;
+
+    .wz-color {
+        color: rgba(0, 0, 0, 0.45);
     }
-    .ant-modal-content .ant-btn-link {
-      padding: 0;
+
+    .mb10 {
+        margin-bottom: 10px;
     }
-    .top {
-      padding: 16px 32px;
-      background-color: #fff;
-      margin-bottom: 24px;
-      .item {
-        margin-right: 16px;
-        &:last-child {
-          margin-right: 0;
-        }
-      }
+
+    .mr10 {
+        margin-right: 10px;
     }
-  }
-  </style>
-<style lang="less" scoped>
-  .mr10 {
-    margin-right: 10px;
-  }
-  .ml16 {
-    margin-left: 16px;
-  }
-  .mr16 {
-    margin-right: 16px;
-  }
-  .mr24 {
-    margin-right: 24px;
-  }
-  .mb18 {
-    margin-bottom: 18px;
-  }
-  .mb10{
-    margin-bottom: 10px;
-  }
-  .content {
-    background: #ffffff;
-    border-radius: 2px;
-    padding: 20px 24px;
-    .data-presentation {
-      margin: 16px 0;
-      .data-item {
-        padding: 16px;
-        width: 242px;
-        margin-right: 24px;
-        background: rgba(0, 0, 0, 0.02);
-        &:last-child {
-          margin-right: 0;
-        }
-        .data-title {
-          font-size: 14px;
-          color: rgba(0, 0, 0, 0.45);
-        }
-        .data-num {
-          font-size: 30px;
-          color: rgba(0, 0, 0, 0.85);
-          margin-top: 8px;
-          font-weight: bold;
-        }
-      }
-    }
-    .list {
-      font-size: 16px;
-      font-family: PingFangSC-Regular, PingFang SC;
-      font-weight: 400;
-      color: #000000;
-      display: flex;
-      border-bottom: 1px solid #e8e8e8;
-      // justify-content: space-between;
-      line-height: 24px;
-      padding-bottom: 10px;
-      flex-wrap: wrap;
-      .lefts {
+
+    .lefts {
         margin-left: 10px;
-      }
-      .lefts_size {
-        margin-left: 10px;
+    }
+
+    .lefts_size {
+        transform: rotate(-100deg);
         color: #595959;
-      }
-      span {
+    }
+
+    .lefts_sizes {
+        margin-left: 5px;
+        cursor: auto;
+    }
+
+    .lefts_check {
+        margin-left: 16px;
+
+        .ant-checkbox+span {
+            padding-right: 0;
+        }
+    }
+
+    span {
+        cursor: pointer;
         font-size: 13px;
         font-family: PingFangSC-Regular, PingFang SC;
         font-weight: 400;
         color: rgba(0, 0, 0, 0.45);
         line-height: 22px;
-      }
     }
-  }
-  .label_list_head {
-    display: inline-block;
-    height: 100%;
-    width: 10%;
-    float: left;
-    word-wrap: break-word;
-    margin-right: 10px;
+}
+
+.qunfa-box {
+    margin-bottom: 0;
+    padding: 2px 8px;
+}
+
+.qunfa {
+    font-size: 12px;
+    width: 250px;
+}
+
+.qunfa_name {
+    font-size: 13px;
+    font-family: PingFangSC-Medium, PingFang SC;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.65);
+    margin-right: 6px;
+}
+
+.zm-line-clamp2 {
+    max-height: 40px;
+    color: #595959;
     font-size: 14px;
-    font-family: PingFangSC-Regular, PingFang SC;
+}
+
+.default-content {
+    color: #595959;
+    font-size: 14px;
+}
+
+.operate-content {
+    color: #2475fc;
+    text-align: center;
+    font-family: "PingFang SC";
+    font-size: 14px;
+    font-style: normal;
     font-weight: 400;
-    color: rgba(0, 0, 0, 0.85);
-    .label-num {
-      font-size: 14px;
-      color: rgba(0, 0, 0, 0.45);
-    }
-  }
-  .label_list {
-    padding: 10px 5px;
-    justify-content: space-between;
-    border-bottom: 1px solid rgba(232, 232, 232, 1);
-    .label_list_width {
-      display: inline-block;
-      width: 90%;
-    }
-    .label_list_edit {
-      float: right;
-      cursor: pointer;
-      margin-right: 10px;
-      margin-top: 14px;
-      &:hover {
-        color: rgba(36, 117, 252, 1);
-      }
-    }
-    .label_list_li {
-      cursor: pointer;
-      list-style: none;
-      padding: 1px;
-      margin-bottom: 0;
-      display: inline-block;
-      height: 100%;
-      width: 87%;
-      li {
-        display: inline-block;
-        padding: 3px 8px;
+    line-height: 22px;
+}
+
+.tages_wid {
+    display: inline-block;
+
+    .tag-name {
+        margin-bottom: 0;
+        color: #595959;
         font-size: 12px;
-        font-family: PingFangSC-Regular, PingFang SC;
-        font-weight: 400;
-        color: rgba(0, 0, 0, 0.65);
-        line-height: 20px;
-        margin-bottom: 10px;
-        margin-right: 10px;
-        background: rgba(0, 0, 0, 0.04);
-        border-radius: 2px;
-        border: 1px solid rgba(0, 0, 0, 0.15);
-        &:hover {
-          border: 1px solid rgba(36, 117, 252, 1);
-          color: rgba(36, 117, 252, 1);
-        }
-      }
+        height: 22px;
+        line-height: 22px;
     }
-  }
-  </style>
+
+    .tag-names {
+        white-space: pre-wrap;
+        margin-bottom: 5px;
+        color: #595959;
+        font-size: 12px;
+        height: 22px;
+        line-height: 22px;
+    }
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+.flex {
+    display: flex;
+    align-items: center;
+}
+
+.login-form {
+    padding-top: 24px;
+}
+
+:deep(.lexicon-table .ant-table) {
+    color: #595959;
+    font-size: 14px;
+}
+
+.statistic-box {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    font-family: "PingFang SC";
+
+    .statistic-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .statistic-title {
+            color: #262626;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: 22px;
+        }
+
+        .statistic-num {
+            color: #595959;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 22px;
+        }
+    }
+}
+
+.update-box {
+    display: flex;
+    align-items: center;
+
+    .btn-update {
+        color: #595959;
+
+        &:hover,
+        &:hover .update-icon {
+            color: #4096ff;
+        }
+
+    }
+}
+
+.tag-main {
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    margin-top: 16px;
+
+    .tag-item {
+        font-family: "PingFang SC";
+        display: flex;
+        padding: 16px;
+        border-bottom: 1px solid #E8E8E8;
+
+        .tag-label-box {
+            flex-basis: 215px;
+            display: flex;
+            flex-direction: column;
+
+            .tag-label-title {
+                align-self: stretch;
+                color: #000000d9;
+                font-feature-settings: 'liga' off, 'clig' off;
+                font-size: 14px;
+                font-style: normal;
+                font-weight: 600;
+                line-height: 22px;
+            }
+
+            .tag-label-info {
+                color: #00000073;
+                font-feature-settings: 'liga' off, 'clig' off;
+                font-size: 14px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 22px;
+            }
+        }
+
+        .tag-content-box {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+
+            .tag {
+                display: flex;
+                padding: 4px 16px;
+                height: 30px;
+                align-items: flex-start;
+                gap: 10px;
+                border-radius: 6px;
+                border: 1px solid #00000026;
+                background: var(--000000, #00000005);
+                color: #000000a6;
+                font-size: 14px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 22px;
+            }
+        }
+
+        .tag-options-box {
+            flex-basis: 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            color: #595959;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 22px;
+
+            .tag-options {
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+
+                .options-icon {
+                    width: 16px;
+                }
+
+                .active {
+                    display: none;
+                }
+
+                &:hover {
+                    color: #2475FC;
+
+                    .options-icon {
+                        display: none;
+                    }
+
+                    .active {
+                        display: block;
+                    }
+                }
+            }
+
+            .tag-options-delete {
+                &:hover {
+                    color: #FB363F;
+
+                    .options-icon {
+                        display: none;
+                    }
+
+                    .active {
+                        display: block;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.list-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+
+    .tag-icon-box {
+        padding: 0 8px;
+        display: flex;
+        gap: 8px;
+        justify-content: space-between;
+    }
+
+    .tag-icon {
+        cursor: pointer;
+        width: 24px;
+        height: 24px;
+    }
+}
+
+.tag-icon-add {
+
+    .tag-icon-active {
+        display: none;
+    }
+
+    &:hover {
+        .tag-icon {
+            display: none;
+        }
+        .tag-icon-active {
+            display: inline-block;
+        }
+    }
+}
+
+.tag-icon-delete {
+
+    .tag-icon-active {
+        display: none;
+    }
+
+    &:hover {
+        .tag-icon {
+            display: none;
+        }
+        .tag-icon-active {
+            display: inline-block;
+        }
+    }
+}
+</style>
+
+<style lang="less">
+.user-info-tooltip .ant-tooltip-inner {
+    width: max-content;
+}
+</style>

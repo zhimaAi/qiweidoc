@@ -55,11 +55,12 @@ class AuthService
         try {
             $wechatUserInfo = $corpInfo->getWechatApi('/cgi-bin/auth/getuserinfo', ['code' => $codeLoginDTO->code]);
             if (empty($wechatUserInfo['userid'])) {
-                throw new Exception("非企业成员不支持登录");
+                throw new LogicException("非企业成员不支持登录");
             }
+        } catch (LogicException $e) {
+            throw new LogicException($e->getMessage());
         } catch (Throwable $e) {
             Yii::logger()->warning($e);
-
             throw new LogicException('获取用户登录身份信息失败');
         }
 

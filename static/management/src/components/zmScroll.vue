@@ -1,5 +1,5 @@
 <template>
-    <div class="zm-list-container"
+    <div :class="['zm-list-container',{'hide-scrollbar': !showScrollbar}]"
          :id="domId"
          @scroll="onScroll"
     >
@@ -48,6 +48,10 @@ const props = defineProps({
     showLoading: {
         type: Boolean,
         default: true
+    },
+    showScrollbar: {
+        type: Boolean,
+        default: false
     }
 })
 
