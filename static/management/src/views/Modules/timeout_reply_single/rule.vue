@@ -73,7 +73,7 @@
                             title="提示"
                         >
                             <template #content>
-                                <div class="zm-nowrap">统计规则修改后需保存才可生效</div>
+                                <div class="zm-nowrap">回复规则修改后需保存才可生效</div>
                                 <div class="mt16 text-right">
                                     <a-button class="save-btn" size="small" @click.stop="save">立即保存</a-button>
                                 </div>

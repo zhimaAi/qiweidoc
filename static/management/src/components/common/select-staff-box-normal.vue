@@ -34,7 +34,8 @@
 
     <selectStaffNew
             selectType="multiple"
-            ref="setStaff" @change="(val) => staffUpdate(val)"
+            ref="setStaff"
+            @change="(val) => staffUpdate(val)"
     ></selectStaffNew>
   </div>
 </template>
@@ -87,6 +88,7 @@ const setStaff = ref(null)
 const selectStaff = computed(() => props.selectedStaffs)
 
 const staffUpdate = (val) => {
+    console.log('val', val)
     selectStaff.value = val;
     emit("change", val || []);
 }

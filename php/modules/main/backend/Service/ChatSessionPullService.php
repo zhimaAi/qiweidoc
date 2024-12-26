@@ -54,38 +54,42 @@ class ChatSessionPullService
         $messages = self::fetchMessages();
         $lastSeq = null;
         foreach ($messages as $msg) {
-            if (!empty($msg['seq'])) {
-                $lastSeq = $msg['seq'];
-            }
-
-            // 过滤掉不能识别和重复的消息
-            if (!self::isValidMessage($msg)) {
-                continue;
-            }
-
-            //处理消息内容
-            $messageData = self::processMessage($msg);
-
-            // 创建会话
-            $conversation = self::saveConversation($messageData);
-
-            // 保存消息到数据库
-            $messageData->update([
-                'conversation_id' => $conversation->get('id'),
-                'conversation_type' => $conversation->get('type'),
-            ]);
-
-            // 下载资源
-            if (in_array($messageData->get('msg_type'), self::ValidMediaType)) {
-                if (self::isLargeFile($messageData)) { // 大文件到单独的队列中处理
-                    Producer::dispatch(DownloadChatSessionBitMediasConsumer::class, ['corp' => $corp, 'message' => $messageData]);
-                } else {
-                    Producer::dispatch(DownloadChatSessionMediasConsumer::class, ['corp' => $corp, 'message' => $messageData]);
+            try {
+                if (!empty($msg['seq'])) {
+                    $lastSeq = $msg['seq'];
                 }
-            }
 
-            // 广播
-            Broadcast::event('chat-session-pull')->send(json_encode([$messageData->toArray()]));
+                // 过滤掉不能识别和重复的消息
+                if (!self::isValidMessage($msg)) {
+                    continue;
+                }
+
+                //处理消息内容
+                $messageData = self::processMessage($msg);
+
+                // 创建会话
+                $conversation = self::saveConversation($messageData);
+
+                // 保存消息
+                $messageData->update([
+                    'conversation_id' => $conversation->get('id'),
+                    'conversation_type' => $conversation->get('type'),
+                ]);
+
+                // 下载资源
+                if (in_array($messageData->get('msg_type'), self::ValidMediaType)) {
+                    if (self::isLargeFile($messageData)) { // 大文件到单独的队列中处理
+                        Producer::dispatch(DownloadChatSessionBitMediasConsumer::class, ['corp' => $corp, 'message' => $messageData]);
+                    } else {
+                        Producer::dispatch(DownloadChatSessionMediasConsumer::class, ['corp' => $corp, 'message' => $messageData]);
+                    }
+                }
+
+                // 广播
+                Broadcast::event('chat-session-pull')->send(json_encode([$messageData->toArray()]));
+            } catch (Throwable $e) {
+                Yii::logger()->error($e);
+            }
         }
 
         // 更新消息序号

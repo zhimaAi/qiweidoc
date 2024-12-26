@@ -43,6 +43,9 @@ class InitModuleCommand extends Command
             ])
         );
 
+
+
+
         $process->mustRun();
     }
 }

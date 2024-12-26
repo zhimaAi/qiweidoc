@@ -196,12 +196,8 @@ function checkImgIsQrcode($img_url)
  */
 function isWeChatEmoji(string $content): bool
 {
-    if (ctype_digit($content)) {
-        return false;
-    }
-
-    $bracketPattern = '/^\[[\x{4e00}-\x{9fa5}a-zA-Z\p{P}]+\]$/u'; // 修改后的正则表达式
-    $emojiPattern = '/^[\p{Emoji}]+$/u';
+    $bracketPattern = '/^(?:\[[\x{4e00}-\x{9fa5}a-zA-Z]+\])+$/u';
+    $emojiPattern = '/^[\x{1F300}-\x{1F9FF}|\x{2600}-\x{26FF}|\x{2700}-\x{27BF}]+$/u';
 
     return (preg_match($bracketPattern, trim($content)) === 1) || (preg_match($emojiPattern, trim($content)) === 1);
 }

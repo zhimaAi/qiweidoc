@@ -17,15 +17,16 @@ class ModuleController extends BaseController
     public function getModuleList(ServerRequestInterface $request): ResponseInterface
     {
         $modules = Module::getModuleDirectories();
-        $modules = array_filter($modules, function ($name) {
-            return $name != 'main';
-        });
-
         $result = [];
         foreach ($modules as $moduleName) {
             $result[] = Module::getModuleConfig($moduleName);
         }
-        return $this->jsonResponse($result);
+        usort($result, function ($a, $b) {
+            return $a['order'] - $b['order'];
+        });
+        unset($result[0]); // 去掉main模块
+
+        return $this->jsonResponse(array_values($result));
     }
 
     public function getModuleDetail(ServerRequestInterface $request, #[RouteArgument('name')] string $name): ResponseInterface

@@ -1,7 +1,7 @@
 import {createRouter, createWebHashHistory} from 'vue-router';
 import store from "@/store";
 import {checkInit} from "@/api/auth-login";
-import {loginHandle} from "@/utils/tools";
+import {loginHandle, logoutHandle} from "@/utils/tools";
 import {getCookieUserInfo} from '@/utils/cookie';
 
 const routes = []
@@ -46,7 +46,8 @@ router.beforeEach(async (to, from, next) => {
             if (!getCookieUserInfo()) {
                 // 已登录但官网退出登录时（网退出会清除cookie）
                 // 官网和demo登录态同步
-                next({ path: '/login' });
+                // next({ path: '/login' });
+                logoutHandle()
                 return
             }
         } else {

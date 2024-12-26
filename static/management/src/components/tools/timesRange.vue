@@ -100,6 +100,7 @@ function add() {
         return
     }
     data.value.push(copyObj(dataItemStruct))
+    change()
 }
 
 function remove(index) {
@@ -115,6 +116,7 @@ function addTimeRange(record) {
         return
     }
     record.ranges.push(copyObj(timeItemStruct))
+    change()
 }
 
 function removeTimeRange(record, index) {
@@ -122,6 +124,7 @@ function removeTimeRange(record, index) {
         return
     }
     record.ranges.splice(index, 1)
+    change()
 }
 
 function disabledWeek(index, week) {

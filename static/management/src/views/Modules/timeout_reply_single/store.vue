@@ -110,6 +110,7 @@ import TimesRange from "@/components/tools/timesRange.vue";
 import SelectStaffBoxNormal from "@/components/common/select-staff-box-normal.vue";
 import {getBaseRule, getRuleInfo, setRule, updateRule} from "@/api/timeout-reply-single";
 import {assignData} from "@/utils/tools";
+import {timeDataFormat} from "@/common/timeoutReply";
 import LoadingBox from "@/components/loadingBox.vue";
 
 const route = useRoute()
@@ -207,18 +208,6 @@ function staffChange(staffs) {
 function noticeStaffChange(staffs, index) {
     formState.designate_remind_userid_list = staffs.map(item => item.userid)
     formState.remind_staff_user_list = staffs
-}
-
-function timeDataFormat(timeData) {
-    return timeData.map(item => {
-        let ranges = item.time_period_list.map(time => {
-            return {times: [time.start, time.end]}
-        })
-        return {
-            week: item.week_day_list,
-            ranges: ranges,
-        }
-    })
 }
 
 function linkStatRule() {

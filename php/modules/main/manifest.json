@@ -1,5 +1,6 @@
 {
     "name": "main",
+    "order": 0,
     "version": "1.0.0",
     "required_main_version": 1,
     "title": "主模块",

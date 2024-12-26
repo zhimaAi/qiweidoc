@@ -1,40 +1,26 @@
 <template>
   <div>
     <a-button
-      type="dashed"
-      style="margin-right: 16px;"
-      @click="show"
-      >选择群聊 ({{ total }})
-    </a-button>
-    <div style="margin-top: 6px">
-      <!-- <template v-for="(item, index) in selectChat" :key="item._id">
-        <a-tag
-          closable
-          @close="del(index)"
-          style="margin-bottom: 10px"
-        >
-          <a-space :size="3" align="center">
-            <span>{{ item.name }}</span>
-          </a-space>
-        </a-tag>
-      </template> -->
+        :icon="h(PlusOutlined)"
+        type="dashed"
+        class="mr16"
+        @click="show">选择群聊 ({{ total }})</a-button>
+    <div class="mt8" v-if="selectChat?.length > 0">
       <a-table
         class="mt16 select-group-table"
         :data-source="selectChat"
         :columns="columns"
         :pagination="pagination"
+        :scroll="{y: 600}"
         @change="tableChange"
       >
         <template #bodyCell="{ column, text, record }">
           <template v-if="'operate' === column.dataIndex">
-              <a class="operate-content ml16" @click="del(record)">移除</a>
+              <a class="operate-content" @click="del(record)">移除</a>
           </template>
         </template>
       </a-table>
     </div>
-
-    <!-- <select-group-chat ref="SetChat" @selectChange="change"></select-group-chat> -->
-
     <!-- 选择群聊 -->
     <SelectGroupChat
       ref="selectGroupChat"
@@ -44,8 +30,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, reactive } from 'vue'
-// import SelectGroupChat from "./select-group-chat";
+import { ref, onMounted, watch, reactive, h} from 'vue'
+import {PlusOutlined} from '@ant-design/icons-vue';
 import SelectGroupChat from "@/components/select-group-chat";
 import {groupsList} from "@/api/company";
 
@@ -60,7 +46,8 @@ const props = defineProps({
     }
 })
 const selectGroupChat = ref(null)
-const selectChat = computed(() => props.selectedChats || [])
+//const selectChat = computed(() => props.selectedChats || [])
+const selectChat = ref([])
 const pagination = reactive({
     total: 0,
     current: 1,
@@ -82,10 +69,17 @@ const columns = reactive([
     {
         title: "操作",
         dataIndex: "operate",
-        width: 160
+        width: 100,
+        fixed: 'right'
     }
 ])
 
+watch(() => props.selectedChats, (n, o) => {
+    selectChat.value = props.selectedChats
+    total.value = props.selectedChats.length
+}, {
+    immediate: true
+})
 const show = () => {
     selectGroupChat.value.show(selectChat.value);
 }
@@ -128,7 +122,7 @@ onMounted(() => {
   background: #ffffff;
 }
 
-.select-group-table {
-  width: 500px;
-}
+//.select-group-table {
+//  width: 500px;
+//}
 </style>

@@ -31,7 +31,7 @@
                 <div class="filter-item">
                     <span class="item-label">选择日期：</span>
                     <div class="item-body">
-                        <a-radio-group v-model:checked="filterData.dateType" @change="dateTypeChange">
+                        <a-radio-group v-model:value="filterData.dateType" @change="dateTypeChange">
                             <a-radio-button :value="1">今天</a-radio-button>
                             <a-radio-button :value="2">昨天</a-radio-button>
                             <a-radio-button :value="0">自定义</a-radio-button>

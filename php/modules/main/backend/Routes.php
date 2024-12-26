@@ -32,9 +32,10 @@ use Modules\Main\Controller\UserController;
 use Modules\Main\Enum\EnumUserRoleType;
 use Modules\Main\Library\Middlewares\CurrentCorpInfoMiddleware;
 use Modules\Main\Library\Middlewares\UserRoleMiddleware;
+use Modules\Main\Library\Middlewares\WxAuthMiddleware;
 use Modules\Main\Model\UserRoleModel;
+use Modules\Main\Controller\WxController;
 use Psr\Http\Message\ServerRequestInterface;
-use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Auth\Middleware\Authentication;
 use Yiisoft\DataResponse\DataResponseFactoryInterface;
 use Yiisoft\DataResponse\Formatter\PlainTextDataResponseFormatter;
@@ -158,6 +159,15 @@ class Routes extends RouterProvider
 
             // 企微事件推送回调
             Route::methods([Method::GET, Method::POST], "/openpush/qw/{corp_id:.+}")->action([OpenPushController::class, "qwPush"]),
+
+            // 企微h5
+            Group::create('/api/wx/h5')
+                ->middleware(WxAuthMiddleware::class)
+                ->routes(
+                    Route::get('/get-agent-config')->action([WxController::class, 'getAgentConfig']),
+                    Route::get('/conversation/messages')->action([WxController::class, 'getMessageListByConversation']),
+                    Route::get('/group/messages')->action([WxController::class, 'getMessageListByGroup']),
+                ),
 
             // 需要验证登录的接口
             Group::create("/api")

@@ -12,7 +12,7 @@ import {showLoadingToast, Empty} from 'vant';
 import 'vant/es/toast/style';
 import 'vant/es/empty/style';
 import {setH5AuthToken} from "@/utils/cache";
-import {getAgentConfig} from "@/api/h5/timeout-reply-single";
+import {getAgentConfig} from "@/api/h5/index";
 import {isWorkWxEnv} from "@/utils/tools";
 
 const route = useRoute()
@@ -22,7 +22,7 @@ const agentConfig = ref(null)
 const agentConfigFinished = ref(false)
 const failMessage = ref('')
 onMounted(() => {
-    if (!isWorkWxEnv()) {
+    if (process.env.NODE_ENV === 'production' && !isWorkWxEnv()) {
         failMessage.value = '请在企业微信浏览器或企业微信手机客户端打开！'
         return
     }
@@ -36,6 +36,7 @@ async function init() {
         return
     }
     tokenData.value = jwtDecode(route.query.token);
+    console.log('tokenData.value', tokenData.value)
     setH5AuthToken(route.query.token)
     const loadingToast = showLoadingToast({
         message: '加载中...',
@@ -54,14 +55,26 @@ async function init() {
                     console.log("res:" + JSON.stringify(res))
                 },
             })
-            wx.openEnterpriseChat({
+            let params = {
+                // 参数不能不传，不需要即传空值
+                // 否则在某些环境打开会报错invalid param
                 userIds: '',
                 chatId: '',
                 groupName: '',
-                // 上面的参数不能不传，不需要即传空值
-                // 否则在某些环境打开会报错invalid param
-                // 如何：Mac PC客户端
-                externalUserIds: tokenData.value?.external_userid,
+                externalUserIds: '',
+            }
+            if (tokenData.value?.group_chat_id) {
+                // 群聊
+                params.chatId = tokenData.value.group_chat_id
+            } else if (tokenData.value?.external_userid) {
+                // 单聊
+                params.externalUserIds = tokenData.value.external_userid
+            } else {
+                failMessage.value = '缺少会话信息'
+                return
+            }
+            wx.openEnterpriseChat({
+                ...params,
                 success: (res) => {
                     console.log(res)
                 },
@@ -100,6 +113,9 @@ async function init() {
 .open-chat-box {
     :deep(.van-empty__description) {
         text-align: center;
+        max-width: 100vw;
+        word-break: break-all;
+        padding: 0 24px;
     }
 }
 </style>

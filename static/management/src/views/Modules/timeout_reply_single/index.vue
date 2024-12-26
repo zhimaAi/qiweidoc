@@ -62,6 +62,7 @@ import {PlusOutlined} from '@ant-design/icons-vue';
 import MainNav from "@/views/Modules/timeout_reply_single/components/mainNav.vue";
 import {delRuleInfo, disabledRule, enableRule, getRules} from "@/api/timeout-reply-single";
 import {weekToText} from '@/utils/tools';
+import {formatCheckTime} from "@/common/timeoutReply";
 
 const router = useRouter()
 const loading = ref(false)
@@ -165,25 +166,6 @@ function linkEdit(record) {
             rule_id: record.id
         }
     })
-}
-
-function formatCheckTime(data) {
-    switch (Number(data.inspect_time_type.value)) {
-        case 1:
-            return "全天"
-        case 2:
-            return "工作时间"
-        case 3:
-            let res = []
-            let weeks, times
-            data.custom_time_list.map(item => {
-                weeks = [], times = []
-                item.week_day_list.map(w => weeks.push(weekToText(w)))
-                item.time_period_list.map(r => times.push(`${r.start}~${r.end}`))
-                res.push(`${weeks.join("、")} ${times.join(" ")}`)
-            })
-            return res
-    }
 }
 
 function statusChange(record) {

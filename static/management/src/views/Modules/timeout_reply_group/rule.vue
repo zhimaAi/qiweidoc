@@ -6,7 +6,7 @@
                 <template #title>
                     <div class="card-title">
                         <span class="title">工作时间段设置</span>
-                        <span class="desc">设置工作时间段后，则仅对设定的时间段内对开启会话存档的员工和客户单聊进行工作质量检测</span>
+                        <span class="desc">设詈工作时间段后，则仅对设定的时间段内的群进行超时未回复的检测</span>
                     </div>
                 </template>
                 <TimesRange ref="timeRangeRef" @change="configChange"/>
@@ -15,28 +15,26 @@
                 <template #title>
                     <div class="card-title">
                         <span class="title">关键词规则</span>
-                        <span
-                            class="desc">设置关键词后，群聊中客户发送的最后一条消息触发后员工没有回复不计入超时回复，不会触发提醒</span>
+                        <span class="desc">设置关键词后，群聊中客户发送的消息触发后员工未回复不计入超时回复规则，不会触发提醒</span>
                     </div>
                 </template>
                 <div class="main-body">
                     <a-alert type="info"
                              :show-icon="false"
                              banner
-                             message="群聊时，客户发送的最后一句话成功匹配到关键词，且员工没有回复，不算作未回复消息"></a-alert>
+                             message="客户关键字：群聊时，客户发送的最后一句话成功匹配到关键词，且群内员工没有回复，不算作超时未回复消息"></a-alert>
                     <a-form-item label="全匹配" class="mt24">
                         <a-input placeholder="请输入自定义匹配关键词"
                                  :max-length="20"
-                                 v-model:value="input.single_keywords_full"
-                                 @keydown.enter="inputHandle('single_keywords','full')"
-                                 @blur="inputHandle('single_keywords','full')"
+                                 v-model:value="input.keywords_full"
+                                 @keydown.enter="inputHandle('full')"
+                                 @blur="inputHandle('full')"
                                  style="width: 360px"/>
                         <div class="keyword-tags">
-                            <a-tag v-for="(keyword,i) in config.single_keywords.full"
+                            <a-tag v-for="(keyword,i) in config.filter_full_match_word_list"
                                    class="zm-customize-tag"
-                                   style="margin: 8px 8px 0 0;"
                                    closable
-                                   @close="(e) => removeTag('single_keywords','full',i,e)"
+                                   @close="(e) => removeTag('full',i,e)"
                                    :key="i">{{ keyword }}
                             </a-tag>
                         </div>
@@ -44,45 +42,41 @@
                     <a-form-item label="半匹配">
                         <a-input placeholder="请输入自定义匹配关键词"
                                  :max-length="20"
-                                 v-model:value="input.single_keywords_half"
-                                 @keydown.enter="inputHandle('single_keywords','half')"
-                                 @blur="inputHandle('single_keywords','half')"
+                                 v-model:value="input.keywords_half"
+                                 @keydown.enter="inputHandle('half')"
+                                 @blur="inputHandle('half')"
                                  style="width: 360px"/>
                         <div class="keyword-tags">
-                            <a-tag v-for="(keyword,i) in config.single_keywords.half"
+                            <a-tag v-for="(keyword,i) in config.filter_half_match_word_list"
                                    class="zm-customize-tag"
-                                   style="margin: 8px 8px 0 0;"
                                    closable
-                                   @close="(e) => removeTag('single_keywords','half',i,e)"
+                                   @close="(e) => removeTag('half',i,e)"
                                    :key="i">{{ keyword }}
                             </a-tag>
                         </div>
                     </a-form-item>
                     <a-form-item label="消息类型" style="margin-bottom: 0;">
-                        <a-checkbox-group v-model:checked="config.single_keywords.msg_type_filter"
-                                          @change="configChange">
-                            <a-checkbox value="image">图片</a-checkbox>
-                            <a-checkbox value="emoji_preg">emoji</a-checkbox>
-                            <a-checkbox value="emotion">表情包</a-checkbox>
-                        </a-checkbox-group>
+                        <a-checkbox v-model:checked="config.include_image_msg">图片</a-checkbox>
+                        <a-checkbox v-model:checked="config.include_emoji_msg">emoji</a-checkbox>
+                        <a-checkbox v-model:checked="config.include_emoticons_msg">表情包</a-checkbox>
                     </a-form-item>
                     <div class="zm-fixed-bottom-box in-module">
-                        <a-button>取 消</a-button>
+                        <a-button @click="cancel">取 消</a-button>
                         <a-popover
                             v-model:open="saveTipVisible"
                             :getPopupContainer="triggerNode => triggerNode"
                             overlayClassName="zm-tip-popover"
+                            trigger="manual"
                             placement="top"
-                            trigger="click"
                             title="提示"
                         >
                             <template #content>
-                                <div class="zm-nowrap">统计规则修改后需保存才可生效</div>
+                                <div class="zm-nowrap">回复规则修改后需保存才可生效</div>
                                 <div class="mt16 text-right">
                                     <a-button class="save-btn" size="small" @click.stop="save">立即保存</a-button>
                                 </div>
                             </template>
-                            <a-button type="primary" class="ml16" @click="save">保 存</a-button>
+                            <a-button type="primary" class="ml16" @click="save" :loading="saving">保 存</a-button>
                         </a-popover>
                     </div>
                 </div>
@@ -92,75 +86,163 @@
 </template>
 
 <script setup>
-import {ref, reactive} from 'vue';
+import {onMounted, ref, reactive, watch, nextTick} from 'vue';
+import {useRouter} from 'vue-router';
+import {message} from 'ant-design-vue';
 import MainNav from '@/views/Modules/timeout_reply_group/components/mainNav.vue';
 import TimesRange from '@/components/tools/timesRange.vue';
+import {getBaseRule, setBaseRule} from "@/api/timeout-reply-group";
+import {assignData} from "@/utils/tools";
 
+const router = useRouter()
 const timeRangeRef = ref(null)
-const saveTipVisible = ref(true)
+const saveTipVisible = ref(false)
+const loading = ref(false)
+const saving = ref(false)
 const staffList = ref([])
 const input = reactive({
-    single_keywords_full: '',
-    single_keywords_half: '',
-    group_keywords_full: '',
-    group_keywords_half: '',
-    staff_single_keywords_full: '',
-    staff_single_keywords_half: '',
+    keywords_full: '',
+    keywords_half: '',
 })
 const config = reactive({
-    _id: '',
-    corp_id: '',
-    owner_id: '',
-    group_at_msg_reply_sec: 3,
-    msg_reply_sec: 3,
-    single_keywords: {
-        full: [],
-        half: [],
-        msg_type_filter: [],
-    },
-    group_keywords: {
-        full: [],
-        half: [],
-        msg_type_filter: [],
-    },
-    staff_single_keywords: {
-        full: [],
-        half: [],
-    },
-    other_effect: true,
-    group_other_effect: false, // 0:未选中，1:选中 需要转换成布尔渲染
-    group_staff_user_json: [], // 给后端的是json字符串，包含员工id，name
-    satff_radio: 2,
-    staffIds: []
+    filter_full_match_word_list: [],
+    filter_half_match_word_list: [],
+    include_image_msg: false,
+    include_emoji_msg: false,
+    include_emoticons_msg: false,
+})
+const configJsonBK = ref(null)
+
+onMounted(() => {
+    loadData()
 })
 
+watch(config, (n, o) => {
+    configChange()
+}, {
+    deep: true
+})
+
+async function loadData() {
+    loading.value = true
+    await getBaseRule().then(res => {
+        let data = res?.data || {}
+        assignData(config, data)
+        let timeData = data.working_hours || []
+        timeData = timeData.map(item => {
+            let ranges = item.time_period_list.map(time => {
+                return {times: [time.start, time.end]}
+            })
+            return {
+                week: item.week_day_list,
+                ranges: ranges,
+            }
+        })
+        timeRangeRef.value.input(timeData)
+        nextTick(() => {
+            configJsonBK.value = JSON.stringify({
+                config: config,
+                timeData: timeRangeRef.value.output()
+            })
+        })
+    }).finally(() => {
+        loading.value = false
+    })
+}
+
 function configChange() {
-
+    if (configJsonBK.value) {
+        let currentData = JSON.stringify({
+            config: config,
+            timeData: timeRangeRef.value.output()
+        })
+        if (configJsonBK.value != currentData) {
+            saveTipVisible.value = true
+        } else {
+            saveTipVisible.value = false
+        }
+    }
 }
 
-function inputHandle(field, type) {
-
+function inputHandle(type) {
+    try {
+        let field = `filter_${type}_match_word_list`
+        let valueKey = `keywords_${type}`
+        input[valueKey] = input[valueKey].trim()
+        let val = input[valueKey]
+        if (!val) {
+            return
+        }
+        if (config[field].length >= 20) {
+            throw '每项最多输入20个关键词'
+        }
+        if (config[field].includes(val)) {
+            throw '请勿重复输入'
+        }
+        config[field].push(val)
+        input[valueKey] = ''
+    } catch (e) {
+        message.error(e)
+    }
 }
 
-function removeTag(field, type, index, e) {
-
+function removeTag(type, index, e) {
+    e.preventDefault();
+    config[`filter_${type}_match_word_list`].splice(index, 1)
 }
 
-function save() {
+function cancel() {
+    router.push({
+        path: '/module/timeout-reply-group/index'
+    })
+}
 
+async function save() {
+    try {
+        saving.value = true
+        let validate = timeRangeRef.value.verify()
+        if (!validate.ok) {
+            throw validate.error
+        }
+        let timeData = timeRangeRef.value.output()
+        timeData = timeData.map(item => {
+            let ranges = item.ranges.map(range => {
+                return {start: range.times[0], end: range.times[1]}
+            })
+            return {
+                week_day_list: item.week,
+                time_period_list: ranges
+            }
+        })
+        await setBaseRule({...config, working_hours: timeData})
+        await loadData()
+        saveTipVisible.value = false
+        message.success('已保存')
+    } catch (e) {
+        typeof e === 'string' && message.error(e)
+    }
+    saving.value = false
 }
 </script>
 
 <style scoped lang="less">
 @import "@/common/sessionStatRule";
+
 .zm-main-box {
     background: #FFF;
     min-height: 100vh;
+    padding-bottom: 80px;
+
     :deep(.ant-card:not(.ant-card-bordered)) {
         box-shadow: none;
     }
+
+    :deep(.ant-tag.zm-customize-tag) {
+        margin: 8px 8px 0 0;
+    }
 }
-.save-btn  {
+
+.save-btn {
     color: #2475FC;
 }
 </style>

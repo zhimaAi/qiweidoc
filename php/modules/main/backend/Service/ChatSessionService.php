@@ -11,6 +11,7 @@ use Modules\Main\DTO\ChatSession\CollectDTO;
 use Modules\Main\Enum\EnumChatCollectStatus;
 use Modules\Main\Enum\EnumChatConversationType;
 use Modules\Main\Enum\EnumChatMessageRole;
+use Modules\Main\Enum\EnumMessageType;
 use Modules\Main\Model\ChatConversationsModel;
 use Modules\Main\Model\ChatMessageModel;
 use Modules\Main\Model\CorpModel;
@@ -466,7 +467,7 @@ SQL;
 
         //存在消息类型过滤
         if (!empty($params["msg_type"]) && in_array($params["msg_type"], array_keys(self::FilterMsgType))) {
-            if ($params["msg_type"] == "voiptext") {
+            if ($params["msg_type"] == EnumMessageType::VoipText->value) {
                 $query->andWhere(["in", "msg_type", self::FilterMsgType[$params["msg_type"] ?? ""] ?? ["_"]]);
             } else {
                 $query->andWhere(["msg_type" => self::FilterMsgType[$params["msg_type"] ?? ""] ?? "_"]);
@@ -549,7 +550,7 @@ SQL;
      * 根据群聊获取聊天内容
      * @throws Throwable
      */
-    public static function getMessageListByGroup(int $page, int $size, CorpModel $corp, string $groupChatId, array $params): array
+    public static function getMessageListByGroup(int $page, int $size, CorpModel $corp, string $groupChatId, array $params = []): array
     {
         // 判断群聊id
         if (empty($groupChatId)) {
@@ -570,7 +571,7 @@ SQL;
 
         //存在消息类型过滤
         if (!empty($params["msg_type"]) && in_array($params["msg_type"], array_keys(self::FilterMsgType))) {
-            if ($params["msg_type"] == "voiptext") {
+            if ($params["msg_type"] == EnumMessageType::VoipText->value) {
                 $query->andWhere(["in", "msg_type", self::FilterMsgType[$params["msg_type"] ?? ""] ?? ["_"]]);
             } else {
                 $query->andWhere(["msg_type" => self::FilterMsgType[$params["msg_type"] ?? ""] ?? "_"]);
@@ -581,7 +582,6 @@ SQL;
         if (!empty($params["msg_content"])){
             $query->andWhere(["ilike","msg_content",$params["msg_content"]]);
         }
-
 
         // 根据群聊查找所有相关的聊天记录
         $result = $query->orderBy(['msg_time' => SORT_DESC])
@@ -599,7 +599,6 @@ SQL;
                 $customerExternalUseridList[] = $message->get('from');
             }
         }
-
 
         // 提取出所有相关的员工信息
         $staffListMap = [];
@@ -659,6 +658,8 @@ SQL;
                 $message->append('from_detail', $t);
             }
         }
+
+        $result['group'] = $group;
 
         return $result;
     }

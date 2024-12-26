@@ -27,4 +27,12 @@ export default [
             ignoreLogin: true
         }
     },
+    {
+        path: '/module/timeout-reply-group/h5/session-message',
+        name: 'TimeoutWithoutReplyH5',
+        component: () => import('@/views/Modules/timeout_reply_group/h5/session-message.vue'),
+        meta: {
+            ignoreLogin: true
+        },
+    }
 ]

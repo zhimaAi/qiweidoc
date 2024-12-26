@@ -52,9 +52,7 @@ class RuleService
         }
 
         foreach ($rules as $rule) {
-            $ruleTimeoutMinute = EnumTimeUnitType::transferMinute($rule->get('timeout_unit'), $rule->get('timeout_value'));
-
-            $subSql = /** @lang sql */ "
+            $subSql = "
                 select 1
                 from timeout_reply_single.timeout_messages
                 where
@@ -62,12 +60,11 @@ class RuleService
                     msg_id = msg.msg_id and
                     rule_id = {$rule->get('id')}
             ";
-
             $recentMessages = ChatMessageModel::query('msg')
                 ->select(['msg_id', 'msg_time', 'msg.from', 'to_list', 'msg_time', 'msg_type', 'conversation_id', 'msg_content', 'staff_last_reply_time'])
                 ->leftJoin('main.chat_conversations c', 'msg.conversation_id = c.id')
                 ->where(['msg.corp_id' => $corp->get('id')])
-                ->andWhere(['>', 'msg_time', max($moduleStartedAt, $rule->get('created_at'))])
+                ->andWhere(['>=', 'msg_time', max($moduleStartedAt, $rule->get('created_at'), Carbon::now()->subDay()->toDateTimeString('m'))])
                 ->andWhere(['conversation_type' => EnumChatConversationType::Single->value])
                 ->andWhere(['msg.from_role' => EnumChatMessageRole::Customer->value])
                 ->andWhere(new Expression("not exists ({$subSql})"))
@@ -75,6 +72,7 @@ class RuleService
                 ->getAll();
             foreach ($recentMessages as $message) {
                 $timeoutMinutes = (int)Carbon::parse($message->get('msg_time'))->diffInMinutes(Carbon::now());
+                $ruleTimeoutMinute = EnumTimeUnitType::transferMinute($rule->get('timeout_unit'), $rule->get('timeout_value'));
                 if ($timeoutMinutes < $ruleTimeoutMinute || $message->get('msg_time') < $message->get('staff_last_reply_time')) {
                     continue;
                 }
@@ -178,11 +176,6 @@ class RuleService
      */
     public static function sendNotice(CorpModel $corp, ChatMessageModel $message, RuleModel $rule, int $timeoutMinutes)
     {
-        Yii::logger()->info(json_encode([
-            'message'   => $message->toArray(),
-            'rule'      => $rule->toArray(),
-        ]));
-
         // 提醒员工本人
         if ($rule->get('is_remind_staff_himself')) {
             self::sendQiWeiMessage($corp, $message->get('to_list')[0], $message, $timeoutMinutes);
@@ -195,35 +188,18 @@ class RuleService
         }
     }
 
-    public static function getJwtKey()
-    {
-        return Yii::cache()->getOrSet('staff_qw_login_jwt_key', function () {
-            return Random::string();
-        });
-    }
-
-    /**
-     * 获取jwt过期时间
-     */
-    public static function getJwtExp(): int
-    {
-        return time() + 3600 * 24;
-    }
-
     /**
      * 生成jwt token
      * */
     public static function generateAuthToken(CorpModel $corp, string $conversationId, string $staffUserid, string $externalUserid)
     {
-        $jwtKey = self::getJwtKey();
         $payload = [
             'staff_userid' => $staffUserid,
             'external_userid' => $externalUserid,
             'conversation_id' => $conversationId,
             'corp_id' => $corp->get('id'),
-            // 'exp' => self::getJwtExp(),
         ];
-        return JWT::encode($payload, $jwtKey, 'HS256');
+        return JWT::encode($payload, 'staff_qw_login_jwt_key', 'HS256');
     }
 
     /**
@@ -255,6 +231,7 @@ class RuleService
         }
 
         $content = <<<MD
+### 单聊超时提醒
 客户：{$cst->get('external_name')}
 员工: {$staff->get('name')}
 消息发送时间: {$msgTime}

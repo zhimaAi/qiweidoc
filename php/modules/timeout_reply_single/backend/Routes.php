@@ -11,7 +11,6 @@ use Modules\Main\Library\Middlewares\UserRoleMiddleware;
 use Modules\TimeoutReplySingle\Consumer\RuleRunConsumer;
 use Modules\TimeoutReplySingle\Controller\ReplyRuleController;
 use Modules\TimeoutReplySingle\Controller\RuleController;
-use Modules\TimeoutReplySingle\Controller\WxController;
 use Yiisoft\Auth\Middleware\Authentication;
 use Yiisoft\Router\Group;
 use Yiisoft\Router\Route;
@@ -49,13 +48,6 @@ class Routes extends RouterProvider
                     Route::put('/rules/{id:\d+}/enable')->action([RuleController::class, 'enable']),
                     Route::put('/rules/{id:\d+}/disable')->action([RuleController::class, 'disable']),
                     Route::delete('/rules/{id:\d+}')->action([RuleController::class, 'destroy']),
-                ),
-            Group::create('/api')
-                ->middleware(WxAuthMiddleware::class)
-                ->routes(
-                    // 企微接口
-                    Route::get('/wx/h5/get-agent-config')->action([WxController::class, 'getAgentConfig']),
-                    Route::get('/wx/h5/messages')->action([WxController::class, 'messages']),
                 ),
         ];
     }

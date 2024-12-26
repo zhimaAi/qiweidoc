@@ -1,269 +1,271 @@
 <template>
   <!-- 添加成员 -->
-  <a-modal
-    width="820px"
-    v-model:open="dialogShow"
-    centered
-    :confirmLoading="addConfirmLoading"
-    @ok="addPeopleHandleOk"
-    @cancel="addPeopleHandleCancel"
-    class="select-staff-new-dialog"
-  >
-    <template #title>
-        <div class="fx-ac">
-            <div>{{title || '选择员工'}}</div>
-            <!-- <div class="desc ml10" style="color: #999;font-size: 12px;">可快速对已选择员工新建标签</div> -->
-            <a class="modal_a_title ml10" @click="modalATitle" v-if="group_chat">刷新员工数据</a>
-        </div>
-    </template>
-    <template #footer>
-      <!-- <a-button @click="createTag" :disabled="addConfirmLoading">新建员工标签</a-button> -->
-      <a-button @click="addPeopleHandleCancel" :disabled="addConfirmLoading">取消</a-button>
-      <a-button type="primary" :loading="addConfirmLoading" @click="addPeopleHandleOk">
-        确定
-      </a-button>
-    </template>
-    <!-- <a class="modal_a_title" @click="modalATitle" v-if="group_chat"
-      >刷新员工数据</a
-    > -->
-    <slot name="alert"></slot>
-    <a-spin :spinning="big_spinning">
-      <div class="add-people flex">
-        <div class="add-left">
-          <a-tabs v-model:activeKey="tabAcitive">
-            <a-tab-pane :key="1" tab="员工">
-              <allStaff
-                :selectData="selectDataAll"
-                @setSelect="setSelect"
-                :isSession="isSession"
-                :isAuthMode="isAuthMode"
-                :excludeRole="excludeRole"
-                :bind_type="bind_type"
-                :filter-staff="filterStaff"
-                :group_chat="group_chat"
-                ref="tabRef_1"
-                :selectType="selectType"
-                :viewAppointPermissions="viewAppointPermissions"
-              ></allStaff>
-            </a-tab-pane>
-            <!-- <a-tab-pane :key="2" tab="组织架构">
-              <framework
-                :selectData="selectData"
-                @setSelect="setSelect"
-                ref="tabRef_2"
-                :isSession="isSession"
-                :excludeRole="excludeRole"
-                :bind_type="bind_type"
-                :group_chat="group_chat"
-                @setLoading="setLoading"
-                :selectType="selectType"
-              ></framework>
-              <newFramework
-                :selectData="selectDataAll"
-                @setSelect="setSelect"
-                ref="tabRef_2"
-                :isSession="isSession"
-                :isAuthMode="isAuthMode"
-                :excludeRole="excludeRole"
-                :bind_type="bind_type"
-                :filter-staff="filterStaff"
-                :group_chat="group_chat"
-                @setLoading="setLoading"
-                :selectType="selectType"
-                :viewAppointPermissions="viewAppointPermissions"
-              >
-              </newFramework>
-            </a-tab-pane> -->
-            <!-- <a-tab-pane :key="3" tab="员工分组"> -->
-              <!-- <staff-group
-                :selectData="selectData"
-                @setSelect="setSelect"
-                :isSession="isSession"
-                :excludeRole="excludeRole"
-                :bind_type="bind_type"
-                :group_chat="group_chat"
-                ref="tabRef_3"
-                @setLoading="setLoading"
-                :selectType="selectType"
-              >
-              </staff-group> -->
-              <!-- <new-staff-group
-                :selectData="selectDataAll"
-                @setSelect="setSelect"
-                :isSession="isSession"
-                :isAuthMode="isAuthMode"
-                :excludeRole="excludeRole"
-                :bind_type="bind_type"
-                :filter-staff="filterStaff"
-                :group_chat="group_chat"
-                ref="tabRef_3"
-                @setLoading="setLoading"
-                :selectType="selectType"
-                :viewAppointPermissions="viewAppointPermissions"
-              >
-              </new-staff-group>
-            </a-tab-pane> -->
-            <!-- <a-tab-pane :key="4" tab="成员标签">
-              <member-tag
-                :selectData="selectDataAll"
-                @setSelect="setSelect"
-                :isSession="isSession"
-                :isAuthMode="isAuthMode"
-                :excludeRole="excludeRole"
-                :bind_type="bind_type"
-                :filter-staff="filterStaff"
-                :group_chat="group_chat"
-                :hideTagName="hideTagName"
-                ref="tabRef_4"
-                @setLoading="setLoading"
-                :selectType="selectType"
-                :viewAppointPermissions="viewAppointPermissions"
-              >
-              </member-tag>
-            </a-tab-pane> -->
-          </a-tabs>
-        </div>
-        <div class="add-right">
-          <div class="top-btn flex">
-            <div class="active fir">
-              已选择<span>({{ selectDataAll.length }})</span>
-            </div>
-            <a-button type="link" v-if="selectDataAll.length" @click="deleteAll"
-              >一键移除</a-button
-            >
-          </div>
-          <!-- <a-input-search
-						placeholder="请输入搜索的内容"
-						style="width: 288px;margin-top: 16px;"
-						@search="selectOnSearch"
-						v-model.trim="selectOnSearchVal"
-					/> -->
-          <cu-scroll class="scroll-box" ref="scrollbarRef">
-            <div class="test_wrapper" @dragover="dragover($event)">
-              <div
-                class="all-select fx-ac"
-                v-for="item in selectData"
-                :key="item.id"
-                :draggable="true"
-                @dragstart="dragstart(item)"
-                @dragenter="dragenter(item, $event)"
-                @dragend="dragend(item, $event)"
-                @dragover="dragover($event)"
-              >
-                <div class="drag"></div>
-                <div class="staff flex" v-if="item.data_type === 1">
-                  <div class="left flex">
-                    <div class="img-wra">
-                      <img
-                        src="@/assets/default-avatar.png"
-                        :class="{'img-c': item.avatar == '/static/image/default-avatar.svg'}"
-                        alt=""
-                      />
-                        <!-- <div class="seat-n-bs"></div> -->
-                    </div>
-                    <!-- <div class="name fx-ac">
-                      <WWOpenData
-                        style="display: inline-block"
-                        type="userName"
-                        :showStatus="showStatus"
-                        :openid="item.user_id"
-                      >
-                        <span class="wk-black-65-text">{{ item.name }}</span>
-                      </WWOpenData>
-                    </div> -->
-                    <span class="name fx-ac">{{ item.name }}</span>
-                  </div>
-                  <div class="icon">
-                    <a-button
-                      type="link"
-                      @click="selectDelete(item, item.data_type)"
-                    >
-                      移除
-                    </a-button>
-                  </div>
-                </div>
-                <div class="staff flex" v-if="item.data_type === 2">
-                  <div class="left flex">
-                    <img
-                      src="../../assets/image/select-staff-new/zu-zhi.png"
-                      alt=""
-                      style="width: 36px; height: 36px;"
-                    />
-                    <!-- <div class="name fx-ac">
-                      <WWOpenData
-                        type="departmentName"
-                        :showStatus="showStatus"
-                        :openid="item.department_id"
-                      >
-                        <span class="wk-black-65-text">{{
-                          item.department_name
-                        }}</span>
-                      </WWOpenData>
-                    </div> -->
-                  </div>
-                  <div class="icon">
-                    <a-button
-                      type="link"
-                      @click="selectDelete(item, item.data_type)"
-                    >
-                      移除
-                    </a-button>
-                  </div>
-                </div>
-                <div class="staff flex" v-if="item.data_type === 3">
-                  <div class="left flex">
-                    <img
-                      src="../../assets/image/select-staff-new/gro.png"
-                      style="width: 36px; height: 36px;"
-                      alt=""
-                    />
-                    <div class="name">{{ item.name }}</div>
-                  </div>
-                  <div class="icon">
-                    <a-button
-                      type="link"
-                      @click="selectDelete(item, item.data_type)"
-                    >
-                      移除
-                    </a-button>
-                  </div>
-                </div>
-                <div class="staff flex" v-if="item.data_type === 4">
-                  <div class="left flex">
-                    <img
-                      src="../../assets/image/select-staff-new/tag.png"
-                      alt=""
-                      style="width: 36px; height: 36px;"
-                    />
-                    <div class="name">{{ item.tag_name }}</div>
-                  </div>
-                  <div class="icon">
-                    <a-button
-                      type="link"
-                      @click="selectDelete(item, item.data_type)"
-                    >
-                      移除
-                    </a-button>
-                  </div>
-                </div>
+  <div>
+      <a-modal
+          width="820px"
+          v-model:open="dialogShow"
+          centered
+          :confirmLoading="addConfirmLoading"
+          @ok="addPeopleHandleOk"
+          @cancel="addPeopleHandleCancel"
+          class="select-staff-new-dialog"
+      >
+          <template #title>
+              <div class="fx-ac">
+                  <div>{{title || '选择员工'}}</div>
+                  <!-- <div class="desc ml10" style="color: #999;font-size: 12px;">可快速对已选择员工新建标签</div> -->
+                  <a class="modal_a_title ml10" @click="modalATitle" v-if="group_chat">刷新员工数据</a>
               </div>
-              <!-- <transition-group class="transition-wrapper" name="sort">
-                动画会导致删除的时候页面乱跳
-              </transition-group> -->
-            </div>
-            <!-- <div
-              id="example"
-              v-if="selectData.length > 0 && selectDataShow"
-            >
-              {{ selectData }} -->
-            <a-empty v-if="!selectDataAll.length" />
-            <!-- </div> -->
-          </cu-scroll>
-        </div>
-      </div>
-    </a-spin>
-    <addTag ref="addTagRef" @initFunc="initMemberTag"></addTag>
-  </a-modal>
+          </template>
+          <template #footer>
+              <!-- <a-button @click="createTag" :disabled="addConfirmLoading">新建员工标签</a-button> -->
+              <a-button @click="addPeopleHandleCancel" :disabled="addConfirmLoading">取消</a-button>
+              <a-button type="primary" :loading="addConfirmLoading" @click="addPeopleHandleOk">
+                  确定
+              </a-button>
+          </template>
+          <!-- <a class="modal_a_title" @click="modalATitle" v-if="group_chat"
+            >刷新员工数据</a
+          > -->
+          <slot name="alert"></slot>
+          <a-spin :spinning="big_spinning">
+              <div class="add-people flex">
+                  <div class="add-left">
+                      <a-tabs v-model:activeKey="tabAcitive">
+                          <a-tab-pane :key="1" tab="员工">
+                              <allStaff
+                                  :selectData="selectDataAll"
+                                  @setSelect="setSelect"
+                                  :isSession="isSession"
+                                  :isAuthMode="isAuthMode"
+                                  :excludeRole="excludeRole"
+                                  :bind_type="bind_type"
+                                  :filter-staff="filterStaff"
+                                  :group_chat="group_chat"
+                                  ref="tabRef_1"
+                                  :selectType="selectType"
+                                  :viewAppointPermissions="viewAppointPermissions"
+                              ></allStaff>
+                          </a-tab-pane>
+                          <!-- <a-tab-pane :key="2" tab="组织架构">
+                            <framework
+                              :selectData="selectData"
+                              @setSelect="setSelect"
+                              ref="tabRef_2"
+                              :isSession="isSession"
+                              :excludeRole="excludeRole"
+                              :bind_type="bind_type"
+                              :group_chat="group_chat"
+                              @setLoading="setLoading"
+                              :selectType="selectType"
+                            ></framework>
+                            <newFramework
+                              :selectData="selectDataAll"
+                              @setSelect="setSelect"
+                              ref="tabRef_2"
+                              :isSession="isSession"
+                              :isAuthMode="isAuthMode"
+                              :excludeRole="excludeRole"
+                              :bind_type="bind_type"
+                              :filter-staff="filterStaff"
+                              :group_chat="group_chat"
+                              @setLoading="setLoading"
+                              :selectType="selectType"
+                              :viewAppointPermissions="viewAppointPermissions"
+                            >
+                            </newFramework>
+                          </a-tab-pane> -->
+                          <!-- <a-tab-pane :key="3" tab="员工分组"> -->
+                          <!-- <staff-group
+                            :selectData="selectData"
+                            @setSelect="setSelect"
+                            :isSession="isSession"
+                            :excludeRole="excludeRole"
+                            :bind_type="bind_type"
+                            :group_chat="group_chat"
+                            ref="tabRef_3"
+                            @setLoading="setLoading"
+                            :selectType="selectType"
+                          >
+                          </staff-group> -->
+                          <!-- <new-staff-group
+                            :selectData="selectDataAll"
+                            @setSelect="setSelect"
+                            :isSession="isSession"
+                            :isAuthMode="isAuthMode"
+                            :excludeRole="excludeRole"
+                            :bind_type="bind_type"
+                            :filter-staff="filterStaff"
+                            :group_chat="group_chat"
+                            ref="tabRef_3"
+                            @setLoading="setLoading"
+                            :selectType="selectType"
+                            :viewAppointPermissions="viewAppointPermissions"
+                          >
+                          </new-staff-group>
+                        </a-tab-pane> -->
+                          <!-- <a-tab-pane :key="4" tab="成员标签">
+                            <member-tag
+                              :selectData="selectDataAll"
+                              @setSelect="setSelect"
+                              :isSession="isSession"
+                              :isAuthMode="isAuthMode"
+                              :excludeRole="excludeRole"
+                              :bind_type="bind_type"
+                              :filter-staff="filterStaff"
+                              :group_chat="group_chat"
+                              :hideTagName="hideTagName"
+                              ref="tabRef_4"
+                              @setLoading="setLoading"
+                              :selectType="selectType"
+                              :viewAppointPermissions="viewAppointPermissions"
+                            >
+                            </member-tag>
+                          </a-tab-pane> -->
+                      </a-tabs>
+                  </div>
+                  <div class="add-right">
+                      <div class="top-btn flex">
+                          <div class="active fir">
+                              已选择<span>({{ selectDataAll.length }})</span>
+                          </div>
+                          <a-button type="link" v-if="selectDataAll.length" @click="deleteAll"
+                          >一键移除</a-button
+                          >
+                      </div>
+                      <!-- <a-input-search
+                                    placeholder="请输入搜索的内容"
+                                    style="width: 288px;margin-top: 16px;"
+                                    @search="selectOnSearch"
+                                    v-model.trim="selectOnSearchVal"
+                                /> -->
+                      <cu-scroll class="scroll-box" ref="scrollbarRef">
+                          <div class="test_wrapper" @dragover="dragover($event)">
+                              <div
+                                  class="all-select fx-ac"
+                                  v-for="item in selectData"
+                                  :key="item.id"
+                                  :draggable="true"
+                                  @dragstart="dragstart(item)"
+                                  @dragenter="dragenter(item, $event)"
+                                  @dragend="dragend(item, $event)"
+                                  @dragover="dragover($event)"
+                              >
+                                  <div class="drag"></div>
+                                  <div class="staff flex" v-if="item.data_type === 1">
+                                      <div class="left flex">
+                                          <div class="img-wra">
+                                              <img
+                                                  src="@/assets/default-avatar.png"
+                                                  :class="{'img-c': item.avatar == '/static/image/default-avatar.svg'}"
+                                                  alt=""
+                                              />
+                                              <!-- <div class="seat-n-bs"></div> -->
+                                          </div>
+                                          <!-- <div class="name fx-ac">
+                                            <WWOpenData
+                                              style="display: inline-block"
+                                              type="userName"
+                                              :showStatus="showStatus"
+                                              :openid="item.user_id"
+                                            >
+                                              <span class="wk-black-65-text">{{ item.name }}</span>
+                                            </WWOpenData>
+                                          </div> -->
+                                          <span class="name fx-ac">{{ item.name }}</span>
+                                      </div>
+                                      <div class="icon">
+                                          <a-button
+                                              type="link"
+                                              @click="selectDelete(item, item.data_type)"
+                                          >
+                                              移除
+                                          </a-button>
+                                      </div>
+                                  </div>
+                                  <div class="staff flex" v-if="item.data_type === 2">
+                                      <div class="left flex">
+                                          <img
+                                              src="../../assets/image/select-staff-new/zu-zhi.png"
+                                              alt=""
+                                              style="width: 36px; height: 36px;"
+                                          />
+                                          <!-- <div class="name fx-ac">
+                                            <WWOpenData
+                                              type="departmentName"
+                                              :showStatus="showStatus"
+                                              :openid="item.department_id"
+                                            >
+                                              <span class="wk-black-65-text">{{
+                                                item.department_name
+                                              }}</span>
+                                            </WWOpenData>
+                                          </div> -->
+                                      </div>
+                                      <div class="icon">
+                                          <a-button
+                                              type="link"
+                                              @click="selectDelete(item, item.data_type)"
+                                          >
+                                              移除
+                                          </a-button>
+                                      </div>
+                                  </div>
+                                  <div class="staff flex" v-if="item.data_type === 3">
+                                      <div class="left flex">
+                                          <img
+                                              src="../../assets/image/select-staff-new/gro.png"
+                                              style="width: 36px; height: 36px;"
+                                              alt=""
+                                          />
+                                          <div class="name">{{ item.name }}</div>
+                                      </div>
+                                      <div class="icon">
+                                          <a-button
+                                              type="link"
+                                              @click="selectDelete(item, item.data_type)"
+                                          >
+                                              移除
+                                          </a-button>
+                                      </div>
+                                  </div>
+                                  <div class="staff flex" v-if="item.data_type === 4">
+                                      <div class="left flex">
+                                          <img
+                                              src="../../assets/image/select-staff-new/tag.png"
+                                              alt=""
+                                              style="width: 36px; height: 36px;"
+                                          />
+                                          <div class="name">{{ item.tag_name }}</div>
+                                      </div>
+                                      <div class="icon">
+                                          <a-button
+                                              type="link"
+                                              @click="selectDelete(item, item.data_type)"
+                                          >
+                                              移除
+                                          </a-button>
+                                      </div>
+                                  </div>
+                              </div>
+                              <!-- <transition-group class="transition-wrapper" name="sort">
+                                动画会导致删除的时候页面乱跳
+                              </transition-group> -->
+                          </div>
+                          <!-- <div
+                            id="example"
+                            v-if="selectData.length > 0 && selectDataShow"
+                          >
+                            {{ selectData }} -->
+                          <a-empty v-if="!selectDataAll.length" />
+                          <!-- </div> -->
+                      </cu-scroll>
+                  </div>
+              </div>
+          </a-spin>
+          <addTag ref="addTagRef" @initFunc="initMemberTag"></addTag>
+      </a-modal>
+  </div>
 </template>
 
 <script>
@@ -558,7 +560,7 @@ export default {
       }, 500);
     },
     //添加成员弹窗关闭
-    addPeopleHandleCancel() {
+    addPeopleHandleCancel(e) {
       this.setScrollbarClear()
       if (this.funcShow) {
         this.funcShow = false;

@@ -26,7 +26,7 @@ enum EnumMessageType: string
     case Vote                   = 'vote';
     case Collect                = 'collect';
     case Redpacket              = 'redpacket';
-    case Meeting                = 'meting';
+    case Meeting                = 'meeting';
     case MeetingNotification    = 'meeting_notification';
     case DocMsg                 = 'docmsg';
     case Markdown               = 'markdown';

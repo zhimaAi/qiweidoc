@@ -123,9 +123,9 @@ import {DownloadOutlined} from '@ant-design/icons-vue';
 import ZmScroll from "@/components/zmScroll.vue";
 import {groupMessage, sessionMessage} from "@/api/session";
 import ChatUser from "@/views/sessionArchive/components/modules/childs/chatUser.vue";
-import MessageRender from "@/views/sessionArchive/components/modules/childs/messageRender.vue";
 import ChatCollection from './childs/chatCollection.vue';
 import {VoicePlayHandle} from "@/utils/voicePlay";
+import MessageRender from "@/components/session-message/messageRender.vue";
 
 const emit = defineEmits('changeCollect')
 const defaultAvatar = require('@/assets/default-avatar.png')

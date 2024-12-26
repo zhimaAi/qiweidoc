@@ -11,8 +11,6 @@ use Common\Yii;
 use GuzzleHttp\Promise\Utils;
 use Modules\Main\Consumer\SendEmailConsumer;
 use Modules\Main\Model\CorpModel;
-use Modules\SingleReply\Model\ReplyRuleModel;
-use Modules\SingleReply\Service\RuleService;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -25,6 +23,7 @@ final class TestCommand extends Command
 {
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        ddump(Carbon::now()->toDateTimeString('m'));
         return ExitCode::OK;
     }
 }
