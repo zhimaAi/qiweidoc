@@ -12,6 +12,7 @@ enum EnumMessageType: string
     case Text                   = 'text';
     case Image                  = 'image';
     case Revoke                 = 'revoke';
+    case Agree                  = 'agree';
     case Disagree               = 'disagree';
     case Voice                  = 'voice';
     case Video                  = 'video';
@@ -45,7 +46,8 @@ enum EnumMessageType: string
             self::Text                  => '文本',
             self::Image                 => '图片',
             self::Revoke                => '撤回消息',
-            self::Disagree              => '同意会话聊天',
+            self::Agree                 => '同意会话聊天',
+            self::Disagree              => '不同意会话聊天',
             self::Voice                 => '语音',
             self::Video                 => '视频',
             self::Card                  => '名片',
@@ -80,7 +82,8 @@ enum EnumMessageType: string
             self::Text => fn ($data) => ['raw_content' => $data['text'], 'msg_content' => $data['text']['content']],
             self::Image => fn ($data) => ['raw_content' => $data['image']],
             self::Revoke => fn ($data) => ['raw_content' => $data['revoke']],
-            self::Disagree => fn ($data) => ['raw_content' => $data['agree']],
+            self::Agree => fn ($data) => ['raw_content' => $data['agree']],
+            self::Disagree => fn ($data) => ['raw_content' => $data['disagree']],
             self::Voice => fn ($data) => ['raw_content' => $data['voice']],
             self::Video => fn ($data) => ['raw_content' => $data['video']],
             self::Card => fn ($data) => ['raw_content' => $data['card']],

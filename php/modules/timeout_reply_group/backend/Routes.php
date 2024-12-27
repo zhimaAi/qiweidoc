@@ -7,6 +7,7 @@ use Common\Job\Producer;
 use Common\RouterProvider;
 use Common\Yii;
 use Modules\Main\Library\Middlewares\CurrentCorpInfoMiddleware;
+use Modules\Main\Library\Middlewares\UserRoleMiddleware;
 use Modules\TimeoutReplyGroup\Consumer\RuleRunConsumer;
 use Modules\TimeoutReplyGroup\Controller\ReplyRuleController;
 use Modules\TimeoutReplyGroup\Controller\RuleController;
@@ -33,6 +34,7 @@ class Routes extends RouterProvider
             Group::create('/api')
                 ->middleware(Authentication::class)
                 ->middleware(CurrentCorpInfoMiddleware::class)
+                ->middleware(UserRoleMiddleware::class)
                 ->routes(
                     // 回复规则
                     Route::get('/reply-rules')->action([ReplyRuleController::class, 'show']),
