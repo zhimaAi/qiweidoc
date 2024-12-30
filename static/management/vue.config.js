@@ -1,5 +1,5 @@
 const {defineConfig} = require('@vue/cli-service')
-const dev_host = process.env.VUE_APP_HOST || 'http://hhdev3.xiaokefu.cn';
+const dev_host = process.env.VUE_APP_HOST || 'http://hhdev5.xiaokefu.cn';
 const path = require("path");
 const webpack = require('webpack');
 const ModuleConfig = require('./module-config');

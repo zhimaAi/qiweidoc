@@ -15,15 +15,19 @@ use Exception;
 use LogicException;
 use Modules\Main\Consumer\DownloadChatSessionBitMediasConsumer;
 use Modules\Main\Consumer\DownloadChatSessionMediasConsumer;
+use Modules\Main\DTO\Setting\CloudStorageSettingDTO;
 use Modules\Main\Enum\EnumChatConversationType;
 use Modules\Main\Enum\EnumChatMessageRole;
 use Modules\Main\Enum\EnumMessageType;
 use Modules\Main\Model\ChatConversationsModel;
 use Modules\Main\Model\ChatMessageModel;
+use Modules\Main\Model\CloudStorageSettingModel;
 use Modules\Main\Model\CorpModel;
 use Modules\Main\Model\CustomersModel;
 use Modules\Main\Model\GroupModel;
+use Modules\Main\Model\SettingModel;
 use Modules\Main\Model\StaffModel;
+use Modules\Main\Model\StorageModel;
 use Ramsey\Uuid\Uuid;
 use Throwable;
 
@@ -76,7 +80,7 @@ class ChatSessionPullService
             ]);
 
             // 下载资源
-            if (in_array($messageData->get('msg_type'), self::ValidMediaType)) {
+            if (in_array($messageData->get('msg_type'), ChatSessionService::ValidMediaType)) {
                 if (self::isLargeFile($messageData)) { // 大文件到单独的队列中处理
                     Producer::dispatch(DownloadChatSessionBitMediasConsumer::class, ['corp' => $corp, 'message' => $messageData]);
                 } else {
@@ -106,7 +110,7 @@ class ChatSessionPullService
      */
     public static function handleMedia(CorpModel $corp, ChatMessageModel $message)
     {
-        if (!in_array($message->get('msg_type'), self::ValidMediaType)) {
+        if (!in_array($message->get('msg_type'), ChatSessionService::ValidMediaType)) {
             throw new LogicException("消息类型不正确");
         }
 
@@ -119,30 +123,60 @@ class ChatSessionPullService
             $md5 = md5($sdkFileId);
         }
 
+        $fileName = Uuid::uuid4();
+        $fileExtension = "";
+
+        if ($message->get('msg_type') == 'file') {
+            $fileName = $message->get('raw_content')['filename'] ?? 'default';
+            $fileExtension = $message->get('raw_content')['fileext'] ?? 'default';
+        } elseif ($message->get('msg_type') == 'image') {
+            $fileName = Uuid::uuid4() . '.png';
+            $fileExtension = "png";
+        } elseif ($message->get('msg_type') == 'voice') {
+            $fileName = Uuid::uuid4() . '.amr';
+            $fileExtension = 'amr';
+        } elseif ($message->get('msg_type') == 'video') {
+            $fileName = Uuid::uuid4() . '.mp4';
+            $fileExtension = 'mp4';
+        } elseif ($message->get('msg_type') == 'emotion') {
+            $type = $message->get('raw_content')['type'] ?? 2;
+            $fileExtension = $type == 1 ? 'gif' : 'png';
+            $fileName = Uuid::uuid4() . "." . $fileExtension;
+        } elseif ($message->get('msg_type') == 'meeting_voice_call') {
+            $fileName = $message->get('raw_content')['voiceid'] . '.mp3';
+            $fileExtension = "mp4";
+        }
+
+        $objectKey = StorageService::generateObjectKey($fileName, $md5);
         $request = [
             'corp_id' => $corp->get('id'),
             'chat_secret' => $corp->get('chat_secret'),
             'sdk_file_id' => $sdkFileId,
-            'md5' => $md5,
+
+            'storage_endpoint' => Yii::params()['local_storage']['endpoint'],
+            'storage_region' => Yii::params()['local_storage']['region'],
+            'storage_access_key' => Yii::params()['local_storage']['access_key'],
+            'storage_secret_key' => Yii::params()['local_storage']['secret_key'],
+            'storage_bucket_name' => StorageModel::SESSION_BUCKET,
+            'storage_object_key' => $objectKey,
         ];
-        if ($message->get('msg_type') == 'file') {
-            $request['origin_file_name'] = $message->get('raw_content')['filename'] ?? '';
-        } elseif ($message->get('msg_type') == 'image') {
-            $request['origin_file_name'] = Uuid::uuid4() . '.png';
-        } elseif ($message->get('msg_type') == 'voice') {
-            $request['origin_file_name'] = Uuid::uuid4() . '.amr';
-        } elseif ($message->get('msg_type') == 'video') {
-            $request['origin_file_name'] = Uuid::uuid4() . '.mp4';
-        } elseif ($message->get('msg_type') == 'emotion') {
-            $type = $message->get('raw_content')['type'] ?? 2;
-            $request['origin_file_name'] = Uuid::uuid4() . ($type == 1 ? '.gif' : '.png');
-        } elseif ($message->get('msg_type') == 'meeting_voice_call') {
-            $request['origin_file_name'] = $message->get('raw_content')['voiceid'] . '.mp3';
-        }
-        $res = Yii::getRpcClient()->call('wxfinance.FetchMediaData', $request);
-        if (!empty($res['url'])) {
-            $message->update(['msg_content' => $res['url']]);
-        }
+        $fileInfo = Yii::getRpcClient()->call('wxfinance.FetchAndDownloadMediaData', $request);
+
+        $retentionDays = (int)SettingModel::getValue('local_session_file_retention_days');
+        $storage = StorageModel::create([
+            'hash'                          => $fileInfo['hash'],
+            'original_filename'             => $fileName,
+            'file_extension'                => $fileExtension,
+            'mime_type'                     => $fileInfo['mime'] ?? '',
+            'file_size'                     => $fileInfo['size'] ?? 0,
+            'local_storage_bucket'          => 'session-bucket',
+            'local_storage_object_key'      => $objectKey,
+            'local_storage_expired_at'      => $retentionDays > 0 ? Carbon::now()->addDays($retentionDays)->toDateTimeString('m') : null,
+        ]);
+        $message->update(['msg_content' => $fileInfo['hash']]);
+
+        // 保存到云存储
+        StorageService::saveCloud($storage);
     }
 
     /**

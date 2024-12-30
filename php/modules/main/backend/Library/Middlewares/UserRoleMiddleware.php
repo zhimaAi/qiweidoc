@@ -44,10 +44,6 @@ class UserRoleMiddleware implements MiddlewareInterface
                 ->withResponseFormatter($this->jsonDataResponseFormatter);
         }
 
-        $currentCorpInfo = CorpModel::query()->where(['id' => $currentUserInfo->get('corp_id')])->getOne();
-
-        $newRequest = $request->withAttribute(CorpModel::class, $currentCorpInfo);
-
-        return $handler->handle($newRequest);
+        return $handler->handle($request);
     }
 }

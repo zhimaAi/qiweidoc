@@ -23,7 +23,6 @@ class Producer
         foreach ($routers as $r) {
             if ($r->getClassName() == $className) {
                 $router = $r;
-
                 break;
             }
         }
@@ -78,7 +77,7 @@ class Producer
             ],
         ]);
     }
-    
+
     public static function dispatchCronDelete(string $className)
     {
         return Yii::getRpcClient()->call('cron.Delete', $className);

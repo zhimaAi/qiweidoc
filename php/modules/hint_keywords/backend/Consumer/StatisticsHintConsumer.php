@@ -351,7 +351,7 @@ SQL;
         } else if ($msg["msg_type"] === "image" && in_array("qr_code", $rule["target_msg_type"])) {//图片类型，验证一下是否存在二维码
 
             //验证是否为二维码
-            $isQrcode = checkImgIsQrcode($_ENV['MINIO_URL'] . $msg["msg_content"]);
+            $isQrcode = checkImgIsQrcode($_ENV['MINIO_ENDPOINT'] . $msg["msg_content"]);
 
             if ($isQrcode["is_qrcode"]) {
                 $is_checked = 1;

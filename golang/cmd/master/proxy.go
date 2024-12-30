@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/tls"
 	"fmt"
+	"github.com/valyala/fasthttp"
 	"log"
 	"net/url"
 	"os"
@@ -36,9 +37,35 @@ func startFiberProxy() error {
 
 		fullURL := c.OriginalURL()
 
-		// Minio代理
+		// Minio代理（旧版，后面不用了）
 		if strings.HasPrefix(c.Path(), "/minio") {
 			return proxy.Do(c, minioUrl+fullURL)
+		}
+
+		// 新版minio代理
+		if strings.HasPrefix(c.Path(), "/storage") {
+			path := strings.TrimPrefix(c.Path(), "/storage")
+
+			// 构建完整的 MinIO URL
+			targetUrl := minioUrl + path
+
+			// 创建一个新的请求
+			req := c.Request()
+			req.SetRequestURI(targetUrl)
+
+			// 发送请求到 MinIO
+			res := c.Response()
+			client := &fasthttp.Client{}
+			if err := client.Do(req, res); err != nil {
+				return c.Status(fiber.StatusInternalServerError).SendString("Proxy Error")
+			}
+
+			// 移除或修改可能导致问题的头部
+			res.Header.Del("Location")
+			res.Header.Del("Content-Disposition")
+			res.Header.Del("Server")
+
+			return nil
 		}
 
 		if strings.HasPrefix(c.Path(), "/ws") {
@@ -46,6 +73,7 @@ func startFiberProxy() error {
 		}
 		// 模块代理
 		if strings.HasPrefix(c.Path(), "/modules/") {
+
 			parts := strings.SplitN(fullURL[9:], "/", 2)
 			if len(parts) != 2 {
 				return c.Status(400).SendString("Invalid path")

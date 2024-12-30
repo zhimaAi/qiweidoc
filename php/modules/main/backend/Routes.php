@@ -7,10 +7,10 @@ use Common\Job\Consumer;
 use Common\Job\Producer;
 use Common\RouterProvider;
 use Common\Yii;
-use Modules\CustomerTag\Controller\TagController;
 use Modules\Main\Consumer\DownloadChatSessionBitMediasConsumer;
 use Modules\Main\Consumer\DownloadChatSessionMediasConsumer;
 use Modules\Main\Consumer\QwOpenPushConsumer;
+use Modules\Main\Consumer\RemoveExpiredLocalFilesConsumer;
 use Modules\Main\Consumer\SendEmailConsumer;
 use Modules\Main\Consumer\SyncCustomersConsumer;
 use Modules\Main\Consumer\SyncDepartmentConsumer;
@@ -19,6 +19,7 @@ use Modules\Main\Consumer\SyncSessionMessageConsumer;
 use Modules\Main\Consumer\SyncStaffChatConsumer;
 use Modules\Main\Controller\AuthController;
 use Modules\Main\Controller\ChatController;
+use Modules\Main\Controller\CloudStorageSettingController;
 use Modules\Main\Controller\CorpController;
 use Modules\Main\Controller\CustomersController;
 use Modules\Main\Controller\CustomerTagController;
@@ -29,12 +30,12 @@ use Modules\Main\Controller\OpenPushController;
 use Modules\Main\Controller\StaffController;
 use Modules\Main\Controller\TagsController;
 use Modules\Main\Controller\UserController;
-use Modules\Main\Enum\EnumUserRoleType;
 use Modules\Main\Library\Middlewares\CurrentCorpInfoMiddleware;
 use Modules\Main\Library\Middlewares\UserRoleMiddleware;
 use Modules\Main\Library\Middlewares\WxAuthMiddleware;
-use Modules\Main\Model\UserRoleModel;
 use Modules\Main\Controller\WxController;
+use Modules\Main\Service\StorageService;
+use Modules\Main\Service\UserService;
 use Psr\Http\Message\ServerRequestInterface;
 use Yiisoft\Auth\Middleware\Authentication;
 use Yiisoft\DataResponse\DataResponseFactoryInterface;
@@ -51,36 +52,17 @@ class Routes extends RouterProvider
      */
     public function init(): void
     {
+        // 初始化本地存储
+        StorageService::initLocalBucket();
+
+        // 初始化用户角色
+        UserService::init();
+
+        // 定时拉取会话存档消息
         Producer::dispatchCron(SyncSessionMessageConsumer::class, [], '5 seconds');
 
-        $userRole = UserRoleModel::query()->getAll()->toArray();
-        $userRoleId = array_column($userRole,"id");
-
-        $roleList = [
-            [
-                "id"=>EnumUserRoleType::NORMAL_STAFF->value,
-                "role_name"=>"普通员工"
-            ],[
-                "id"=>EnumUserRoleType::ADMIN->value,
-                "role_name"=>"管理员"
-            ],[
-                "id"=>EnumUserRoleType::SUPPER_ADMIN->value,
-                "role_name"=>"超级管理员"
-            ],[
-                "id"=>EnumUserRoleType::VISITOR->value,
-                "role_name"=>"游客账号"
-            ],
-        ];
-
-        foreach ($roleList as $item) {
-            if (!in_array($item["id"],$userRoleId)){
-                $sql = "INSERT INTO \"main\".\"user_role\" (\"id\",  \"role_name\", \"permission_config\") VALUES ('".$item["id"]."', '".$item["role_name"]."', '[]')";
-                Yii::db()->createCommand($sql)->execute();
-            }
-        }
-
-
-        return;
+        // 定时清理本地过期文件
+        Producer::dispatchCron(RemoveExpiredLocalFilesConsumer::class, [], '* * * * *');
     }
 
     public function getBroadcastRouters(): array
@@ -118,6 +100,7 @@ class Routes extends RouterProvider
             Consumer::name("sync_session_message")->count(1)->action(SyncSessionMessageConsumer::class),
             Consumer::name("download_session_medias")->count(2)->action(DownloadChatSessionBitMediasConsumer::class)->reserveOnStop(),
             Consumer::name("download_session_big_medias")->count(1)->action(DownloadChatSessionMediasConsumer::class)->reserveOnStop(),
+            Consumer::name("remove_expired_local_files")->count(1) ->action(RemoveExpiredLocalFilesConsumer::class),
         ];
     }
 
@@ -153,7 +136,6 @@ class Routes extends RouterProvider
             Group::create("/api/corps")->routes(
                 Route::post("/init/check")->action([CorpController::class, "checkInit"]),
                 Route::post("/basic")->action([CorpController::class, "initCorpInfo"]),
-                //登录页可以调用的
                 Route::get("/name-logo/get")->action([CorpController::class, "getBaseNameAndLogo"]),
             ),
 
@@ -175,6 +157,17 @@ class Routes extends RouterProvider
                 ->middleware(CurrentCorpInfoMiddleware::class)
                 ->middleware(UserRoleMiddleware::class)
                 ->routes(
+                    // 模块管理
+                    Route::get("/modules")->action([ModuleController::class, "getModuleList"]),
+                    Route::get("/modules/{name:.+}")->action([ModuleController::class, "getModuleDetail"]),
+                    Route::put("/modules/{name:.+}/enable")->action([ModuleController::class, "enableModule"]),
+                    Route::put("/modules/{name:.+}/disable")->action([ModuleController::class, "disableModule"]),
+
+                    // 云存储配置
+                    Route::get('/cloud-storage-settings')->action([CloudStorageSettingController::class, 'show']),
+                    Route::put('/cloud-storage-settings')->action([CloudStorageSettingController::class, 'save']),
+                    Route::get('/cloud-storage-settings/provider-regions')->action([CloudStorageSettingController::class, 'getStorageProviderRegionList']),
+
                     // 企业相关接口
                     Route::get("/corps/current")->action([CorpController::class, "getCurrentCorpInfo"]),
                     Route::get("/corps/session/publicKey")->action([CorpController::class, "getSessionPublicKey"]),
@@ -182,8 +175,8 @@ class Routes extends RouterProvider
                     Route::put("/corps/current")->action([CorpController::class, "updateConfig"]),
                     Route::get("/corps/callback/event/token/generate")->action([CorpController::class, "generateCallbackEventToken"]),
                     Route::put("/corps/callback/event/token/save")->action([CorpController::class, "saveCallbackEventToken"])->disableMiddleware(UserRoleMiddleware::class),
-                    Route::put("/corps/name-logo/save")->action([CorpController::class, "SaveNameOrLogo"]),
-                    Route::post("/corps/upload/logo")->action([CorpController::class, "UploadLogo"]),
+                    Route::post("/corps/upload/logo")->action([CorpController::class, "uploadLogo"]),
+                    Route::put("/corps/name-logo/save")->action([CorpController::class, "saveNameOrLogo"]),
 
                     // 用户相关接口
                     Route::get("/users/current")->action([UserController::class, "getCurrentUserInfo"]),
@@ -241,12 +234,6 @@ class Routes extends RouterProvider
                     Route::get('/chats/by/collect/room/conversation/list')->action([ChatController::class, 'getRoomConversationListByCollect']),
                     Route::put('/chats/join/collect')->action([ChatController::class, 'joinCollect']),
                     Route::put('/chats/cancel/collect')->action([ChatController::class, 'cancelCollect']),
-
-                    // 模块管理
-                    Route::get("/modules")->action([ModuleController::class, "getModuleList",]),
-                    Route::get("/modules/{name:.+}")->action([ModuleController::class, "getModuleDetail"]),
-                    Route::put("/modules/{name:.+}/enable")->action([ModuleController::class, "enableModule"]),
-                    Route::put("/modules/{name:.+}/disable")->action([ModuleController::class, "disableModule"]),
                 ),
         ];
     }

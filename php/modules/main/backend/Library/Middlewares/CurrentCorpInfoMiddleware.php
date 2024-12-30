@@ -4,6 +4,7 @@
 namespace Modules\Main\Library\Middlewares;
 
 use Modules\Main\Model\CorpModel;
+use Modules\Main\Service\StorageService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -21,6 +22,7 @@ class CurrentCorpInfoMiddleware implements MiddlewareInterface
         $currentUserInfo = $request->getAttribute(Authentication::class);
 
         $currentCorpInfo = CorpModel::query()->where(['id' => $currentUserInfo->get('corp_id')])->getOne();
+        $currentCorpInfo->set('corp_logo', StorageService::getDownloadUrl($currentCorpInfo->get('corp_logo')));
 
         $newRequest = $request->withAttribute(CorpModel::class, $currentCorpInfo);
 

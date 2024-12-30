@@ -3,6 +3,7 @@
 
 namespace Modules\Main\Service;
 
+use Common\Yii;
 use LogicException;
 use Modules\Main\DTO\CreateUserBaseDTO;
 use Modules\Main\DTO\UpdateUserInfoBaseDTO;
@@ -14,6 +15,35 @@ use Yiisoft\Arrays\ArrayHelper;
 
 class UserService
 {
+    public static function init()
+    {
+        $userRole = UserRoleModel::query()->getAll()->toArray();
+        $userRoleId = array_column($userRole,"id");
+
+        $roleList = [
+            [
+                "id"=>EnumUserRoleType::NORMAL_STAFF->value,
+                "role_name"=>"普通员工"
+            ],[
+                "id"=>EnumUserRoleType::ADMIN->value,
+                "role_name"=>"管理员"
+            ],[
+                "id"=>EnumUserRoleType::SUPPER_ADMIN->value,
+                "role_name"=>"超级管理员"
+            ],[
+                "id"=>EnumUserRoleType::VISITOR->value,
+                "role_name"=>"游客账号"
+            ],
+        ];
+
+        foreach ($roleList as $item) {
+            if (!in_array($item["id"],$userRoleId)){
+                $sql = "INSERT INTO \"main\".\"user_role\" (\"id\",  \"role_name\", \"permission_config\") VALUES ('".$item["id"]."', '".$item["role_name"]."', '[]')";
+                Yii::db()->createCommand($sql)->execute();
+            }
+        }
+    }
+
     public static function updateCurrentUserInfo(UserModel $currentUser, UpdateUserInfoBaseDTO $updateUserInfoDTO): void
     {
 

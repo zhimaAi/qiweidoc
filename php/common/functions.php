@@ -201,3 +201,11 @@ function isWeChatEmoji(string $content): bool
 
     return (preg_match($bracketPattern, trim($content)) === 1) || (preg_match($emojiPattern, trim($content)) === 1);
 }
+
+/**
+ * 判断一个字符串是否是md5
+ */
+function is_md5($string)
+{
+    return ctype_xdigit($string) && strlen($string) == 32;
+}

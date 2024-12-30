@@ -49,14 +49,15 @@ services:
       dockerfile: docker/minio/Dockerfile
     platform: linux/amd64
     image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/chat_session_archive_minio:latest
-    command: "server /data"
+    command: "server /data --console-address 0.0.0.0:9001"
     environment:
       TZ: Asia/Shanghai
     restart: always
     volumes:
       - minio_data:/data
     ports:
-      - ${EXTERNAL_MINIO_PORT:-9000}:9000
+      - ${EXTERNAL_MINIO_API_PORT:-9000}:9000
+      - ${EXTERNAL_MINIO_CONSOLE_PORT:-9001}:9001
 
   nats:
     build:

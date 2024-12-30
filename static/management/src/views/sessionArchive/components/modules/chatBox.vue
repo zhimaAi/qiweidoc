@@ -53,6 +53,12 @@
                         <a-radio-button value="voice">语音</a-radio-button>
                         <a-radio-button v-if="sessionType === 'session'" value="voiptext">音视频通话</a-radio-button>
                     </a-radio-group>
+                    <a-range-picker
+                        class="ml8"
+                        v-model:value="filterData.dates"
+                        style="width: 220px; height: 24px;"
+                        @change="filterDateChange"
+                        :disabled-date="disabledDate"/>
                 </div>
             </div>
             <div v-if="showCollectReason" class="zm-flex-center zm-pointer collect_reason">
@@ -80,7 +86,7 @@
             :style="getMessageListStyle"
             :class="['message-list', { opacity: opacity}]">
             <a-empty v-if="finished && list.length < 1" description="暂无数据" style="margin-top: 60px;"/>
-            <template v-for="(item, index) in list">
+            <template v-for="item in list">
                 <div v-if="item.msg_type != 'revoke'" :key="item.msg_id"
                      :class="['message-item', { isSelf: item.isSelf }]">
                     <div class="user-info">
@@ -179,7 +185,8 @@ const pagination = reactive({
 const currentPayVoiceKey = getPlayerKey()
 const filterData = reactive({
     keyword: '',
-    msg_type: 'all'
+    msg_type: 'all',
+    dates: []
 })
 
 const showCollectReason = computed(() => {
@@ -226,6 +233,10 @@ const loadData = () => {
         size: pagination.pageSize,
         ...props.chatInfo.params,
     }
+    if (filterData.dates && filterData.dates.length) {
+        params.msg_start_time = dayjs(filterData.dates[0]).format('YYYY-MM-DD 00:00:00')
+        params.msg_end_time = dayjs(filterData.dates[1]).format('YYYY-MM-DD 23:59:59')
+    }
     filterData.keyword = filterData.keyword.trim()
     if (filterData.keyword) {
         params.msg_content = filterData.keyword
@@ -246,7 +257,7 @@ const loadData = () => {
         if (!items || !items?.length || list.value.length === total) {
             finished.value = true
         }
-        items.map((item, index) => {
+        items.map(item => {
             item.msg_time_show = dayjs(item.msg_time).format('YY/MM/DD HH:mm')
             item.from_role = item.from_role.name
             item.from_detail = item.from_detail || {}
@@ -262,14 +273,14 @@ const loadData = () => {
             // 撤回消息
             if (item.msg_type === 'revoke') {
                 let findIx = items.findIndex(i => i.msg_id === item.raw_content.pre_msgid)
-                items[findIx].is_revoke = true
+                items[findIx] && (items[findIx].is_revoke = true)
             }
         })
         oldHeight.value = listRef.value.getListDom().scrollHeight
         items.reverse()
         list.value.unshift(...items)
         pagination.current += 1
-        total = Number(total)
+        // total = Number(total)
         if (pagination.current === 2) {
             opacity.value = true
             setTimeout(() => {
@@ -291,7 +302,8 @@ const loadData = () => {
                 })
             }, 200)
         }
-    }).catch(() => {
+    }).catch(err => {
+        console.log('Err:', err)
         loading.value = false
         finished.value = true
     })
@@ -306,6 +318,21 @@ function filterMsgTypeChange() {
 
 function playVoice(message) {
     play(message.msg_id, message.msg_content)
+}
+
+const filterDateChange = () => {
+    if (filterData.dates && filterData.dates.length > 0) {
+        let time = filterData.dates[1] - filterData.dates[0]
+        if ((time / 86400000) > 30) {
+            filterData.dates = []
+            message.warning("发送时间跨度不得超过30天")
+        }
+    }
+    init()
+}
+
+const disabledDate = current => {
+    return current && current > dayjs().endOf('day')
 }
 
 </script>
@@ -336,6 +363,9 @@ function playVoice(message) {
         }
 
         .filter-box {
+            display: flex;
+            align-items: center;
+
             :deep(.ant-input-search .ant-input) {
                 min-height: 22px;
             }

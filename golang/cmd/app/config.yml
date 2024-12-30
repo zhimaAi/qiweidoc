@@ -33,13 +33,6 @@ http:
     calculate_etag: true
     weak: false
 
-# 封装minio上传的插件
-minio:
-  server_address: minio:9000
-  bucket_name: download
-  access_key_id: minioadmin
-  secret_access_key: minioadmin
-
 # 管理进程的插件
 service:
   init-module:

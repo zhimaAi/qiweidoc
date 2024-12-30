@@ -119,6 +119,7 @@ abstract class BaseModel
     {
         $model = new static();
         $model->exists = false;
+        $attributes = $model->filterAttributes($attributes);
 
         $timestampFields = $model->getTimestampFields();
         if (!empty($timestampFields['created_at'])) {
@@ -268,8 +269,24 @@ abstract class BaseModel
         if ($value !== null) {
             return $this->transform($field, $value);
         }
+        if ($default != null) {
+            return $default;
+        }
 
-        return $default;
+        $casts = $this->casts();
+        if (empty($casts[$field])) {
+            return null;
+        }
+
+        $cast = $casts[$field];
+
+        return match ($cast) {
+            'array' => [],
+            'int', 'float' => 0,
+            'bool' => false,
+            'string' => '',
+            default => BackedEnum::class,
+        };
     }
 
     public function set(string $field, mixed $value): void
@@ -311,6 +328,8 @@ abstract class BaseModel
      */
     public function update(array $attributes): void
     {
+        $attributes = $this->filterAttributes($attributes);
+
         foreach ($attributes as $key => $value) {
             $this->set($key, $value);
         }
@@ -380,6 +399,12 @@ abstract class BaseModel
         };
     }
 
+    protected function filterAttributes(array $attributes): array
+    {
+        $casts = $this->casts();
+        return array_intersect_key($attributes, $casts);
+    }
+
     /**
      * 保存模型到数据库
      *
@@ -392,6 +417,7 @@ abstract class BaseModel
             if (empty($dirty)) {
                 return;
             }
+            $dirty = $this->filterAttributes($dirty);
 
             if (!empty($this->getTimestampFields()['updated_at'])) {
                 $dirty[$this->getTimestampFields()['updated_at']] = Carbon::now()->format('Y-m-d H:i:s.v');
@@ -404,6 +430,8 @@ abstract class BaseModel
                 return $db->createCommand()->update($this->getTableName(), $dirty, $condition)->execute();
             });
         } else {
+            $this->attributes = $this->filterAttributes($this->attributes);
+
             // 对于非自增主键（如UUID），在插入前必须确保主键值已设置
             if (!$this->isAutoIncrementPK()) {
                 $pk = $this->getPrimaryKeys();

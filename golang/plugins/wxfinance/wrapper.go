@@ -3,16 +3,22 @@ package wxfinance
 // 对企业微信提供的接口做进一步的封装，方便使用
 
 import (
+	"context"
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/pem"
 	errors2 "errors"
 	"fmt"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/roadrunner-server/errors"
 	"go.uber.org/zap"
+	"net/http"
 	"os"
-	"session_archive/golang/plugins/minio"
+	"strings"
 )
 
 type FetchDataRequest struct {
@@ -161,55 +167,94 @@ func (p *Plugin) FetchData(input *FetchDataRequest) ([]ChatMsg, error) {
 	return output, nil
 }
 
-type FetchMediaDataRequest struct {
-	CorpId         string `json:"corp_id"`
-	ChatSecret     string `json:"chat_secret"`
-	SdkFileId      string `json:"sdk_file_id"`
-	MD5            string `json:"md5"`
-	OriginFileName string `json:"origin_file_name"`
-	Proxy          string `json:"proxy"`
-	Passwd         string `json:"passwd"`
-	Timeout        int    `json:"timeout"`
+func getFileMIMEType(file *os.File) (string, error) {
+	// Seek to the beginning of the file
+	_, err := file.Seek(0, 0)
+	if err != nil {
+		return "", err
+	}
+
+	// Read the first 512 bytes of the file
+	buffer := make([]byte, 512)
+	_, err = file.Read(buffer)
+	if err != nil {
+		return "", err
+	}
+
+	// Detect the content type
+	contentType := http.DetectContentType(buffer)
+
+	return contentType, nil
 }
 
-// FetchMediaData 从企微下载文件，然后上传到minio返回url链接
-func (p *Plugin) FetchMediaData(input *FetchMediaDataRequest) (*minio.UploadFileResponse, error) {
+type FetchMediaDataRequest struct {
+	CorpId     string `json:"corp_id"`
+	ChatSecret string `json:"chat_secret"`
+	SdkFileId  string `json:"sdk_file_id"`
+	Proxy      string `json:"proxy"`
+	Passwd     string `json:"passwd"`
+	Timeout    int    `json:"timeout"`
+
+	StorageEndpoint   string `json:"storage_endpoint"`
+	StorageRegion     string `json:"storage_region"`
+	StorageAccessKey  string `json:"storage_access_key"`
+	StorageSecretKey  string `json:"storage_secret_key"`
+	StorageBucketName string `json:"storage_bucket_name"`
+	StorageObjectKey  string `json:"storage_object_key"`
+}
+
+type FileInfo struct {
+	Hash string `json:"hash"`
+	Mime string `json:"mime"`
+	Size int64  `json:"size"`
+}
+
+// FetchAndDownloadMediaData 从企微下载文件，然后上传到minio返回url链接
+func (p *Plugin) FetchAndDownloadMediaData(input *FetchMediaDataRequest) (*FileInfo, error) {
+	const Op = "plugin_wxfinance: FetchMediaData"
+
 	if len(input.CorpId) == 0 {
-		return nil, errors.E(errors.Op(`缺少corp_id参数`))
+		return nil, errors.E(Op, "缺少corp_id参数")
 	}
 	if len(input.ChatSecret) == 0 {
-		return nil, errors.E(errors.Op(`缺少chat_secret参数`))
+		return nil, errors.E(Op, `缺少chat_secret参数`)
 	}
 	if len(input.SdkFileId) == 0 {
-		return nil, errors.E(errors.Op(`缺少sdk_field_id参数`))
+		return nil, errors.E(Op, `缺少sdk_file_id参数`)
 	}
-	if len(input.MD5) == 0 {
-		return nil, errors.E(errors.Op(`缺少md5参数`))
+	if len(input.StorageEndpoint) == 0 {
+		return nil, errors.E(Op, `缺少minio_endpoint参数`)
 	}
-	if len(input.OriginFileName) == 0 {
-		return nil, errors.E(errors.Op(`缺少origin_file_name参数`))
+	if len(input.StorageAccessKey) == 0 {
+		return nil, errors.E(Op, `缺少minio_access_key参数`)
+	}
+	if len(input.StorageSecretKey) == 0 {
+		return nil, errors.E(Op, `缺少minio_secret_key参数`)
+	}
+	if len(input.StorageBucketName) == 0 {
+		return nil, errors.E(Op, `缺少minio_bucket_name参数`)
+	}
+	if len(input.StorageObjectKey) == 0 {
+		return nil, errors.E(Op, `缺少minio_object_key参数`)
 	}
 
-	// 先根据md5值从文件服务器查看文件是否存在，如果存在就直接返回不用下载了
-	url, err := p.minioPlugin.GetFileByMD5(minio.GetFileByMD5Request{MD5: input.MD5})
-	if err != nil {
-		return nil, errors.E(errors.Op(`从文件服务器查询文件是否存在失败`), err)
-	}
-	if len(url) > 0 {
-		p.log.Info(`根据md5从文件服务器找到了文件`, zap.String("url", url))
-		return &minio.UploadFileResponse{Url: url, MD5: input.MD5}, nil
-	}
+	client := s3.New(s3.Options{
+		BaseEndpoint: aws.String(input.StorageEndpoint),
+		Region:       input.StorageRegion,
+		UsePathStyle: true,
+		Credentials:  aws.NewCredentialsCache(credentials.NewStaticCredentialsProvider(input.StorageAccessKey, input.StorageSecretKey, "")),
+	})
 
 	// 创建SDK对象
 	sdk, err := NewSDK()
 	if err != nil {
-		return nil, errors.E(errors.Op(`创建SDK对象失败`), err)
+		return nil, errors.E(Op, err)
 	}
 
 	// 初始化SDK
 	err = sdk.Init(input.CorpId, input.ChatSecret)
 	if err != nil {
-		return nil, errors.E(errors.Op(`初始化失败`), err)
+		return nil, errors.E(Op, err)
 	}
 
 	// 创建临时文件
@@ -217,17 +262,16 @@ func (p *Plugin) FetchMediaData(input *FetchMediaDataRequest) (*minio.UploadFile
 	tempDir := os.TempDir()
 	tempFile, err := os.CreateTemp(tempDir, prefix)
 	if err != nil {
-		return nil, errors.E(errors.Op(fmt.Sprintf("创建临时文件%s失败", tempFile.Name())), err)
-
+		return nil, errors.E(Op, err)
 	}
 
 	// 确保临时文件被关闭和删除
 	defer func(tempFile *os.File) {
 		if err := tempFile.Close(); err != nil {
-			p.log.Error(fmt.Sprintf(`关闭临时文件%s失败: %v`, tempFile.Name(), err))
+			p.log.Error(errors.E(Op, err).Error())
 		}
 		if err := os.Remove(tempFile.Name()); err != nil {
-			p.log.Error(fmt.Sprintf(`删除临时文件%s失败: %v`, tempFile.Name(), err))
+			p.log.Error(errors.E(Op, err).Error())
 		}
 	}(tempFile)
 
@@ -236,11 +280,11 @@ func (p *Plugin) FetchMediaData(input *FetchMediaDataRequest) (*minio.UploadFile
 	for {
 		mediaData, err := sdk.GetMediaData(indexBuf, input.SdkFileId, input.Passwd, input.Passwd, input.Timeout)
 		if err != nil {
-			return nil, errors.E(errors.Op(`文件下载失败`), err)
+			return nil, errors.E(Op, err)
 		}
 		_, err = tempFile.Write(mediaData.Data)
 		if err != nil {
-			return nil, errors.E(errors.Op(`媒体数据写入失败`), err)
+			return nil, errors.E(Op, err)
 		}
 		if mediaData.IsFinish {
 			break
@@ -248,17 +292,56 @@ func (p *Plugin) FetchMediaData(input *FetchMediaDataRequest) (*minio.UploadFile
 		indexBuf = mediaData.OutIndexBuf
 	}
 
-	// 把资源上传到文件服务器
-	updateMetaData := minio.UploadFileRequest{
-		FilePath: tempFile.Name(),
-	}
-	if len(input.OriginFileName) > 0 {
-		updateMetaData.OriginFileName = input.OriginFileName
-	}
-	result, err := p.minioPlugin.UploadFile(updateMetaData)
+	fileInfo := &FileInfo{}
+	f, err := tempFile.Stat()
 	if err != nil {
-		return nil, errors.E(errors.Op(fmt.Sprintf(`上传文件%s到服务器失败`, tempFile.Name())), err)
+		return nil, errors.E(Op, err)
 	}
 
-	return &result, nil
+	// 获取文件实际大小
+	fileInfo.Size = f.Size()
+
+	// 解析文件的mime
+	mime, err := getFileMIMEType(tempFile)
+	if err != nil {
+		return nil, errors.E(Op, err)
+	}
+	fileInfo.Mime = mime
+
+	if _, err := tempFile.Seek(0, 0); err != nil {
+		return nil, errors.E(Op, err)
+	}
+	uploader := manager.NewUploader(client)
+	fileUploadInfo, err := uploader.Upload(context.TODO(), &s3.PutObjectInput{
+		Bucket: aws.String(input.StorageBucketName),
+		Key:    aws.String(input.StorageObjectKey),
+		Body:   tempFile,
+	})
+	if err != nil {
+		return nil, errors.E(Op, err)
+	}
+	fileInfo.Hash = extract32BitETag(*fileUploadInfo.ETag)
+
+	return fileInfo, nil
+}
+
+func extract32BitETag(etag string) string {
+	// 移除 ETag 开头和结尾的双引号（如果存在）
+	etag = strings.Trim(etag, "\"")
+
+	// 检查是否包含连字符（表示分片上传）
+	if strings.Contains(etag, "-") {
+		// 分片上传的情况，提取连字符前的部分
+		parts := strings.Split(etag, "-")
+		if len(parts) > 0 {
+			return parts[0]
+		}
+	}
+
+	// 如果 ETag 长度为 32，直接返回（标准 MD5）
+	if len(etag) == 32 {
+		return etag
+	}
+
+	return etag
 }

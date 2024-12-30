@@ -2,7 +2,6 @@ package wxfinance
 
 import (
 	"go.uber.org/zap"
-	"session_archive/golang/plugins/minio"
 )
 
 type rpc struct {
@@ -40,14 +39,14 @@ func (r *rpc) FetchData(input *FetchDataRequest, output *[]ChatMsg) (err error) 
 	return
 }
 
-// FetchMediaData 从企微下载文件，然后上传到minio返回url链接
-func (r *rpc) FetchMediaData(input *FetchMediaDataRequest, output *minio.UploadFileResponse) (err error) {
+// FetchAndDownloadMediaData 从企微下载文件，然后上传到minio
+func (r *rpc) FetchAndDownloadMediaData(input *FetchMediaDataRequest, output *FileInfo) (err error) {
 	r.pl.log.Debug("收到RPC请求",
 		zap.String("method", "FetchMediaData"),
 		zap.Any("input", input),
 	)
 
-	result, err := r.pl.FetchMediaData(input)
+	result, err := r.pl.FetchAndDownloadMediaData(input)
 	if err != nil {
 		r.pl.log.Error("RPC请求失败",
 			zap.String("method", "FetchMediaData"),
@@ -63,5 +62,5 @@ func (r *rpc) FetchMediaData(input *FetchMediaDataRequest, output *minio.UploadF
 		)
 	}
 
-	return nil
+	return
 }

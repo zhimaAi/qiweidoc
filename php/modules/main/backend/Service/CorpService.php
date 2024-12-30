@@ -4,12 +4,14 @@
 namespace Modules\Main\Service;
 
 use Common\Yii;
+use HttpSoft\Message\UploadedFile;
 use LogicException;
 use Modules\Main\DTO\Corp\InitCorpInfoBaseDTO;
 use Modules\Main\DTO\Corp\SaveCallbackEventTokenBaseDTO;
 use Modules\Main\DTO\Corp\SaveCorpInfoBaseDTO;
 use Modules\Main\DTO\Corp\UpdateCorpConfigBaseDTO;
 use Modules\Main\Model\CorpModel;
+use Modules\Main\Model\StorageModel;
 use Throwable;
 
 class CorpService
@@ -190,7 +192,6 @@ class CorpService
         if (!empty($dto->corpName)) {
             $data['corp_name'] = $dto->corpName;
         }
-
         if (!empty($dto->corpLogo)) {
             $data['corp_logo'] = $dto->corpLogo;
         }
@@ -200,38 +201,22 @@ class CorpService
         return $data;
     }
 
-    public static function uploadLogo(CorpModel $corp,$files)
+    /**
+     * @throws Throwable
+     */
+    public static function uploadLogo(UploadedFile $file): string
     {
-        $result=[];
-        foreach ($files as $file) {
-            //只取第一个
-            if (empty($file)){
-                throw new LogicException('请上传文件');
-            }
-
-            /** @var \HttpSoft\Message\UploadedFile $file */
-            $filepath = '/tmp/' . $file->getClientFilename();
-
-            if ($file->getSize() > 1024 * 1024 * 50) {
-
-                throw new LogicException('文件不能超过50M');
-            }
-            if (stripos($file->getClientMediaType(), 'jpeg') === false && stripos($file->getClientMediaType(), 'png') === false) {
-                throw new LogicException('请上传jpg或png图片logo');
-            }
-
-            $file->moveTo($filepath);
-            $result = Yii::getRpcClient()->call('minio.UploadFile', ['file_path' => $filepath]);
-            unlink($filepath);
-            break;
+        $filepath = '/tmp/' . $file->getClientFilename();
+        if ($file->getSize() > 1024 * 1024 * 50) {
+            throw new LogicException('文件不能超过50M');
+        }
+        if (stripos($file->getClientMediaType(), 'jpeg') === false && stripos($file->getClientMediaType(), 'png') === false) {
+            throw new LogicException('请上传jpg或png图片logo');
         }
 
-        //
-        // array(2) {
-        //         ["url"] => string(64) "/minio-default/2024/12/17/d41d8cd98f00b204e9800998ecf8427e/a.txt"
-        //         ["md5"] => string(32) "d41d8cd98f00b204e9800998ecf8427e"
-        // }
-        return $result;
+        $file->moveTo($filepath);
+        $storage = StorageService::saveLocal($filepath);
+        return $storage->get('hash');
     }
 
     public static function saveCallbackEventToken(CorpModel $corp, SaveCallbackEventTokenBaseDTO $dto)
@@ -241,6 +226,4 @@ class CorpService
             'callback_event_aes_key' => $dto->callbackEventAesKey,
         ]);
     }
-
-
 }

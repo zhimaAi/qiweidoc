@@ -5,17 +5,16 @@ namespace Modules\Main\Controller;
 
 use Common\Controller\BaseController;
 use Exception;
+use LogicException;
 use Modules\Main\DTO\Corp\InitCorpInfoBaseDTO;
 use Modules\Main\DTO\Corp\SaveCallbackEventTokenBaseDTO;
 use Modules\Main\DTO\Corp\SaveCorpInfoBaseDTO;
 use Modules\Main\DTO\Corp\UpdateCorpConfigBaseDTO;
-use Modules\Main\Enum\EnumUserRoleType;
 use Modules\Main\Model\CorpModel;
 use Modules\Main\Service\CorpService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
-use Yiisoft\Auth\Middleware\Authentication;
 use Yiisoft\DataResponse\DataResponse;
 
 class CorpController extends BaseController
@@ -53,8 +52,10 @@ class CorpController extends BaseController
      * @return DataResponse
      * @throws Throwable
      */
-    public function getBaseNameAndLogo(){
-       $result= CorpService::getBaseNameAndLogo();
+    public function getBaseNameAndLogo()
+    {
+        $result= CorpService::getBaseNameAndLogo();
+
         return $this->jsonResponse($result);
     }
 
@@ -63,6 +64,7 @@ class CorpController extends BaseController
      */
     public function getCurrentCorpInfo(ServerRequestInterface $request): ResponseInterface
     {
+        ddump('abc');
         return $this->jsonResponse($request->getAttribute(CorpModel::class));
     }
 
@@ -113,18 +115,6 @@ class CorpController extends BaseController
         return $this->jsonResponse();
     }
 
-
-    public function updateNameOrLogo(ServerRequestInterface $request): ResponseInterface
-    {
-        $currentCorpInfo = $request->getAttribute(CorpModel::class);
-
-        $updateCorpConfigDTO = new UpdateCorpConfigBaseDTO($request->getParsedBody());
-
-        CorpService::updateConfig($currentCorpInfo, $updateCorpConfigDTO);
-
-        return $this->jsonResponse();
-    }
-
     /**
      * 生成回调事件token
      *
@@ -158,7 +148,7 @@ class CorpController extends BaseController
      * @return ResponseInterface
      * @throws Throwable
      */
-    public function SaveNameOrLogo(ServerRequestInterface $request): ResponseInterface
+    public function saveNameOrLogo(ServerRequestInterface $request): ResponseInterface
     {
         $corp = $request->getAttribute(CorpModel::class);
 
@@ -174,13 +164,15 @@ class CorpController extends BaseController
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
-    public function UploadLogo(ServerRequestInterface $request): ResponseInterface
+    public function uploadLogo(ServerRequestInterface $request): ResponseInterface
     {
-        $corp = $request->getAttribute(CorpModel::class);
         $files = $request->getUploadedFiles();
-        $result= CorpService::uploadLogo($corp,$files );
+        if (count($files) == 0) {
+            throw new LogicException('请上传文件');
+        }
 
-        return $this->jsonResponse($result);
+        $url = CorpService::uploadLogo($files['file']);
+
+        return $this->jsonResponse(['url' => $url]);
     }
-
 }

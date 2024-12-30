@@ -38,7 +38,7 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { useStore } from 'vuex';
 import { Form, message } from 'ant-design-vue'
 import { DEFAULT_ZH_LOGO } from '@/constants/index'
-import AvatarInput from './avatar-input.vue'
+import AvatarInput from './components/avatar-input.vue'
 import {getCurrentCorp, setNameLogoSave, uploadImage} from "@/api/auth-login";
 
 const loading = ref(false)

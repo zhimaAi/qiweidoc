@@ -577,9 +577,9 @@ export function formatBytes(bytes) {
     return `${convertedSize}${sizes[i]}`;
 }
 
-export function  downloadFile(fileUr, filename="") {
+export function  downloadFile(fileUrl, filename="") {
     const x = new window.XMLHttpRequest();
-    x.open('GET', fileUr, true);
+    x.open('GET', fileUrl, true);
     x.responseType = 'blob';
     x.onload = () => {
         const url = window.URL.createObjectURL(x.response);
@@ -588,6 +588,12 @@ export function  downloadFile(fileUr, filename="") {
         a.download = filename;
         a.click();
     };
+    x.onerror = err => {
+        const a = document.createElement('a');
+        a.href = fileUrl;
+        a.download = filename;
+        a.click();
+    }
     x.send();
 }
 

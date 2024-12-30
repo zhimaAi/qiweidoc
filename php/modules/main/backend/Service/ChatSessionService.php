@@ -20,6 +20,7 @@ use Modules\Main\Model\CustomerTagModel;
 use Modules\Main\Model\DepartmentModel;
 use Modules\Main\Model\GroupModel;
 use Modules\Main\Model\StaffModel;
+use Modules\Main\Model\StorageModel;
 use Modules\Main\Model\UserModel;
 use Modules\Main\Model\UserReadChatDetailModel;
 use Throwable;
@@ -31,6 +32,17 @@ class ChatSessionService
 {
     //可以筛选的消息类型，文本，语音，文件，图片，音视频通话
     const FilterMsgType = ["text" => "text", "voice" => "voice", "file" => "file", "image" => "image", "voiptext" => ["voiptext", "meeting_voice_call"]];
+
+    //需要下载的文件类型
+    const ValidMediaType = [
+        'image',
+        'voice',
+        'video',
+        'emotion',
+        'file',
+        'meeting_voice_call',
+    ];
+
     /**
      *  按员工查询与客户的会话列表
      */
@@ -479,6 +491,11 @@ SQL;
             $query->andWhere(["ilike","msg_content",$params["msg_content"]]);
         }
 
+        //存在消息时间范围
+        if (!empty($params["msg_start_time"]) && !empty($params["msg_end_time"])){
+            $query->andWhere(["between","msg_time",$params["msg_start_time"],$params["msg_end_time"]]);
+        }
+
         // 分页获取聊天消息
         $result = $query->orderBy(['msg_time' => SORT_DESC])->paginate($page, $size);
         if ($result['items']->isEmpty()) {
@@ -523,13 +540,18 @@ SQL;
             }
         }
 
-        // 把相关员工、客户、群聊等信息拼接到消息列表中
+        // 把相关员工、客户、群聊、文件下载链接等信息拼接到消息列表中
         foreach ($result['items'] as $message) {
             /** @var ChatMessageModel $message */
             $message->set("msg_time", date("Y-m-d H:i:s", strtotime($message->get("msg_time"))));
 
             $message->append('from_detail', ($message->get('from') == $conversation->get('from') ? $fromDetail : $toDetail));
             $message->append('to_detail',  ($message->get('from') == $conversation->get('from') ? $toDetail : $fromDetail));
+
+            // 动态获取下载链接
+            if (in_array($message->get('msg_type'), self::ValidMediaType) && is_md5($message->get('msg_content'))) {
+                $message->append('msg_content', StorageService::getDownloadUrl($message->get('msg_content')));
+            }
         }
 
         //如果开启已读标记
@@ -581,6 +603,11 @@ SQL;
         //存在消息内容关键字搜索
         if (!empty($params["msg_content"])){
             $query->andWhere(["ilike","msg_content",$params["msg_content"]]);
+        }
+
+        //存在消息时间范围
+        if (!empty($params["msg_start_time"]) && !empty($params["msg_end_time"])){
+            $query->andWhere(["between","msg_time",$params["msg_start_time"],$params["msg_end_time"]]);
         }
 
         // 根据群聊查找所有相关的聊天记录
@@ -647,6 +674,7 @@ SQL;
         }
 
         // 把消息发送者信息拼接到结果集中
+        // 把消息发送者、文件下载链接等信息拼接到消息列表中
         foreach ($result['items'] as $message) {
             $message->set("msg_time", date("Y-m-d H:i:s", strtotime($message->get("msg_time"))));
             /** @var ChatMessageModel $message */
@@ -656,6 +684,11 @@ SQL;
             } elseif ($message->get('from_role') == EnumChatMessageRole::Staff) {
                 $t = $staffListMap[$message->get('from')] ?? [];
                 $message->append('from_detail', $t);
+            }
+
+            // 动态获取下载链接
+            if (in_array($message->get('msg_type'), self::ValidMediaType) && is_md5($message->get('msg_content'))) {
+                $message->append('msg_content', StorageService::getDownloadUrl($message->get('msg_content')));
             }
         }
 

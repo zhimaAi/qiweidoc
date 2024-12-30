@@ -45,4 +45,11 @@ return [
         'uri' => "tcp://" . $_ENV['REDIS_HOST'] . ":" . $_ENV['REDIS_PORT'],
         'password' => $_ENV['REDIS_PASSWORD'],
     ],
+
+    'local_storage' => [
+        'endpoint' => $_ENV['MINIO_ENDPOINT'] ?? 'http://minio:9000',
+        'region' => 'us-east-1',
+        'access_key' => $_ENV['MINIO_ACCESS_KEY'] ?? 'minioadmin',
+        'secret_key' => $_ENV['MINIO_SECRET_KEY'] ?? 'minioadmin',
+    ],
 ];

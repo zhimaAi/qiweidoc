@@ -29,9 +29,6 @@ $_ENV['YII_ENV'] = empty($_ENV['MODE']) ? 'dev' : $_ENV['MODE'];
 $_SERVER['YII_ENV'] = $_ENV['YII_ENV'];
 $_ENV['YII_DEBUG'] = $_SERVER['YII_DEBUG'] = $_ENV['YII_ENV'] == 'dev';
 
-// minio
-$_ENV['MINIO_URL'] = $_ENV['MINIO_URL'] ?? 'http://minio:9000';
-
 // redis配置
 $_ENV['REDIS_HOST'] = $_ENV['REDIS_HOST'] ?? 'redis';
 $_ENV['REDIS_PORT'] = $_ENV['REDIS_PORT'] ?? 6379;

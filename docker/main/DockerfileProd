@@ -40,6 +40,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # 安装composer
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 
+# minio客户端
+COPY docker/main/mc /usr/local/bin/mc
+RUN chmod +x /usr/local/bin/mc
+
 # 添加自定义加密扩展
 COPY docker/main/edl.so /usr/local/lib/php/extensions/no-debug-non-zts-20220829/
 RUN docker-php-ext-enable edl

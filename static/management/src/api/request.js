@@ -18,6 +18,7 @@ const showGlobalError = (content, type = 'error') => {
 }
 
 export const H5RequestHeader = {'H5-Special-Request': true}
+export const HideRequestErrorHeader = {'Custom-Handle-Error': true}
 
 const request = axios.create({
     headers: {
@@ -84,10 +85,12 @@ request.interceptors.response.use(
                 logoutHandle()
                 break
             default:
-                showGlobalError(res?.error_message || '网络连接出错');
+                if (!error?.config?.headers['Custom-Handle-Error']) {
+                    showGlobalError(res?.error_message || '网络连接出错');
+                }
                 break
         }
-        return Promise.reject(error)
+        return Promise.reject(res)
     }
 )
 export default request

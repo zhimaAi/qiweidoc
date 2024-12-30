@@ -34,8 +34,10 @@
     "require": {
         "php": "^8.2",
         "ext-curl": "*",
+        "ext-fileinfo": "*",
         "ext-openssl": "*",
         "ext-pdo": "*",
+        "aws/aws-sdk-php": "^3.336",
         "cebe/markdown": "^1.2@dev",
         "doctrine/collections": "^2.2",
         "filp/whoops": "^2.16",
