@@ -90,4 +90,9 @@ class Routes extends RouterProvider
             }),
         ];
     }
+
+    public function getMicroServiceRouters(): array
+    {
+        return [];
+    }
 }

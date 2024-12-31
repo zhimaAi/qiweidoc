@@ -1,35 +1,35 @@
 package main
 
 import (
-    "fmt"
-    "github.com/roadrunner-server/app-logger/v5"
-    "log/slog"
-    "os"
-    "os/signal"
-    "session_archive/golang/define"
-    "session_archive/golang/initialize"
-    "session_archive/golang/pkg/nats_util"
-    "session_archive/golang/plugins/common"
-    "session_archive/golang/plugins/cron"
-    "session_archive/golang/plugins/httpbatch"
-    "session_archive/golang/plugins/wxfinance"
-    "strings"
-    "syscall"
+	"fmt"
+	"github.com/roadrunner-server/app-logger/v5"
+	"log/slog"
+	"os"
+	"os/signal"
+	"session_archive/golang/define"
+	"session_archive/golang/initialize"
+	"session_archive/golang/pkg/nats_util"
+	"session_archive/golang/plugins/common"
+	"session_archive/golang/plugins/cron"
+	"session_archive/golang/plugins/httpbatch"
+	"session_archive/golang/plugins/wxfinance"
+	"strings"
+	"syscall"
 
-    "github.com/joho/godotenv"
-    "github.com/roadrunner-server/config/v5"
-    "github.com/roadrunner-server/endure/v2"
-    "github.com/roadrunner-server/gzip/v5"
-    "github.com/roadrunner-server/headers/v5"
-    httpPlugin "github.com/roadrunner-server/http/v5"
-    "github.com/roadrunner-server/jobs/v5"
-    "github.com/roadrunner-server/nats/v5"
-    "github.com/roadrunner-server/rpc/v5"
-    "github.com/roadrunner-server/server/v5"
-    "github.com/roadrunner-server/service/v5"
-    "github.com/roadrunner-server/static/v5"
-    "github.com/shellphy/logger/v5"
-    "github.com/spf13/cast"
+	"github.com/joho/godotenv"
+	"github.com/roadrunner-server/config/v5"
+	"github.com/roadrunner-server/endure/v2"
+	"github.com/roadrunner-server/gzip/v5"
+	"github.com/roadrunner-server/headers/v5"
+	httpPlugin "github.com/roadrunner-server/http/v5"
+	"github.com/roadrunner-server/jobs/v5"
+	"github.com/roadrunner-server/nats/v5"
+	"github.com/roadrunner-server/rpc/v5"
+	"github.com/roadrunner-server/server/v5"
+	"github.com/roadrunner-server/service/v5"
+	"github.com/roadrunner-server/static/v5"
+	"github.com/shellphy/logger/v5"
+	"github.com/spf13/cast"
 )
 
 var (
@@ -53,7 +53,7 @@ func startEndureApp() error {
 	define.RpcPort = cast.ToUint(os.Getenv(`MODULE_RPC_PORT`))
 
 	// 向nats注册服务
-	if err := nats_util.RegisterNatsService(define.NatsConn, name, version, description, metadata); err != nil {
+	if err := nats_util.RegisterNatsService(define.NatsConn, name+"_temp", version, description, metadata); err != nil {
 		panic(err)
 	}
 

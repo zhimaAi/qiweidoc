@@ -28,9 +28,9 @@ abstract class RouterProvider
 
         return glob("{$modulesPath}/{$currentModule}/proto/*.proto");
     }
-    
+
     abstract public function init(): void;
-    
+
     abstract public function getBroadcastRouters(): array;
 
     abstract public function getHttpRouters(): array;
@@ -38,4 +38,6 @@ abstract class RouterProvider
     abstract public function getConsoleRouters(): array;
 
     abstract public function getConsumerRouters(): array;
+
+    abstract public function getMicroServiceRouters(): array;
 }

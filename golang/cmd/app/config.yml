@@ -40,3 +40,8 @@ service:
     service_name_in_logs: true
     remain_after_exit: false
 
+  micro-service:
+    command: php php/yii micro-service
+    service_name_in_logs: true
+    remain_after_exit: true
+

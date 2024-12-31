@@ -65,4 +65,9 @@ class Routes extends RouterProvider
                 ->action(RuleRunConsumer::class),
         ];
     }
+
+    public function getMicroServiceRouters(): array
+    {
+        return [];
+    }
 }

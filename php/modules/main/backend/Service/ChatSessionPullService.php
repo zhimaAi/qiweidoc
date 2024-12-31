@@ -169,7 +169,7 @@ class ChatSessionPullService
             'file_extension'                => $fileExtension,
             'mime_type'                     => $fileInfo['mime'] ?? '',
             'file_size'                     => $fileInfo['size'] ?? 0,
-            'local_storage_bucket'          => 'session-bucket',
+            'local_storage_bucket'          => StorageModel::SESSION_BUCKET,
             'local_storage_object_key'      => $objectKey,
             'local_storage_expired_at'      => $retentionDays > 0 ? Carbon::now()->addDays($retentionDays)->toDateTimeString('m') : null,
         ]);

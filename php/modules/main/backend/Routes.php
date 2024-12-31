@@ -34,6 +34,7 @@ use Modules\Main\Library\Middlewares\CurrentCorpInfoMiddleware;
 use Modules\Main\Library\Middlewares\UserRoleMiddleware;
 use Modules\Main\Library\Middlewares\WxAuthMiddleware;
 use Modules\Main\Controller\WxController;
+use Modules\Main\Micro\TestController;
 use Modules\Main\Service\StorageService;
 use Modules\Main\Service\UserService;
 use Psr\Http\Message\ServerRequestInterface;
@@ -235,6 +236,13 @@ class Routes extends RouterProvider
                     Route::put('/chats/join/collect')->action([ChatController::class, 'joinCollect']),
                     Route::put('/chats/cancel/collect')->action([ChatController::class, 'cancelCollect']),
                 ),
+        ];
+    }
+
+    public function getMicroServiceRouters(): array
+    {
+        return [
+            'test' => TestController::class,
         ];
     }
 }

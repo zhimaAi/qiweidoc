@@ -7,6 +7,7 @@
 
 namespace Common;
 
+use Basis\Nats\Client;
 use EasyWeChat\Kernel\Exceptions\InvalidArgumentException;
 use EasyWeChat\Work\Application;
 use Predis\ClientInterface;
@@ -154,5 +155,10 @@ final class Yii
         $app->getAccessToken();
 
         return $app;
+    }
+
+    public static function getNatsClient()
+    {
+        return self::getContainer()->get(Client::class);
     }
 }

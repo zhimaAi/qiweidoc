@@ -38,6 +38,7 @@
         "ext-openssl": "*",
         "ext-pdo": "*",
         "aws/aws-sdk-php": "^3.336",
+        "basis-company/nats": "^1.0",
         "cebe/markdown": "^1.2@dev",
         "doctrine/collections": "^2.2",
         "filp/whoops": "^2.16",
@@ -103,7 +104,8 @@
         "yiisoft/yii-middleware": "^1.0",
         "yiisoft/yii-runner-console": "^2.0",
         "yiisoft/yii-runner-http": "^2.0",
-        "yiisoft/yii-runner-roadrunner": "^3.0"
+        "yiisoft/yii-runner-roadrunner": "^3.0",
+        "ext-pcntl": "*"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.64"

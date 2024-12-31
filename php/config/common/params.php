@@ -52,4 +52,8 @@ return [
         'access_key' => $_ENV['MINIO_ACCESS_KEY'] ?? 'minioadmin',
         'secret_key' => $_ENV['MINIO_SECRET_KEY'] ?? 'minioadmin',
     ],
+
+    'nats-server' => [
+        'endpoint' => $_ENV['NATS_ENDPOINT'] ?? 'tcp://nats:4222',
+    ],
 ];

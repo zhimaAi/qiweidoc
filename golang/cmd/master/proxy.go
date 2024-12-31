@@ -80,7 +80,7 @@ func startFiberProxy() error {
 			}
 
 			// 从nats获取服务信息
-			info, err := nats_util.GetNatsServiceInfo(define.NatsConn, parts[0])
+			info, err := nats_util.GetNatsServiceInfo(define.NatsConn, parts[0]+"_temp")
 			if err != nil {
 				return c.Status(404).SendString("Module not found")
 			}
@@ -101,7 +101,7 @@ func startFiberProxy() error {
 			return proxy.Do(c, targetURL)
 		} else {
 			// 默认是main模块
-			info, err := nats_util.GetNatsServiceInfo(define.NatsConn, "main")
+			info, err := nats_util.GetNatsServiceInfo(define.NatsConn, "main_temp")
 			if err != nil {
 				return c.Status(404).SendString("Module main not found")
 			}

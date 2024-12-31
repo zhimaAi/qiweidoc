@@ -62,11 +62,25 @@ class StorageService
     {
         $s3Client = self::getLocalS3Client();
         foreach (StorageModel::LOCAL_BUCKET_LIST as $bucket) {
-            if ($s3Client->doesBucketExist($bucket)) {
-                continue;
+            if (!$s3Client->doesBucketExist($bucket)) {
+                $s3Client->createBucket([
+                    'Bucket' => $bucket,
+                ]);
             }
-            $s3Client->createBucket([
+            $s3Client->putBucketPolicy([
                 'Bucket' => $bucket,
+                'Policy' => json_encode([
+                    'Version' => '2012-10-17',
+                    'Statement' => [
+                        [
+                            'Sid' => 'PublicReadGetObject',
+                            'Effect' => 'Allow',
+                            'Principal' => '*',
+                            'Action' => ['s3:GetObject'],
+                            'Resource' => ["arn:aws:s3:::$bucket/*"]
+                        ]
+                    ]
+                ])
             ]);
         }
     }

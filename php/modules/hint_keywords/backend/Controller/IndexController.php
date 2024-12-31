@@ -13,7 +13,7 @@ use Yiisoft\Auth\Middleware\Authentication;
 
 /**
  * @author rand
- * @ClassName IndexController
+ * @ClassName TestController
  * @date 2024/12/314:40
  * @description
  */

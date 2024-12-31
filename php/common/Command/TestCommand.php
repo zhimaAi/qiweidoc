@@ -3,9 +3,8 @@
 
 namespace Common\Command;
 
-use Aws\S3\S3Client;
-use Modules\Main\Model\StorageModel;
-use Modules\Main\Service\StorageService;
+use Basis\Nats\Message\Payload;
+use Common\Yii;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,6 +16,10 @@ final class TestCommand extends Command
 {
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        Yii::getNatsClient()->request('main.test', 'hello', function (Payload $response) {
+            ddump($response->body);
+        });
+
         return ExitCode::OK;
     }
 }
