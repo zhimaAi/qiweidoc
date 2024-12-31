@@ -35,13 +35,13 @@ export default [
         component: () => import('../views/authorizedAccess/auth.vue')
     },
     {
-        path: '/module/group-chat-stat/index',
+        path: '/module/chat-statistic-group/index',
         name: 'GroupChatStatIndex',
-        component: () => import('@/views/Modules/group_chat_stat/index.vue')
+        component: () => import('@/views/Modules/chat_statistic_group/index.vue')
     },
     {
-        path: '/module/group-chat-stat/rule',
+        path: '/module/chat-statistic-group/rule',
         name: 'GroupChatStatRule',
-        component: () => import('@/views/Modules/group_chat_stat/rule.vue')
+        component: () => import('@/views/Modules/chat_statistic_group/rule.vue')
     },
 ]

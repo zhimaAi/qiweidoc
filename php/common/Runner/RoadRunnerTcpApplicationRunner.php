@@ -1,5 +1,5 @@
 <?php
-// Copyright © 2016- 2024 Sesame Network Technology all right reserved
+// Copyright © 2016- 2025 Sesame Network Technology all right reserved
 
 declare(strict_types=1);
 
@@ -115,7 +115,7 @@ final class RoadRunnerTcpApplicationRunner extends ApplicationRunner
                 gc_mem_caches();
             }
         }
-        
+
         $application->shutdown(0);
     }
 }

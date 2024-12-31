@@ -5,7 +5,7 @@
                 <div class="zm-flex-between">
                     <div class="title">
                         <template v-if="!chatInfo">加载中...</template>
-                        <template v-else-if="chatInfo?.receiver?.zm_user_type === 'GROUP'">
+                        <template v-else-if="chatInfo?.receiver?.zm_user_type === 'GROUP' || chatInfo?.receiver?.zm_user_type === 'GROUP_CHAT'">
                             <ChatCollection
                                 @changeCollect="changeCollectFn"
                                 :currentMsgCancelCollect="currentMsgCancelCollect"

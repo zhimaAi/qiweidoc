@@ -22,16 +22,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends make
 RUN go env -w GOPROXY=https://goproxy.cn,direct && make app && make master
 
 # 构建最终镜像
-FROM php:8.2.26-cli-bookworm
+FROM php:8.2.27-cli-bookworm
 
 # 安装常用扩展
 RUN apt-get update && apt-get install -y --no-install-recommends \
    procps vim tzdata make unzip libpq-dev libzip-dev libpng-dev libmagickwand-dev zlib1g-dev \
    && ln -fs /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
    && dpkg-reconfigure -f noninteractive tzdata \
-   && docker-php-ext-install pdo_pgsql bcmath gd zip sockets \
+   && docker-php-ext-install pdo_pgsql bcmath gd zip sockets pcntl \
    && pecl install imagick igbinary msgpack\
-   && docker-php-ext-enable imagick igbinary msgpack \
+   && docker-php-ext-enable imagick igbinary msgpack pcntl \
    && apt-get clean \
    && rm -rf /var/lib/apt/lists/* \
    && rm -rf /tmp/pear \

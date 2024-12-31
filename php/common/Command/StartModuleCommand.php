@@ -1,6 +1,6 @@
 <?php
 
-// Copyright © 2016- 2024 Sesame Network Technology all right reserved
+// Copyright © 2016- 2025 Sesame Network Technology all right reserved
 
 declare(strict_types=1);
 
@@ -44,9 +44,6 @@ class StartModuleCommand extends Command
             // 创建数据库schema
             $output->writeln("给模块{$moduleName}创建独立的schema");
             $this->createSchema($moduleName);
-
-            // 修复由于某些未知原因导致表拥有者不是指定模块名的问题
-            $this->resetTableOwner($moduleName);
 
             // 获取模块禁用状态
             $cacheKey = Module::getModuleRunningCacheKey($moduleName);
@@ -115,26 +112,6 @@ class StartModuleCommand extends Command
 SQL;
         Yii::db()->createCommand($sql)->execute();
     }
-
-    private function resetTableOwner(string $moduleName)
-    {
-        $sql = <<<SQL
-DO $$
-DECLARE
-    cmd text;
-BEGIN
-    FOR cmd IN
-        SELECT 'ALTER TABLE ' || quote_ident(schemaname) || '.' || quote_ident(tablename) || ' OWNER TO {$moduleName};'
-        FROM pg_tables
-        WHERE schemaname = '{$moduleName}'
-    LOOP
-        EXECUTE cmd;
-    END LOOP;
-END $$;
-SQL;
-        Yii::db()->createCommand($sql)->execute();
-    }
-
 
      /**
      * 获取指定模块的配置信息

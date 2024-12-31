@@ -13,8 +13,8 @@ const ModuleConfig = {
     single_chat_stat: {
         buildOutputPath: '/php/modules/single_chat_stat/public/build/',
     },
-    group_chat_stat: {
-        buildOutputPath: '/php/modules/group_chat_stat/public/build/',
+    chat_statistic_group: {
+        buildOutputPath: '/php/modules/chat_statistic_group/public/build/',
     },
     timeout_reply_single: {
         buildOutputPath: '/php/modules/timeout_reply_single/public/build/',

@@ -1,5 +1,5 @@
 <?php
-// Copyright © 2016- 2024 Sesame Network Technology all right reserved
+// Copyright © 2016- 2025 Sesame Network Technology all right reserved
 
 use Carbon\Carbon;
 use Yiisoft\Db\Migration\MigrationBuilder;
@@ -208,4 +208,41 @@ function isWeChatEmoji(string $content): bool
 function is_md5($string)
 {
     return ctype_xdigit($string) && strlen($string) == 32;
+}
+
+
+
+/**
+ * @param $time_range
+ * @param $msg_timestamp
+ * Notes: 验证消息时间是否在工作时间内
+ * User: rand
+ * Date: 2024/12/20 15:26
+ * @return bool
+ */
+function checkMsgInWorkTime($time_range, $msg_timestamp): bool
+{
+    $msg_time = strtotime($msg_timestamp);
+    if (empty($time_range)) {
+        return false;
+    }
+
+    $w = date("w", $msg_time);
+    $H = date("H:i", $msg_time);
+    foreach ($time_range as $i => $one) {
+        $week = $one["week"] ?? [];
+        $range = $one["range"] ?? [];
+
+        if (!in_array($w, $week)) {
+            continue;
+        }
+        foreach ($range as $ii => $v) {
+            $s = $v["s"] ?? 0;
+            $e = $v["e"] ?? 0;
+            if ($H >= $s and $H <= $e) {
+                return true;
+            }
+        }
+    }
+    return false;
 }

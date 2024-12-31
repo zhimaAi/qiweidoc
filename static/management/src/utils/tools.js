@@ -433,7 +433,7 @@ export function assignData(target = {}, source = {}) {
                 if (Array.isArray(target[key]) && typeof source[key] === "string") {
                     target[key] = source[key].split(",").filter(i => i)
                 } else {
-                    target[key] = source[key]
+                    target[key] = source[key] || target[key]
                 }
                 break
             case "number":

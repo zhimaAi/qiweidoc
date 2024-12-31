@@ -74,7 +74,7 @@
                                 :precision="0"
                                 :min="0"
                                 style="width: 100px;"
-                                placeholder="请输入Bucket"/>
+                                placeholder="请输入"/>
                             <span class="ml8">天</span>
                         </div>
                         <div class="zm-tip-info mt8">

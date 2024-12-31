@@ -73,11 +73,11 @@ class StorageService
                     'Version' => '2012-10-17',
                     'Statement' => [
                         [
-                            'Sid' => 'PublicReadGetObject',
+                            'Sid' => 'PublicRead',
                             'Effect' => 'Allow',
                             'Principal' => '*',
                             'Action' => ['s3:GetObject'],
-                            'Resource' => ["arn:aws:s3:::$bucket/*"]
+                            'Resource' => ["arn:aws:s3:::$bucket/*"],
                         ]
                     ]
                 ])
@@ -90,7 +90,7 @@ class StorageService
      *
      * @throws Throwable
      */
-    public static function saveLocal(string $filePath, string $bucketName = 'default-bucket', ?int $preserveSeconds = 0): StorageModel
+    public static function saveLocal(string $filePath, string $bucketName = StorageModel::DEFAULT_BUCKET, ?int $preserveSeconds = 0): StorageModel
     {
         if (! file_exists($filePath)) {
             throw new Exception("文件{$filePath}不存在");

@@ -50,22 +50,30 @@ func startFiberProxy() error {
 			targetUrl := minioUrl + path
 
 			// 创建一个新的请求
-			req := c.Request()
+			req := fasthttp.AcquireRequest()
+			defer fasthttp.ReleaseRequest(req)
 			req.SetRequestURI(targetUrl)
+			req.SetBody(c.Body())
 
 			// 发送请求到 MinIO
 			res := c.Response()
 			client := &fasthttp.Client{}
 			if err := client.Do(req, res); err != nil {
+				log.Printf("Proxy error: %v\n", err)
+				log.Printf("Target URL: %s\n", targetUrl)
 				return c.Status(fiber.StatusInternalServerError).SendString("Proxy Error")
 			}
 
-			// 移除或修改可能导致问题的头部
-			res.Header.Del("Location")
-			res.Header.Del("Content-Disposition")
-			res.Header.Del("Server")
+			// 复制响应头部
+			res.Header.VisitAll(func(key, value []byte) {
+				c.Response().Header.SetBytesKV(key, value)
+			})
 
-			return nil
+			// 设置状态码
+			c.Status(res.StatusCode())
+
+			// 写入响应体
+			return c.Send(res.Body())
 		}
 
 		if strings.HasPrefix(c.Path(), "/ws") {

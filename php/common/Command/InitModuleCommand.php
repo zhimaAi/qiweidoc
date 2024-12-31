@@ -1,6 +1,6 @@
 <?php
 
-// Copyright © 2016- 2024 Sesame Network Technology all right reserved
+// Copyright © 2016- 2025 Sesame Network Technology all right reserved
 
 declare(strict_types=1);
 
@@ -24,6 +24,9 @@ class InitModuleCommand extends Command
         $module = Module::getCurrentModuleName();
         $this->dbMigrate($module);
 
+        // 修复由于某些未知原因导致表拥有者不是指定模块名的问题
+        $this->resetTableOwner($module);
+
         $output->writeln("执行模块初始化方法");
         Module::getRouterProvider()->init();
 
@@ -43,9 +46,25 @@ class InitModuleCommand extends Command
             ])
         );
 
-
-
-
         $process->mustRun();
+    }
+
+    private function resetTableOwner(string $moduleName)
+    {
+        $sql = <<<SQL
+DO $$
+DECLARE
+    cmd text;
+BEGIN
+    FOR cmd IN
+        SELECT 'ALTER TABLE ' || quote_ident(schemaname) || '.' || quote_ident(tablename) || ' OWNER TO {$moduleName};'
+        FROM pg_tables
+        WHERE schemaname = '{$moduleName}'
+    LOOP
+        EXECUTE cmd;
+    END LOOP;
+END $$;
+SQL;
+        Yii::db()->createCommand($sql)->execute();
     }
 }

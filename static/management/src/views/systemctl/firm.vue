@@ -68,7 +68,8 @@ const open = ref(false)
 const onAvatarChange = (formData) => {
   uploadImage(formData).then((res) => {
     if (res.status == 'success') {
-      formState.logo = res.data.url
+      // res.data.url 拿不到图片，用本地的
+      formState.logo = URL.createObjectURL(formData.get('file')) || DEFAULT_ZH_LOGO
     }
     res.error_message && message.error(res.error_message)
   })
