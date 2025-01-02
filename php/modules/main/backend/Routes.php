@@ -9,6 +9,7 @@ use Common\RouterProvider;
 use Common\Yii;
 use Modules\Main\Consumer\DownloadChatSessionBitMediasConsumer;
 use Modules\Main\Consumer\DownloadChatSessionMediasConsumer;
+use Modules\Main\Consumer\MarkTagConsumer;
 use Modules\Main\Consumer\QwOpenPushConsumer;
 use Modules\Main\Consumer\RemoveExpiredLocalFilesConsumer;
 use Modules\Main\Consumer\SendEmailConsumer;
@@ -72,6 +73,12 @@ class Routes extends RouterProvider
             Broadcast::event('test')->from('main')->handle(function (string $payload) {
 
             }),
+            Broadcast::event('mark_tag')->from('keywords_tagging')->handle(function (string $payload) {
+                //关键词打标签 消费者
+                if (!empty($payload)){
+                    Producer::dispatch(MarkTagConsumer::class, ['taskMsg'=>$payload,'defaultSource'=>'keywords_tagging']);
+                }
+            }),
         ];
     }
 
@@ -102,6 +109,7 @@ class Routes extends RouterProvider
             Consumer::name("download_session_medias")->count(2)->action(DownloadChatSessionBitMediasConsumer::class)->reserveOnStop(),
             Consumer::name("download_session_big_medias")->count(1)->action(DownloadChatSessionMediasConsumer::class)->reserveOnStop(),
             Consumer::name("remove_expired_local_files")->count(1) ->action(RemoveExpiredLocalFilesConsumer::class),
+            Consumer::name("mark_tag")->count(1)->action(MarkTagConsumer::class)
         ];
     }
 

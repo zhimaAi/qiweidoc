@@ -8,5 +8,5 @@ export default [
         path: '/sessionArchive/search',
         name: 'sessionArchiveSearch',
         component: () => import('../views/sessionArchive/search.vue')
-    },
+    }
 ]

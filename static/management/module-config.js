@@ -7,6 +7,9 @@ const ModuleConfig = {
     main: {
         buildOutputPath: '/php/modules/main/public/build/',
     },
+    keywords_tagging: {
+        buildOutputPath: '/php/modules/keywords_tagging/public/build/',
+    },
     hint_keywords: {
         buildOutputPath: '/php/modules/hint_keywords/public/build/',
     },

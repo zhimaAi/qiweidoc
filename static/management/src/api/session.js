@@ -1,5 +1,33 @@
 import request from "@/api/request";
 
+export const taskLogList = data => {
+    return request.get("/modules/keywords_tagging/api/task/log/list", {params: data})
+}
+
+export const taskStatistics = data => {
+    return request.get("/modules/keywords_tagging/api/task/statistics", {params: data})
+}
+
+export const taskDelete = (data = {}) => {
+    return request.put('/modules/keywords_tagging/api/task/delete', data)
+}
+
+export const taskChangeSwitch = (data = {}) => {
+    return request.put('/modules/keywords_tagging/api/task/change/switch', data)
+}
+
+export const taskSave = (data) => {
+    return request.post("/modules/keywords_tagging/api/task/save", data)
+}
+
+export const taskInfo = data => {
+    return request.get("/modules/keywords_tagging/api/task/info", {params: data})
+}
+
+export const taskList = data => {
+    return request.get("/modules/keywords_tagging/api/task/list", {params: data})
+}
+
 export const conversationList = data => {
     return request.get("/api/chats/by/collect/customer/conversation/list", {params: data})
 }

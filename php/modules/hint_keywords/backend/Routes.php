@@ -64,7 +64,6 @@ class Routes extends RouterProvider
 
     public function init(): void
     {
-        // TODO: Implement init() method.
         $corp = CorpModel::query()->getOne();
         Producer::dispatchCron(StatisticsHintConsumer::class, ["corp" => $corp], '30 seconds');//敏感词触发统计，30秒一次
 
@@ -73,8 +72,6 @@ class Routes extends RouterProvider
 
     public function getBroadcastRouters(): array
     {
-        // TODO: Implement getBroadcastRouters() method.
-
         return [
             Broadcast::event('module_enable')->from('main')->handle(function (string $payload) {
                 $msgData = json_decode($payload, true);

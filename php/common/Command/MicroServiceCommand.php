@@ -2,6 +2,7 @@
 
 namespace Common\Command;
 
+use Basis\Nats\Message\Payload;
 use Basis\Nats\Service\Service;
 use Common\Module;
 use Common\Yii;
@@ -9,10 +10,19 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Yiisoft\Router\RouteCollectionInterface;
 
 #[AsCommand(name: 'micro-service', description: '测试命令', hidden: false)]
 class MicroServiceCommand extends Command
 {
+    private RouteCollectionInterface $routeCollection;
+
+    public function __construct(RouteCollectionInterface $routeCollection, ?string $name = null)
+    {
+        $this->routeCollection = $routeCollection;
+        parent::__construct($name);
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         pcntl_signal(SIGTERM, [$this, 'signalHandler']);
@@ -26,7 +36,6 @@ class MicroServiceCommand extends Command
         foreach ($routers as $name => $handler) {
             $group->addEndpoint($name, $handler);
         }
-
         $micro->client->logger->info("{$serviceName} is ready to accept connections\n");
         while (true) {
             try {

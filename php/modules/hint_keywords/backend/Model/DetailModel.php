@@ -25,14 +25,11 @@ class DetailModel extends BaseModel
 
     public function getTableName(): string
     {
-        // TODO: Implement getTableName() method.
         return "hint_keywords.detail";
     }
 
     protected function casts(): array
     {
-        // TODO: Implement casts() method.
-
         return [
             "created_at" => 'string',
             "updated_at" => 'string',

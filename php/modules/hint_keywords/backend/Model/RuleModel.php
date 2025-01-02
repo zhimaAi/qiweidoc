@@ -17,14 +17,11 @@ class RuleModel extends BaseModel
 
     public function getTableName(): string
     {
-        // TODO: Implement getTableName() method.
         return "hint_keywords.rule";
     }
 
     protected function casts(): array
     {
-        // TODO: Implement casts() method.
-
         return [
             "id" => 'int',
             "created_at" => 'string',

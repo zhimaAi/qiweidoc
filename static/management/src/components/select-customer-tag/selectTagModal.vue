@@ -298,8 +298,8 @@ defineExpose({
 
 <style scoped lang="less">
 .zm-cst-tag-modal {
-    max-height: 70vh;
-    min-height: 500px;
+    max-height: 60vh;
+    min-height: 380px;
     overflow-y: auto;
 
     :deep(.ant-checkbox-group) {
