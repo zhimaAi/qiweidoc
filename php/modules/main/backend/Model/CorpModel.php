@@ -7,6 +7,7 @@
 
 namespace Modules\Main\Model;
 
+use Basis\Nats\Message\Payload;
 use Common\DB\BaseModel;
 use Common\Yii;
 use Exception;
@@ -258,6 +259,10 @@ class CorpModel extends BaseModel
             $request['params'] = $params;
         }
 
-        return Yii::getRpcClient()->call('httpbatch.Request', $input);
+        $result = [];
+        Yii::getNatsClient(30)->request('httpbatch.Request', json_encode($input), function (Payload $payload) use (&$result) {
+            $result = json_decode($payload->body, true);
+        });
+        return $result;
     }
 }

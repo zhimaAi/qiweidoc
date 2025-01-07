@@ -31,9 +31,14 @@ return [
     ],
 
     'yiisoft/db-migration' => [
-        'sourcePaths' => ["modules/" . Module::getCurrentModuleName() . "/migration"],
-        'newMigrationPath' => "modules/" . Module::getCurrentModuleName() . "/migration",
+        'sourcePaths' => [__DIR__ . "/../../modules/" . Module::getCurrentModuleName() . "/migration"],
+        'newMigrationPath' => __DIR__ . "/../../modules/" . Module::getCurrentModuleName() . "/migration",
         'historyTable' => Module::getCurrentModuleName() . ".migration",
+    ],
+
+    'yiisoft/cache-redis' => [
+        'uri' => "tcp://" . $_ENV['REDIS_HOST'] . ":" . $_ENV['REDIS_PORT'],
+        'password' => $_ENV['REDIS_PASSWORD'],
     ],
 
     'predis' => [
@@ -41,10 +46,7 @@ return [
         'password' => $_ENV['REDIS_PASSWORD'],
     ],
 
-    'yiisoft/cache-redis' => [
-        'uri' => "tcp://" . $_ENV['REDIS_HOST'] . ":" . $_ENV['REDIS_PORT'],
-        'password' => $_ENV['REDIS_PASSWORD'],
-    ],
+    'module_host' => $_ENV['MODULE_HOST'] ?? 'https://zmwk.cn',
 
     'local_storage' => [
         'endpoint' => $_ENV['MINIO_ENDPOINT'] ?? 'http://minio:9000',

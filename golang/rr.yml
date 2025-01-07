@@ -1,0 +1,71 @@
+version: "3"
+
+logs:
+  mode: production
+  level: info
+  encoding: console
+  use_local_time: true
+  output: stderr
+  err_output: stderr
+  show_caller: false
+
+server:
+  command: php php/yii
+  num_workers: 1
+  allocate_timeout: 2s
+  dynamic_allocator:
+    max_workers: 10
+    spawn_rate: 1
+    idle_timeout: 5s
+
+http:
+  access_logs: true
+  max_request_size: 100 # HTTP请求队列超过100个就丢弃，防止服务器压力过大
+  pool:
+    max_jobs: 100   # 单个worker最大处理请求数,超过后重启
+    supervisor:
+      max_worker_memory: 128 # 当进程使用内存超过128MB后自动重启(不会终止正在处理的请求)
+      ttl: 300s # 每隔5分钟自动重启进程（不会终止正在处理的请求）
+      exec_ttl: 30s  # 请求最长执行时间为30秒，超过就自动重启进程以便结束请求
+  middleware: ["headers", "gzip", "static"]
+  uploads:
+    dir: "/tmp"
+    forbid: [".php", ".exe", ".bat", ".sh"]
+    allow: [".png", ".jpeg", ".jpg", ".svg", ".txt"]
+  headers:
+    response:
+      "Cache-Control": "no-cache"
+  static:
+    forbid: [ ".php", ".htaccess" ]
+    calculate_etag: true
+    weak: false
+
+jobs:
+  pool:
+    command: php php/yii
+    num_workers: 1
+    dynamic_allocator:
+      max_workers: 15
+      spawn_rate: 2
+      idle_timeout: 5s
+
+micro:
+  pool:
+    command: php php/yii
+
+broadcast:
+  pool:
+    command: php php/yii
+
+cron:
+  pool:
+    command: php php/yii
+
+# 管理进程的插件
+service:
+  # 一次性脚本: 模块启动后初始化任务
+  init-module:
+    command: php php/yii init-module
+    service_name_in_logs: true
+    remain_after_exit: false
+

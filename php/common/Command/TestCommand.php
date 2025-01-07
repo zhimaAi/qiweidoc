@@ -3,7 +3,6 @@
 
 namespace Common\Command;
 
-use Basis\Nats\Message\Payload;
 use Common\Yii;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -16,9 +15,6 @@ final class TestCommand extends Command
 {
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        Yii::getNatsClient()->request('main.test', 'hello', function (Payload $response) {
-            ddump($response->body);
-        });
 
         return ExitCode::OK;
     }

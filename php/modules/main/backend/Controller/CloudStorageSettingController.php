@@ -3,6 +3,7 @@
 namespace Modules\Main\Controller;
 
 use Common\Controller\BaseController;
+use Common\Controller\PublicController;
 use Common\Yii;
 use Exception;
 use LogicException;
@@ -18,10 +19,11 @@ use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 use Yiisoft\Auth\Middleware\Authentication;
 use Yiisoft\DataResponse\DataResponse;
+use Yiisoft\Router\RouteCollectionInterface;
 
 class CloudStorageSettingController extends BaseController
 {
-    public function show(ServerRequestInterface $request)
+    public function show(ServerRequestInterface $request, RouteCollectionInterface $collection)
     {
         $result = CloudStorageSettingModel::query()->orderBy(['id' => SORT_DESC])->getOne()?->toArray() ?: [];
         $result['local_session_file_retention_days'] = (int)SettingModel::getValue('local_session_file_retention_days') ?: 0;

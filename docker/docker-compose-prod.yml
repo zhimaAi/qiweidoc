@@ -14,9 +14,9 @@ volumes:
 
 services:
   db:
-    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/chat_session_archive_db:latest
+    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/qiweidoc_db:latest
     restart: always
-    shm_size: 256mb
+    shm_size: 1024mb
     command: "postgres -c 'config_file=/etc/postgresql/postgresql.conf'"
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
@@ -25,15 +25,9 @@ services:
       - pg_data:/var/lib/postgresql/data
     ports:
       - 127.0.0.1:${EXTERNAL_DB_PORT:-5432}:5432
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-        reservations:
-          memory: 256M
 
   redis:
-    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/chat_session_archive_redis:latest
+    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/qiweidoc_redis:latest
     command: [ "redis-server", "/etc/redis/redis.conf" ]
     restart: always
     environment:
@@ -48,7 +42,7 @@ services:
           memory: 64M
 
   minio:
-    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/chat_session_archive_minio:latest
+    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/qiweidoc_minio:latest
     command: "server /data"
     environment:
       TZ: Asia/Shanghai
@@ -63,7 +57,7 @@ services:
           memory: 256M
 
   nats:
-    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/chat_session_archive_nats:latest
+    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/qiweidoc_nats:latest
     command: "-js -c /etc/nats/nats-server.conf"
     restart: always
     environment:
@@ -77,8 +71,22 @@ services:
         reservations:
           memory: 128M
 
+  wxfinance:
+    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/qiweidoc_wxfinance:latest
+    restart: always
+    environment:
+      TZ: Asia/Shanghai
+
+  httpbatch:
+    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/qiweidoc_httpbatch:latest
+    restart: always
+    environment:
+      TZ: Asia/Shanghai
+    depends_on:
+      - nats
+
   main:
-    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/chat_session_archive_main_prod:latest
+    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/qiweidoc_main_prod:latest
     restart: always
     logging:
       options:

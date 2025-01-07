@@ -1,0 +1,7 @@
+#!/usr/bin/env php
+<?php
+// Copyright © 2016- 2025 Sesame Network Technology all right reserved
+
+require __DIR__ . '/../../autoload.php';
+
+runModule('main');

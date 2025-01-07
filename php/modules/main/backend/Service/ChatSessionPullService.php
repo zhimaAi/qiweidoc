@@ -7,6 +7,7 @@
 
 namespace Modules\Main\Service;
 
+use Basis\Nats\Message\Payload;
 use Carbon\Carbon;
 use Common\Broadcast;
 use Common\Job\Producer;
@@ -89,7 +90,12 @@ class ChatSessionPullService
             }
 
             // 广播
-            Broadcast::event('chat-session-pull')->send(json_encode([$messageData->toArray()]));
+            Broadcast::event('chat-session-pull')->send(json_encode([
+                'msg_id' => $messageData->get('id'),
+                'msg_type' => $messageData->get('msg_type'),
+                'from_role' => $messageData->get('from_role'),
+                'to_role' => $messageData->get('to_role'),
+            ]));
         }
 
         // 更新消息序号
@@ -160,7 +166,10 @@ class ChatSessionPullService
             'storage_bucket_name' => StorageModel::SESSION_BUCKET,
             'storage_object_key' => $objectKey,
         ];
-        $fileInfo = Yii::getRpcClient()->call('wxfinance.FetchAndDownloadMediaData', $request);
+        $fileInfo = [];
+        Yii::getNatsClient()->request('wxfinance.FetchAndStreamMediaData', json_encode($request), function (Payload $payload) use (&$fileInfo) {
+            $fileInfo = json_decode($payload->body, true);
+        });
 
         $retentionDays = (int)SettingModel::getValue('local_session_file_retention_days');
         $storage = StorageModel::create([
@@ -194,7 +203,11 @@ class ChatSessionPullService
             'limit' => self::MESSAGE_LIMIT,
         ];
 
-        return Yii::getRpcClient()->call('wxfinance.FetchData', $request);
+        $result = [];
+        Yii::getNatsClient()->request('wxfinance.FetchData', json_encode($request), function (Payload $payload) use (&$result) {
+            $result = json_decode($payload->body, true);
+        });
+        return $result;
     }
 
     /**

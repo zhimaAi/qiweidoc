@@ -3,8 +3,8 @@
 
 namespace Modules\ChatStatisticGroup;
 
+use Common\Cron;
 use Common\Job\Consumer;
-use Common\Job\Producer;
 use Common\RouterProvider;
 use Modules\Main\Library\Middlewares\CurrentCorpInfoMiddleware;
 use Modules\Main\Library\Middlewares\UserRoleMiddleware;
@@ -17,6 +17,39 @@ use Yiisoft\Router\Route;
 
 class Routes extends RouterProvider
 {
+    public function init(): void
+    {
+
+    }
+
+    public function getBroadcastRouters(): array
+    {
+        return [];
+    }
+
+    public function getMicroServiceRouters(): array
+    {
+        return [];
+    }
+
+    public function getCronRouters(): array
+    {
+        $corp = CorpModel::query()->getOne();
+
+        return [
+            //敏感词触发统计，每小时0点触发
+            Cron::name('chat_statistic_group')->spec('0 * * * *')
+                ->action(StatisticsGroupChatConsumer::class, ['corp' => $corp]),
+        ];
+    }
+
+    public function getConsumerRouters(): array
+    {
+        return [
+            Consumer::name("chat_statistic_group")->count(1)->action(StatisticsGroupChatConsumer::class),
+        ];
+    }
+
     public function getHttpRouters(): array
     {
         return [
@@ -32,33 +65,5 @@ class Routes extends RouterProvider
                     Route::get('/stat')->action([StatisticController::class, 'stat']),//获取明细
                 )
         ];
-    }
-
-    public function getConsoleRouters(): array
-    {
-        return [];
-    }
-
-    public function getConsumerRouters(): array
-    {
-        return [
-            Consumer::name("chat_statistic_group")->count(1)->action(StatisticsGroupChatConsumer::class),
-        ];
-    }
-
-    public function init(): void
-    {
-        $corp = CorpModel::query()->getOne();
-        Producer::dispatchCron(StatisticsGroupChatConsumer::class, ["corp" => $corp], '0 * * * *');//敏感词触发统计，每小时0点触发
-    }
-
-    public function getBroadcastRouters(): array
-    {
-        return [];
-    }
-
-    public function getMicroServiceRouters(): array
-    {
-        return [];
     }
 }

@@ -51,6 +51,7 @@
                         <a-radio-button value="file">文件</a-radio-button>
                         <a-radio-button value="image">图片</a-radio-button>
                         <a-radio-button value="voice">语音</a-radio-button>
+                        <a-radio-button value="video">视频</a-radio-button>
                         <a-radio-button v-if="sessionType === 'session'" value="voiptext">音视频通话</a-radio-button>
                     </a-radio-group>
                     <a-range-picker
@@ -113,6 +114,7 @@
                         </div>
                         <MessageRender
                             @playVoice="playVoice"
+                            @playVideo="playVideo"
                             :voicePlaying="item.msg_id === currentPayVoiceKey"
                             :messageInfo="item"
                             :isSelf="item.isSelf" />
@@ -120,6 +122,8 @@
                 </div>
             </template>
         </ZmScroll>
+
+        <lookVideo ref="lookVideoRef"></lookVideo>
     </div>
 </template>
 <script setup>
@@ -132,6 +136,7 @@ import ChatUser from "@/views/sessionArchive/components/modules/childs/chatUser.
 import ChatCollection from './childs/chatCollection.vue';
 import {VoicePlayHandle} from "@/utils/voicePlay";
 import MessageRender from "@/components/session-message/messageRender.vue";
+import lookVideo from "@/components/common/look-video.vue";
 
 const emit = defineEmits('changeCollect')
 const defaultAvatar = require('@/assets/default-avatar.png')
@@ -172,6 +177,7 @@ const {play, getPlayerKey} = VoicePlayHandle()
 
 const list = ref([])
 const oldHeight = ref(0)
+const lookVideoRef = ref(null)
 const listRef = ref(null)
 const loading = ref(false)
 const finished = ref(false)
@@ -318,6 +324,10 @@ function filterMsgTypeChange() {
 
 function playVoice(message) {
     play(message.msg_id, message.msg_content)
+}
+
+function playVideo(message) {
+    lookVideoRef.value.show(message.msg_content)
 }
 
 const filterDateChange = () => {

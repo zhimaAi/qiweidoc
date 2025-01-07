@@ -1,13 +1,12 @@
 package main
 
 import (
+	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"os/signal"
-	"session_archive/golang/initialize"
+	"session_archive/golang/internal/master"
 	"syscall"
-
-	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -16,24 +15,20 @@ func main() {
 		panic(err)
 	}
 
+	// 初始化数据库
+	master.InitPostgres()
+
 	// 初始化nats
-	if err := initialize.InitNats(); err != nil {
-		panic(err)
-	}
-	defer initialize.CloseNats()
+	master.InitNats()
+
+	// 初始化模块
+	master.InitModules()
 
 	var errCh = make(chan error)
 
 	// 启动代理服务
 	go func() {
-		if err := startFiberProxy(); err != nil {
-			errCh <- err
-		}
-	}()
-
-	// 启动插件容器
-	go func() {
-		if err := startEndureContainer(); err != nil {
+		if err := master.StartHttp(); err != nil {
 			errCh <- err
 		}
 	}()
@@ -44,12 +39,12 @@ func main() {
 	select {
 	case err := <-errCh:
 		log.Printf("服务出错了: %v", err)
-		stopFiberProxy()
-		stopEndureContainer()
+		master.StopHttp()
+		master.StopAllModules()
 	case <-sigCh:
 		log.Printf("收到退出信号...")
-		stopFiberProxy()
-		stopEndureContainer()
+		master.StopHttp()
+		master.StopAllModules()
 	}
 
 	close(errCh)

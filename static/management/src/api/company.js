@@ -28,6 +28,10 @@ export const disableModules = (data) => {
     return request.put(`/api/modules/${data.name}/disable`)
 }
 
+export const installModule = (data) => {
+    return request.post(`/api/modules/${data.name}/install`)
+}
+
 export const getModules = (data) => {
     return request.get('/api/modules', {params: data})
 }

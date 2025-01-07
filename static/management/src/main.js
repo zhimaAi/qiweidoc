@@ -13,6 +13,10 @@ import { registGlobalComponent } from './components'
 // 引入指令入口文件
 import directive from "@/directive/index";
 
+//导入视频播放组件
+import VueVideoPlayer from '@videojs-player/vue'
+import 'video.js/dist/video-js.css'
+
 // import swiper module styles
 import 'swiper/css'
 // more module style...
@@ -29,6 +33,7 @@ app.use(store)
     .use(router)
     .use(Antd)
     .use(VueViewer)
+    .use(VueVideoPlayer)
     .use(VueAwesomeSwiper)
 
   registGlobalComponent(app)

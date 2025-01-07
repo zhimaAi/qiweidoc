@@ -61,9 +61,6 @@ abstract class BaseModel
         $this->appends[$key] = $value;
     }
 
-    /**
-     * @throws Throwable
-     */
     public static function query(string $alias = ''): DBQuery
     {
         $model = new static();

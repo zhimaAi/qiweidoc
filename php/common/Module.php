@@ -1,9 +1,13 @@
 <?php
+// Copyright © 2016- 2025 Sesame Network Technology all right reserved
 
 namespace Common;
 
+use Basis\Nats\Message\Payload;
 use Exception;
-use Spiral\RoadRunner\Services\Manager;
+use LogicException;
+use Edl\FileEncryptSystem;
+use Throwable;
 
 class Module
 {
@@ -23,9 +27,18 @@ class Module
     {
         $className = str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', strtolower($moduleName))));
 
-        $namespace = "Modules\\{$className}\\";
         $path = __DIR__ . "/../modules/" . $moduleName . "/backend";
-        $composerLoader->addPsr4($namespace, $path);
+        $encryptedCode = __DIR__ . "/../modules/" . $moduleName . "/backend.phpe";
+        $privateKey = __DIR__ . "/../modules/" . $moduleName . "/private.key";
+
+        if (file_exists($encryptedCode) && file_exists($privateKey)) {
+            (new FileEncryptSystem($privateKey))->decryptAndLoadPhpFiles($encryptedCode);
+        } elseif (is_dir($path)) {
+            $namespace = "Modules\\{$className}\\";
+            $composerLoader->addPsr4($namespace, $path);
+        } else {
+            throw new Exception("模块{$moduleName}加载失败");
+        }
     }
 
     public static function getDynamicClassByModule(string $subClass): string
@@ -43,164 +56,102 @@ class Module
         return new $class();
     }
 
-    /**
-    * 获取所有模块目录，并确保main模块在第一位
-    *
-    * @throws Exception
-    */
-    public static function getModuleDirectories(): array
+    public static function getAllLocalModuleConfigList(): array
     {
-        $modulesPath = Yii::aliases()->get("@modules");
-        $dirs = array_map('basename', glob($modulesPath . '/*', GLOB_ONLYDIR));
-
-        if (!in_array('main', $dirs)) {
-            throw new Exception('main模块不存在');
+        $host = Yii::getModuleManageAddress();
+        $uri = "/internal/modules/list";
+        $response = (new HttpClient(['base_uri' => $host]))->post($uri);
+        if ($response->getStatusCode() != 200) {
+            throw new LogicException(json_decode($response->getBody(), true)['message'] ?? "未知错误");
         }
-
-        // main模块排到最前面
-        usort($dirs, fn ($a, $b) => ($a === 'main') ? -1 : (($b === 'main') ? 1 : strcasecmp($a, $b)));
-
-        return $dirs;
+        return json_decode($response->getBody(), true);
     }
 
-    public static function getModuleConfigCacheKey(string $moduleName)
+    public static function getLocalModuleConfig(string $name): array
     {
-        return "module_{$moduleName}_config";
+        $host = Yii::getModuleManageAddress();
+        $uri = "/internal/modules/info";
+        $response = (new HttpClient(['base_uri' => $host]))->post($uri, ['name' => $name]);
+        if ($response->getStatusCode() != 200) {
+            throw new LogicException(json_decode($response->getBody(), true)['message'] ?? "未知错误");
+        }
+        return json_decode($response->getBody(), true);
     }
 
-    public static function getModuleRunningCacheKey(string $moduleName): string
+    public static function startModule(string $name): void
     {
-        return "module_{$moduleName}_paused_status";
+        $host = Yii::getModuleManageAddress();
+        $uri = "/internal/modules/start";
+        $result = (new HttpClient(['base_uri' => $host]))->post($uri, ['name' => $name]);
+        if ($result->getStatusCode() != 200) {
+            throw new LogicException(json_decode($result->getBody(), true)['message'] ?? "未知错误");
+        }
     }
 
-    public static function getModuleHttpPortCacheKey($moduleName): string
+    public static function stopModule(string $name): void
     {
-        return "module_{$moduleName}_http_port";
+        Yii::getNatsClient()->request("{$name}.stop-module", '', function (Payload $payload) {});
+
+        $host = Yii::getModuleManageAddress();
+        $uri = "/internal/modules/stop";
+        $result = (new HttpClient(['base_uri' => $host]))->post($uri, ['name' => $name]);
+        if ($result->getStatusCode() != 200) {
+            throw new LogicException(json_decode($result->getBody(), true)['message'] ?? "未知错误");
+        }
     }
 
-    public static function getModuleRpcPortCacheKey($moduleName): string
+    public static function getAllRemoteModuleConfigList(string $corpId)
     {
-        return "module_{$moduleName}_rpc_port";
+        $host = Yii::params()['module_host'];
+        $uri = '/wkOperation/open-module/list';
+        $query = ['size' => 100, 'corp_id' => $corpId];
+        $response = (new HttpClient(['base_uri' => $host]))->get($uri, $query);
+        return json_decode($response->getBody(), true)['data']['list'] ?? [];
     }
 
-    public static function getModuleStartedAtCacheKey($moduleName): string
+    public static function getRemoteModuleDetail(string $moduleName, string $corpId)
     {
-        return "module_{$moduleName}_started_at";
+        $host = Yii::params()['module_host'];
+        $uri = '/wkOperation/open-module/detail';
+        $query = ['name' => $moduleName, 'corp_id' => $corpId];
+        $response = (new HttpClient(['base_uri' => $host]))->get($uri, $query);
+        return json_decode($response->getBody(), true)['data'] ?? [];
     }
 
-    /**
-     * 获取指定模块的配置信息
-     */
-    public static function getModuleConfig(string $moduleName): array
+    public static function getRemoteLatestModuleVersion(string $moduleName, string $corpId)
     {
-        $result = Yii::cache()->psr()->get(self::getModuleConfigCacheKey($moduleName));
-        $result['paused'] = Yii::cache()->psr()->get(self::getModuleRunningCacheKey($moduleName));
-        $result['http_port'] = Yii::cache()->psr()->get(self::getModuleHttpPortCacheKey($moduleName));
-        $result['rpc_port'] = Yii::cache()->psr()->get(self::getModuleRpcPortCacheKey($moduleName));
-        $result['started_at'] = Yii::cache()->psr()->get(self::getModuleStartedAtCacheKey($moduleName));
-
-        return $result;
+        $baseUri = Yii::params()['module_host'];
+        $uri = '/wkOperation/open-module/get-module-latest-version';
+        $query = ['module_name' => $moduleName, 'corp_id' => $corpId];
+        $response = (new HttpClient(['base_uri' => $baseUri]))->get($uri, $query);
+        $data = json_decode($response->getBody(), true)['data'] ?? [];
+        if (empty($data)) {
+            throw new LogicException("没有找到对应的模块版本");
+        }
+        return $data;
     }
 
-    /**
-    * 启动模块
-    */
-    public static function enable(string $name, array $moduleConfig, $rpcPort, $httpPort): void
+    public static function addTryRecordInRemote(string $moduleName, string $corpId): void
     {
-        $env = [
-            // 版本信息
-            'MODULE_NAME' => "$name",
-            'MODULE_VERSION' => $moduleConfig['version'],
-            'MODULE_DESCRIPTION' => $moduleConfig['description'],
+        $baseUri = Yii::params()['module_host'];
+        $uri = "/wkOperation/open-module/create-try-order";
+        $body = ['corp_id' => $corpId, 'module_name' => $moduleName];
+        try {
+            $res = (new HttpClient(['base_uri' => $baseUri]))->post($uri, $body);
+            Yii::logger()->debug((string)$res->getBody());
+        } catch (Throwable $e) {
+            Yii::logger()->warning($e);
+        }
+    }
 
-            // rpc
-            'MODULE_RPC_PORT' => $rpcPort,
-
-            // http
-            'MODULE_HTTP_PORT' => $httpPort,
-            'MODULE_STATIC_DIR' => $moduleConfig['public_dir'],
-
-            // 数据库
-            'DB_HOST' => $_ENV['DB_HOST'],
-            'DB_PORT' => $_ENV['DB_PORT'],
-            'DB_DATABASE' => $_ENV['DB_DATABASE'],
-            'DB_USERNAME' => $name,
-            'Db_PASSWORD' => $name,
-
-            // 消费者配置
-            ...$moduleConfig['consumer_route_list'],
+    public static function collectModuleInfo(string $moduleName, string $moduleVersion, string $corpId)
+    {
+        $data = [
+            'url' => Yii::params()['module_host'] . '/wkOperation/open-module/collect-module-info',
+            'name' => $moduleName,
+            'version' => $moduleVersion,
+            'corp_id' => $corpId,
         ];
-
-        (new Manager(Yii::getDefaultRpcClient()))->create(
-            name: $name,
-            command: "golang/build/app {$name}",
-            processNum: 1,
-            remainAfterExit: true,
-            env: $env,
-            restartSec: 5,
-            serviceNameInLogs: true,
-        );
-
-        Yii::cache()->psr()->setMultiple([
-            self::getModuleRunningCacheKey($name) => false,
-            self::getModuleHttpPortCacheKey($name) => $httpPort,
-            self::getModuleRpcPortCacheKey($name) => $rpcPort,
-            self::getModuleStartedAtCacheKey($name) => now(),
-        ]);
-    }
-
-    /**
-     * 禁用模块
-     */
-    public static function disable(string $name)
-    {
-        (new Manager(Yii::getDefaultRpcClient()))->terminate($name);
-
-        $cacheKey = self::getModuleRunningCacheKey($name);
-        Yii::cache()->psr()->set($cacheKey, true);
-
-        Yii::cache()->psr()->deleteMultiple([
-            self::getModuleHttpPortCacheKey($name),
-            self::getModuleRpcPortCacheKey($name),
-            self::getModuleStartedAtCacheKey($name),
-        ]);
-    }
-
-    private static function findAvailablePorts(int $start, int $end, int $count): array
-    {
-        $ports = [];
-
-        for ($port = $start; $port <= $end && count($ports) < $count; $port++) {
-            if (self::isPortAvailable($port)) {
-                $ports[] = $port;
-            }
-        }
-
-        if (count($ports) < $count) {
-            throw new Exception("仅找到 {$count} 个可用端口，但需要 {$count} 个。");
-        }
-
-        return $ports;
-    }
-
-    public static function isPortAvailable(int $port, int $timeout = 1): bool
-    {
-        $connection = @stream_socket_server("tcp://0.0.0.0:{$port}", $errno, $errstr);
-        if ($connection) {
-            fclose($connection);
-            return true; // 端口未被占用
-        }
-
-        return false; // 端口被占用
-    }
-
-    public static function findAvailableRpcPorts(int $count): array
-    {
-        return self::findAvailablePorts(6002, 6100, $count);
-    }
-
-    public static function findAvailableHttpPorts(int $count): array
-    {
-        return self::findAvailablePorts(8081, 8100, $count);
+        Yii::getRpcClient()->call('common.CronCollectModule', $data);
     }
 }

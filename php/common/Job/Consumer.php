@@ -2,13 +2,18 @@
 
 namespace Common\Job;
 
+use Common\Module;
+use Common\Yii;
+use Spiral\RoadRunner\Jobs\Jobs;
+use Spiral\RoadRunner\Jobs\Queue\NatsCreateInfo;
+
 class Consumer
 {
     private string $queueName;
 
     private int $count = 1;
 
-    private string $className;
+    private string $handler;
 
     private bool $deleteOnStop = true;
 
@@ -36,19 +41,9 @@ class Consumer
 
     public function action(string $className): self
     {
-        $this->className = $className;
+        $this->handler = $className;
 
         return $this;
-    }
-
-    public function getCount(): int
-    {
-        return $this->count;
-    }
-
-    public function getClassName(): string
-    {
-        return $this->className;
     }
 
     public function getQueueName(): string
@@ -56,8 +51,25 @@ class Consumer
         return $this->queueName;
     }
 
-    public function getDeleteOnStop(): bool
+    public function getHandler(): string
     {
-        return $this->deleteOnStop;
+        return $this->handler;
+    }
+
+    public function register()
+    {
+        $moduleName = Module::getCurrentModuleName();
+        $jobs = new Jobs(Yii::getRpcClient());
+
+        $name = "{$moduleName}_{$this->queueName}";
+        $jobs->create(new NatsCreateInfo(
+            name: $name,
+            subject: $name,
+            stream: $name,
+            priority: 10,
+            prefetch: $this->count,
+            deleteStreamOnStop: $this->deleteOnStop,
+            deleteAfterAck: true,
+        ))->resume();
     }
 }

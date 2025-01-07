@@ -7,8 +7,12 @@ use Common\Yii;
 use Doctrine\Common\Collections\ArrayCollection;
 use Exception;
 use Throwable;
+use Yiisoft\Db\Query\Query;
 
-class DBQuery extends \Yiisoft\Db\Query\Query
+/**
+ * @template-covariant BModel
+ */
+class DBQuery extends Query
 {
     private BaseModel $model;
 
@@ -42,11 +46,12 @@ class DBQuery extends \Yiisoft\Db\Query\Query
     /**
      * 查询单条结果并返回一个model实例
      *
+     * @return BModel|null
      * @throws Throwable
      */
-    public function getOne(): BaseModel | null
+    public function getOne(): BaseModel|null
     {
-        $attributes = $this->executeCommand(fn () => $this->one());
+        $attributes = $this->executeCommand(fn () => $this->limit(1)->one());
 
         if (empty($attributes)) {
             return null;

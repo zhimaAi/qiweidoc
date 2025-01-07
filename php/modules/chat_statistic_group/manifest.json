@@ -1,19 +1,6 @@
 {
     "name": "chat_statistic_group",
-    "order": 5,
     "version": "1.0.0",
-    "required_main_version": 1,
-    "title": "群聊统计",
-    "description": "统计员工每天的回复消息量以及回复效率和详情时间",
-    "intro": "设置指定的工作时间段检测员工消息数，沟通数，回复率和响应时间，判断员工的工作量和工作积极性",
-    "icon": "modules/customer_tag/icon.png",
-    "images": [
-        "modules/customer_tag/images/1.png",
-        "modules/customer_tag/images/2.png"
-    ],
-    "features": [
-        "1.设置指定的工作时间段检测员工的数据",
-        "2.设置超时回复时间，统计员工回复效率",
-        "3.设置回复关键字，对回复的关键字，表情包，图片，emoji过滤按天统计每天员工的消息数，沟通数，回复率和响应时间 "
-    ]
+    "compatible_main_version_list": ["1.0.0"],
+    "plugins": ["http", "jobs", "cron"]
 }

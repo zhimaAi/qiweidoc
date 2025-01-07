@@ -2,10 +2,8 @@
 
 namespace Modules\TimeoutReplySingle;
 
-use Common\Job\Consumer;
-use Common\Job\Producer;
+use Common\Cron;
 use Common\RouterProvider;
-use Common\Yii;
 use Modules\Main\Library\Middlewares\CurrentCorpInfoMiddleware;
 use Modules\Main\Library\Middlewares\UserRoleMiddleware;
 use Modules\TimeoutReplySingle\Consumer\RuleRunConsumer;
@@ -19,11 +17,27 @@ class Routes extends RouterProvider
 {
     public function init(): void
     {
-        Yii::logger()->info("初始化定时任务");
-        Producer::dispatchCron(RuleRunConsumer::class, [], '* * * * *');
     }
 
     public function getBroadcastRouters(): array
+    {
+        return [];
+    }
+
+    public function getMicroServiceRouters(): array
+    {
+        return [];
+    }
+
+    public function getCronRouters(): array
+    {
+        return [
+            Cron::name('check-recent-timeout-message')->spec('* * * * *')
+                ->action(RuleRunConsumer::class, []),
+        ];
+    }
+
+    public function getConsumerRouters(): array
     {
         return [];
     }
@@ -50,24 +64,5 @@ class Routes extends RouterProvider
                     Route::delete('/rules/{id:\d+}')->action([RuleController::class, 'destroy']),
                 ),
         ];
-    }
-
-    public function getConsoleRouters(): array
-    {
-        return [];
-    }
-
-    public function getConsumerRouters(): array
-    {
-        return [
-            Consumer::name('check-recent-timeout-message')
-                ->count(1)
-                ->action(RuleRunConsumer::class),
-        ];
-    }
-
-    public function getMicroServiceRouters(): array
-    {
-        return [];
     }
 }

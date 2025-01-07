@@ -3,13 +3,17 @@
 namespace Modules\Main;
 
 use Common\Broadcast;
+use Common\Controller\PublicController;
+use Common\Cron;
 use Common\Job\Consumer;
 use Common\Job\Producer;
+use Common\Micro;
 use Common\RouterProvider;
 use Common\Yii;
+use Exception;
 use Modules\Main\Consumer\DownloadChatSessionBitMediasConsumer;
 use Modules\Main\Consumer\DownloadChatSessionMediasConsumer;
-use Modules\Main\Consumer\MarkTagConsumer;
+use Modules\Main\Consumer\MarkTagListener;
 use Modules\Main\Consumer\QwOpenPushConsumer;
 use Modules\Main\Consumer\RemoveExpiredLocalFilesConsumer;
 use Modules\Main\Consumer\SendEmailConsumer;
@@ -35,7 +39,8 @@ use Modules\Main\Library\Middlewares\CurrentCorpInfoMiddleware;
 use Modules\Main\Library\Middlewares\UserRoleMiddleware;
 use Modules\Main\Library\Middlewares\WxAuthMiddleware;
 use Modules\Main\Controller\WxController;
-use Modules\Main\Micro\TestController;
+use Modules\Main\Listener\TestBroadcastController;
+use Modules\Main\Micro\TestMirco;
 use Modules\Main\Service\StorageService;
 use Modules\Main\Service\UserService;
 use Psr\Http\Message\ServerRequestInterface;
@@ -51,6 +56,7 @@ class Routes extends RouterProvider
 {
     /**
      * 模块刚启动时需要执行的方法
+     * @throws Exception
      */
     public function init(): void
     {
@@ -59,35 +65,35 @@ class Routes extends RouterProvider
 
         // 初始化用户角色
         UserService::init();
-
-        // 定时拉取会话存档消息
-        Producer::dispatchCron(SyncSessionMessageConsumer::class, [], '5 seconds');
-
-        // 定时清理本地过期文件
-        Producer::dispatchCron(RemoveExpiredLocalFilesConsumer::class, [], '* * * * *');
     }
 
     public function getBroadcastRouters(): array
     {
         return [
-            Broadcast::event('test')->from('main')->handle(function (string $payload) {
+            Broadcast::event('test')->from('main')
+                ->action(TestBroadcastController::class),
 
-            }),
-            Broadcast::event('mark_tag')->from('keywords_tagging')->handle(function (string $payload) {
-                //关键词打标签 消费者
-                if (!empty($payload)){
-                    Producer::dispatch(MarkTagConsumer::class, ['taskMsg'=>$payload,'defaultSource'=>'keywords_tagging']);
-                }
-            }),
+            Broadcast::event('mark_tag')->from('keywords_tagging')
+                ->action(MarkTagListener::class),
         ];
     }
 
-    /**
-     * 控制台路由
-     */
-    public function getConsoleRouters(): array
+    public function getCronRouters(): array
     {
-        return [];
+        return [
+            Cron::name("sync_session_message")->spec("@every 5s")
+                ->action(SyncSessionMessageConsumer::class, []),
+
+            Cron::name("remove_expire_local_files")->spec("* * * * *")
+                ->action(RemoveExpiredLocalFilesConsumer::class, []),
+        ];
+    }
+
+    public function getMicroServiceRouters(): array
+    {
+        return [
+            Micro::name('test')->action(TestMirco::class),
+        ];
     }
 
     /**
@@ -106,10 +112,9 @@ class Routes extends RouterProvider
             Consumer::name("qw_open_push")->count(5)->action(QwOpenPushConsumer::class),
 
             Consumer::name("sync_session_message")->count(1)->action(SyncSessionMessageConsumer::class),
-            Consumer::name("download_session_medias")->count(2)->action(DownloadChatSessionBitMediasConsumer::class)->reserveOnStop(),
-            Consumer::name("download_session_big_medias")->count(1)->action(DownloadChatSessionMediasConsumer::class)->reserveOnStop(),
+            Consumer::name("download_session_medias")->count(5)->action(DownloadChatSessionBitMediasConsumer::class)->reserveOnStop(),
+            Consumer::name("download_session_big_medias")->count(2)->action(DownloadChatSessionMediasConsumer::class)->reserveOnStop(),
             Consumer::name("remove_expired_local_files")->count(1) ->action(RemoveExpiredLocalFilesConsumer::class),
-            Consumer::name("mark_tag")->count(1)->action(MarkTagConsumer::class)
         ];
     }
 
@@ -171,8 +176,10 @@ class Routes extends RouterProvider
                     Route::get("/modules/{name:.+}")->action([ModuleController::class, "getModuleDetail"]),
                     Route::put("/modules/{name:.+}/enable")->action([ModuleController::class, "enableModule"]),
                     Route::put("/modules/{name:.+}/disable")->action([ModuleController::class, "disableModule"]),
+                    Route::post('/modules/{name:.+}/install')->action([ModuleController::class, 'installModule']),
 
                     // 云存储配置
+                    Route::get('/ping/settings')->action([PublicController::class, 'ping']),
                     Route::get('/cloud-storage-settings')->action([CloudStorageSettingController::class, 'show']),
                     Route::put('/cloud-storage-settings')->action([CloudStorageSettingController::class, 'save']),
                     Route::get('/cloud-storage-settings/provider-regions')->action([CloudStorageSettingController::class, 'getStorageProviderRegionList']),
@@ -244,13 +251,6 @@ class Routes extends RouterProvider
                     Route::put('/chats/join/collect')->action([ChatController::class, 'joinCollect']),
                     Route::put('/chats/cancel/collect')->action([ChatController::class, 'cancelCollect']),
                 ),
-        ];
-    }
-
-    public function getMicroServiceRouters(): array
-    {
-        return [
-            'test' => TestController::class,
         ];
     }
 }

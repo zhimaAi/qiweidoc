@@ -31,7 +31,15 @@ use Yiisoft\Db\Expression\Expression;
 class ChatSessionService
 {
     //可以筛选的消息类型，文本，语音，文件，图片，音视频通话
-    const FilterMsgType = ["text" => "text", "voice" => "voice", "file" => "file", "image" => "image", "voiptext" => ["voiptext", "meeting_voice_call"]];
+    const FilterMsgType = [
+        "text" => "text",
+        "voice" => "voice",
+        "file" => "file",
+        "image" => "image",
+        "video" => "video",
+        "voiptext" => ["voiptext", "meeting_voice_call"],
+
+    ];
 
     //需要下载的文件类型
     const ValidMediaType = [
@@ -41,6 +49,7 @@ class ChatSessionService
         'emotion',
         'file',
         'meeting_voice_call',
+        "video",
     ];
 
     /**

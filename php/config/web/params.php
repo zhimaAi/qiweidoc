@@ -16,7 +16,7 @@ return [
 
     'middlewares' => [
         ErrorCatcher::class,
-        Subfolder::class,
+        // Subfolder::class,
         Router::class,
     ],
 ];

@@ -9,9 +9,10 @@ class RoadRunnerAppLogTarget extends Target
 {
     private Logger $rrLogger;
 
-    public function __construct()
+    public function __construct(int $exportInterval)
     {
         $this->rrLogger = new Logger(Yii::getRpcClient());
+        $this->setExportInterval($exportInterval);
 
         parent::__construct();
     }
@@ -21,14 +22,34 @@ class RoadRunnerAppLogTarget extends Target
         $formattedMessages = $this->getFormattedMessages();
 
         foreach ($this->getMessages() as $key => $message) {
+            $context = $message->context();
+
+            // 过滤掉数据库的连接日志
+            if (!empty($context['type']) && $context['type'] == 'connection') {
+                continue;
+            }
+
+            // 过滤掉一些common context
+            unset($context['trace']);
+            unset($context['time']);
+            unset($context['memory']);
+            unset($context['category']);
+            unset($context[0]);
+
+            // 过滤掉框架启动时的一些sql
+            if (str_contains($message->message(), "pg_class") || str_contains($message->message(), 'migration')) {
+                continue;
+            }
+
+            // 格式化
             $trace = $message->trace()[0] ?? [];
             $file = $trace['file'] ?? '';
             $line = $trace['line'] ?? 0;
-
-            $context = $message->context();
-            unset($context['trace']);
-
-            $text = sprintf("file: %s:%d %s", $file, $line, $message->message());
+            if ($file) {
+                $text = sprintf("[%s:%d] %s", $file, $line, $message->message());
+            } else {
+                $text = sprintf("%s", $message->message());
+            }
 
             if ($message->level() == 'info') {
                 $this->rrLogger->info($text, $context);

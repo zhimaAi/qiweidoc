@@ -19,7 +19,7 @@ WORKDIR /build
 COPY go.mod Makefile ./
 COPY golang ./golang/
 RUN apt-get update && apt-get install -y --no-install-recommends make
-RUN go env -w GOPROXY=https://goproxy.cn,direct && make app && make master
+RUN go env -w GOPROXY=https://goproxy.cn,direct && make master
 
 # 构建最终镜像
 FROM php:8.2.27-cli-bookworm
@@ -66,6 +66,5 @@ COPY .env.prod .env
 RUN chmod -R 777 php/runtime
 
 # 运行
-ENV LD_LIBRARY_PATH=/var/www/golang/plugins/wxfinance/linux
 RUN chmod +x /var/www/golang/build/master
 CMD ["/var/www/golang/build/master"]

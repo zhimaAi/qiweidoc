@@ -9,9 +9,12 @@ use Psr\Container\ContainerInterface;
 
 return [
     Client::class => static function (ContainerInterface $container) use ($params) {
-        $configuration = new Configuration(
-            host: $params['nats-server']['endpoint'],
-        );
-        return new Client($configuration, Yii::logger());
+        return function (int $timeout = 1) use ($params) {
+            $configuration = new Configuration(
+                host: $params['nats-server']['endpoint'],
+                timeout: $timeout,
+            );
+            return new Client($configuration, Yii::logger());
+        };
     },
 ];

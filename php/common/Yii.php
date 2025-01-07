@@ -4,7 +4,6 @@
 /**
  * 类库统一访问入口
  */
-
 namespace Common;
 
 use Basis\Nats\Client;
@@ -105,17 +104,9 @@ final class Yii
         return $mutexes[$ttl];
     }
 
-    /**
-     * 获取默认rpc客户端实例（中心RPC）
-     */
-    public static function getDefaultRpcClient() : RPC
+    public static function getModuleManageAddress(): string
     {
-        static $relay;
-        if (empty($relay)) {
-            $relay = Relay::create('tcp://127.0.0.1:6001');
-        }
-
-        return new RPC($relay);
+        return "http://localhost:8080";
     }
 
     /**
@@ -127,12 +118,6 @@ final class Yii
         static $relays = [];
 
         $address = Environment::fromGlobals()->getRPCAddress();
-        if ($address == 'tcp://127.0.0.1:6001') {
-            $cacheKey = Module::getModuleRpcPortCacheKey(Module::getCurrentModuleName());
-            $port = Yii::cache()->psr()->get($cacheKey);
-            $address = "tcp://127.0.0.1:{$port}";
-        }
-
         if (!isset($relays[$address])) {
             $relays[$address] = Relay::create($address);
         }
@@ -157,8 +142,8 @@ final class Yii
         return $app;
     }
 
-    public static function getNatsClient()
+    public static function getNatsClient(int $timeout = 1): Client
     {
-        return self::getContainer()->get(Client::class);
+        return self::getContainer()->get(Client::class)($timeout);
     }
 }

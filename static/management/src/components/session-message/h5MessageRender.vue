@@ -58,6 +58,21 @@
             <div class="zm-flex-center">
                 <template v-if="voicePlaying">
                     <img src="@/assets/image/icon-voice.gif" class="voice-play-icon"/>
+<<<<<<<< HEAD:static/management/src/components/session-message/messageRender.vue
+                    <span class="ml8">语音通话 {{getVoiceCallDuration}}</span>
+                    <a-divider type="vertical"/>
+                    <a-tooltip title="停止播放">
+                        <PauseCircleOutlined @click="playingVoice(messageInfo)" class="icon-btn"/>
+                    </a-tooltip>
+                </template>
+                <template v-else>
+                    <PhoneOutlined class="voice-phone-icon"/>
+                    <span class="ml8">语音通话 {{getVoiceCallDuration}}</span>
+                    <a-divider type="vertical"/>
+                    <a-tooltip title="播放通话">
+                        <PlayCircleOutlined @click="playingVoice(messageInfo)" class="icon-btn"/>
+                    </a-tooltip>
+========
                     <span class="ml8">语音通话 {{ getVoiceCallDuration }}</span>
                     <a-divider type="vertical"/>
                     <PauseCircleOutlined @click="playingVoice(messageInfo)" class="icon-btn"/>
@@ -67,6 +82,7 @@
                     <span class="ml8">语音通话 {{ getVoiceCallDuration }}</span>
                     <a-divider type="vertical"/>
                     <PlayCircleOutlined @click="playingVoice(messageInfo)" class="icon-btn"/>
+>>>>>>>> master:static/management/src/components/session-message/h5MessageRender.vue
                 </template>
                 <DownloadOutlined @click="downloadMsgFile" class="icon-btn ml8"/>
             </div>
@@ -75,7 +91,11 @@
              class="message-box">
             <div class="zm-flex-center">
                 <PhoneOutlined class="voice-phone-icon"/>
+<<<<<<<< HEAD:static/management/src/components/session-message/messageRender.vue
+                <span class="ml8">语音通话 {{secondsToDate(messageInfo.raw_content.callduration)}}</span>
+========
                 <span class="ml8">语音通话 {{ secondsToDate(messageInfo.raw_content.callduration) }}</span>
+>>>>>>>> master:static/management/src/components/session-message/h5MessageRender.vue
             </div>
         </div>
         <!-- 语音消息-->
@@ -84,6 +104,21 @@
             <div class="zm-flex-center">
                 <template v-if="voicePlaying">
                     <img src="@/assets/image/icon-voice.gif" class="voice-play-icon"/>
+<<<<<<<< HEAD:static/management/src/components/session-message/messageRender.vue
+                    <span class="ml8">语音消息 {{formatSeconds(messageInfo.raw_content.play_length)}}</span>
+                    <a-divider type="vertical"/>
+                    <a-tooltip title="停止播放">
+                        <PauseCircleOutlined @click="playingVoice(messageInfo)" class="icon-btn"/>
+                    </a-tooltip>
+                </template>
+                <template v-else>
+                    <img class="icon-14" src="@/assets/image/icon-voice.png"/>
+                    <span class="ml8">语音消息 {{formatSeconds(messageInfo.raw_content.play_length)}}</span>
+                    <a-divider type="vertical"/>
+                    <a-tooltip title="播放语音">
+                        <PlayCircleOutlined @click="playingVoice(messageInfo)" class="icon-btn"/>
+                    </a-tooltip>
+========
                     <span class="ml8">语音消息 {{ formatSeconds(messageInfo.raw_content.play_length) }}</span>
                     <a-divider type="vertical"/>
                     <PauseCircleOutlined @click="playingVoice(messageInfo)" class="icon-btn"/>
@@ -93,6 +128,7 @@
                     <span class="ml8">语音消息 {{ formatSeconds(messageInfo.raw_content.play_length) }}</span>
                     <a-divider type="vertical"/>
                     <PlayCircleOutlined @click="playingVoice(messageInfo)" class="icon-btn"/>
+>>>>>>>> master:static/management/src/components/session-message/h5MessageRender.vue
                 </template>
                 <DownloadOutlined @click="downloadMsgFile" class="icon-btn ml8"/>
             </div>
@@ -171,7 +207,11 @@ const downloadMsgFile = () => {
             downloadFile(msg.msg_content, `语音通话-${msg.msg_id}.amr`)
             break
         case 'voice':
+<<<<<<<< HEAD:static/management/src/components/session-message/messageRender.vue
+            downloadFile(msg.msg_content, `语音消息-${msg.msg_id}.mp3`)
+========
             downloadFile(msg.msg_content, `语音消息-${msg.msg_id}.amr`)
+>>>>>>>> master:static/management/src/components/session-message/h5MessageRender.vue
             break
     }
 }
@@ -220,8 +260,13 @@ const showBuyFileStorage = () => {
 .message-box {
     display: inline-block;
     background: #FFFFFF;
+<<<<<<<< HEAD:static/management/src/components/session-message/messageRender.vue
+    padding: 8px;
+    max-width: 40vw;
+========
     padding: 0.8rem;
     max-width: 80vw;
+>>>>>>>> master:static/management/src/components/session-message/h5MessageRender.vue
     white-space: normal;
     word-break: break-all;
     border-radius: .2rem;
@@ -311,6 +356,19 @@ const showBuyFileStorage = () => {
         }
     }
 }
+<<<<<<<< HEAD:static/management/src/components/session-message/messageRender.vue
+.voice-phone-icon {
+    transform: rotate(90deg);
+    font-size: 14px;
+}
+.voice-play-icon {
+    width: 14px;
+    height: 12px;
+}
+.icon-btn {
+    font-size: 16px;
+    cursor: pointer;
+========
 
 .voice-phone-icon {
     transform: rotate(90deg);
@@ -326,6 +384,7 @@ const showBuyFileStorage = () => {
     font-size: 1.6rem;
     cursor: pointer;
 
+>>>>>>>> master:static/management/src/components/session-message/h5MessageRender.vue
     &:hover {
         color: #2475FC;
     }

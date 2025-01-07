@@ -24,7 +24,28 @@
             </span>
         </div>
         <!-- 视频 -->
-        <div v-else-if="messageInfo.msg_type == 'video'" class="message-box">[视频消息]</div>
+        <div v-else-if="messageInfo.msg_type == 'video'" class="message-box video-box">
+            <div class="zm-flex-center">
+                <template v-if="voicePlaying">
+                    <img src="@/assets/image/icon-voice.gif" class="voice-play-icon"/>
+                    <span class="ml8">视频消息 {{formatSeconds(messageInfo.raw_content.play_length)}}</span>
+                    <a-divider type="vertical"/>
+                    <a-tooltip title="停止播放">
+                        <PauseCircleOutlined @click="playingVideo(messageInfo)" class="icon-btn"/>
+                    </a-tooltip>
+                </template>
+                <template v-else>
+                    <img class="icon-14" src="@/assets/image/icon-video.png"/>
+                    <span class="ml8">视频消息 {{formatSeconds(messageInfo.raw_content.play_length)}}</span>
+                    <a-divider type="vertical"/>
+                    <a-tooltip title="播放视频">
+                        <PlayCircleOutlined @click="playingVideo(messageInfo)" class="icon-btn"/>
+                    </a-tooltip>
+                </template>
+                <DownloadOutlined v-if="messageInfo.msg_content && messageInfo.msg_id" @click="downloadMsgFile" class="icon-btn ml8"/>
+                <DownloadOutlined v-else class="icon-disabled ml8"/>
+            </div>
+        </div>
         <!-- 文件 -->
         <div v-else-if="messageInfo.msg_type == 'file'"
              :class="['message-box file-box', {warning: downloadFileLimit(messageInfo.content)}]">
@@ -159,10 +180,18 @@ const getVoiceCallDuration = computed(() => {
 
 const playingVoice = (msg) => {
     if (!msg.msg_content) {
-        message.error('播放失败，缺少文件！')
+        message.error('播放失败，文件正在下载中！')
         return;
     }
     emit('playVoice', props.messageInfo)
+}
+
+const playingVideo = (msg) => {
+    if (!msg.msg_content) {
+        message.error('播放失败，文件正在下载中！')
+        return;
+    }
+    emit('playVideo', props.messageInfo)
 }
 
 const getTotalStorageSizeTitle = () => {
@@ -180,6 +209,9 @@ const downloadMsgFile = () => {
             break
         case 'voice':
             downloadFile(msg.msg_content, `语音消息-${msg.msg_id}.mp3`)
+            break
+        case 'video':
+            downloadFile(msg.msg_content, `视频消息-${msg.msg_id}.mp4`)
             break
     }
 }
@@ -333,5 +365,10 @@ const showBuyFileStorage = () => {
     &:hover {
         color: #2475FC;
     }
+}
+.icon-disabled {
+    font-size: 16px;
+    color: #999;
+    cursor: no-drop;
 }
 </style>

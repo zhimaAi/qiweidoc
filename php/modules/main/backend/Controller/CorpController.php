@@ -64,7 +64,6 @@ class CorpController extends BaseController
      */
     public function getCurrentCorpInfo(ServerRequestInterface $request): ResponseInterface
     {
-        ddump('abc');
         return $this->jsonResponse($request->getAttribute(CorpModel::class));
     }
 

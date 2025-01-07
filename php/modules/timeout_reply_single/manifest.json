@@ -1,14 +1,6 @@
 {
   "name": "timeout_reply_single",
-  "order": 2,
   "version": "1.0.0",
-  "required_main_version": 1,
-  "title": "单聊超时回复",
-  "description": "员工超时回复后发送超时提醒员工及时回复 ",
-  "intro": "当单聊的客户发送消息员工未回复时，按照规则，可设置给指定员工以及员工本人发送消息提醒，及时回复消息并处理",
-  "features": [
-      "1.对指定的员工的单聊做检测",
-      "2.可设置指定时间段或工作时间段",
-      "3.可设置员工本人或指定员工，应用内接收通知"
-  ]
+  "compatible_main_version_list": ["1.0.0"],
+  "plugins": ["http", "cron"]
 }

@@ -32,3 +32,5 @@ build
 *.njsproj
 *.sln
 *.sw?
+*.zip
+*.phpe

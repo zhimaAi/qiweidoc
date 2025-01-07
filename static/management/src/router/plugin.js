@@ -9,10 +9,6 @@ export default [
         name: "plugManagementInfo",
         meta: {
             activeMenuKey: 'plugManagementHome',
-            links: [
-                {name: "功能插件", to: "/plug/index"},
-                {name: "客户标签详情"}
-            ],
         },
         component: () => import("../views/plug/info.vue"),
     },
@@ -20,6 +16,11 @@ export default [
         path: "/plug/render",
         name: "plugManagementRender",
         component: () => import("../views/plug/render.vue"),
+    },
+    {
+        path: "/plug/shopping",
+        name: "plugShopping",
+        component: () => import("../views/plug/shopping.vue"),
     },
 ]
 

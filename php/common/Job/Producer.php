@@ -2,10 +2,10 @@
 
 namespace Common\Job;
 
+use Common\Exceptions\RetryableJobException;
 use Common\Module;
 use Common\Yii;
 use Exception;
-use Ramsey\Uuid\UuidFactory;
 use Spiral\RoadRunner\Jobs\Jobs;
 use Spiral\RoadRunner\Jobs\Task\QueuedTaskInterface;
 use Throwable;
@@ -21,7 +21,8 @@ class Producer
 
         $router = null;
         foreach ($routers as $r) {
-            if ($r->getClassName() == $className) {
+            /* @var Consumer $r */
+            if ($r->getHandler() == $className) {
                 $router = $r;
                 break;
             }
@@ -56,35 +57,8 @@ class Producer
     }
 
     /**
-     * 定时执行
-     */
-    public static function dispatchCron(string $className, array $data, string $cron)
-    {
-        $router = self::resolveRoute($className);
-
-        $job = new Jobs(Yii::getRpcClient());
-        $queueName = Module::getCurrentModuleName() . "_" . $router->getQueueName();
-        $queue = $job->connect($queueName);
-        $task = $queue->create($className, serialize($data));
-
-        return Yii::getRpcClient()->call('cron.Save', [
-            'name' => $className,
-            'cron' => $cron,
-            'task' => [
-                'job' => $task->getName(),
-                'payload' => $task->getPayload(),
-                'pipeline' => $queueName,
-            ],
-        ]);
-    }
-
-    public static function dispatchCronDelete(string $className)
-    {
-        return Yii::getRpcClient()->call('cron.Delete', $className);
-    }
-
-    /**
      * 同步执行
+     * @throws RetryableJobException
      */
     public static function dispatchSync(string $className, array $data): void
     {

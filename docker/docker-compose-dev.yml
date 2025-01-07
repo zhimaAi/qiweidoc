@@ -16,7 +16,7 @@ services:
       context: ..
       dockerfile: docker/postgres/Dockerfile
     platform: linux/amd64
-    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/chat_session_archive_db:latest
+    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/qiweidoc_db:latest
     restart: always
     shm_size: 256mb
     command: "postgres -c 'config_file=/etc/postgresql/postgresql.conf'"
@@ -33,7 +33,7 @@ services:
       context: ..
       dockerfile: docker/redis/Dockerfile
     platform: linux/amd64
-    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/chat_session_archive_redis:latest
+    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/qiweidoc_redis:latest
     command: [ "redis-server", "/etc/redis/redis.conf" ]
     restart: always
     environment:
@@ -48,7 +48,7 @@ services:
       context: ..
       dockerfile: docker/minio/Dockerfile
     platform: linux/amd64
-    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/chat_session_archive_minio:latest
+    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/qiweidoc_minio:latest
     command: "server /data --console-address 0.0.0.0:9001"
     environment:
       TZ: Asia/Shanghai
@@ -64,7 +64,7 @@ services:
       context: ..
       dockerfile: docker/nats/Dockerfile
     platform: linux/amd64
-    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/chat_session_archive_nats:latest
+    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/qiweidoc_nats:latest
     command: "-js -c /etc/nats/nats-server.conf"
     restart: always
     environment:
@@ -74,11 +74,35 @@ services:
     ports:
       - ${EXTERNAL_NATS_PORT:-4222}:4222
 
+  wxfinance:
+    build:
+      context: ..
+      dockerfile: docker/wxfinance/Dockerfile
+    platform: linux/amd64
+    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/qiweidoc_wxfinance:latest
+    restart: always
+    environment:
+      TZ: Asia/Shanghai
+    depends_on:
+      - nats
+
+  httpbatch:
+    build:
+      context: ..
+      dockerfile: docker/httpbatch/Dockerfile
+    platform: linux/amd64
+    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/qiweidoc_httpbatch:latest
+    restart: always
+    environment:
+      TZ: Asia/Shanghai
+    depends_on:
+      - nats
+
   main:
     build:
       context: ..
       dockerfile: docker/main/DockerfileDev
-    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/chat_session_archive_main_dev:latest
+    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/qiweidoc_main_dev:latest
     restart: always
     command: "/usr/sbin/sshd -D"
     cpu_count: 2
@@ -90,6 +114,8 @@ services:
       - redis
       - minio
       - nats
+      - wxfinance
+      - httpbatch
     tty: true
     ports:
       - ${EXTERNAL_HTTP_PORT:-80}:8080
@@ -101,5 +127,5 @@ services:
     build:
       context: ..
       dockerfile: docker/main/DockerfileProd
-    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/chat_session_archive_main_prod:latest
+    image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/qiweidoc_main_prod:latest
     scale: 0

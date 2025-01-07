@@ -3,15 +3,11 @@
 
 namespace Modules\HintKeywords;
 
-use Common\Broadcast;
-use Common\Job\Consumer;
-use Common\Job\Producer;
+use Common\Cron;
 use Common\RouterProvider;
 use Modules\HintKeywords\Consumer\StatisticsHintConsumer;
 use Modules\HintKeywords\Controller\IndexController;
 use Modules\HintKeywords\Model\NoticeConfig;
-use Modules\HintKeywords\Model\RuleModel;
-use Modules\Main\Consumer\SyncSessionMessageConsumer;
 use Modules\Main\Library\Middlewares\CurrentCorpInfoMiddleware;
 use Modules\Main\Library\Middlewares\UserRoleMiddleware;
 use Modules\Main\Model\CorpModel;
@@ -21,7 +17,40 @@ use Yiisoft\Router\Route;
 
 class Routes extends RouterProvider
 {
-    public function getGrpcRouters(): array
+    public function init(): void
+    {
+        $corp = CorpModel::query()->getOne();
+
+        NoticeConfig::updateOrCreate(["corp_id" => $corp->get('id')],
+            [
+                "corp_id" => $corp->get('id'),
+                "statistics_msg_time" => now(),
+            ]
+        );
+    }
+
+    public function getBroadcastRouters(): array
+    {
+        return [];
+    }
+
+    public function getMicroServiceRouters(): array
+    {
+        return [];
+    }
+
+    public function getCronRouters(): array
+    {
+        $corp = CorpModel::query()->getOne();
+
+        return [
+            //敏感词触发统计，30秒一次
+            Cron::name('statistics_hint')->spec('@every 30s')
+                ->action(StatisticsHintConsumer::class, ['corp' => $corp]),
+        ];
+    }
+
+    public function getConsumerRouters(): array
     {
         return [];
     }
@@ -49,47 +78,6 @@ class Routes extends RouterProvider
                 )
         ];
     }
-
-    public function getConsoleRouters(): array
-    {
-        return [];
-    }
-
-    public function getConsumerRouters(): array
-    {
-        return [
-            Consumer::name("statistics_hint")->count(1)->action(StatisticsHintConsumer::class),
-        ];
-    }
-
-    public function init(): void
-    {
-        $corp = CorpModel::query()->getOne();
-        Producer::dispatchCron(StatisticsHintConsumer::class, ["corp" => $corp], '30 seconds');//敏感词触发统计，30秒一次
-
-        return;
-    }
-
-    public function getBroadcastRouters(): array
-    {
-        return [
-            Broadcast::event('module_enable')->from('main')->handle(function (string $payload) {
-                $msgData = json_decode($payload, true);
-                if (isset($msgData["module_name"]) && $msgData["module_name"] == "hint_keywords") {
-                    NoticeConfig::updateOrCreate(
-                        ["corp_id" => $msgData["corp_id"] ?? ""],
-                        [
-                            "corp_id" => $msgData["corp_id"] ?? "",
-                            "statistics_msg_time" => $msgData["event_time"] ?? date("Y-m-d H:i:s", time())
-                        ]
-                    );
-                }
-            }),
-        ];
-    }
-
-    public function getMicroServiceRouters(): array
-    {
-        return [];
-    }
 }
+
+

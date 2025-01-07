@@ -3,9 +3,7 @@
 
 namespace Modules\KeywordsTagging;
 
-use Common\Broadcast;
-use Common\Job\Consumer;
-use Common\Job\Producer;
+use Common\Cron;
 use Common\RouterProvider;
 use Modules\KeywordsTagging\Consumer\MsgCheckKeywordsConsumer;
 use Modules\KeywordsTagging\Controller\TaskController;
@@ -18,7 +16,33 @@ use Yiisoft\Router\Route;
 
 class Routes extends RouterProvider
 {
-    public function getGrpcRouters(): array
+    public function init(): void
+    {
+
+    }
+
+    public function getBroadcastRouters(): array
+    {
+        return [];
+    }
+
+    public function getMicroServiceRouters(): array
+    {
+        return [];
+    }
+
+    public function getCronRouters(): array
+    {
+        $corp = CorpModel::query()->getOne();
+
+        return [
+            //敏感词触发统计，30秒一次
+            Cron::name('msg_check_keywords')->spec('@every 30s')
+                ->action(MsgCheckKeywordsConsumer::class, ['corp' => $corp]),
+        ];
+    }
+
+    public function getConsumerRouters(): array
     {
         return [];
     }
@@ -41,38 +65,5 @@ class Routes extends RouterProvider
 
                 )
         ];
-    }
-
-    public function getConsoleRouters(): array
-    {
-        return [];
-    }
-
-    public function getConsumerRouters(): array
-    {
-        //消费者注册
-        return [
-            Consumer::name("msg_check_keywords")->count(1)->action(MsgCheckKeywordsConsumer::class),
-        ];
-    }
-
-    public function init(): void
-    {
-        $corp = CorpModel::query()->getOne();
-        Producer::dispatchCron(MsgCheckKeywordsConsumer::class, ['corp'=>$corp], '30 seconds');//敏感词触发统计，30秒一次
-        return;
-    }
-
-    public function getBroadcastRouters(): array
-    {
-        // 事件接收处理
-        return [
-
-        ];
-    }
-
-    public function getMicroServiceRouters(): array
-    {
-        return [];
     }
 }

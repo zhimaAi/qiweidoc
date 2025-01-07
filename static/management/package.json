@@ -15,6 +15,7 @@
     "build:chat_statistic_group": "cross-env VUE_APP_MODULE=chat_statistic_group vue-cli-service build"
   },
   "dependencies": {
+    "@videojs-player/vue": "^1.0.0",
     "ant-design-vue": "^4.2.5",
     "axios": "^1.7.7",
     "benz-amr-recorder": "^1.1.5",
@@ -29,6 +30,7 @@
     "v-viewer": "^3.0.21",
     "vant": "^4.9.9",
     "video-player": "^0.0.1",
+    "video.js": "~7.20.1",
     "viewerjs": "^1.11.6",
     "vue": "^3.2.13",
     "vue-awesome-swiper": "^5.0.1",

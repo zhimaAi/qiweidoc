@@ -1,10 +1,5 @@
 {
     "name": "main",
-    "order": 0,
     "version": "1.0.0",
-    "required_main_version": 1,
-    "title": "主模块",
-    "description": "主模块,提供基础功能",
-    "intro": "主模块,提供基础功能",
-    "features": []
+    "plugins": ["http", "jobs", "cron", "micro", "broadcast"]
 }

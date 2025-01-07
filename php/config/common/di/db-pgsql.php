@@ -22,11 +22,14 @@ return [
                 [
                     PDO::ATTR_EMULATE_PREPARES => true,
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_PERSISTENT => true,
+                    PDO::ATTR_PERSISTENT => false,
                 ],
             ),
         ],
         'setLogger()' => [Reference::to('db.logger')],
+        // 'reset' => function () {
+        //     $this->close();
+        // },
     ],
 
     SchemaCache::class => [

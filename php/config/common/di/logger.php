@@ -46,15 +46,18 @@ return [
             }
 
             $aliases = $container->get(Aliases::class);
-            $logName = $aliases->get("@runtime/logs/{$module}/{$business}/" . date('Y-m-d') . ".log");
+            $logName = $aliases->get("@runtime/logs/{$module}/{$business}/app-" . date('Y-m-d') . ".log");
             $fileTarget = new FileTarget($logName);
 
             $logger = new Logger(
-                [$fileTarget, new RoadRunnerAppLogTarget()],
+                [
+                    $fileTarget,
+                    new RoadRunnerAppLogTarget(1),
+                ],
                 contextProvider: new CompositeContextProvider(
-                    new SystemContextProvider(traceLevel: 5, excludedTracePaths: ['vendor/yiisoft/di']),
+                    new SystemContextProvider(traceLevel: 10, excludedTracePaths: ['vendor']),
                     new CommonContextProvider($context),
-                )
+                ),
             );
             $logger->setFlushInterval(1);
 
@@ -62,13 +65,25 @@ return [
         };
     },
 
-    // 数据库查询日志
+    // 数据库操作日志,每3秒写一次文件
     'db.logger' => static function (ContainerInterface $container) {
+        $module = Module::getCurrentModuleName();
         $aliases = $container->get(Aliases::class);
-        $logName = $aliases->get('@runtime/logs/db.log');
+        $logName = $aliases->get("@runtime/logs/{$module}/db-" . date('Y-m-d') . ".log");
         $fileTarget = new FileTarget($logName);
-        $logger = new Logger([$fileTarget], new CommonContextProvider([]));
-        $logger->setFlushInterval(3);
+        $logger = new Logger(
+            [
+                $fileTarget,
+                new RoadRunnerAppLogTarget(1),
+            ],
+            contextProvider: new CompositeContextProvider(
+                new SystemContextProvider(
+                    traceLevel: 50,
+                    excludedTracePaths:
+                    ['vendor', 'php/common/DB', 'php/config', ]),
+            ),
+        );
+        $logger->setFlushInterval(1);
         return $logger;
     },
 ];

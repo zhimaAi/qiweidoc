@@ -11,7 +11,6 @@ class SyncSessionMessageConsumer
 {
     public function __construct()
     {
-
     }
 
     /**
@@ -19,15 +18,22 @@ class SyncSessionMessageConsumer
      */
     public function handle(): void
     {
-        /** @var CorpModel $corp */
         $corp = CorpModel::query()->getOne();
+        if (empty($corp) || empty($corp->get('chat_private_key'))) {
+            return;
+        }
 
-        if (!empty($corp) && !empty($corp->get('chat_private_key'))) {
-            $mutexKey = self::class . $corp->get('id');
-            if (Yii::mutex()->acquire($mutexKey)) {
-                ChatSessionPullService::handleMessage($corp);
-                Yii::mutex()->release($mutexKey);
-            }
+        $mutexKey = self::class . $corp->get('id');
+        if (!Yii::mutex()->acquire($mutexKey)) {
+            return;
+        }
+
+        try {
+            ChatSessionPullService::handleMessage($corp);
+        } catch (Throwable $e) {
+            Yii::logger()->error($e);
+        } finally {
+            Yii::mutex()->release($mutexKey);
         }
     }
 }

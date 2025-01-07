@@ -24,7 +24,7 @@
                         <template v-if="menu.key === 'FunctionCenter'">
                             <template v-for="plugin in lists">
                                 <a-menu-item
-                                    v-if="plugin.enable"
+                                    v-if="plugin.is_enabled && !plugin.is_expired"
                                     @click="pluginSwitch(plugin)"
                                     :key="`zm-plugin-${plugin.name}`">
                                     {{ plugin.title }}
@@ -141,14 +141,7 @@ const menus = ref([
 
 const loadData = () => {
     loading.value = true
-    let params = {}
-    getModules(params).then(res => {
-        let modules = res?.data || []
-        modules.map(item => {
-            item.enable = !item.paused
-        })
-        store.commit('setModules', modules)
-    }).finally(() => {
+    store.dispatch('updateModules').finally(() => {
         loading.value = false
     })
 }

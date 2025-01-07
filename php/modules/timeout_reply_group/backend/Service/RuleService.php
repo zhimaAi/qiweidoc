@@ -33,7 +33,7 @@ class RuleService
      */
     public static function run(CorpModel $corp): void
     {
-        $moduleInfo = Module::getModuleConfig(Module::getCurrentModuleName());
+        $moduleInfo = Module::getLocalModuleConfig(Module::getCurrentModuleName());
         $moduleStartedAt = $moduleInfo['started_at'] ?? Carbon::today()->format('Y-m-d H:i:s.v');
 
         // 获取所有超时规则

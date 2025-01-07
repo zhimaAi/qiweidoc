@@ -1,18 +1,6 @@
 {
     "name": "keywords_tagging",
     "version": "1.0.0",
-    "order": 2,
-    "required_main_version": 1,
-    "title": "关键词打标签",
-    "description": "客户在聊天过程中触发了设定的关键词即可自动给客户打上标签，并在客户画像中实时同步，方便员工了解客户信息，便于企业管理",
-    "intro": "在企业微信的聊天里给根据客户的聊天记录关键词来给客户打上标签，比如不同的客户经常询问的产品类型可能不一样，比如母婴类产品、3C数码产品、生鲜产品等，咨询不同的产品的频次可以代表一个客户平时的购物倾向和人物画像特征，通过给聊天记录关键词打标签，这样就可以给每个人的购物倾向打标签，这样可以在后续的活动营销里更精准的选择标签，按照兴趣群发活动信息，更精准营销。",
-    "icon": "modules/customer_tag/icon.png",
-    "images": [
-        "modules/customer_tag/images/1.png",
-        "modules/customer_tag/images/2.png"
-    ],
-    "features": [
-        "1.支持对全部群聊，单聊的检测，对客户或员工设置关键词和打标签",
-        "2.支持对关键词的触发记录进行前后消息追溯"
-    ]
+    "compatible_main_version_list": ["1.0.0"],
+    "plugins": ["http", "jobs", "cron"]
 }
