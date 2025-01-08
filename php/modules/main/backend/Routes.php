@@ -40,6 +40,7 @@ use Modules\Main\Library\Middlewares\UserRoleMiddleware;
 use Modules\Main\Library\Middlewares\WxAuthMiddleware;
 use Modules\Main\Controller\WxController;
 use Modules\Main\Listener\TestBroadcastController;
+use Modules\Main\Micro\ChangeModuleStatusMirco;
 use Modules\Main\Micro\TestMirco;
 use Modules\Main\Service\StorageService;
 use Modules\Main\Service\UserService;

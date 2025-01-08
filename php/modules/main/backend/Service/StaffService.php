@@ -133,7 +133,11 @@ class StaffService
                     }
                 }
                 $item->append('tag_name', $tagName);
-                $item->append('role_info', $userRoleListIndex[$item->get("role_id")->value]);
+                if (empty($item->get("role_id"))) {
+                    $item->append('role_info', ["id" => EnumUserRoleType::NORMAL_STAFF->value, "name" => "普通员工"]);
+                } else {
+                    $item->append('role_info', $userRoleListIndex[$item->get("role_id")->value] ?? ["id" => EnumUserRoleType::NORMAL_STAFF->value, "name" => "普通员工"]);
+                }
             }
 
             // 获取部门id和名称的映射

@@ -21,6 +21,7 @@ module.exports = defineConfig({
     outputDir: outputDir,
     publicPath: publicPath,
     transpileDependencies: true,
+    productionSourceMap: false,
     devServer: {
         open: true,
         proxy: {

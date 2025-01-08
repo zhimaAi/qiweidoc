@@ -45,7 +45,7 @@
 </template>
 
 <script setup>
-import {h, reactive, ref, onMounted, computed, watch} from 'vue';
+import {h, reactive, ref, onMounted, computed} from 'vue';
 import {useStore} from 'vuex';
 import {useRoute, useRouter} from 'vue-router';
 import {

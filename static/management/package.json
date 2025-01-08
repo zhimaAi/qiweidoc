@@ -12,7 +12,8 @@
     "build:hint_keywords": "cross-env VUE_APP_MODULE=hint_keywords vue-cli-service build",
     "build:timeout_reply_single": "cross-env VUE_APP_MODULE=timeout_reply_single vue-cli-service build",
     "build:timeout_reply_group": "cross-env VUE_APP_MODULE=timeout_reply_group vue-cli-service build",
-    "build:chat_statistic_group": "cross-env VUE_APP_MODULE=chat_statistic_group vue-cli-service build"
+    "build:chat_statistic_group": "cross-env VUE_APP_MODULE=chat_statistic_group vue-cli-service build",
+    "build:chat_statistic_single": "cross-env VUE_APP_MODULE=chat_statistic_single vue-cli-service build"
   },
   "dependencies": {
     "@videojs-player/vue": "^1.0.0",

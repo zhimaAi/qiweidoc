@@ -71,6 +71,26 @@ export const logoutHandle = () => {
     window.location.href = router.resolve({ path: '/login' }).href
 }
 
+export const logoutClearData = () => {
+    const company = JSON.parse(JSON.stringify(store.getters.getCompany))
+    store.commit('RESET_STATE')
+    // 企业信息不能清了
+    store.commit('setCompany', company)
+    clearLocalStorageWithPrefix('zm:session:archive:login:')
+}
+
+// 插件中新开页面打开插件路由
+// 插件没有右侧菜单则通过main模块打开插件的方式打开
+export const openPluginRouteLink = (pluginName, link) => {
+    link = `/modules/${pluginName}/${link}`
+    let url = `/#/plug/render?_key=zm-plugin-${pluginName}&link=${encodeURIComponent(link)}`
+    if (process.env.NODE_ENV === 'development') {
+        let host = process.env.VUE_APP_HOST || 'http://hhdev2.xiaokefu.cn'
+        url = host + url
+    }
+    window.open(url, '_blank')
+}
+
 export const sessionRoleMap = {
     1: 'Customer',
     2: 'Staff',

@@ -566,7 +566,7 @@ export default {
         this.funcShow = false;
       }
       this.$emit("cancel");
-      this.$emit("cancleSelect");
+      this.$emit("cancelSelect");
     },
     //选择的员工删除一项
     selectDelete(item, type) {

@@ -164,7 +164,7 @@ import MainNavbar from "@/components/mainNavbar.vue";
 import TimesRange from "@/components/tools/timesRange.vue";
 import SelectChatBox from "@/components/common/select-chat-box.vue";
 import SelectStaffBoxNormal from "@/components/common/select-staff-box-normal.vue";
-import {assignData, copyObj} from "@/utils/tools";
+import {assignData, copyObj, openPluginRouteLink} from "@/utils/tools";
 import {getBaseRule, getRuleInfo, setRule, updateRule} from "@/api/timeout-reply-group";
 import {timeDataFormat} from "@/common/timeoutReply";
 
@@ -313,7 +313,7 @@ function linkStatRule() {
     let link = router.resolve({
         path: '/module/timeout-reply-group/rule'
     })
-    window.open(link.href)
+    openPluginRouteLink('timeout_reply_group', link.href)
 }
 
 function verify() {

@@ -109,7 +109,7 @@ import MainNavbar from "@/components/mainNavbar.vue";
 import TimesRange from "@/components/tools/timesRange.vue";
 import SelectStaffBoxNormal from "@/components/common/select-staff-box-normal.vue";
 import {getBaseRule, getRuleInfo, setRule, updateRule} from "@/api/timeout-reply-single";
-import {assignData} from "@/utils/tools";
+import {assignData, openPluginRouteLink} from "@/utils/tools";
 import {timeDataFormat} from "@/common/timeoutReply";
 import LoadingBox from "@/components/loadingBox.vue";
 
@@ -214,7 +214,7 @@ function linkStatRule() {
     let link = router.resolve({
         path: '/module/timeout-reply-single/rule'
     })
-    window.open(link.href)
+    openPluginRouteLink('timeout_reply_single', link.href)
 }
 
 function verify() {

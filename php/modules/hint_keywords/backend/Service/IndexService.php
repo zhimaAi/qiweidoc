@@ -20,7 +20,7 @@ use Yiisoft\Arrays\ArrayHelper;
 
 /**
  * @author rand
- * @ClassName IndexService
+ * @ClassName StatisticService
  * @date 2024/12/314:42
  * @description
  */

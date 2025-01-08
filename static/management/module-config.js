@@ -13,8 +13,8 @@ const ModuleConfig = {
     hint_keywords: {
         buildOutputPath: '/php/modules/hint_keywords/public/build/',
     },
-    single_chat_stat: {
-        buildOutputPath: '/php/modules/single_chat_stat/public/build/',
+    chat_statistic_single: {
+        buildOutputPath: '/php/modules/chat_statistic_single/public/build/',
     },
     chat_statistic_group: {
         buildOutputPath: '/php/modules/chat_statistic_group/public/build/',

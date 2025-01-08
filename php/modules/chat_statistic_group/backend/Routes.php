@@ -37,7 +37,7 @@ class Routes extends RouterProvider
         $corp = CorpModel::query()->getOne();
 
         return [
-            //敏感词触发统计，每小时0点触发
+            //群聊统计，每小时0点触发
             Cron::name('chat_statistic_group')->spec('0 * * * *')
                 ->action(StatisticsGroupChatConsumer::class, ['corp' => $corp]),
         ];

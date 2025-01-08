@@ -101,15 +101,15 @@ onMounted(() => {
     loading.value = false
     nextTick(() => {
         // 重置路由信息
-        rsetRouteQuery(query)
+        resetRouteQuery(query)
     })
 })
 
 const mainTabChange = () => {
-    rsetRouteQuery({...route.query, tab: BASE_TYPE.value})
+    resetRouteQuery({...route.query, tab: BASE_TYPE.value})
 }
 
-const rsetRouteQuery = queryParams => {
+const resetRouteQuery = queryParams => {
     router.replace({
         path: route.path,
         query: queryParams
