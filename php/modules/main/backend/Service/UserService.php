@@ -81,7 +81,7 @@ class UserService
         $userRoleListIndex = ArrayHelper::index($userRoleList, "id");
 
         foreach ($list["items"] as $item) {
-            $item->append('role_info', $userRoleListIndex[$item->get("role_id")->value]??[]);
+            $item->append('role_info', $userRoleListIndex[$item->get("role_id")]??[]);
         }
 
         return $list;

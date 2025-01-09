@@ -5,17 +5,17 @@ export default [
     },
     {
         path: '/module/keywords_tagging/index',
-        name: 'CustomerLabelInex',
+        name: 'keywordsTaggingIndex',
         component: () => import('@/views/Modules/keywords_tagging/index.vue')
     },
     {
         path: "/module/keywords_tagging/ruleStore",
-        name: "hintKeywordsRuleStore",
+        name: "keywordsTaggingRuleStore",
         component: () => import("@/views/Modules/keywords_tagging/ruleConfig.vue"),
     },
     {
         path: "/module/keywords_tagging/details",
-        name: "hintKeywordsDetails",
+        name: "keywordsTaggingDetails",
         component: () => import("@/views/Modules/keywords_tagging/details.vue"),
     },
 ]

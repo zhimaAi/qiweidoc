@@ -53,18 +53,18 @@
                                 <span class="name">{{ record.name }}</span>
                             </div>
                         </template>
-                        <template v-else-if="'role_name' === column.dataIndex">
+                        <!-- <template v-else-if="'role_name' === column.dataIndex">
                             {{ text }}
                             <a v-if="showEditRole(record)" @click="showStaffRole(record)" class="ml8">修改</a>
-                        </template>
-                        <template v-else-if="'login_perm' === column.dataIndex">
+                        </template> -->
+                        <!-- <template v-else-if="'login_perm' === column.dataIndex">
                             <a-switch
-                                v-if="record.role_id.value != 3"
+                                v-if="record.role_id != 3"
                                 v-model:checked="record.login_perm"
                                 @change="loginPermChange(record)"
                                 checked-children="开"
                                 un-checked-children="关"/>
-                        </template>
+                        </template> -->
                         <template v-else-if="'tag_name' === column.dataIndex">
                             <a-popover v-if="text?.length > 3">
                                 <template #content>
@@ -158,11 +158,11 @@ const columns = [
         width: 135,
         title: "角色",
     },
-    {
-        dataIndex: "login_perm",
-        width: 135,
-        title: "登录",
-    },
+    // {
+    //     dataIndex: "login_perm",
+    //     width: 135,
+    //     title: "登录",
+    // },
 ]
 const loading = ref(false)
 const syncing = ref(false)
@@ -192,7 +192,13 @@ const userInfo = computed(() => {
     return store.getters.getUserInfo
 })
 
+const administrator = [2, 3]
+
 onMounted(() => {
+    const tabIndex = StaffAccountsTabs.map(item => item.key).indexOf('accounts')
+    if (administrator.indexOf(userInfo.value.role_id) === -1 && tabIndex !== -1) {
+        StaffAccountsTabs.splice(tabIndex , 1)
+    }
     autoSync()
     loadData()
 })
@@ -238,7 +244,7 @@ const loadData = () => {
     staffList(params).then(res => {
         let items = res.data.items || []
         items.map(item => {
-            item.login_perm = (item?.can_login == 1)
+            // item.login_perm = (item?.can_login == 1)
             item.role_name = item?.role_info?.role_name
         })
         list.value = items
@@ -269,29 +275,29 @@ const loadRoles = () => {
     })
 }
 
-const loginPermChange = record => {
-    let status = record.login_perm ? '开启' : '关闭'
-    const cancel = () => {
-        record.login_perm = !record.login_perm
-    }
-    Modal.confirm({
-        title: '提示',
-        content: `确认${status}该员工登录权限？`,
-        onOk: () => {
-            staffLoginPermChange({
-                id: record.id,
-                can_login: Number(record.login_perm)
-            }).then(() => {
-                message.success(`已${status}`)
-            }).catch(() => {
-                cancel()
-            })
-        },
-        onCancel: () => {
-            cancel()
-        }
-    })
-}
+// const loginPermChange = record => {
+//     let status = record.login_perm ? '开启' : '关闭'
+//     const cancel = () => {
+//         record.login_perm = !record.login_perm
+//     }
+//     Modal.confirm({
+//         title: '提示',
+//         content: `确认${status}该员工登录权限？`,
+//         onOk: () => {
+//             staffLoginPermChange({
+//                 id: record.id,
+//                 can_login: Number(record.login_perm)
+//             }).then(() => {
+//                 message.success(`已${status}`)
+//             }).catch(() => {
+//                 cancel()
+//             })
+//         },
+//         onCancel: () => {
+//             cancel()
+//         }
+//     })
+// }
 
 const showStaffRole = record => {
     if (!roles.value.length) {
@@ -316,11 +322,11 @@ const saveStaffRole = () => {
     })
 }
 
-const showEditRole = record => {
-    // 超级管理员拥有此权限
-    // 且超级管理员不能被修改
-    return userInfo.value?.role_id?.value == 3 && record.role_id.value != 3
-}
+// const showEditRole = record => {
+//     // 超级管理员拥有此权限
+//     // 且超级管理员不能被修改
+//     return userInfo.value?.role_id == 3 && record.role_id != 3
+// }
 </script>
 
 <style scoped lang="less">

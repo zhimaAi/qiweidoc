@@ -117,7 +117,7 @@
 </template>
 
 <script setup>
-import {h, reactive, ref} from 'vue';
+import {h, reactive, ref, onMounted} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
 import dayjs from 'dayjs';
 import {SearchOutlined} from '@ant-design/icons-vue';
@@ -191,7 +191,7 @@ const search = () => {
     loadData()
 }
 
-const loadData = () => {
+const loadData = (type) => {
     loading.value = true
     let params = {
         page: pagination.current,
@@ -199,7 +199,7 @@ const loadData = () => {
     }
     filterData.keyword = filterData.keyword.trim()
     filterData.from = filterData.from.trim()
-    if (!filterData.keyword) {
+    if (!filterData.keyword && !type) {
         message.warn('请输入搜索内容')
         return
     }
@@ -216,6 +216,9 @@ const loadData = () => {
     if (filterData.dates.length) {
         params.start_time = filterData.dates[0].format('YYYY-MM-DD 00:00:00')
         params.stop_time = filterData.dates[1].format('YYYY-MM-DD 23:59:59')
+    }
+    if (type && type == 'init') {
+        params.init = true
     }
     searchSession(params).then(res => {
         let data = res.data || {}
@@ -271,6 +274,18 @@ const openDetail = record => {
 const disabledDate = current => {
     return current && current > dayjs().endOf('day')
 }
+
+const onInit = () => {
+    list.value = []
+    pagination.current = 1
+    pagination.total = 0
+    loadData('init')
+}
+
+onMounted(() => {
+    // 为了权限验证
+    onInit()
+})
 </script>
 
 <style scoped lang="less">

@@ -153,7 +153,7 @@
                             type="primary"
                             style="margin-left:20px;"
                             :icon="h(SyncOutlined)"
-                            :loading="latest_info.success == false"
+                            :loading="latest_info.success"
                             @click="pullCustomerGroup"
                         >
                         更新数据
@@ -414,19 +414,20 @@ const last_sync_time = ref('')
 const refreshFlag = ref(false)
 const latest_info = reactive({
     end_time: void 0,
-    success: true
+    success: false
 })
 const pullCustomerGroup = () => {
     if (!refreshFlag.value) {
         refreshFlag.value = true;
-        latest_info.success = false;
+        latest_info.success = true;
         groupsSync({}).then((res) => {
             //已经在拉取的状态
-            refreshFlag.value = false;
-            latest_info.success = true;
             message.success('更新成功')
             // checkTaskStatus();
-        });
+        }).finally(() => {
+            refreshFlag.value = false;
+            latest_info.success = false;
+        })
     }
 }
 

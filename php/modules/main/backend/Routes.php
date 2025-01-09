@@ -42,8 +42,12 @@ use Modules\Main\Controller\WxController;
 use Modules\Main\Listener\TestBroadcastController;
 use Modules\Main\Micro\ChangeModuleStatusMirco;
 use Modules\Main\Micro\TestMirco;
+use Modules\Main\Micro\ChangeRolePermissionConfigMirco;
+use Modules\Main\Micro\ChangeStaffRoleMirco;
+use Modules\Main\Micro\TestController;
 use Modules\Main\Service\StorageService;
 use Modules\Main\Service\UserService;
+use Modules\UserPermission\Micro\CheckMirco;
 use Psr\Http\Message\ServerRequestInterface;
 use Yiisoft\Auth\Middleware\Authentication;
 use Yiisoft\DataResponse\DataResponseFactoryInterface;
@@ -94,6 +98,9 @@ class Routes extends RouterProvider
     {
         return [
             Micro::name('test')->action(TestMirco::class),
+            Micro::name('change_staff_role')->action(ChangeStaffRoleMirco::class),
+            Micro::name('change_role_permission_config')->action(ChangeRolePermissionConfigMirco::class),
+
         ];
     }
 
@@ -115,7 +122,8 @@ class Routes extends RouterProvider
             Consumer::name("sync_session_message")->count(1)->action(SyncSessionMessageConsumer::class),
             Consumer::name("download_session_medias")->count(5)->action(DownloadChatSessionBitMediasConsumer::class)->reserveOnStop(),
             Consumer::name("download_session_big_medias")->count(2)->action(DownloadChatSessionMediasConsumer::class)->reserveOnStop(),
-            Consumer::name("remove_expired_local_files")->count(1) ->action(RemoveExpiredLocalFilesConsumer::class),
+            Consumer::name("remove_expired_local_files")->count(1)->action(RemoveExpiredLocalFilesConsumer::class),
+            Consumer::name("mark_tag")->count(1)->action(MarkTagConsumer::class)
         ];
     }
 
@@ -175,29 +183,29 @@ class Routes extends RouterProvider
                     // 模块管理
                     Route::get("/modules")->action([ModuleController::class, "getModuleList"]),
                     Route::get("/modules/{name:.+}")->action([ModuleController::class, "getModuleDetail"]),
-                    Route::put("/modules/{name:.+}/enable")->action([ModuleController::class, "enableModule"]),
-                    Route::put("/modules/{name:.+}/disable")->action([ModuleController::class, "disableModule"]),
+                    Route::put("/modules/{name:.+}/enable")->action([ModuleController::class, "enableModule"])->defaults(["permission_key" => 'main.plug_module.edit']),
+                    Route::put("/modules/{name:.+}/disable")->action([ModuleController::class, "disableModule"])->defaults(["permission_key" => 'main.plug_module.edit']),
                     Route::post('/modules/{name:.+}/install')->action([ModuleController::class, 'installModule']),
 
                     // 云存储配置
                     Route::get('/ping/settings')->action([PublicController::class, 'ping']),
-                    Route::get('/cloud-storage-settings')->action([CloudStorageSettingController::class, 'show']),
-                    Route::put('/cloud-storage-settings')->action([CloudStorageSettingController::class, 'save']),
-                    Route::get('/cloud-storage-settings/provider-regions')->action([CloudStorageSettingController::class, 'getStorageProviderRegionList']),
+                    Route::get('/cloud-storage-settings')->action([CloudStorageSettingController::class, 'show'])->defaults(["permission_key" => 'main.oss_config.list']),
+                    Route::put('/cloud-storage-settings')->action([CloudStorageSettingController::class, 'save'])->defaults(["permission_key" => 'main.oss_config.edit']),
+                    Route::get('/cloud-storage-settings/provider-regions')->action([CloudStorageSettingController::class, 'getStorageProviderRegionList'])->defaults(["permission_key" => 'main.oss_config.list']),
 
                     // 企业相关接口
                     Route::get("/corps/current")->action([CorpController::class, "getCurrentCorpInfo"]),
                     Route::get("/corps/session/publicKey")->action([CorpController::class, "getSessionPublicKey"]),
-                    Route::post("/corps/session/saveConfig")->action([CorpController::class, "saveConfig"]),
-                    Route::put("/corps/current")->action([CorpController::class, "updateConfig"]),
+                    Route::post("/corps/session/saveConfig")->action([CorpController::class, "saveConfig"])->defaults(["permission_key" => 'main.corp_setting.edit']),
+                    Route::put("/corps/current")->action([CorpController::class, "updateConfig"])->defaults(["permission_key" => 'main.corp_setting.edit']),
                     Route::get("/corps/callback/event/token/generate")->action([CorpController::class, "generateCallbackEventToken"]),
                     Route::put("/corps/callback/event/token/save")->action([CorpController::class, "saveCallbackEventToken"])->disableMiddleware(UserRoleMiddleware::class),
-                    Route::post("/corps/upload/logo")->action([CorpController::class, "uploadLogo"]),
-                    Route::put("/corps/name-logo/save")->action([CorpController::class, "saveNameOrLogo"]),
+                    Route::post("/corps/upload/logo")->action([CorpController::class, "uploadLogo"])->defaults(["permission_key" => 'main.corp_setting.edit']),
+                    Route::put("/corps/name-logo/save")->action([CorpController::class, "saveNameOrLogo"])->defaults(["permission_key" => 'main.corp_setting.edit']),
 
                     // 用户相关接口
                     Route::get("/users/current")->action([UserController::class, "getCurrentUserInfo"]),
-                    Route::put("/users/current")->action([UserController::class, "updateCurrentUserInfo"]),
+                    Route::put("/users/current")->action([UserController::class, "updateCurrentUserInfo"])->defaults(["permission_key" => 'main.user_config.edit']),
                     Route::get("/demo/users/list")->action([UserController::class, "demoUserList"]),
                     Route::post("/demo/users/save")->action([UserController::class, "demoUserSave"]),
                     Route::post("/demo/users/change")->action([UserController::class, "demoUserChangeLogin"]),
@@ -205,46 +213,44 @@ class Routes extends RouterProvider
                     Route::get("/users/role/list")->action([UserController::class, "userRoleList"]),
 
                     // 群相关的接口
-                    Route::get("/groups/sync")->action([GroupController::class, "sync"]),
+                    Route::get("/groups/sync")->action([GroupController::class, "sync"])->defaults(["permission_key" => 'main.corp_group.sync','filter_status'=>true]),
                     Route::get("/groups/list")->action([GroupController::class, "list"]),
 
                     // 客户相关的接口
-                    Route::get("/customers/sync")->action([CustomersController::class, "sync"]),
-                    Route::get("/customers/list")->action([CustomersController::class, "list"]),
-                    Route::get("/customers/has-conversation/list")->action([CustomersController::class, "hasConversationList"]),
+                    Route::get("/customers/sync")->action([CustomersController::class, "sync"])->defaults(["permission_key" => 'main.customer_manager.list','filter_status'=>true]),
+                    Route::get("/customers/list")->action([CustomersController::class, "list"])->defaults(["permission_key" => 'main.customer_manager.list']),
+                    Route::get("/customers/has-conversation/list")->action([CustomersController::class, "hasConversationList"])->defaults(["permission_key" => 'main.customer_manager.list']),
 
                     // 客户标签相关的接口
                     Route::get('/customer-tags')->action([CustomerTagController::class, 'list']),
-                    Route::post('/customer-tags')->action([CustomerTagController::class, 'updateOrCreate']),
-                    Route::delete('/customer-tags/group/{group_id:.+}')->action([CustomerTagController::class, 'destroyGroup']),
-                    Route::delete('/customer-tags/{tag_id:.+}')->action([CustomerTagController::class, 'destroyTag']),
+                    Route::post('/customer-tags')->action([CustomerTagController::class, 'updateOrCreate'])->defaults(["permission_key" => 'main.customer_tag.edit']),
+                    Route::delete('/customer-tags/group/{group_id:.+}')->action([CustomerTagController::class, 'destroyGroup'])->defaults(["permission_key" => 'main.customer_tag.edit']),
+                    Route::delete('/customer-tags/{tag_id:.+}')->action([CustomerTagController::class, 'destroyTag'])->defaults(["permission_key" => 'main.customer_tag.edit']),
 
                     // 员工相关接口
                     Route::get("/staff/list")->action([StaffController::class, "list"]),
-                    Route::post("/staff/change/login")->action([StaffController::class, "changeLogin"]),
-                    Route::post("/staff/change/role")->action([StaffController::class, "changeRole"]),
 
                     // 部门相关接口
-                    Route::get("/department/sync")->action([DepartmentController::class, "sync"]),
+                    Route::get("/department/sync")->action([DepartmentController::class, "sync"])->defaults(["permission_key" => 'main.corp_staff.sync','filter_status'=>true]),
                     Route::get("/department/list")->action([DepartmentController::class, "list"]),
 
                     // 标签相关的接口
                     Route::get("/tags/staff")->action([TagsController::class, "staff"]),
 
                     // 会话存档相关的接口
-                    Route::get("/chats/by/staff/customer/conversation/list")->action([ChatController::class, "getCustomerConversationListByStaff"]),
-                    Route::get("/chats/by/staff/staff/conversation/list")->action([ChatController::class, "getStaffConversationListByStaff"]),
-                    Route::get("/chats/by/staff/room/conversation/list")->action([ChatController::class, "getRoomConversationListByStaff"]),
-                    Route::get("/chats/by/customer/staff/conversation/list")->action([ChatController::class, "getStaffConversationListByCustomer"]),
+                    Route::get("/chats/by/staff/customer/conversation/list")->action([ChatController::class, "getCustomerConversationListByStaff"])->defaults(["permission_key" => 'main.session_archive.list']),
+                    Route::get("/chats/by/staff/staff/conversation/list")->action([ChatController::class, "getStaffConversationListByStaff"])->defaults(["permission_key" => 'main.session_archive.list']),
+                    Route::get("/chats/by/staff/room/conversation/list")->action([ChatController::class, "getRoomConversationListByStaff"])->defaults(["permission_key" => 'main.session_archive.list']),
+                    Route::get("/chats/by/customer/staff/conversation/list")->action([ChatController::class, "getStaffConversationListByCustomer"])->defaults(["permission_key" => 'main.session_archive.list']),
                     Route::get("/chats/config/info")->action([ChatController::class, "getChatConfigInfo"]),
                     Route::post("/chats/config/save")->action([ChatController::class, "saveChatConfig"]),
 
                     //会话存档 消息相关接口
-                    Route::get('/chats/by/conversation/message/list')->action([ChatController::class, 'getMessageListByConversation']),
-                    Route::get('/chats/by/group/message/list')->action([ChatController::class, 'getMessageListByGroup']),
+                    Route::get('/chats/by/conversation/message/list')->action([ChatController::class, 'getMessageListByConversation'])->defaults(["permission_key" => 'main.session_archive.list']),
+                    Route::get('/chats/by/group/message/list')->action([ChatController::class, 'getMessageListByGroup'])->defaults(["permission_key" => 'main.session_archive.list']),
 
                     //会话存档搜索相关接口
-                    Route::get('/chats/search')->action([ChatController::class, 'getSearch']),
+                    Route::get('/chats/search')->action([ChatController::class, 'getSearch'])->defaults(["permission_key" => 'main.session_archive.search']),
 
                     // 会话存档收藏相关接口
                     Route::get('/chats/by/collect/customer/conversation/list')->action([ChatController::class, 'getCustomerConversationListByCollect']),

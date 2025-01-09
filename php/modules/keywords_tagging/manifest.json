@@ -1,6 +1,6 @@
 {
     "name": "keywords_tagging",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "compatible_main_version_list": ["1.0.0"],
     "plugins": ["http", "jobs", "cron"]
 }

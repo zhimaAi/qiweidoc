@@ -17,6 +17,16 @@ export default [
         },
     },
     {
+      path: '/403',
+      name: 'Error403',
+      component: () => import('../views/error/error-403.vue'),
+      meta: {
+        title: '没有权限',
+        noAuth: true,
+        isWhiteRouter: true
+      }
+    },
+    {
         path: '/authorizedAccess/index',
         name: 'authIndex',
         component: () => import('../views/authorizedAccess/index.vue'),

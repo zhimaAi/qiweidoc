@@ -40,7 +40,7 @@ class StatisticService
                         "range" => [
                             [
                                 "s" => "09:00",
-                                "e" => "19:00"
+                                "e" => "18:00"
                             ]
                         ],
                     ]

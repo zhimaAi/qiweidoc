@@ -33,7 +33,7 @@ class UserModel extends BaseModel implements IdentityInterface, IdentityWithToke
             "password" => 'string',
             "created_at" => 'string',
             "updated_at" => 'string',
-            "role_id" => EnumUserRoleType::class,
+            "role_id" => 'int',
             "exp_time" => 'int',
             "can_login" => 'int',
             "description" => 'string',

@@ -87,7 +87,8 @@
 </template>
 
 <script setup>
-import {onMounted, ref, reactive, h} from 'vue';
+import {onMounted, ref, reactive, h, computed} from 'vue';
+import {useStore} from 'vuex';
 import dayjs from 'dayjs';
 import {message, Modal} from 'ant-design-vue';
 import {PlusOutlined} from '@ant-design/icons-vue';
@@ -97,6 +98,7 @@ import {StaffAccountsTabs} from "@/views/companyManagement/const";
 import {delLoginAccount, loginAccountList, permLoginAccount, saveLoginAccount} from "@/api/company";
 import {copyObj} from "@/utils/tools";
 
+const store = useStore()
 const loading = ref(false)
 const inputAccount = ref(false)
 const inputPassword = ref(false)
@@ -155,7 +157,17 @@ const storeModal = reactive({
     }
 })
 
+const userInfo = computed(() => {
+    return store.getters.getUserInfo
+})
+
+const administrator = [2, 3]
+
 onMounted(() => {
+    const tabIndex = StaffAccountsTabs.map(item => item.key).indexOf('accounts')
+    if (administrator.indexOf(userInfo.value.role_id) === -1 && tabIndex !== -1) {
+        StaffAccountsTabs.splice(tabIndex , 1)
+    }
     init()
 })
 

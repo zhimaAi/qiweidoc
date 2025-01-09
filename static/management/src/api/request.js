@@ -84,6 +84,9 @@ request.interceptors.response.use(
                 showGlobalError(res?.error_message || '登录过期，请重新登录！', 'warn');
                 logoutHandle()
                 break
+            case 403:
+                window.location.href = "/#/403"
+                break
             default:
                 if (!error?.config?.headers['Custom-Handle-Error']) {
                     showGlobalError(res?.error_message || '网络连接出错');

@@ -63,18 +63,18 @@ class Routes extends RouterProvider
                 ->middleware(CurrentCorpInfoMiddleware::class)
                 ->middleware(UserRoleMiddleware::class)
                 ->routes(
-                    Route::get('/list')->action([IndexController::class, 'list']),
-                    Route::post('/delete')->action([IndexController::class, 'delete']),
-                    Route::post('/save')->action([IndexController::class, 'save']),
-                    Route::get('/rule/list')->action([IndexController::class, 'ruleList']),
-                    Route::post('/rule/save')->action([IndexController::class, 'ruleSave']),
-                    Route::get('/rule/statistics')->action([IndexController::class, 'ruleStatistic']),
-                    Route::get('/rule/info')->action([IndexController::class, 'ruleInfo']),
-                    Route::get('/rule/detail')->action([IndexController::class, 'ruleDetail']),
-                    Route::post('/rule/delete')->action([IndexController::class, 'ruleDelete']),
-                    Route::post('/rule/change/status')->action([IndexController::class, 'changeStatus']),
-                    Route::get('/notice/info')->action([IndexController::class, 'noticeInfo']),
-                    Route::post('/notice/save')->action([IndexController::class, 'noticeSave']),
+                    Route::get('/list')->action([IndexController::class, 'list'])->defaults(["permission_key" => 'hint_keywords.list']),
+                    Route::post('/delete')->action([IndexController::class, 'delete'])->defaults(["permission_key" => 'hint_keywords.edit']),
+                    Route::post('/save')->action([IndexController::class, 'save'])->defaults(["permission_key" => 'hint_keywords.edit']),
+                    Route::get('/rule/list')->action([IndexController::class, 'ruleList'])->defaults(["permission_key" => 'hint_keywords.list']),
+                    Route::post('/rule/save')->action([IndexController::class, 'ruleSave'])->defaults(["permission_key" => 'hint_keywords.edit']),
+                    Route::get('/rule/statistics')->action([IndexController::class, 'ruleStatistic'])->defaults(["permission_key" => 'hint_keywords.list']),
+                    Route::get('/rule/info')->action([IndexController::class, 'ruleInfo'])->defaults(["permission_key" => 'hint_keywords.list']),
+                    Route::get('/rule/detail')->action([IndexController::class, 'ruleDetail'])->defaults(["permission_key" => 'hint_keywords.list']),
+                    Route::post('/rule/delete')->action([IndexController::class, 'ruleDelete'])->defaults(["permission_key" => 'hint_keywords.edit']),
+                    Route::post('/rule/change/status')->action([IndexController::class, 'changeStatus'])->defaults(["permission_key" => 'hint_keywords.edit']),
+                    Route::get('/notice/info')->action([IndexController::class, 'noticeInfo'])->defaults(["permission_key" => 'hint_keywords.list']),
+                    Route::post('/notice/save')->action([IndexController::class, 'noticeSave'])->defaults(["permission_key" => 'hint_keywords.edit']),
                 )
         ];
     }

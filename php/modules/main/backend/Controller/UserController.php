@@ -3,17 +3,19 @@
 
 namespace Modules\Main\Controller;
 
+use Basis\Nats\Message\Payload;
 use Common\Controller\BaseController;
+use Common\Module;
 use Common\Yii;
 use Modules\Main\DTO\CreateUserBaseDTO;
 use Modules\Main\DTO\UpdateUserInfoBaseDTO;
-use Modules\Main\Service\AuthService;
 use Modules\Main\Enum\EnumUserRoleType;
 use Modules\Main\Model\CorpModel;
 use Modules\Main\Model\UserRoleModel;
 use Modules\Main\Service\UserService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Auth\Middleware\Authentication;
 
 class UserController extends BaseController
@@ -25,6 +27,31 @@ class UserController extends BaseController
     {
         $currentUserInfo = $request->getAttribute(Authentication::class);
         $currentUserInfo->unset('password');
+
+        $allRoleList = UserRoleModel::query()->getAll()->toArray();
+
+        $otherRoleList = [];
+        $moduleConfig = Module::getLocalModuleConfig("user_permission");
+        if (!$moduleConfig["paused"]) {
+            $roleListParam = [
+                "corp_id" => $currentUserInfo->get("corp_id")
+            ];
+            Yii::getNatsClient()->request('user_permission.get_role_list', json_encode($roleListParam), function (Payload $response) use (&$otherRoleList) {
+                $otherRoleList = json_decode($response, true);
+            });
+        }
+
+        $allRoleList = array_merge($allRoleList, $otherRoleList["res"] ?? []);
+        $allRoleListIndex = ArrayHelper::index($allRoleList, "id");
+
+        $roleInfo = $allRoleListIndex[$currentUserInfo->get("role_id")] ?? [];
+        $currentUserInfo->append("permission_list", $roleInfo["permission_config"] ?? []);
+        $currentUserInfo->append("role_name", $roleInfo["role_name"] ?? "普通员工");
+
+        //如果没有角色，当前账户变更为普通员工
+        if (empty($roleInfo)) {
+            $currentUserInfo->set("role_id", EnumUserRoleType::NORMAL_STAFF->value);
+        }
 
         return $this->jsonResponse($currentUserInfo);
     }

@@ -6,6 +6,7 @@ namespace Modules\ChatStatisticGroup;
 use Common\Cron;
 use Common\Job\Consumer;
 use Common\RouterProvider;
+use Modules\ChatStatisticGroup\Model\ConfigModel;
 use Modules\Main\Library\Middlewares\CurrentCorpInfoMiddleware;
 use Modules\Main\Library\Middlewares\UserRoleMiddleware;
 use Modules\Main\Model\CorpModel;
@@ -17,9 +18,36 @@ use Yiisoft\Router\Route;
 
 class Routes extends RouterProvider
 {
+    const DefaultConfig = [
+        "work_time" => [
+            [
+                "week" => [1, 2, 3, 4, 5],
+                "range" => [
+                    [
+                        "s" => "09:00",
+                        "e" => "18:00"
+                    ]
+                ],
+            ]
+        ],
+        "cst_keywords" => [
+            "full" => ["好的", "谢谢"],
+            "half" => [],
+            "msg_type_filter" => []
+        ],
+        "msg_reply_sec" => 3,
+        "at_msg_reply_sec" => 3,
+        "other_effect" => 0,
+    ];
+
     public function init(): void
     {
-
+        $corp = CorpModel::query()->getOne();
+        //检查是否存在默认配置
+        $groupConfig = ConfigModel::query()->where(['corp_id' => $corp->get('id')])->getOne();
+        if (empty($groupConfig)) {
+            ConfigModel::create(array_merge(self::DefaultConfig, ["corp_id" => $corp->get("id")]));
+        }
     }
 
     public function getBroadcastRouters(): array
@@ -58,12 +86,14 @@ class Routes extends RouterProvider
                 ->middleware(CurrentCorpInfoMiddleware::class)
                 ->middleware(UserRoleMiddleware::class)
                 ->routes(
-                    Route::get('/config')->action([StatisticController::class, 'getConfig']),//获取配置
-                    Route::post('/config')->action([StatisticController::class, 'saveConfig']),//保存配置
-                    Route::get('/list')->action([StatisticController::class, 'getList']),//获取统计列表
-                    Route::get('/detail')->action([StatisticController::class, 'getDetail']),//获取明细
-                    Route::get('/stat')->action([StatisticController::class, 'stat']),//获取明细
+                    Route::get('/config')->action([StatisticController::class, 'getConfig'])->defaults(["permission_key" => 'chat_statistic_group.list']),//获取配置
+                    Route::post('/config')->action([StatisticController::class, 'saveConfig'])->defaults(["permission_key" => 'chat_statistic_group.edit']),//保存配置
+                    Route::get('/list')->action([StatisticController::class, 'getList'])->defaults(["permission_key" => 'chat_statistic_group.list']),//获取统计列表
+                    Route::get('/detail')->action([StatisticController::class, 'getDetail'])->defaults(["permission_key" => 'chat_statistic_group.list']),//获取明细
+                    Route::get('/stat')->action([StatisticController::class, 'stat'])->defaults(["permission_key" => 'chat_statistic_group.list']),//获取明细
                 )
         ];
     }
+
+
 }

@@ -55,13 +55,13 @@ class Routes extends RouterProvider
                 ->middleware(CurrentCorpInfoMiddleware::class)
                 ->middleware(UserRoleMiddleware::class)
                 ->routes(
-                    Route::get('/list')->action([TaskController::class, 'list']),
-                    Route::put('/delete')->action([TaskController::class, 'delete']),
-                    Route::post('/save')->action([TaskController::class, 'save']),
-                    Route::get('/info')->action([TaskController::class, 'info']),
-                    Route::get('/statistics')->action([TaskController::class, 'statistics']),
-                    Route::put('/change/switch')->action([TaskController::class, 'changeStatus']),
-                    Route::get('/log/list')->action([TaskController::class, 'RuleTriggerLogList']),
+                    Route::get('/list')->action([TaskController::class, 'list'])->defaults(["permission_key" => 'keywords_tagging.list', 'filter_status' => true]),
+                    Route::put('/delete')->action([TaskController::class, 'delete'])->defaults(["permission_key" => 'keywords_tagging.edit']),
+                    Route::post('/save')->action([TaskController::class, 'save'])->defaults(["permission_key" => 'keywords_tagging.list']),
+                    Route::get('/info')->action([TaskController::class, 'info'])->defaults(["permission_key" => 'keywords_tagging.sync']),
+                    Route::get('/statistics')->action([TaskController::class, 'statistics'])->defaults(["permission_key" => 'keywords_tagging.list']),
+                    Route::put('/change/switch')->action([TaskController::class, 'changeStatus'])->defaults(["permission_key" => 'keywords_tagging.edit']),
+                    Route::get('/log/list')->action([TaskController::class, 'RuleTriggerLogList'])->defaults(["permission_key" => 'keywords_tagging.list']),
 
                 )
         ];

@@ -777,6 +777,10 @@ SQL;
             $start_time = date("Y-m-d H:i:s", strtotime("-180 days"));
         }
 
+        if (isset($data["init"]) && $data["init"] ) {
+            return [];
+        }
+
         if (empty($data["keyword"])) {
             throw new LogicException('请输入查找内容');
         }
@@ -815,7 +819,7 @@ SQL;
 
         $query = ChatMessageModel::query()
             ->where($where)
-            ->andWhere(['ilike', 'msg_content', $data["keyword"]])
+            ->andWhere(['ilike', 'msg_content', $data["keyword"] ?? ""])
             ->andWhere(['>', 'msg_time', $start_time])
             ->andWhere(['<', 'msg_time', $stop_time]);
 
@@ -827,6 +831,9 @@ SQL;
         $res = $query->orderBy(['msg_time' => SORT_DESC])
             ->paginate($data['page'] ?? 1, $data['size'] ?? 10);
 
+        if ($res["items"]->isEmpty()) {
+            return $res;
+        }
         //查询客户信息
         $customerInfoIndex = [];
         //查询员工信息

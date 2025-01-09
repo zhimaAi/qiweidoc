@@ -34,3 +34,5 @@ build
 *.sw?
 *.zip
 *.phpe
+/php/modules/user_permission/
+/php/modules/chat_statistic_single/

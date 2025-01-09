@@ -162,11 +162,14 @@ const pluginSwitch = plugin => {
 }
 
 onMounted(() => {
-    loadData()
+    // 普通员工不请求getModules接口
+    if (userInfo.value && userInfo.value.role_id && userInfo.value.role_id != 1) {
+        loadData()
+    }
     const query = route.query
     // state.selectedKeys = [query._key || route?.meta?.selectNav || route.name]
     state.selectedKeys = [query._key || route.meta.activeMenuKey || route.name]
-    switch (Number(userInfo.value?.role_id?.value || 0)) {
+    switch (Number(userInfo.value?.role_id || 0)) {
         case 1:
             // 普通员工
             menus.value = [

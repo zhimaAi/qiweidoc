@@ -3,7 +3,10 @@
 
 namespace Modules\Main\Service;
 
+use Basis\Nats\Message\Payload;
 use Common\Job\Producer;
+use Common\Module;
+use Common\Yii;
 use Modules\Main\Consumer\SyncStaffChatConsumer;
 use Modules\Main\Enum\EnumUserRoleType;
 use Modules\Main\Model\CorpModel;
@@ -99,8 +102,23 @@ class StaffService
         if (!$res['items']->isEmpty()) {
 
             //员工角色列表
-            $userRoleList = UserRoleModel::query()->select(["id","role_name"])->getAll()->toArray();
-            $userRoleListIndex = ArrayHelper::index($userRoleList,"id");
+            $userRoleList = UserRoleModel::query()->select(["id", "role_name"])->getAll()->toArray();
+
+            //如果权限管理插件开启了，查一下自定义角色
+            $moduleConfig = Module::getLocalModuleConfig("user_permission");
+            if (!$moduleConfig["paused"]) {
+                $roleListParam = [
+                    "corp_id" => $corp->get("id")
+                ];
+                $otherRoleList = [];
+                Yii::getNatsClient()->request('user_permission.get_role_list', json_encode($roleListParam), function (Payload $response) use (&$otherRoleList) {
+                    $otherRoleList = json_decode($response, true);
+                });
+
+                $userRoleList = array_merge($userRoleList, $otherRoleList["res"] ?? []);
+            }
+
+            $userRoleListIndex = ArrayHelper::index($userRoleList, "id");
 
             // 获取员工标签列表
             $allTagsId = [];
@@ -133,11 +151,10 @@ class StaffService
                     }
                 }
                 $item->append('tag_name', $tagName);
-                if (empty($item->get("role_id"))) {
-                    $item->append('role_info', ["id" => EnumUserRoleType::NORMAL_STAFF->value, "name" => "普通员工"]);
-                } else {
-                    $item->append('role_info', $userRoleListIndex[$item->get("role_id")->value] ?? ["id" => EnumUserRoleType::NORMAL_STAFF->value, "name" => "普通员工"]);
-                }
+                $item->append('role_info', $userRoleListIndex[$item->get("role_id")] ?? [
+                    "id" => EnumUserRoleType::NORMAL_STAFF->value,
+                    "role_name" => "普通员工"
+                ]);
             }
 
             // 获取部门id和名称的映射

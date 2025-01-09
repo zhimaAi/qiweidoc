@@ -51,17 +51,17 @@ class Routes extends RouterProvider
                 ->middleware(UserRoleMiddleware::class)
                 ->routes(
                     // 回复规则
-                    Route::get('/reply-rules')->action([ReplyRuleController::class, 'show']),
-                    Route::post('/reply-rules')->action([ReplyRuleController::class, 'save']),
+                    Route::get('/reply-rules')->action([ReplyRuleController::class, 'show'])->defaults(["permission_key" => 'timeout_reply_single.list']),
+                    Route::post('/reply-rules')->action([ReplyRuleController::class, 'save'])->defaults(["permission_key" => 'timeout_reply_single.edit']),
 
                     // 超时规则
-                    Route::get('/rules')->action([RuleController::class, 'list']),
-                    Route::get('/rules/{id:\d+}')->action([RuleController::class, 'show']),
-                    Route::post('/rules')->action([RuleController::class, 'save']),
-                    Route::put('/rules/{id:\d+}')->action([RuleController::class, 'update']),
-                    Route::put('/rules/{id:\d+}/enable')->action([RuleController::class, 'enable']),
-                    Route::put('/rules/{id:\d+}/disable')->action([RuleController::class, 'disable']),
-                    Route::delete('/rules/{id:\d+}')->action([RuleController::class, 'destroy']),
+                    Route::get('/rules')->action([RuleController::class, 'list'])->defaults(["permission_key" => 'timeout_reply_single.list']),
+                    Route::get('/rules/{id:\d+}')->action([RuleController::class, 'show'])->defaults(["permission_key" => 'timeout_reply_single.list']),
+                    Route::post('/rules')->action([RuleController::class, 'save'])->defaults(["permission_key" => 'timeout_reply_single.edit']),
+                    Route::put('/rules/{id:\d+}')->action([RuleController::class, 'update'])->defaults(["permission_key" => 'timeout_reply_single.edit']),
+                    Route::put('/rules/{id:\d+}/enable')->action([RuleController::class, 'enable'])->defaults(["permission_key" => 'timeout_reply_single.edit']),
+                    Route::put('/rules/{id:\d+}/disable')->action([RuleController::class, 'disable'])->defaults(["permission_key" => 'timeout_reply_single.edit']),
+                    Route::delete('/rules/{id:\d+}')->action([RuleController::class, 'destroy'])->defaults(["permission_key" => 'timeout_reply_single.edit']),
                 ),
         ];
     }

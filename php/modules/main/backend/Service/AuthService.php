@@ -3,6 +3,8 @@
 
 namespace Modules\Main\Service;
 
+use Basis\Nats\Message\Payload;
+use Common\Module;
 use Common\Yii;
 use Exception;
 use Firebase\JWT\JWT;
@@ -11,6 +13,7 @@ use Modules\Main\DTO\CodeLoginBaseDTO;
 use Modules\Main\DTO\PasswordLoginBaseDTO;
 use Modules\Main\Enum\EnumUserRoleType;
 use Modules\Main\Model\CorpModel;
+use Modules\Main\Model\StaffModel;
 use Modules\Main\Model\UserModel;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
@@ -35,7 +38,7 @@ class AuthService
      */
     public static function getJwtExp(): int
     {
-        return  time() + 3600 * 24;
+        return time() + 3600 * 24;
     }
 
     /**
@@ -64,19 +67,23 @@ class AuthService
             throw new LogicException('获取用户登录身份信息失败');
         }
 
+        //查一下表内员工
+        $staffUserInfo = StaffModel::query()->where([
+            'corp_id' => $codeLoginDTO->corpId,
+            'userid' => $wechatUserInfo['userid']
+        ])->getOne();
+
         $accountData = [
             'corp_id' => $codeLoginDTO->corpId,
             'userid' => $wechatUserInfo['userid'],
             'account' => mb_substr($corpInfo->get('id') . "_" . $wechatUserInfo['userid'], 0, 32), //生成一个默认登录用户名
-            'role_id' => EnumUserRoleType::NORMAL_STAFF,
-            'can_login' => 0
+            'role_id' => !empty($staffUserInfo)?$staffUserInfo->get("role_id"):EnumUserRoleType::NORMAL_STAFF->value,
         ];
 
         //如果当前企业没有超级管理员，把当前创建的账号设置为超级管理员账户
         $superAdminUser = UserModel::query()->where(['corp_id' => $codeLoginDTO->corpId, "role_id" => EnumUserRoleType::SUPPER_ADMIN->value])->getOne();
         if (empty($superAdminUser)) {
             $accountData["role_id"] = EnumUserRoleType::SUPPER_ADMIN->value;
-            $accountData["can_login"] = 1;
         }
 
         // 获取或创建新用户
@@ -85,9 +92,27 @@ class AuthService
             ['userid' => $wechatUserInfo['userid']],
         ], $accountData);
 
-        if ($userInfo->get("can_login") == 0) {
-            throw new LogicException("当前账户无登陆权限");
+        //如果不是游客账号，验证登陆权限
+        $moduleConfig = Module::getLocalModuleConfig("user_permission");
+        if ($userInfo->get("role_id") != EnumUserRoleType::VISITOR->value && !$moduleConfig["paused"]) {
+            $checkData = [
+                "role_id" => $userInfo->get("role_id"),
+                "permission_key" => "main.user_login.list",
+                "corp_id" => $accountData["corp_id"]
+            ];
+
+            //验证当前账户权限
+            $permissionCheckRes = false;
+            Yii::getNatsClient()->request('user_permission.check_permission', json_encode($checkData), function (Payload $response) use (&$permissionCheckRes) {
+                $permissionRes = json_decode($response, true);
+                $permissionCheckRes = $permissionRes["res"];
+            });
+
+            if (!$permissionCheckRes) {
+                throw new LogicException('当前账户无登陆权限');
+            }
         }
+
 
         //生成jwt key
         $jwtKey = self::getJwtKey();
@@ -114,7 +139,7 @@ class AuthService
         }
 
         //账户是否可以登陆验证
-        if ($userInfo->get("can_login") == 0) {
+        if ($userInfo->get("role_id") == EnumUserRoleType::VISITOR->value && $userInfo->get("can_login") == 0) {
             throw new LogicException("当前账户无登陆权限");
         }
 
@@ -124,8 +149,29 @@ class AuthService
         }
 
         //如果是游客账户登陆，继续验证一下登陆有效期
-        if ($userInfo->get("role_id") == EnumUserRoleType::VISITOR && $userInfo->get("exp_time") > 0 && $userInfo->get("exp_time") < time()) {
+        if ($userInfo->get("role_id") == EnumUserRoleType::VISITOR->value && $userInfo->get("exp_time") > 0 && $userInfo->get("exp_time") < time()) {
             throw new LogicException('当前账户超过可登陆有效期');
+        }
+
+        //如果不是游客账号，验证登陆权限
+        $moduleConfig = Module::getLocalModuleConfig("user_permission");
+        if ($userInfo->get("role_id") != EnumUserRoleType::VISITOR->value && !$moduleConfig["paused"]) {
+            $checkData = [
+                "role_id" => $userInfo->get("role_id"),
+                "permission_key" => "main.user_login.list",
+                "corp_id" => $userInfo->get("corp_id")
+            ];
+
+            //验证当前账户权限
+            $permissionCheckRes = false;
+            Yii::getNatsClient()->request('user_permission.check_permission', json_encode($checkData), function (Payload $response) use (&$permissionCheckRes) {
+                $permissionRes = json_decode($response, true);
+                $permissionCheckRes = $permissionRes["res"];
+            });
+
+            if (!$permissionCheckRes) {
+                throw new LogicException('当前账户无登陆权限');
+            }
         }
 
         //生成jwt key

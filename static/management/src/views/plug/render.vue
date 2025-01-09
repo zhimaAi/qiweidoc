@@ -49,7 +49,7 @@ function loadFinished() {
 
     .render-module-iframe {
         width: 100%;
-        height: 100%;
+        height: calc(100% - 3px);
         border: none;
     }
 }

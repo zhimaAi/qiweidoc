@@ -1,14 +1,14 @@
 <template>
   <div>
     <a-button
-      type="dashed"
-      style="margin-right: 16px;"
+      :type="btnType"
+      :style="btnStyle"
       @click="onShowStaff"
       >
       <PlusOutlined />
       {{btnText}}
     </a-button>
-    <div style="display: flex;flex-wrap: wrap">
+    <div style="display: flex;flex-wrap: wrap" v-if="showSelectStaff">
       <a-tag
         v-for="(item, index) in selectStaff"
         :key="item.userid"
@@ -56,6 +56,26 @@ const props = defineProps({
       type: String,
       default: "添加员工",
     },
+    // 按钮样式
+    btnType: {
+      type: String,
+      default: "dashed",
+    },
+    // 样式
+    btnStyle: {
+      type: String,
+      default: "margin-right: 16px;",
+    },
+    // 是否显示底部的已选员工列表
+    showSelectStaff:{
+      type:Boolean,
+      default:true
+    },
+    // 打开员工选择弹窗时清空已选的员工
+    showClearSelectStaff:{
+      type:Boolean,
+      default:false
+    },
     selectType: {
       default: "multiple",
     },
@@ -88,7 +108,6 @@ const setStaff = ref(null)
 const selectStaff = computed(() => props.selectedStaffs)
 
 const staffUpdate = (val) => {
-    console.log('val', val)
     selectStaff.value = val;
     emit("change", val || []);
 }
@@ -99,6 +118,10 @@ const deleteStaff = (index) => {
 }
 
 const onShowStaff = () => {
+    if (props.showClearSelectStaff) {
+        setStaff.value.show([])
+        return
+    }
     setStaff.value.show(selectStaff.value)
 }
 

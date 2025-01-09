@@ -1,5 +1,29 @@
 import request from "@/api/request";
 
+export const deleteRole = data => {
+    return request.post("/modules/user_permission/api/delete", data)
+}
+
+export const changeRole = data => {
+    return request.post("/modules/user_permission/api/change/role", data)
+}
+
+export const permissionSave = data => {
+    return request.post("/modules/user_permission/api/save", data)
+}
+
+export const permissionList = data => {
+    return request.get("/modules/user_permission/api/permission/list", {params: data})
+}
+
+export const roleUserList = data => {
+    return request.get("/modules/user_permission/api/user/list", {params: data})
+}
+
+export const roleList = data => {
+    return request.get("/modules/user_permission/api/list", {params: data})
+}
+
 export const taskLogList = data => {
     return request.get("/modules/keywords_tagging/api/task/log/list", {params: data})
 }

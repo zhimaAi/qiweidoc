@@ -54,6 +54,14 @@ readonly class StatisticsGroupChatConsumer
         ]);
 
         $stat_time = strtotime(date("Y-m-d", time()) . " 00:00:00");
+
+        //如果是凌晨2点前的统计，统计昨日的数据
+        $thisHour = (int) date("h", time());
+        if ($thisHour < 2) {
+            $stat_time -= 86400;
+        }
+
+        $end_time = $stat_time + 86400;
         $baseId = 0;
 
         $page = 1;
@@ -68,7 +76,7 @@ readonly class StatisticsGroupChatConsumer
                 $baseId = $groupInfo->get("id");
                 //进行统计
                 foreach ($staffUserList as $staffInfo) {//会话存档员工
-                    self::statistic($this->corp, $configInfo->toArray(), $staffInfo->get("userid"), $groupInfo->get("chat_id"), $stat_time, $groupInfo->toArray());
+                    self::statistic($this->corp, $configInfo->toArray(), $staffInfo->get("userid"), $groupInfo->get("chat_id"), $stat_time, $end_time, $groupInfo->toArray());
                 }
             }
 
@@ -88,13 +96,14 @@ readonly class StatisticsGroupChatConsumer
      * @param $staff_userid
      * @param $chat_id
      * @param $stat_time
+     * @param $end_time
      * @param $groupInfo
      * Notes:
      * User: rand
      * Date: 2024/12/20 09:20
      * @return void
      */
-    public static function statistic($corp, $rule, $staff_userid, $chat_id, $stat_time, $groupInfo)
+    public static function statistic($corp, $rule, $staff_userid, $chat_id, $stat_time, $end_time, $groupInfo)
     {
         $memberListIndex = ArrayHelper::index($groupInfo["member_list"] ?? [], "userid");
 
@@ -154,10 +163,11 @@ readonly class StatisticsGroupChatConsumer
 
 
         $msg_time = date("Y-m-d H:i:s", $stat_time);
+        $msg_time_end = date("Y-m-d H:i:s", $end_time);
         $page = 1;
         $size = 100;
         while (true) {
-            $msgList = $msgListQuery->andWhere([">", "msg_time", $msg_time])->orderBy(["msg_time" => SORT_ASC])->paginate($page, $size);
+            $msgList = $msgListQuery->andWhere([">", "msg_time", $msg_time])->andWhere(["<", "msg_time", $msg_time_end])->orderBy(["msg_time" => SORT_ASC])->paginate($page, $size);
 
             if (count($msgList["items"]) == 0) {
                 break;

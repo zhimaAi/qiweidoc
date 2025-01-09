@@ -38,7 +38,7 @@ class StaffModel extends BaseModel
             'cst_total' => 'int',
             'chat_status' => 'int',
             'has_conversation' => 'boolean',
-            "role_id" => EnumUserRoleType::class,
+            "role_id" => 'int',
             'can_login' => 'int',
         ];
     }
