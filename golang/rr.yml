@@ -11,6 +11,10 @@ logs:
 
 server:
   command: php php/yii
+
+http:
+  access_logs: true
+  max_request_size: 100 # HTTP请求队列超过100个就丢弃，防止服务器压力过大
   pool:
     num_workers: 1
     allocate_timeout: 2s
@@ -18,11 +22,6 @@ server:
       max_workers: 10
       spawn_rate: 1
       idle_timeout: 5s
-
-http:
-  access_logs: true
-  max_request_size: 100 # HTTP请求队列超过100个就丢弃，防止服务器压力过大
-  pool:
     max_jobs: 100   # 单个worker最大处理请求数,超过后重启
     supervisor:
       max_worker_memory: 128 # 当进程使用内存超过128MB后自动重启(不会终止正在处理的请求)
@@ -45,22 +44,41 @@ jobs:
   pool:
     command: php php/yii
     num_workers: 1
+    allocate_timeout: 2s
     dynamic_allocator:
-      max_workers: 15
-      spawn_rate: 2
+      max_workers: 10
+      spawn_rate: 1
       idle_timeout: 5s
 
 micro:
   pool:
     command: php php/yii
+    num_workers: 1
+    allocate_timeout: 2s
+    dynamic_allocator:
+      max_workers: 10
+      spawn_rate: 1
+      idle_timeout: 5s
 
 broadcast:
   pool:
     command: php php/yii
+    num_workers: 1
+    allocate_timeout: 2s
+    dynamic_allocator:
+      max_workers: 10
+      spawn_rate: 1
+      idle_timeout: 5s
 
 cron:
   pool:
     command: php php/yii
+    num_workers: 1
+    allocate_timeout: 2s
+    dynamic_allocator:
+      max_workers: 10
+      spawn_rate: 1
+      idle_timeout: 5s
 
 # 管理进程的插件
 service:
