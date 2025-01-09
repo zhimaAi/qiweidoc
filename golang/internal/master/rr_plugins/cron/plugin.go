@@ -53,10 +53,11 @@ type Logger interface {
 }
 
 type Router struct {
-	Id      cron.EntryID `json:"id"`
-	Spec    string       `json:"spec"`
-	Handler string       `json:"handler"`
-	Data    string       `json:"data"`
+	Id        cron.EntryID `json:"id"`
+	Spec      string       `json:"spec"`
+	Handler   string       `json:"handler"`
+	Data      string       `json:"data"`
+	IsRunning bool         `json:"is_running"`
 }
 
 type Config struct {

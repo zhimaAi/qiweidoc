@@ -34,4 +34,3 @@ build
 *.sw?
 *.zip
 *.phpe
-/php/modules/chat_statistic_single/

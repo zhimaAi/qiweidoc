@@ -43,12 +43,21 @@ func (r *rpc) Add(input Input, output *string) error {
 	}
 
 	entryId, err := r.pl.cron.AddFunc(input.Spec, func() {
+		const op2 = "cron_plugin:RunCron"
+		router := r.pl.routerMap[input.Name]
+		if router.IsRunning == true {
+			r.log.Warn(errors.E(op2, input.Name+" is running").Error())
+			return
+		}
+		router.IsRunning = true
+		r.pl.routerMap[input.Name] = router
+
 		data := make(map[string]string)
-		data["data"] = input.Data
-		data["handler"] = input.Handler
+		data["data"] = router.Data
+		data["handler"] = router.Handler
 		d, err := json.Marshal(data)
 		if err != nil {
-			r.log.Error(errors.E(op, err).Error())
+			r.log.Error(errors.E(op2, err).Error())
 			return
 		}
 
@@ -59,8 +68,10 @@ func (r *rpc) Add(input Input, output *string) error {
 		}
 		r.log.Debug("开始执行")
 		_, err = r.pl.exec(context.Background(), pl)
+		router.IsRunning = false
+		r.pl.routerMap[input.Name] = router
 		if err != nil {
-			r.log.Error(errors.E(op, err).Error())
+			r.log.Error(errors.E(op2, err).Error())
 			return
 		}
 	})
@@ -68,10 +79,11 @@ func (r *rpc) Add(input Input, output *string) error {
 		return errors.E(op, err)
 	}
 	r.pl.routerMap[input.Name] = Router{
-		Id:      entryId,
-		Spec:    input.Spec,
-		Handler: input.Handler,
-		Data:    input.Data,
+		Id:        entryId,
+		Spec:      input.Spec,
+		Handler:   input.Handler,
+		Data:      input.Data,
+		IsRunning: false,
 	}
 
 	return nil
