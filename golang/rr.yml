@@ -11,12 +11,13 @@ logs:
 
 server:
   command: php php/yii
-  num_workers: 1
-  allocate_timeout: 2s
-  dynamic_allocator:
-    max_workers: 10
-    spawn_rate: 1
-    idle_timeout: 5s
+  pool:
+    num_workers: 1
+    allocate_timeout: 2s
+    dynamic_allocator:
+      max_workers: 10
+      spawn_rate: 1
+      idle_timeout: 5s
 
 http:
   access_logs: true
