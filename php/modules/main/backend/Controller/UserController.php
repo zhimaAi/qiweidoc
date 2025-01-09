@@ -32,7 +32,7 @@ class UserController extends BaseController
 
         $otherRoleList = [];
         $moduleConfig = Module::getLocalModuleConfig("user_permission");
-        if (!empty($moduleConfig["paused"])) {
+        if (isset($moduleConfig['paused']) && !$moduleConfig["paused"]) {
             $roleListParam = [
                 "corp_id" => $currentUserInfo->get("corp_id")
             ];

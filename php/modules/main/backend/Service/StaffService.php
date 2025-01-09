@@ -106,7 +106,7 @@ class StaffService
 
             //如果权限管理插件开启了，查一下自定义角色
             $moduleConfig = Module::getLocalModuleConfig("user_permission");
-            if (!empty($moduleConfig["paused"])) {
+            if (isset($moduleConfig['paused']) && !$moduleConfig["paused"]) {
                 $roleListParam = [
                     "corp_id" => $corp->get("id")
                 ];
