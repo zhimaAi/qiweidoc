@@ -67,7 +67,7 @@ class UserRoleMiddleware implements MiddlewareInterface
 
         //获取模块开关状态，
         $moduleConfig = Module::getLocalModuleConfig("user_permission");
-        if (!$moduleConfig["paused"] && $this->routePermission != "" && $currentUserInfo->get("role_id") != EnumUserRoleType::VISITOR->value) {//用户权限模块启用，定义权限的路由 进行权限验证
+        if (!empty($moduleConfig["paused"]) && $this->routePermission != "" && $currentUserInfo->get("role_id") != EnumUserRoleType::VISITOR->value) {//用户权限模块启用，定义权限的路由 进行权限验证
 
             $corpInfo = $request->getAttribute(CorpModel::class);
             $checkData = [

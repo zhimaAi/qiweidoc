@@ -94,7 +94,7 @@ class AuthService
 
         //如果不是游客账号，验证登陆权限
         $moduleConfig = Module::getLocalModuleConfig("user_permission");
-        if ($userInfo->get("role_id") != EnumUserRoleType::VISITOR->value && !$moduleConfig["paused"]) {
+        if ($userInfo->get("role_id") != EnumUserRoleType::VISITOR->value && !empty($moduleConfig['paused'])) {
             $checkData = [
                 "role_id" => $userInfo->get("role_id"),
                 "permission_key" => "main.user_login.list",
@@ -155,7 +155,7 @@ class AuthService
 
         //如果不是游客账号，验证登陆权限
         $moduleConfig = Module::getLocalModuleConfig("user_permission");
-        if ($userInfo->get("role_id") != EnumUserRoleType::VISITOR->value && !empty($moduleConfig) && !$moduleConfig["paused"]) {
+        if ($userInfo->get("role_id") != EnumUserRoleType::VISITOR->value && !empty($moduleConfig["paused"])) {
             $checkData = [
                 "role_id" => $userInfo->get("role_id"),
                 "permission_key" => "main.user_login.list",
