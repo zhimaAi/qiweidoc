@@ -142,7 +142,7 @@ final class Yii
         return $app;
     }
 
-    public static function getNatsClient(int $timeout = 1): Client
+    public static function getNatsClient(int $timeout = 5): Client
     {
         return self::getContainer()->get(Client::class)($timeout);
     }

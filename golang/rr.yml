@@ -16,7 +16,7 @@ http:
   access_logs: true
   max_request_size: 100 # HTTP请求队列超过100个就丢弃，防止服务器压力过大
   pool:
-    num_workers: 1
+    num_workers: 2
     allocate_timeout: 2s
     dynamic_allocator:
       max_workers: 10
@@ -43,7 +43,7 @@ http:
 jobs:
   pool:
     command: php php/yii
-    num_workers: 1
+    num_workers: 2
     allocate_timeout: 2s
     dynamic_allocator:
       max_workers: 10
@@ -53,7 +53,7 @@ jobs:
 micro:
   pool:
     command: php php/yii
-    num_workers: 1
+    num_workers: 2
     allocate_timeout: 2s
     dynamic_allocator:
       max_workers: 10
@@ -63,7 +63,7 @@ micro:
 broadcast:
   pool:
     command: php php/yii
-    num_workers: 1
+    num_workers: 2
     allocate_timeout: 2s
     dynamic_allocator:
       max_workers: 10
@@ -73,7 +73,7 @@ broadcast:
 cron:
   pool:
     command: php php/yii
-    num_workers: 1
+    num_workers: 2
     allocate_timeout: 2s
     dynamic_allocator:
       max_workers: 10

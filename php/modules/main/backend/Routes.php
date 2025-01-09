@@ -40,14 +40,11 @@ use Modules\Main\Library\Middlewares\UserRoleMiddleware;
 use Modules\Main\Library\Middlewares\WxAuthMiddleware;
 use Modules\Main\Controller\WxController;
 use Modules\Main\Listener\TestBroadcastController;
-use Modules\Main\Micro\ChangeModuleStatusMirco;
 use Modules\Main\Micro\TestMirco;
 use Modules\Main\Micro\ChangeRolePermissionConfigMirco;
 use Modules\Main\Micro\ChangeStaffRoleMirco;
-use Modules\Main\Micro\TestController;
 use Modules\Main\Service\StorageService;
 use Modules\Main\Service\UserService;
-use Modules\UserPermission\Micro\CheckMirco;
 use Psr\Http\Message\ServerRequestInterface;
 use Yiisoft\Auth\Middleware\Authentication;
 use Yiisoft\DataResponse\DataResponseFactoryInterface;
@@ -123,7 +120,6 @@ class Routes extends RouterProvider
             Consumer::name("download_session_medias")->count(5)->action(DownloadChatSessionBitMediasConsumer::class)->reserveOnStop(),
             Consumer::name("download_session_big_medias")->count(2)->action(DownloadChatSessionMediasConsumer::class)->reserveOnStop(),
             Consumer::name("remove_expired_local_files")->count(1)->action(RemoveExpiredLocalFilesConsumer::class),
-            Consumer::name("mark_tag")->count(1)->action(MarkTagConsumer::class)
         ];
     }
 
