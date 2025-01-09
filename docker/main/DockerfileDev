@@ -44,13 +44,6 @@ ENV LANG=zh_CN.UTF-8 \
     LANGUAGE=zh_CN:zh \
     LC_ALL=zh_CN.UTF-8
 
-# 安装grpc扩展
-RUN pecl install grpc && \
-    echo "extension=grpc.so" > /etc/php/8.2/cli/conf.d/20-grpc.ini
-COPY docker/main/protoc /usr/local/bin/
-COPY docker/main/grpc_php_plugin /usr/local/bin/
-COPY docker/main/protoc-gen-php-grpc /usr/local/bin/
-
 # PHP 扩展配置
 COPY docker/main/edl.so /usr/lib/php/20220829/
 RUN mkdir -p /etc/php/8.2/cli/conf.d && \
