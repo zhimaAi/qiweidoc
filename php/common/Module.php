@@ -61,9 +61,6 @@ class Module
         $host = Yii::getModuleManageAddress();
         $uri = "/internal/modules/list";
         $response = (new HttpClient(['base_uri' => $host]))->post($uri);
-        if ($response->getStatusCode() != 200) {
-            throw new LogicException(json_decode($response->getBody(), true)['message'] ?? "未知错误");
-        }
         return json_decode($response->getBody(), true);
     }
 
@@ -71,21 +68,19 @@ class Module
     {
         $host = Yii::getModuleManageAddress();
         $uri = "/internal/modules/info";
-        $response = (new HttpClient(['base_uri' => $host]))->post($uri, ['name' => $name]);
-        if ($response->getStatusCode() != 200) {
-            throw new LogicException(json_decode($response->getBody(), true)['message'] ?? "未知错误");
+        try {
+            $response = (new HttpClient(['base_uri' => $host]))->post($uri, ['name' => $name]);
+            return json_decode($response->getBody(), true);
+        } catch (\Throwable $e) {
+            return [];
         }
-        return json_decode($response->getBody(), true);
     }
 
     public static function startModule(string $name): void
     {
         $host = Yii::getModuleManageAddress();
         $uri = "/internal/modules/start";
-        $result = (new HttpClient(['base_uri' => $host]))->post($uri, ['name' => $name]);
-        if ($result->getStatusCode() != 200) {
-            throw new LogicException(json_decode($result->getBody(), true)['message'] ?? "未知错误");
-        }
+        (new HttpClient(['base_uri' => $host]))->post($uri, ['name' => $name]);
     }
 
     public static function stopModule(string $name): void
@@ -94,10 +89,7 @@ class Module
 
         $host = Yii::getModuleManageAddress();
         $uri = "/internal/modules/stop";
-        $result = (new HttpClient(['base_uri' => $host]))->post($uri, ['name' => $name]);
-        if ($result->getStatusCode() != 200) {
-            throw new LogicException(json_decode($result->getBody(), true)['message'] ?? "未知错误");
-        }
+        (new HttpClient(['base_uri' => $host]))->post($uri, ['name' => $name]);
     }
 
     public static function getAllRemoteModuleConfigList(string $corpId)

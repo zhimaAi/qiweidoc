@@ -11,6 +11,7 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Promise\PromiseInterface;
+use LogicException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
@@ -40,7 +41,7 @@ class HttpClient
             'Content-Type' => 'application/json',
         ],
     ];
-    
+
     /**
      * @var array
      */
@@ -138,7 +139,7 @@ class HttpClient
         } catch (RequestException $e) {
             $this->handleRequestException($e);
         } catch (GuzzleException $e) {
-            throw new Exception('HTTP Client Error: ' . $e->getMessage(), $e->getCode());
+            throw new LogicException('HTTP Client Error: ' . $e->getMessage(), $e->getCode());
         }
     }
 
@@ -174,7 +175,7 @@ class HttpClient
     {
         $response = $e->getResponse();
         if (!$response) {
-            throw new Exception('Network Error: ' . $e->getMessage(), 0);
+            throw new LogicException('Network Error: ' . $e->getMessage(), 0);
         }
 
         $statusCode = $response->getStatusCode();
@@ -182,7 +183,7 @@ class HttpClient
 
         $message = $body['message'] ?? $e->getMessage();
 
-        throw new Exception("HTTP Error {$statusCode}: {$message}", $statusCode);
+        throw new LogicException("HTTP Error {$statusCode}: {$message}", $statusCode);
     }
 
     /**
@@ -306,7 +307,7 @@ class HttpClient
 
         // Re-initialize the client with the updated configuration
         $this->initClient();
- 
+
         return $this;
     }
 }
