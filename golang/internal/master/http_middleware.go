@@ -74,8 +74,13 @@ func proxyMiddleware(c *fiber.Ctx) error {
 
 		// 获取模块信息
 		moduleInfo, ok := define.ModuleList[parts[0]]
-		if !ok {
-			return c.Status(404).SendString("Module not found")
+		if !ok || moduleInfo.RR == nil {
+			return c.Status(200).JSON(fiber.Map{
+				"status":        "success",
+				"error_message": "模块不存在或未启用",
+				"error_code":    200,
+				"data":          nil,
+			})
 		}
 
 		// 构建目标URL

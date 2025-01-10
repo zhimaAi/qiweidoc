@@ -189,18 +189,22 @@ onMounted(() => {
     loadRegionData()
 })
 
-function loadConfig() {
-    loading.value = true
-    getSettings().then(res => {
-        let data = res?.data || {}
-        if (data.access_key && data.secret_key) {
-            configFinished.value = true
-            configEdit.value = false
-            Object.assign(formState, data)
-        }
-    }).finally(() => {
-        loading.value = false
-    })
+function loadConfig () {
+    try {
+        loading.value = true
+        getSettings().then(res => {
+            let data = res?.data || {}
+            if (data.access_key && data.secret_key) {
+                configFinished.value = true
+                configEdit.value = false
+                Object.assign(formState, data)
+            }
+        }).finally(() => {
+            loading.value = false
+        })
+    } catch (e) {
+
+    }
 }
 
 function loadRegionData() {

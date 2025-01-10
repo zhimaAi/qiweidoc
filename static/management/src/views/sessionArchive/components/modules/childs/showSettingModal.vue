@@ -156,7 +156,6 @@ function deleteGroup(e, group, index) {
 function tagChange({tagKeys, tags}) {
     config.show_customer_tag_ids = tagKeys
     config.show_customer_tags = tags
-    console.log('tagKeys, tags', tagKeys, tags, config)
 }
 
 function tagGroupChange({groupKeys, groups}) {

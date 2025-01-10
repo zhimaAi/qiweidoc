@@ -13,7 +13,6 @@ export function VoicePlayHandle() {
         _player.value.stop()
     }
     const play = (key, voice) => {
-        console.log('play', key, voice)
         if (_player.value !== null) {
             stop()
             if (key === _key.value) {

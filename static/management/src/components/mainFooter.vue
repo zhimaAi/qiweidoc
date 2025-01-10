@@ -1,11 +1,18 @@
 <template>
     <div id="_footer" class="_main-footer normal hide">
-        <div class="copyright">Copyright © 2021, 芝麻小事网络科技（武汉）有限公司</div>
+        <div class="copyright">{{ copyright || 'Copyright © 2021, 芝麻小事网络科技（武汉）有限公司 鄂ICP备19019997号-3' }}</div>
     </div>
 </template>
 
 <script setup>
-import {onMounted} from "vue";
+import { onMounted } from "vue";
+
+const props = defineProps({
+    copyright: {
+        type: String,
+        default: ''
+    }
+})
 
 onMounted(() => {
     window.addEventListener('load', adjustFooterPosition);

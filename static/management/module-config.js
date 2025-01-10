@@ -7,6 +7,9 @@ const ModuleConfig = {
     main: {
         buildOutputPath: '/php/modules/main/public/build/',
     },
+    custom_brand: {
+        buildOutputPath: '/php/modules/custom_brand/public/build/',
+    },
     user_permission: {
         buildOutputPath: '/php/modules/user_permission/public/build/',
     },

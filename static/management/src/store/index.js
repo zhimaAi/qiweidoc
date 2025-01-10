@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 
 const getState = () => {
     return {
+        document_title: '',
         corp_id: '',
         agent_id: '',
         user_info: {},
@@ -14,8 +15,12 @@ const getState = () => {
         mainModuleInfo: {},
         corp_info: {},
         company: {
-            corp_name: '',
-            corp_logo: ''
+            title: '',
+            logo: '',
+            navigation_bar_title: '',
+            login_page_title: '',
+            login_page_description: '',
+            copyright: ''
         }, // 企业
     }
 }
@@ -51,6 +56,10 @@ export default createStore({
         },
         setCompany(state, info) {
             state.company = info
+            if (info.title) {
+                state.document_title = info.title
+                document.title = info.title
+            }
         }
     },
     actions: {

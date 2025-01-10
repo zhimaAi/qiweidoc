@@ -345,7 +345,6 @@ const searchData = () => {
 }
 
 const onTriggerType = () => {
-  console.log(filterData.hint_type)
   if (filterData.hint_type == 1) {
     filterData.target_msg_type = 'text'
   } else if (filterData.hint_type == 2) {

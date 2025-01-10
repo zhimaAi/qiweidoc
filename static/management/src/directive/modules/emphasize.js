@@ -11,7 +11,6 @@ const nodeChild = (node, val) => {
     const children = Array.from(node.children);
     let nodeSplicing = "";
     //   判断是否为末级节点
-    console.log('children.length', children.length)
     if (children.length !== 0) {
         // 子节点数据遍历
         children.forEach((item) => {

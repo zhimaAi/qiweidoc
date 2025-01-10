@@ -36,7 +36,6 @@ async function init() {
         return
     }
     tokenData.value = jwtDecode(route.query.token);
-    console.log('tokenData.value', tokenData.value)
     setH5AuthToken(route.query.token)
     const loadingToast = showLoadingToast({
         message: '加载中...',

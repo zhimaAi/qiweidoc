@@ -1,7 +1,15 @@
 import request from "@/api/request";
 
+export const getSettings = (data = {}) => {
+    return request.get('/modules/custom_brand/api/settings', {params: data})
+}
+
+export const settings = (data = {}) => {
+    return request.post('/modules/custom_brand/api/settings', data)
+}
+
 export const uploadImage = (data) => {
-    return request.post('/api/corps/upload/logo', data, {
+    return request.post('/api/storages', data, {
         headers: {
             'Content-Type': 'multipart/form-data'
         },

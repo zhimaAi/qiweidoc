@@ -30,16 +30,19 @@ onMounted(() => {
     loadConfig()
 })
 
-function loadConfig() {
+function loadConfig () {
+  try {
     loading.value = true
     getSettings().then(res => {
-        let data = res?.data || {}
-        if (data.access_key && data.secret_key) {
-            configFinished.value = true
-        }
+      let data = res?.data || {}
+      if (data.access_key && data.secret_key) {
+        configFinished.value = true
+      }
     }).finally(() => {
-        loading.value = false
+      loading.value = false
     })
+  } catch (e) {
+  }
 }
 
 function showConfig() {

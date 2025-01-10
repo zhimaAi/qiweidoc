@@ -12,7 +12,7 @@
               </a-form-item>
               <a-form-item ref="name" label="企业名称">
                 <div class="content-name">
-                    <span v-if="corp_name">{{ corp_name }}</span>
+                    <span v-if="navigation_bar_title">{{ navigation_bar_title }}</span>
                     <a-input v-else v-model:value="formState.name" placeholder="请输入企业名称" class="gray-text" :maxlength="12"></a-input>
                     <div class="company_tip">长度不超过12个字，企业名称将会显示在左上角logo后面、登录窗口等
                       <a-popover title="" placement="bottom">
@@ -39,7 +39,7 @@ import { useStore } from 'vuex';
 import { Form, message } from 'ant-design-vue'
 import { DEFAULT_ZH_LOGO } from '@/constants/index'
 import AvatarInput from './components/avatar-input.vue'
-import {getCurrentCorp, setNameLogoSave, uploadImage} from "@/api/auth-login";
+import {getSettings, setNameLogoSave, uploadImage} from "@/api/auth-login";
 
 const loading = ref(false)
 const formState = reactive({
@@ -57,7 +57,7 @@ const { validate, validateInfos } = useForm(formState, rules)
 // import { saveCompany } from '@/api/user/index.js'
 // import { message } from 'ant-design-vue'
 const store = useStore()
-const { corp_name, corp_logo } = computed(() =>  store.getters.getCompany)
+const { navigation_bar_title, logo } = computed(() =>  store.getters.getCompany)
 // const handleGetCompany = () => {
 //   // 获取企业信息
 // }
@@ -76,7 +76,7 @@ const onAvatarChange = (formData) => {
 }
 
 const openCompanyModal = () => {
-  formState.name = corp_name;
+  formState.name = navigation_bar_title;
   open.value = true
 }
 
@@ -84,8 +84,8 @@ const onSave = () => {
   loading.value = true
   let { name, logo } = formState
   let params = {
-    corp_name: name,
-    corp_logo: logo
+    navigation_bar_title: name,
+    logo: logo
   }
   setNameLogoSave(params).then((res) => {
     if (res.status == 'success') {
@@ -113,12 +113,26 @@ const handleSetCompany = () => {
   // })
 }
 
-const getCUrrentCorpData = async() => {
-  const currentCorp = await getCurrentCorp()
-  store.commit('setCompany', currentCorp.data)
-  const {corp_name, corp_logo} = currentCorp.data
-  formState.name = corp_name
-  formState.logo = corp_logo
+const getCUrrentCorpData = async () => {
+  try {
+    const currentCorp = await getSettings()
+    if (currentCorp.data) {
+      store.commit('setCompany', currentCorp.data)
+      const {navigation_bar_title, logo} = currentCorp.data
+      formState.name = navigation_bar_title
+      formState.logo = logo
+    } else {
+      store.commit('setCompany', {
+        title: '',
+        logo: '',
+        navigation_bar_title: '',
+        login_page_title: '',
+        login_page_description: '',
+        copyright: ''
+      })
+    }
+  } catch (e) {
+  }
 }
 
 onMounted(() => {

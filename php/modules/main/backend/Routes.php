@@ -33,6 +33,7 @@ use Modules\Main\Controller\GroupController;
 use Modules\Main\Controller\ModuleController;
 use Modules\Main\Controller\OpenPushController;
 use Modules\Main\Controller\StaffController;
+use Modules\Main\Controller\StorageController;
 use Modules\Main\Controller\TagsController;
 use Modules\Main\Controller\UserController;
 use Modules\Main\Library\Middlewares\CurrentCorpInfoMiddleware;
@@ -188,6 +189,9 @@ class Routes extends RouterProvider
                     Route::get('/cloud-storage-settings')->action([CloudStorageSettingController::class, 'show'])->defaults(["permission_key" => 'main.oss_config.list']),
                     Route::put('/cloud-storage-settings')->action([CloudStorageSettingController::class, 'save'])->defaults(["permission_key" => 'main.oss_config.edit']),
                     Route::get('/cloud-storage-settings/provider-regions')->action([CloudStorageSettingController::class, 'getStorageProviderRegionList'])->defaults(["permission_key" => 'main.oss_config.list']),
+
+                    // 文件上传
+                    Route::post('/storages')->action([StorageController::class, 'upload']),
 
                     // 企业相关接口
                     Route::get("/corps/current")->action([CorpController::class, "getCurrentCorpInfo"]),

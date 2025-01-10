@@ -9,6 +9,16 @@ export default [
         name: 'systemctlAccount',
         component: () => import('../views/systemctl/account.vue')
     },
+    // {
+    //     path: '/systemctl/firm',
+    //     name: 'systemctlFirm',
+    //     component: () => import('../views/systemctl/firm.vue')
+    // },
+    {
+        path: '/systemctl/fileStorage',
+        name: 'systemctlFileStorage',
+        component: () => import('../views/systemctl/fileStorage.vue')
+    },
     {
         path: '/systemctl/firm',
         name: 'systemctlFirm',

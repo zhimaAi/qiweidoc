@@ -275,7 +275,6 @@ function cancel() {
 
 async function save() {
     try {
-        console.log('save', config)
         saving.value = true
         let validate = timeRangeRef.value.verify()
         if (!validate.ok) {

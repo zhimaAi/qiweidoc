@@ -3,7 +3,11 @@
         <MainHeader/>
         <div class="main-content">
             <div class="left-box">
-                <img src="@/assets/login-cover.png" class="cover"/>
+                <img src="@/assets/login-cover.svg" class="cover"/>
+                <div class="web-logo-title-box">
+                    <div class="web-logo-title">{{ company.login_page_title || '芝麻会话存档' }}</div>
+                    <div class="web-logo-info">{{ company.login_page_description || '助力企业客户沟通合规管控和质量提升' }}</div>
+                </div>
             </div>
             <div class="right-box" v-if="isWxLogin">
                 <div class="right-icon-box">
@@ -65,17 +69,17 @@
                 </div>
             </div>
         </div>
-        <MainFooter/>
+        <MainFooter :copyright="company.copyright" />
     </div>
 </template>
 
 <script setup>
-import {onMounted, getCurrentInstance, ref, reactive} from 'vue';
+import {onMounted, getCurrentInstance, ref, reactive, computed} from 'vue';
 import {useRouter} from 'vue-router';
 import {useStore} from 'vuex';
 import MainHeader from "@/components/mainHeader.vue";
 import MainFooter from "@/components/mainFooter.vue";
-import {checkInit, getCurrentCorp, getCurrentUser, loginByCode, loginByAccount} from "@/api/auth-login";
+import {checkInit, getSettings, getCurrentUser, loginByCode, loginByAccount} from "@/api/auth-login";
 import {setAuthToken, setCorpInfo} from "@/utils/cache";
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue';
 import {setCookieAcrossSubdomain} from "@/utils/cookie";
@@ -84,6 +88,7 @@ import {loginHandle} from "@/utils/tools";
 const {proxy} = getCurrentInstance();
 const router = useRouter()
 const store = useStore()
+const company = computed(() => store.getters.getCompany)
 const loading = ref(true)
 const isWxLogin = ref(false)
 const formState = reactive({
@@ -92,12 +97,26 @@ const formState = reactive({
   remember: true
 })
 
-const getCUrrentCorpData = async() => {
-  const currentCorp = await getCurrentCorp()
-  store.commit('setCompany', currentCorp.data)
-}
+// const getCUrrentCorpData = () => {
+//   getSettings().then((res) => {
+//     if (res.status === 'success') {
+//         store.commit('setCompany', res.data)
+//     }
+//   }).catch((e) => {
+//     // 用默认的头像和企业信息
+//     store.commit('setCompany', {
+//       title: '',
+//       logo: '',
+//       navigation_bar_title: '',
+//       login_page_title: '',
+//       login_page_description: '',
+//       copyright: ''
+//     })
+//   })
+// }
 
 onMounted(async () => {
+  // getCUrrentCorpData()
     // console.log('ww', ww)
     // console.log('SDK_VERSION', ww.SDK_VERSION)
     // console.log('process.env.NODE_ENV', process.env.NODE_ENV)
@@ -194,7 +213,6 @@ const loginAfterHandle = async token => {
         const {corpInfo} = await loginHandle(token)
         proxy.$message.success('登录成功，正在跳转主页')
         setTimeout(() => {
-            getCUrrentCorpData()
             // chat_public_key_version > 0表示已经配置会话存档
             // 否则去配置
             if (corpInfo.data?.chat_public_key_version > 0) {
@@ -233,12 +251,46 @@ const loginAfterHandle = async token => {
         display: flex;
 
         .left-box {
+            position: relative;
             width: 480px;
             flex-shrink: 0;
 
             .cover {
                 width: 100%;
                 height: 100%;
+            }
+
+            .web-logo-title-box {
+                font-family: "PingFang SC";
+                position: absolute;
+                top: 44px;
+                left: 50%;
+                transform: translateX(-50%);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+
+                .web-logo-title {
+                    color: #262626;
+                    text-align: center;
+                    font-family: "PingFang SC";
+                    font-size: 24px;
+                    font-style: normal;
+                    font-weight: 600;
+                    line-height: 32px;
+                }
+
+                .web-logo-info {
+                    color: #3a4559;
+                    font-family: "PingFang SC";
+                    font-size: 16px;
+                    font-style: normal;
+                    font-weight: 400;
+                    line-height: 24px;
+                    opacity: 0.85;
+                }
             }
         }
 

@@ -1,11 +1,12 @@
 <template>
     <div class="_main-header" :style="style">
         <div class="logo-box">
-            <img :src="company.corp_logo || DEFAULT_ZH_LOGO" class="logo"/>
+            <img :src="company.logo || DEFAULT_ZH_LOGO" class="logo"/>
             <div class="system-name-box">
-                <div class="default-system-name">芝麻会话存档</div>
-                <div v-if="company.corp_name" class="system-line"></div>
-                <div v-if="company.corp_name" class="system-name">{{ company.corp_name }}</div>
+                <!-- <div class="default-system-name">芝麻会话存档</div> -->
+                <!-- <div v-if="company.navigation_bar_title" class="system-line"></div> -->
+                <div v-if="company.navigation_bar_title" class="default-system-name">{{ company.navigation_bar_title || '芝麻会话存档' }}</div>
+                <div v-else class="default-system-name">芝麻会话存档</div>
             </div>
         </div>
         <div class="right-header-nav">
@@ -43,7 +44,7 @@ import {useStore} from 'vuex';
 import {Modal, message} from 'ant-design-vue';
 import {DownOutlined} from '@ant-design/icons-vue';
 import {logoutHandle} from "@/utils/tools";
-import {getNameLogo} from "@/api/auth-login";
+import {getSettings} from "@/api/auth-login";
 import {DEFAULT_ZH_LOGO} from "@/constants";
 
 const props = defineProps({
@@ -81,14 +82,36 @@ const logout = () => {
 }
 
 onMounted(() => {
-    const defaultCompany = store.getters.getCompany
-    if (!defaultCompany.corp_name) {
-        getNameLogo().then((res) => {
-            if (res.status === 'success') {
-                store.commit('setCompany', res.data)
-            }
-        })
-    }
+  try {
+    getSettings().then((res) => {
+      if (res.status === 'success') {
+        if (res.data) {
+          store.commit('setCompany', res.data)
+        } else {
+          store.commit('setCompany', {
+            title: '',
+            logo: '',
+            navigation_bar_title: '',
+            login_page_title: '',
+            login_page_description: '',
+            copyright: ''
+          })
+        }
+      }
+    }).catch((e) => {
+      // 用默认的头像和企业信息
+      store.commit('setCompany', {
+        title: '',
+        logo: '',
+        navigation_bar_title: '',
+        login_page_title: '',
+        login_page_description: '',
+        copyright: ''
+      })
+    })
+  } catch (e) {
+
+  }
 })
 </script>
 

@@ -223,7 +223,6 @@ const show = () => {
 }
 
 const onShowStaff = () => {
-    console.log('selectedStaff.value', selectedStaff.value)
     setStaff.value.show(selectedStaff.value);
 }
 
