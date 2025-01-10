@@ -69,12 +69,12 @@ class MsgCheckKeywordsConsumer
         //查询消息列表
         $lastCheck = CheckTaskModel::query()->where(["corp_id" => $this->corp->get("id")])->getOne();
         if (!empty($lastCheck)) {
-            $baseMsgTime = max($lastCheck->get("last_msg_time"),$baseMsgTime);
+            $baseMsgTime=max($lastCheck->get("last_msg_time"),$baseMsgTime);
         }
         $moduleInfo = Module::getLocalModuleConfig(Module::getCurrentModuleName());
         $moduleStartedAt = $moduleInfo['started_at'] ?? Carbon::today()->format('Y-m-d H:i:s.v');
         //获取模块启动时间 中大的时间
-        $baseMsgTime = max($moduleStartedAt,$baseMsgTime);
+        $baseMsgTime=  max($moduleStartedAt,$baseMsgTime);
         //检测时间
         $last_msg_time = 0;
         $last_msg_id='';
