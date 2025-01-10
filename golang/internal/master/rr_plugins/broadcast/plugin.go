@@ -190,6 +190,7 @@ func (p *Plugin) Stop(ctx context.Context) error {
 	stCh := make(chan struct{}, 1)
 	go func() {
 		p.mu.Lock()
+		p.natsConn.Close()
 		p.pool.Destroy(ctx)
 		p.mu.Unlock()
 		stCh <- struct{}{}
