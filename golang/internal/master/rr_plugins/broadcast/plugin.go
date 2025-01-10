@@ -3,6 +3,7 @@ package broadcast
 import (
 	"context"
 	"encoding/json"
+	"github.com/gofiber/fiber/v2/log"
 	"github.com/nats-io/nats.go"
 	"github.com/roadrunner-server/errors"
 	"github.com/roadrunner-server/goridge/v3/pkg/frame"
@@ -12,7 +13,6 @@ import (
 	"github.com/roadrunner-server/pool/state/process"
 	"github.com/roadrunner-server/pool/worker"
 	"go.uber.org/zap"
-	"session_archive/golang/internal/master/define"
 	"sync"
 	"time"
 )
@@ -75,8 +75,9 @@ type Plugin struct {
 	natsCfg    *NatsConfig
 	cfg        *Config
 
-	log    *zap.Logger
-	server Server
+	log      *zap.Logger
+	server   Server
+	natsConn *nats.Conn
 
 	pool   Pool
 	router map[string]Router
@@ -88,6 +89,12 @@ func (p *Plugin) Name() string {
 
 func (p *Plugin) Init(cfg Configurer, log Logger, server Server) error {
 	const op = errors.Op("broadcast_plugin_init")
+	if !cfg.Has("nats") {
+		return errors.E(op, errors.Disabled)
+	}
+	if err := cfg.UnmarshalKey("nats", &p.natsCfg); err != nil {
+		return errors.E(op, err)
+	}
 	if !cfg.Has(pluginName) {
 		return errors.E(op, errors.Disabled)
 	}
@@ -106,6 +113,7 @@ func (p *Plugin) Init(cfg Configurer, log Logger, server Server) error {
 
 func (p *Plugin) Serve() chan error {
 	p.log.Debug("broadcast插件启动")
+	var err error
 	errCh := make(chan error, 1)
 
 	const op = errors.Op("plugin_broadcast:Serve")
@@ -113,7 +121,21 @@ func (p *Plugin) Serve() chan error {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
-	var err error
+	p.natsConn, err = nats.Connect(p.natsCfg.Addr,
+		nats.NoEcho(),
+		nats.Timeout(time.Minute),
+		nats.MaxReconnects(-1),
+		nats.PingInterval(time.Second*10),
+		nats.ReconnectWait(time.Second),
+		nats.ReconnectBufSize(20*1024*1024),
+		nats.ReconnectHandler(reconnectHandler()),
+		nats.DisconnectErrHandler(disconnectHandler()),
+	)
+	if err != nil {
+		errCh <- errors.E(op, err)
+		return errCh
+	}
+
 	p.pool, err = p.server.NewPool(context.Background(), p.cfg.Pool, map[string]string{RRMode: RRModeMicro}, nil)
 	if err != nil {
 		errCh <- err
@@ -126,7 +148,7 @@ func (p *Plugin) Serve() chan error {
 		Data  string `json:"data"`
 	}
 
-	_, err = define.NatsConn.Subscribe(Subject, func(msg *nats.Msg) {
+	_, err = p.natsConn.Subscribe(Subject, func(msg *nats.Msg) {
 		p.log.Debug("收到消息: " + string(msg.Data))
 		var message Message
 		if err = json.Unmarshal(msg.Data, &message); err != nil {
@@ -268,4 +290,21 @@ func (p *Plugin) exec(ctx context.Context, pld *payload.Payload) (*payload.Paylo
 		return nil, errors.E("worker empty response")
 	}
 	return resp, nil
+}
+
+func reconnectHandler() func(*nats.Conn) {
+	return func(conn *nats.Conn) {
+		log.Warn("connection lost, reconnecting", zap.String("url", conn.ConnectedUrl()))
+	}
+}
+
+func disconnectHandler() func(*nats.Conn, error) {
+	return func(_ *nats.Conn, err error) {
+		if err != nil {
+			log.Error("nats disconnected", zap.Error(err))
+			return
+		}
+
+		log.Info("nats disconnected")
+	}
 }

@@ -22,17 +22,7 @@ func InitNats() {
 	if len(natsAddr) == 0 {
 		natsAddr = "nats://nats:4222"
 	}
-
-	nc, err := nats.Connect(natsAddr,
-		nats.NoEcho(),
-		nats.Timeout(time.Minute),
-		nats.MaxReconnects(-1),
-		nats.PingInterval(time.Second*10),
-		nats.ReconnectWait(time.Second),
-		nats.ReconnectBufSize(20*1024*1024),
-		nats.ReconnectHandler(reconnectHandler()),
-		nats.DisconnectErrHandler(disconnectHandler()),
-	)
+	nc, err := nats.Connect(natsAddr)
 	if err != nil {
 		panic(err)
 	}
