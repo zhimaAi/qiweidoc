@@ -387,6 +387,61 @@ export const jsonDecode = (jsonStr, nullval = {}) => {
     }
 }
 
+export const checkVersionCompatible = (version, versionStack) => {
+    if (!version || !versionStack || !Array.isArray(versionStack)) {
+        return false
+    }
+    // 兼容第一版
+    const _versionStack = []
+    versionStack.map(v => {
+        if (/^\d+\.\d+\.\d$/.test(v)) {
+            v = '>='+v
+        }
+        _versionStack.push(v)
+    })
+    const versionRegEx = /([><=]+)(\d+\.\d+\.\d+)/;  // 匹配对比操作符和版本号
+    for (let rule of _versionStack) {
+        const match = versionRegEx.exec(rule.trim());
+        if (match) {
+            const operator = match[1];
+            const versionToCompare = match[2];
+            if (!isVersionCompatible(version, versionToCompare, operator)) {
+                return false;
+            }
+        } else {
+            console.error('规则格式不正确:', version, versionStack);
+            return false;
+        }
+    }
+    return true;
+}
+
+export const isVersionCompatible = (currentVersion, versionToCompare, operator) => {
+    const current = currentVersion.split('.').map(Number);
+    const compare = versionToCompare.split('.').map(Number);
+    const compareVersion = (version1, version2) => {
+        for (let i = 0; i < 3; i++) {
+            if (version1[i] > version2[i]) return 1;
+            if (version1[i] < version2[i]) return -1;
+        }
+        return 0;
+    };
+    switch (operator) {
+        case '>':
+            return compareVersion(current, compare) > 0;
+        case '<':
+            return compareVersion(current, compare) < 0;
+        case '>=':
+        case '=>':
+            return compareVersion(current, compare) >= 0;
+        case '<=':
+        case '=<':
+            return compareVersion(current, compare) <= 0;
+        default:
+            return false;
+    }
+}
+
 export const weeks = [
     {
         label: "周一",

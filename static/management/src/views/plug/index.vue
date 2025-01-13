@@ -43,7 +43,7 @@
                             </div>
                             <div class="zm-flex-between mt8">
                                 <div class="price">{{ item.price_info }}</div>
-                                <div>
+                                <div class="btn-box">
                                     <template v-if="item.is_install">
                                         <a-button v-if="item.price_type > 1" @click="goPay(item)">联系客服</a-button>
                                         <a-popover
@@ -330,6 +330,13 @@ const goPay = item => {
                     color: #fa541c;
                     font-size: 16px;
                     font-weight: 600;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                .btn-box {
+                    white-space: nowrap;
                 }
             }
         }

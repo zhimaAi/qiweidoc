@@ -247,14 +247,17 @@ function checkMsgInWorkTime($time_range, $msg_timestamp): bool
     return false;
 }
 
-function is_compatible_version($app_version, $compatible_versions) {
+function is_compatible_version($app_version, $compatible_versions): bool
+{
     foreach ($compatible_versions as $version_constraint) {
-        if (substr($version_constraint, 0, 2) === '>=' || substr($version_constraint, 0, 2) === '<=') {
+        if (str_starts_with($version_constraint, '>=') || str_starts_with($version_constraint, '<=')) {
             $operator = substr($version_constraint, 0, 2);
             $version = substr($version_constraint, 2);
-        } else {
+        } elseif (str_starts_with($version_constraint, '>') || str_starts_with($version_constraint, '<')) {
             $operator = substr($version_constraint, 0, 1);
             $version = substr($version_constraint, 1);
+        } else {
+            return false;
         }
 
         if (!version_compare($app_version, $version, $operator)) {

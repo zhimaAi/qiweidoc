@@ -167,10 +167,7 @@ class ModuleController extends BaseController
         // 获取main模块信息
         $mainModuleConfig = Module::getLocalModuleConfig('main');
         $mainModuleVersion = $mainModuleConfig['version'] ?? 0;
-        // if (!is_compatible_version($mainModuleVersion, $compatibleMainVersionList)) {
-        //
-        // }
-        if (!in_array($mainModuleVersion, $compatibleMainVersionList)) {
+        if (!is_compatible_version($mainModuleVersion, $compatibleMainVersionList)) {
             throw new LogicException("与主应用版本不兼容");
         }
 
