@@ -127,5 +127,6 @@ services:
     build:
       context: ..
       dockerfile: docker/main/DockerfileProd
+    platform: linux/amd64
     image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/qiweidoc_main_prod:latest
     scale: 0

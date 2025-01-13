@@ -1,4 +1,4 @@
-FROM golang:1.23-bookworm
+FROM php:8.2.27-cli-bookworm
 
 # 安装软件
 RUN apt-get update && \
@@ -28,7 +28,6 @@ RUN apt-get update && \
     php-dev \
     php-pear \
     zlib1g-dev \
-    npm && \
     sed -i '/zh_CN.UTF-8/s/^# //g' /etc/locale.gen && \
     locale-gen && \
     update-locale LANG=zh_CN.UTF-8 LC_ALL=zh_CN.UTF-8 && \
@@ -51,7 +50,6 @@ RUN mkdir -p /etc/php/8.2/cli/conf.d && \
     chmod 644 /etc/php/8.2/cli/conf.d/20-edl.ini && \
     chmod 644 /usr/lib/php/20220829/edl.so
 
-
 # 配置SSH
 RUN mkdir -p /var/run/sshd && \
     echo 'root:root' | chpasswd && \
@@ -65,8 +63,7 @@ RUN git config --global core.editor "vim" && \
     git config --global credential.helper store
 
 # 配置代理
-RUN npm config set registry https://registry.npmmirror.com && \
-    go env -w GOPROXY=https://goproxy.cn,direct
+RUN npm config set registry https://registry.npmmirror.com
 
 # 工作目录
 WORKDIR /var/www/
