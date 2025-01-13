@@ -102,6 +102,7 @@ services:
     build:
       context: ..
       dockerfile: docker/main/DockerfileDev
+    platform: linux/amd64
     image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/qiweidoc_main_dev:latest
     restart: always
     command: "/usr/sbin/sshd -D"

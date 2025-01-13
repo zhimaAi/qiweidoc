@@ -1,54 +1,51 @@
 FROM php:8.2.27-cli-bookworm
 
-# 安装软件
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+# 安装常用扩展
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    procps \
+    vim \
+    tzdata \
+    unzip \
     locales \
     curl \
-    net-tools \
-    wget \
-    vim \
-    iputils-ping \
-    make \
     openssh-server \
     git \
-    unzip \
-    php-cli \
-    php-mbstring \
-    php-pgsql \
-    php-dom \
-    php-curl \
-    php-zip \
-    php-igbinary \
-    php-msgpack \
-    php-bcmath \
-    php-gd \
-    php-imagick \
-    composer \
-    php-dev \
-    php-pear \
+    libpq-dev \
+    libzip-dev \
+    libpng-dev \
+    libmagickwand-dev \
     zlib1g-dev \
-    sed -i '/zh_CN.UTF-8/s/^# //g' /etc/locale.gen && \
-    locale-gen && \
-    update-locale LANG=zh_CN.UTF-8 LC_ALL=zh_CN.UTF-8 && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-# minio客户端
-COPY docker/main/mc /usr/local/bin/mc
-RUN chmod +x /usr/local/bin/mc
+    iputils-ping \
+    && sed -i '/zh_CN.UTF-8/s/^# //g' /etc/locale.gen \
+    && locale-gen \
+    && update-locale LANG=zh_CN.UTF-8 LC_ALL=zh_CN.UTF-8 \
+    && ln -fs /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && dpkg-reconfigure -f noninteractive tzdata \
+    && docker-php-ext-install pdo_pgsql bcmath gd zip sockets pcntl \
+    && pecl install igbinary \
+    && pecl install msgpack \
+    && pecl install imagick \
+    && docker-php-ext-enable igbinary \
+    && docker-php-ext-enable msgpack \
+    && docker-php-ext-enable imagick \
+    && docker-php-ext-enable pcntl \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /tmp/pear \
+    && docker-php-source delete
 
 # 设置语言环境变量
 ENV LANG=zh_CN.UTF-8 \
     LANGUAGE=zh_CN:zh \
     LC_ALL=zh_CN.UTF-8
 
-# PHP 扩展配置
-COPY docker/main/edl.so /usr/lib/php/20220829/
-RUN mkdir -p /etc/php/8.2/cli/conf.d && \
-    echo "extension=edl.so" > /etc/php/8.2/cli/conf.d/20-edl.ini && \
-    chmod 644 /etc/php/8.2/cli/conf.d/20-edl.ini && \
-    chmod 644 /usr/lib/php/20220829/edl.so
+# minio客户端
+COPY docker/main/mc /usr/local/bin/mc
+RUN chmod +x /usr/local/bin/mc
+
+# 添加自定义加密扩展
+COPY docker/main/edl.so /usr/local/lib/php/extensions/no-debug-non-zts-20220829/
+RUN docker-php-ext-enable edl
 
 # 配置SSH
 RUN mkdir -p /var/run/sshd && \
@@ -61,9 +58,6 @@ RUN mkdir -p /var/run/sshd && \
 RUN git config --global core.editor "vim" && \
     git config --global pull.rebase false && \
     git config --global credential.helper store
-
-# 配置代理
-RUN npm config set registry https://registry.npmmirror.com
 
 # 工作目录
 WORKDIR /var/www/

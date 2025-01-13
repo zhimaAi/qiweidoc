@@ -1,6 +1,5 @@
 .env
 .git
-vendor
 node_modules
 *.log
 *.bin

@@ -1,18 +1,43 @@
-# 构建最终镜像
 FROM php:8.2.27-cli-bookworm
 
 # 安装常用扩展
 RUN apt-get update && apt-get install -y --no-install-recommends \
-   procps vim tzdata make unzip libpq-dev libzip-dev libpng-dev libmagickwand-dev zlib1g-dev \
-   && ln -fs /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
-   && dpkg-reconfigure -f noninteractive tzdata \
-   && docker-php-ext-install pdo_pgsql bcmath gd zip sockets pcntl \
-   && pecl install imagick igbinary msgpack\
-   && docker-php-ext-enable imagick igbinary msgpack pcntl \
-   && apt-get clean \
-   && rm -rf /var/lib/apt/lists/* \
-   && rm -rf /tmp/pear \
-   && docker-php-source delete
+    procps \
+    vim \
+    tzdata \
+    unzip \
+    locales \
+    curl \
+    openssh-server \
+    git \
+    libpq-dev \
+    libzip-dev \
+    libpng-dev \
+    libmagickwand-dev \
+    zlib1g-dev \
+    iputils-ping \
+    && sed -i '/zh_CN.UTF-8/s/^# //g' /etc/locale.gen \
+    && locale-gen \
+    && update-locale LANG=zh_CN.UTF-8 LC_ALL=zh_CN.UTF-8 \
+    && ln -fs /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && dpkg-reconfigure -f noninteractive tzdata \
+    && docker-php-ext-install pdo_pgsql bcmath gd zip sockets pcntl \
+    && pecl install igbinary \
+    && pecl install msgpack \
+    && pecl install imagick \
+    && docker-php-ext-enable igbinary \
+    && docker-php-ext-enable msgpack \
+    && docker-php-ext-enable imagick \
+    && docker-php-ext-enable pcntl \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /tmp/pear \
+    && docker-php-source delete
+
+# 设置语言环境变量
+ENV LANG=zh_CN.UTF-8 \
+    LANGUAGE=zh_CN:zh \
+    LC_ALL=zh_CN.UTF-8
 
 # minio客户端
 COPY docker/main/mc /usr/local/bin/mc
@@ -24,10 +49,6 @@ RUN docker-php-ext-enable edl
 
 WORKDIR /var/www/
 COPY . .
-
-# 安装php依赖
-COPY php/composer.lock php/composer.lock
-RUN COMPOSER_ALLOW_SUPERUSER=1 composer --working-dir php install --no-dev
 
 # 复制环境变量文件
 COPY .env.prod .env
