@@ -11,7 +11,7 @@
                     <div class="client-box">
                         <div class="client-box-top">
                             <div class="top-title">{{ detailData.title }}</div>
-                            <span class="version-tag">v{{ detailData?.local_version }}</span>
+                            <span v-if="detailData?.local_version" class="version-tag">v{{ detailData.local_version }}</span>
                             <div class="top-enable" v-if="detailData.is_install && detailData.enable_bool">
                                 <img class="enable-img" src="../../assets/svg/enable.svg" alt="">
                                 <div class="top-enable-label">已启用</div>
@@ -139,6 +139,12 @@ const loading = ref(false)
 const installing = ref(false)
 const modules = ref([Pagination, Navigation])
 
+onMounted(() => {
+    getModulesInfo({
+        name: query.name
+    })
+})
+
 const lists = computed(() => {
     let _modules = store.getters.getModules || []
     if (Array.isArray(_modules)) {
@@ -169,7 +175,7 @@ const statusChange = (status) => {
     let key = status ? '启用' : '禁用'
     Modal.confirm({
         title: `确认${key}该插件`,
-        content: status ? '启用后，可到功能插件-客户标签使用该功能' : '禁用后，功能不可再使用，禁用后可重新启用',
+        content: status ? `启用后，可到功能插件-${detailData.title}使用该功能` : '禁用后，功能不可再使用，禁用后可重新启用',
         okText: '确定',
         cancelText: '取消',
         onOk: () => {

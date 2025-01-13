@@ -120,7 +120,7 @@ const statusChange = (item) => {
     }
     Modal.confirm({
         title: `确认${key}该插件`,
-        content: item.enable_bool ? '启用后，可到功能插件-客户标签使用该功能' : '禁用后，功能不可再使用，禁用后可重新启用',
+        content: item.enable_bool ? `启用后，可到功能插件-${item.title}使用该功能` : '禁用后，功能不可再使用，禁用后可重新启用',
         okText: '确定',
         cancelText: '取消',
         onOk: () => {

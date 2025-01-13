@@ -246,3 +246,22 @@ function checkMsgInWorkTime($time_range, $msg_timestamp): bool
     }
     return false;
 }
+
+function is_compatible_version($app_version, $compatible_versions) {
+    foreach ($compatible_versions as $version_constraint) {
+        if (substr($version_constraint, 0, 2) === '>=' || substr($version_constraint, 0, 2) === '<=') {
+            $operator = substr($version_constraint, 0, 2);
+            $version = substr($version_constraint, 2);
+        } else {
+            $operator = substr($version_constraint, 0, 1);
+            $version = substr($version_constraint, 1);
+        }
+
+        if (!version_compare($app_version, $version, $operator)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+

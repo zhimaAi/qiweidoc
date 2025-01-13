@@ -123,7 +123,7 @@ onMounted(async () => {
 })
 
 const localLoginTest = () => {
-    loginAfterHandle('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjUsInVzZXJpZCI6IllvdUVyWXVhblhpYW9CYVdhbmciLCJjb3JwX2lkIjoid3c1ZjQzMmIzYTI0YTliOWYxIiwiZXhwIjoxNzM2NDgwNDEyfQ.Oq5jmdIk8pYFc5kRhwUe49UFoaNVhRNjmwjMfINlqew')
+    loginAfterHandle('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MjUsInVzZXJpZCI6IllvdUVyWXVhblhpYW9CYVdhbmciLCJjb3JwX2lkIjoid3c1ZjQzMmIzYTI0YTliOWYxIiwiZXhwIjoxNzM2NTA3MzcxfQ.77WBQ5tRSrBMSSiaK7p90HvTWhiPzF-5z6RJPJo7uzM')
 }
 
 const onChangeLogin = (type) => {

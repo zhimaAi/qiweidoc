@@ -46,9 +46,11 @@ return [
         'password' => $_ENV['REDIS_PASSWORD'],
     ],
 
-    'module_host' => $_ENV['MODULE_HOST'] ?? 'https://zmwk.cn',
+    'module-host' => $_ENV['MODULE_HOST'] ?? 'https://zmwk.cn',
 
-    'local_storage' => [
+    'internal-host' => 'http://localhost:8080',
+
+    'local-storage' => [
         'endpoint' => $_ENV['MINIO_ENDPOINT'] ?? 'http://minio:9000',
         'region' => 'us-east-1',
         'access_key' => $_ENV['MINIO_ACCESS_KEY'] ?? 'minioadmin',

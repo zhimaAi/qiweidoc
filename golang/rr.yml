@@ -14,7 +14,6 @@ server:
 
 http:
   access_logs: true
-  max_request_size: 100 # HTTP请求队列超过100个就丢弃，防止服务器压力过大
   pool:
     num_workers: 2
     allocate_timeout: 2s
@@ -22,7 +21,6 @@ http:
       max_workers: 10
       spawn_rate: 1
       idle_timeout: 5s
-    max_jobs: 100   # 单个worker最大处理请求数,超过后重启
     supervisor:
       max_worker_memory: 128 # 当进程使用内存超过128MB后自动重启(不会终止正在处理的请求)
       ttl: 300s # 每隔5分钟自动重启进程（不会终止正在处理的请求）

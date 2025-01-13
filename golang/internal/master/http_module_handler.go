@@ -111,7 +111,6 @@ func getModuleList(ctx *fiber.Ctx) error {
 		var item define.ModuleRespInfo
 		item.Name = moduleInfo.Name
 		item.Version = moduleInfo.Version
-		item.CompatibleMainVersionList = moduleInfo.CompatibleMainVersionList
 		item.StartedAt = moduleInfo.StartedAt
 		item.Paused = moduleInfo.RR == nil
 		list = append(list, item)
@@ -150,7 +149,6 @@ func getModuleInfo(ctx *fiber.Ctx) error {
 		if moduleInfo.Name == data.Name {
 			item.Name = moduleInfo.Name
 			item.Version = moduleInfo.Version
-			item.CompatibleMainVersionList = moduleInfo.CompatibleMainVersionList
 			item.StartedAt = moduleInfo.StartedAt
 			item.Paused = moduleInfo.RR == nil
 		}

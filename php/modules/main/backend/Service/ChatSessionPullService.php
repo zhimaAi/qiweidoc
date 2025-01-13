@@ -159,10 +159,10 @@ class ChatSessionPullService
             'chat_secret' => $corp->get('chat_secret'),
             'sdk_file_id' => $sdkFileId,
 
-            'storage_endpoint' => Yii::params()['local_storage']['endpoint'],
-            'storage_region' => Yii::params()['local_storage']['region'],
-            'storage_access_key' => Yii::params()['local_storage']['access_key'],
-            'storage_secret_key' => Yii::params()['local_storage']['secret_key'],
+            'storage_endpoint' => Yii::params()['local-storage']['endpoint'],
+            'storage_region' => Yii::params()['local-storage']['region'],
+            'storage_access_key' => Yii::params()['local-storage']['access_key'],
+            'storage_secret_key' => Yii::params()['local-storage']['secret_key'],
             'storage_bucket_name' => StorageModel::SESSION_BUCKET,
             'storage_object_key' => $objectKey,
         ];

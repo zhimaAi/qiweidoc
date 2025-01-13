@@ -25,11 +25,11 @@ class StorageService
     {
         return new S3Client([
             'version' => 'latest',
-            'region' => Yii::params()['local_storage']['region'],
-            'endpoint' => Yii::params()['local_storage']['endpoint'],
+            'region' => Yii::params()['local-storage']['region'],
+            'endpoint' => Yii::params()['local-storage']['endpoint'],
             'credentials' => [
-                'key'    => Yii::params()['local_storage']['access_key'],
-                'secret' => Yii::params()['local_storage']['secret_key'],
+                'key'    => Yii::params()['local-storage']['access_key'],
+                'secret' => Yii::params()['local-storage']['secret_key'],
             ],
             'use_path_style_endpoint' => true,
         ]);
@@ -156,9 +156,9 @@ class StorageService
         }
 
         // 用mc注册本地配置
-        $endpoint = Yii::params()['local_storage']['endpoint'];
-        $accessKey = Yii::params()['local_storage']['access_key'];
-        $secretKey = Yii::params()['local_storage']['secret_key'];
+        $endpoint = Yii::params()['local-storage']['endpoint'];
+        $accessKey = Yii::params()['local-storage']['access_key'];
+        $secretKey = Yii::params()['local-storage']['secret_key'];
         $bucket = $model->get('local_storage_bucket');
         $objectKey = $model->get('local_storage_object_key');
         $command = "mc alias set local {$endpoint} {$accessKey} {$secretKey} --path auto";

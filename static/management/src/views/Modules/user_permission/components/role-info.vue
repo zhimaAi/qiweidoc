@@ -254,9 +254,21 @@ const loadData = () => {
     if (!items || !items?.length || tableData.value.length === total) {
       finished.value = true
     }
-    for (let item of items) {
-      tableData.value.push(item)
-    }
+    tableData.value = items || []
+    // let json = tableData.value.concat(items)
+    // let newJson = []
+    // for (let item1 of json) {
+    //     let flag = true
+    //     for (let item2 of newJson) {
+    //         if (item1.userid == item2.userid) {
+    //             flag = false
+    //         }
+    //     }
+    //     if (flag) {
+    //         newJson.push(item1)
+    //     }
+    // }
+    // tableData.value = newJson
     pagination.total = total
     loading.value = false
     if (pagination.current == 1) {

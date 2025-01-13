@@ -72,7 +72,6 @@ func StopModule(name string) error {
 	module.RR = nil
 	module.RpcPort = 0
 	module.HttpPort = 0
-	module.CompatibleMainVersionList = nil
 	module.StartedAt = ""
 	define.ModuleList[name] = module
 
@@ -103,15 +102,13 @@ func scanModules() error {
 		if existsModuleInfo, ok := define.ModuleList[entry.Name()]; ok {
 			existsModuleInfo.Name = manifest.Name
 			existsModuleInfo.Version = manifest.Version
-			existsModuleInfo.CompatibleMainVersionList = manifest.CompatibleMainVersionList
 			existsModuleInfo.Plugins = manifest.Plugins
 			define.ModuleList[entry.Name()] = existsModuleInfo
 		} else {
 			define.ModuleList[entry.Name()] = define.ModuleInfo{
-				Name:                      manifest.Name,
-				Version:                   manifest.Version,
-				CompatibleMainVersionList: manifest.CompatibleMainVersionList,
-				Plugins:                   manifest.Plugins,
+				Name:    manifest.Name,
+				Version: manifest.Version,
+				Plugins: manifest.Plugins,
 			}
 		}
 	}

@@ -9,30 +9,27 @@ import (
 )
 
 type ModuleInfo struct {
-	Name                      string
-	Version                   string
-	CompatibleMainVersionList []string
-	Plugins                   []string
-	RR                        *endure.Endure
-	StartedAt                 string
-	HttpPort                  int
-	RpcPort                   int
+	Name      string
+	Version   string
+	Plugins   []string
+	RR        *endure.Endure
+	StartedAt string
+	HttpPort  int
+	RpcPort   int
 }
 
 type ModuleManifest struct {
-	Name                      string   `json:"name"`
-	Version                   string   `json:"version"`
-	CompatibleMainVersionList []string `json:"compatible_main_version_list"`
-	Plugins                   []string `json:"plugins"`
+	Name    string   `json:"name"`
+	Version string   `json:"version"`
+	Plugins []string `json:"plugins"`
 }
 
 // ModuleRespInfo http接口里返回的结构体
 type ModuleRespInfo struct {
-	Name                      string   `json:"name"`
-	Version                   string   `json:"version"`
-	CompatibleMainVersionList []string `json:"compatible_main_version_list"`
-	Paused                    bool     `json:"paused"`
-	StartedAt                 string   `json:"started_at"`
+	Name      string `json:"name"`
+	Version   string `json:"version"`
+	Paused    bool   `json:"paused"`
+	StartedAt string `json:"started_at"`
 }
 
 // 全局变量

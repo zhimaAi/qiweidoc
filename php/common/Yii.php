@@ -104,11 +104,6 @@ final class Yii
         return $mutexes[$ttl];
     }
 
-    public static function getModuleManageAddress(): string
-    {
-        return "http://localhost:8080";
-    }
-
     /**
      * 获取当前环境的rpc客户端实例
      * @throws Throwable

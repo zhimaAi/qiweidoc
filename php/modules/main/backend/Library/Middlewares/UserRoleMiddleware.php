@@ -31,19 +31,12 @@ class UserRoleMiddleware implements MiddlewareInterface
     public function __construct(
         protected DataResponseFactoryInterface $responseFactory,
         protected JsonDataResponseFormatter    $jsonDataResponseFormatter,
-        CurrentRoute                           $currentRoute,
-        RouteCollectionInterface               $routeCollection,
+        private CurrentRoute                   $currentRoute,
+        private RouteCollectionInterface       $routeCollection,
 
     )
     {
-        // $this->routeName = $route->getName();
-        foreach ($routeCollection->getRoutes() as $route) {
-            if ($route->getData('name') == $currentRoute->getName()) {
-                $defaults = $route->getData('defaults');
-                $this->routePermission = $defaults['permission_key'] ?? '';
-                $this->routeFilterStatus = $defaults['filter_status'] ?? false;
-            }
-        }
+
     }
 
 
@@ -52,6 +45,14 @@ class UserRoleMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        foreach ($this->routeCollection->getRoutes() as $route) {
+            if ($route->getData('name') == $this->currentRoute->getName()) {
+                $defaults = $route->getData('defaults');
+                $this->routePermission = $defaults['permission_key'] ?? '';
+                $this->routeFilterStatus = $defaults['filter_status'] ?? false;
+            }
+        }
+
         $currentUserInfo = $request->getAttribute(Authentication::class);
 
         if (in_array($request->getMethod(), [Method::POST, Method::PUT, Method::DELETE]) && $currentUserInfo->get("role_id") == EnumUserRoleType::VISITOR->value) {

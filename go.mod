@@ -27,9 +27,9 @@ require (
 	github.com/roadrunner-server/server/v5 v5.1.2
 	github.com/roadrunner-server/service/v5 v5.0.4
 	github.com/roadrunner-server/static/v5 v5.0.3
+	github.com/robfig/cron/v3 v3.0.0
 	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.31.0
-	google.golang.org/grpc v1.69.2
 )
 
 require (
@@ -43,7 +43,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.18.7 // indirect
 	github.com/aws/smithy-go v1.22.1 // indirect
 	github.com/goccy/go-json v0.10.4 // indirect
-	github.com/robfig/cron/v3 v3.0.0 // indirect
 	github.com/spf13/cast v1.7.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 )
@@ -130,7 +129,7 @@ require (
 	golang.org/x/text v0.21.0 // indirect
 	golang.org/x/time v0.8.0 // indirect
 	golang.org/x/tools v0.27.0 // indirect
-	google.golang.org/protobuf v1.36.1
+	google.golang.org/protobuf v1.36.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	gopkg.in/yaml.v3 v3.0.1 // indirect

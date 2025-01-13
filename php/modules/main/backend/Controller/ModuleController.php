@@ -69,6 +69,9 @@ class ModuleController extends BaseController
         // 获取远程模块信息
         $remoteModule = Module::getRemoteModuleDetail($name, $corp->get('id'));
 
+        // 收集浏览记录
+        Module::collectModuleView($name, $corp->get('id'));
+
         return $this->jsonResponse(['remote_module' => $remoteModule, 'local_module' => $localModule, 'main_local' => $mainModule]);
     }
 
@@ -161,10 +164,12 @@ class ModuleController extends BaseController
             }
         } catch (Throwable) {}
 
-
         // 获取main模块信息
         $mainModuleConfig = Module::getLocalModuleConfig('main');
         $mainModuleVersion = $mainModuleConfig['version'] ?? 0;
+        // if (!is_compatible_version($mainModuleVersion, $compatibleMainVersionList)) {
+        //
+        // }
         if (!in_array($mainModuleVersion, $compatibleMainVersionList)) {
             throw new LogicException("与主应用版本不兼容");
         }
