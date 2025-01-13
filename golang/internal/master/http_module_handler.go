@@ -81,21 +81,15 @@ func stopModule(ctx *fiber.Ctx) error {
 		})
 	}
 
-	err := StopModule(data.Name)
-	if err != nil {
-		log.Errorf("停止模块失败%v", err)
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "停止模块失败",
-		})
-	}
-
-	// 删除模块运行状态
-	if err = deleteModuleOpen(data.Name); err != nil {
-		log.Errorf(fmt.Sprintf("更新运行状态失败: %v", err))
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "停止模块后更新状态失败",
-		})
-	}
+	go func() {
+		if err := StopModule(data.Name); err != nil {
+			log.Errorf("停止模块失败%v", err)
+		}
+		// 删除模块运行状态
+		if err := deleteModuleOpen(data.Name); err != nil {
+			log.Errorf(fmt.Sprintf("更新运行状态失败: %v", err))
+		}
+	}()
 
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "ok",

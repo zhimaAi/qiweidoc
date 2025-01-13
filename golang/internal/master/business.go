@@ -63,9 +63,9 @@ func StopModule(name string) error {
 	}
 
 	// 停止模块进程
-	err := module.RR.Stop()
-	if err != nil {
-		return err
+	log.Infof("准备停止模块进程%s", name)
+	if err := module.RR.Stop(); err != nil {
+		log.Infof("停止模块进程%s失败", name)
 	}
 
 	// 更新运行时信息
