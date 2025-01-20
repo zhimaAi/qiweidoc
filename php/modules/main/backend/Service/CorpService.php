@@ -122,8 +122,8 @@ class CorpService
 
         try {
             $corpModel->getWechatApi("cgi-bin/msgaudit/get_permit_user_list", [], CorpModel::SecretTypeChat);
-        } catch (Throwable) {
-            throw new LogicException('会话密钥不正确');
+        } catch (Throwable $e) {
+            throw new LogicException('会话密钥不正确: ' . $e->getMessage());
         }
 
         $corpModel->saveOrFail();

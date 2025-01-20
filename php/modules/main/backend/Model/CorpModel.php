@@ -50,6 +50,8 @@ class CorpModel extends BaseModel
             "show_is_read" => 'int',
             "corp_name"=>'string',
             "corp_logo"=>'string',
+            'callback_event_token' => 'string',
+            'callback_event_aes_key' => 'string',
         ];
     }
 
