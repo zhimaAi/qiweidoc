@@ -3,6 +3,7 @@ package cron
 import (
 	"context"
 	"encoding/json"
+
 	"github.com/roadrunner-server/errors"
 	"github.com/roadrunner-server/goridge/v3/pkg/frame"
 	"github.com/roadrunner-server/pool/payload"
@@ -44,17 +45,29 @@ func (r *rpc) Add(input Input, output *string) error {
 
 	entryId, err := r.pl.cron.AddFunc(input.Spec, func() {
 		const op2 = "cron_plugin:RunCron"
-		router := r.pl.routerMap[input.Name]
-		if router.IsRunning == true {
+
+		r.pl.mutex.Lock()
+		router, exists := r.pl.routerMap[input.Name]
+		if !exists {
+			r.pl.mutex.Unlock()
+			r.log.Error(errors.E(op2, "任务不存在").Error())
+			return
+		}
+
+		if router.IsRunning {
+			r.pl.mutex.Unlock()
 			r.log.Warn(errors.E(op2, input.Name+" is running").Error())
 			return
 		}
+
 		router.IsRunning = true
 		r.pl.routerMap[input.Name] = router
 
 		data := make(map[string]string)
 		data["data"] = router.Data
 		data["handler"] = router.Handler
+		r.pl.mutex.Unlock()
+
 		d, err := json.Marshal(data)
 		if err != nil {
 			r.log.Error(errors.E(op2, err).Error())
@@ -66,10 +79,17 @@ func (r *rpc) Add(input Input, output *string) error {
 			Body:    d,
 			Codec:   frame.CodecProto,
 		}
+
 		r.log.Debug("开始执行")
 		_, err = r.pl.exec(context.Background(), pl)
-		router.IsRunning = false
-		r.pl.routerMap[input.Name] = router
+
+		r.pl.mutex.Lock()
+		if routerNew, ok := r.pl.routerMap[input.Name]; ok {
+			routerNew.IsRunning = false
+			r.pl.routerMap[input.Name] = routerNew
+		}
+		r.pl.mutex.Unlock()
+
 		if err != nil {
 			r.log.Error(errors.E(op2, err).Error())
 			return
