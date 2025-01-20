@@ -7,6 +7,7 @@ use Common\Yii;
 use Doctrine\Common\Collections\ArrayCollection;
 use Exception;
 use Throwable;
+use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Query\Query;
 
 /**
@@ -28,18 +29,24 @@ class DBQuery extends Query
      */
     private function executeCommand(callable $command): mixed
     {
-        try {
-            $result = $command();
-            BaseModel::$lastSql = $this->createCommand()->getRawSql();
+        $maxRetries = 3;  // 最大重试次数
+        $retryCount = 0;
 
-            return $result;
-        } catch (Throwable $e) {
-            BaseModel::$lastSql = $this->createCommand()->getRawSql();
-            if (Yii::isDebug()) {
-                throw new Exception("sql执行出错：" . BaseModel::$lastSql . $e->getMessage(), 500, $e);
+        while (true) {
+            try {
+                return $command();
+            } catch (IntegrityException $e) {
+                if (str_contains($e->getMessage(), 'SQLSTATE[HY000]')) {
+                    $retryCount++;
+                    if ($retryCount > $maxRetries) {
+                        throw new Exception('数据库连接失败，已重试' . $maxRetries . '次', 0, $e);
+                    }
+                    Yii::db()->close();
+                    usleep(100000 * $retryCount);
+                    continue;
+                }
+                throw $e;
             }
-
-            throw $e;
         }
     }
 

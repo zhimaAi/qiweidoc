@@ -9,6 +9,7 @@ use Exception;
 use RuntimeException;
 use Throwable;
 use ValueError;
+use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Expression\Expression;
 
 abstract class BaseModel
@@ -533,18 +534,24 @@ abstract class BaseModel
      */
     private function executeCommand(callable $command): mixed
     {
-        try {
-            $result = $command(Yii::db());
-            self::$lastSql = Yii::db()->createCommand()->getRawSql();
+        $maxRetries = 3;  // 最大重试次数
+        $retryCount = 0;
 
-            return $result;
-        } catch (Throwable $e) {
-            self::$lastSql = Yii::db()->createCommand()->getRawSql();
-            if (Yii::isDebug()) {
-                throw new Exception("sql执行出错：" . self::$lastSql . $e->getMessage(), 500, $e);
+        while (true) {
+            try {
+                return $command(Yii::db());
+            } catch (IntegrityException $e) {
+                if (str_contains($e->getMessage(), 'SQLSTATE[HY000]')) {
+                    $retryCount++;
+                    if ($retryCount > $maxRetries) {
+                        throw new Exception('数据库连接失败，已重试' . $maxRetries . '次', 0, $e);
+                    }
+                    Yii::db()->close();
+                    usleep(100000 * $retryCount);
+                    continue;
+                }
+                throw $e;
             }
-
-            throw $e;
         }
     }
 
