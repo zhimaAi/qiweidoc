@@ -6,7 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "build:modules": "npm-run-all --parallel build:main build:custom_brand build:user_permission build:keywords_tagging build:hint_keywords build:timeout_reply_single build:timeout_reply_group build:chat_statistic_group",
+    "build:modules": "npm-run-all --parallel build:main build:custom_brand build:user_permission build:keywords_tagging build:hint_keywords build:timeout_reply_single build:timeout_reply_group build:chat_statistic_group build:archive_staff",
     "build:main": "cross-env VUE_APP_MODULE=main vue-cli-service build",
     "build:custom_brand": "cross-env VUE_APP_MODULE=custom_brand vue-cli-service build",
     "build:user_permission": "cross-env VUE_APP_MODULE=user_permission vue-cli-service build",
@@ -15,7 +15,8 @@
     "build:timeout_reply_single": "cross-env VUE_APP_MODULE=timeout_reply_single vue-cli-service build",
     "build:timeout_reply_group": "cross-env VUE_APP_MODULE=timeout_reply_group vue-cli-service build",
     "build:chat_statistic_group": "cross-env VUE_APP_MODULE=chat_statistic_group vue-cli-service build",
-    "build:chat_statistic_single": "cross-env VUE_APP_MODULE=chat_statistic_single vue-cli-service build"
+    "build:chat_statistic_single": "cross-env VUE_APP_MODULE=chat_statistic_single vue-cli-service build",
+    "build:archive_staff": "cross-env VUE_APP_MODULE=archive_staff vue-cli-service build"
   },
   "dependencies": {
     "@videojs-player/vue": "^1.0.0",

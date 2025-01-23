@@ -65,7 +65,7 @@ return [
         };
     },
 
-    // 数据库操作日志,每3秒写一次文件
+    // 数据库操作日志
     'db.logger' => static function (ContainerInterface $container) {
         $module = Module::getCurrentModuleName();
         $aliases = $container->get(Aliases::class);
@@ -79,8 +79,7 @@ return [
             contextProvider: new CompositeContextProvider(
                 new SystemContextProvider(
                     traceLevel: 50,
-                    excludedTracePaths:
-                    ['vendor', 'php/common/DB', 'php/config', ]),
+                    excludedTracePaths: ['vendor', 'php/common/DB', 'php/config', ]),
             ),
         );
         $logger->setFlushInterval(1);

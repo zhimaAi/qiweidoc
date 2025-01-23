@@ -12,17 +12,14 @@ use Carbon\Carbon;
 use Common\Broadcast;
 use Common\Job\Producer;
 use Common\Yii;
-use Exception;
 use LogicException;
 use Modules\Main\Consumer\DownloadChatSessionBitMediasConsumer;
 use Modules\Main\Consumer\DownloadChatSessionMediasConsumer;
-use Modules\Main\DTO\Setting\CloudStorageSettingDTO;
 use Modules\Main\Enum\EnumChatConversationType;
 use Modules\Main\Enum\EnumChatMessageRole;
 use Modules\Main\Enum\EnumMessageType;
 use Modules\Main\Model\ChatConversationsModel;
 use Modules\Main\Model\ChatMessageModel;
-use Modules\Main\Model\CloudStorageSettingModel;
 use Modules\Main\Model\CorpModel;
 use Modules\Main\Model\CustomersModel;
 use Modules\Main\Model\GroupModel;
@@ -37,14 +34,6 @@ class ChatSessionPullService
     private const MESSAGE_LIMIT = 1000;
     private const LARGE_FILE_THRESHOLD = 20 * 1024 * 1024; // 20MB
     private static CorpModel $corp;
-    const ValidMediaType = [
-        'image',
-        'voice',
-        'video',
-        'emotion',
-        'file',
-        'meeting_voice_call',
-    ];
 
     /**
      * 拉取并保存会话消息
@@ -216,22 +205,50 @@ class ChatSessionPullService
      */
     private static function isValidMessage(array $msg): bool
     {
+        // 缺少字段的忽略
         if (empty($msg['decrypted_data']) || empty($msg['msgid']) || empty($msg['seq'])) {
             return false;
         }
+
+        // 解密失败的忽略
         $decryptedData = json_decode($msg['decrypted_data'], true);
-        if (empty($decryptedData['msgtime'])) {
+        if (empty($decryptedData['msgtime']) || empty($decryptedData['from']) || empty($decryptedData['tolist'])) {
             return false;
         }
 
-        $message = ChatMessageModel::query()
+        // 重复消息忽略
+        $old = ChatMessageModel::query()
             ->where(['and',
                 ['msg_id' => $msg['msgid']],
                 ['msg_time' => Carbon::createFromTimestampMsUTC($decryptedData['msgtime'])->timezone('Asia/Shanghai')->format('Y-m-d H:i:s.v')],
             ])
             ->getOne();
+        if (!empty($old)) {
+            return false;
+        }
 
-        return empty($message);
+        // 不在会话存档中的员工的消息忽略掉
+        $inArchive = false;
+        $validStaffList = StaffModel::query()
+            ->select('userid')
+            ->where(["chat_status" => 1])
+            ->andWhere(['enable_archive' => true])
+            ->all();
+        $validStaffList = array_column($validStaffList, 'userid');
+        if (in_array($decryptedData['from'], $validStaffList)) {
+            $inArchive = true;
+        }
+        foreach ($decryptedData['tolist'] as $to) {
+            if (in_array($to, $validStaffList)) {
+                $inArchive = true;
+                break;
+            }
+        }
+        if (!$inArchive) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

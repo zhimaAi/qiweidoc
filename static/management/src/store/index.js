@@ -1,9 +1,11 @@
 import {createStore} from 'vuex'
+import dayjs from 'dayjs';
+import createPersistedState from 'vuex-persistedstate';
+import {getArchiveStaffSettings} from "@/api/archive-staff";
 import {getAuthToken, getCorpInfo, getUserInfo} from "@/utils/cache";
 import {getModules} from "@/api/company";
-import createPersistedState from 'vuex-persistedstate';
 import {checkVersionCompatible, jsonDecode} from "@/utils/tools";
-import dayjs from 'dayjs';
+import {getArchiveMaxStf} from "@/api/session";
 
 const getState = () => {
     return {
@@ -22,6 +24,7 @@ const getState = () => {
             login_page_description: '',
             copyright: ''
         }, // 企业
+        archiveStfSetting: {},
     }
 }
 
@@ -35,6 +38,12 @@ export default createStore({
         getCompany: state => state.company,
         getModules: state => state.modules,
         getMainModule: state => state.mainModuleInfo,
+        getArchiveStfInfo: state => {
+            let _modules = state.modules || []
+            let archive_staff_m = _modules.find(i => i.name === 'archive_staff')
+            return archive_staff_m || {}
+        },
+        getArchiveStfSetting: state => state.archiveStfSetting
     },
     mutations: {
         RESET_STATE(state) {
@@ -87,6 +96,7 @@ export default createStore({
                 let find
                 const mainVersion = mainModule?.version
                 const nowTime = dayjs().unix()
+                // modules.push(localMods.find(i => i.name === 'archive_staff'))
                 modules.map(item => {
                     find = localMods.find(i => item.name === i.name)
                     item.is_install = false
@@ -96,7 +106,7 @@ export default createStore({
                     item.is_enabled = false
                     item.local_version = ''
                     // 兼容main模块版本
-                    item.compatible_main_version_list = jsonDecode(item?.latest_version?.compatible_main_version_list)
+                    item.compatible_main_version_list = jsonDecode(item?.latest_version?.compatible_main_version_list, [])
                     // 最新版本是否兼容当前main模块
                     item.is_compatible_main =  checkVersionCompatible(mainVersion, item.compatible_main_version_list)
                     if (item?.expire_time > 0) {
@@ -132,6 +142,19 @@ export default createStore({
                 commit('setModules', modules)
                 commit('setMainModule', mainModule)
                 return Promise.resolve(modules)
+            })
+        },
+       async updateArchiveStfSetting({state}) {
+            const maxStfRes = await getArchiveMaxStf()
+            const defaultMaxStfNum = Number(maxStfRes?.data?.num || 5)
+            return getArchiveStaffSettings().then(res => {
+                const settings = res.data || {}
+                if (!settings.max_staff_num && settings.max_staff_num != 0) {
+                    settings.max_staff_num = defaultMaxStfNum
+                }
+                settings.max_staff_num = Number(settings.max_staff_num)
+                state.archiveStfSetting = settings
+                return Promise.resolve(settings)
             })
         }
     },

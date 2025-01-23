@@ -3,6 +3,7 @@
 
 namespace Common\Command;
 
+use Common\Micro;
 use Common\Yii;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -15,6 +16,8 @@ final class TestCommand extends Command
 {
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $result = Micro::call('archive_staff', 'query', '');
+        ddump($result);
 
         return ExitCode::OK;
     }

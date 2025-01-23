@@ -55,6 +55,7 @@ import {
     MessageOutlined
 } from '@ant-design/icons-vue';
 import {getModules} from "@/api/company";
+import {getPluginRouteParams} from "@/utils/tools";
 
 const store = useStore()
 const route = useRoute();
@@ -147,18 +148,7 @@ const loadData = () => {
 }
 
 const pluginSwitch = plugin => {
-    let link = `/modules/${plugin.name}/`
-    if (process.env.NODE_ENV === 'development') {
-        let host = process.env.VUE_APP_HOST || 'http://hhdev2.xiaokefu.cn'
-        link = host + link
-    }
-    router.push({
-        path: '/plug/render',
-        query: {
-            _key: `zm-plugin-${plugin.name}`,
-            link: encodeURIComponent(link)
-        }
-    })
+    router.push(getPluginRouteParams(plugin))
 }
 
 onMounted(() => {

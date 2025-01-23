@@ -40,6 +40,7 @@ class StaffModel extends BaseModel
             'has_conversation' => 'boolean',
             "role_id" => 'int',
             'can_login' => 'int',
+            'enable_archive' => 'boolean',
         ];
     }
 

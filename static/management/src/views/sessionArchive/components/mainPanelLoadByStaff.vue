@@ -1,104 +1,124 @@
 <template>
     <!----按员工查看---->
-    <div id="sessionMainContent" class="session-main-container">
-        <DragStretchBox
-            @change="panelBlockWidthChange"
-            :max-width="panelWin.leftMaxWith"
-            :min-width="panelWin.leftMinWith"
-            id="sessionLeftBlock"
-            class="session-left-block"
-        >
-            <a-tabs v-model:active-key="main.staffType"
-                    @change="staffTypeChange"
-                    class="zm-customize-tabs">
-                <a-tab-pane key="SESSION_STAFF" :tab="`会话存档中(${main.sessionStaffCount})`"></a-tab-pane>
-                <a-tab-pane key="HISTORY_STAFF" :tab="`历史员工(${main.historyStaffCount})`"></a-tab-pane>
-            </a-tabs>
-            <StaffBox v-show="main.staffType === 'SESSION_STAFF'"
-                      class="main-content-box"
-                      @totalReport="val => totalReport(val, 'SESSION_STAFF')"
-                      @change="val => staffChange(val, 'SESSION_STAFF')"
-                      :default="defaultStaff"
-                      :type="1"/>
-            <StaffBox v-show="main.staffType === 'HISTORY_STAFF'"
-                      class="main-content-box"
-                      @totalReport="val => totalReport(val, 'HISTORY_STAFF')"
-                      @change="val => staffChange(val, 'HISTORY_STAFF')"
-                      :default="defaultStaff"
-                      :type="2"/>
-        </DragStretchBox>
-        <div class="session-right-block">
-            <FilterBoxByStaff
-                class="filter-box"
-                @change="search"
-                :type="main.contactType"
-                @show-setting-change="showSettingChange"/>
-            <div class="content-block">
-                <DragStretchBox
-                    :max-width="panelWin.centerMaxWidth"
-                    :min-width="panelWin.centerMinWidth"
-                    id="sessionCenterBlock"
-                    class="center-block"
-                    @change="panelBlockWidthChange"
-                >
-                    <a-tabs v-model:activeKey="main.contactType"
-                            @change="contactTypeChange"
-                            class="zm-customize-tabs">
-                        <a-tab-pane key="CUSTOMER" :tab="`客户(${main.contactCustomerCount})`"></a-tab-pane>
-                        <a-tab-pane key="STAFF" :tab="`员工(${main.contactStaffCount})`"></a-tab-pane>
-                        <a-tab-pane key="GROUP" :tab="`群聊(${main.contactGroupCount})`"></a-tab-pane>
-                    </a-tabs>
-                    <ContactColleague
-                        v-show="main.contactType === 'STAFF'"
-                        @change="val => contactChange(val, 'STAFF')"
-                        @totalReport="val => contactTotalReport(val, 'STAFF')"
-                        :staffInfo="currentStaff"
-                        :filterData="filterData"
-                        :default="defaultParams"
-                        :key="contactCompKey"
-                        class="main-content-box"
-                    />
-                    <ContactCustomer
-                        v-show="main.contactType === 'CUSTOMER'"
-                        @change="val => contactChange(val, 'CUSTOMER')"
-                        @totalReport="val => contactTotalReport(val, 'CUSTOMER')"
-                        @cancelCollect="onCancelCollect"
-                        :staffInfo="currentStaff"
-                        :filterData="filterData"
-                        :default="defaultParams"
-                        :callbackData="callbackData"
-                        :key="contactCompKey * 100"
-                        :showSettings="showSettings"
-                        class="main-content-box"
-                    />
-                    <ContactGroup
-                        v-show="main.contactType === 'GROUP'"
-                        @change="val => contactChange(val, 'GROUP')"
-                        @totalReport="val => contactTotalReport(val, 'GROUP')"
-                        :staffInfo="currentStaff"
-                        :filterData="filterData"
-                        :default="defaultParams"
-                        :key="contactCompKey * 200"
-                        class="main-content-box"
-                    />
-                </DragStretchBox>
-                <ChatBox ref="chatRef"
-                         class="right-block"
-                         mainTab="LOAD_BY_STAFF"
-                         :chatInfo="chatInfo"
-                         :currentMsgCancelCollect="currentMsgCancelCollect"
-                         @changeCollect="onChangeCollect"
-                         :sessionType="main.contactType === 'GROUP' ? 'group' : 'session'"/>
+    <div class="_container">
+        <div v-if="!(archiveStfModule.is_enabled && archiveStfSettings.is_staff_designated == 0)" class="_header">
+            <a-alert type="info" show-icon>
+                <template #message>
+                    可设置{{archiveStfTotal}}/{{archiveStfSettings.max_staff_num}}个存档员工
+                    <a class="ml8" @click="showSetStaffModal">设置</a>
+                    <template v-if="!archiveStfModule.is_install">
+                        ，如需设置更多，需购买存档员工管理插件<a class="ml8" @click="linkPlugHome">去购买</a>
+                    </template>
+                </template>
+            </a-alert>
+        </div>
+        <div id="sessionMainContent" class="session-main-container">
+            <DragStretchBox
+                @change="panelBlockWidthChange"
+                :max-width="panelWin.leftMaxWith"
+                :min-width="panelWin.leftMinWith"
+                id="sessionLeftBlock"
+                class="session-left-block"
+            >
+                <a-tabs v-model:active-key="main.staffType"
+                        @change="staffTypeChange"
+                        class="zm-customize-tabs">
+                    <a-tab-pane key="SESSION_STAFF" :tab="`会话存档中(${main.sessionStaffCount})`"></a-tab-pane>
+                    <a-tab-pane key="HISTORY_STAFF" :tab="`历史员工(${main.historyStaffCount})`"></a-tab-pane>
+                </a-tabs>
+                <StaffBox v-show="main.staffType === 'SESSION_STAFF'"
+                          :key="staffCompKey"
+                          class="main-content-box"
+                          @totalReport="val => totalReport(val, 'SESSION_STAFF')"
+                          @change="val => staffChange(val, 'SESSION_STAFF')"
+                          :default="defaultStaff"
+                          :type="1"/>
+                <StaffBox v-show="main.staffType === 'HISTORY_STAFF'"
+                          :key="staffCompKey"
+                          class="main-content-box"
+                          @totalReport="val => totalReport(val, 'HISTORY_STAFF')"
+                          @change="val => staffChange(val, 'HISTORY_STAFF')"
+                          :default="defaultStaff"
+                          :type="2"/>
+            </DragStretchBox>
+            <div class="session-right-block">
+                <FilterBoxByStaff
+                    class="filter-box"
+                    @change="search"
+                    :type="main.contactType"
+                    @show-setting-change="showSettingChange"/>
+                <div class="content-block">
+                    <DragStretchBox
+                        :max-width="panelWin.centerMaxWidth"
+                        :min-width="panelWin.centerMinWidth"
+                        id="sessionCenterBlock"
+                        class="center-block"
+                        @change="panelBlockWidthChange"
+                    >
+                        <a-tabs v-model:activeKey="main.contactType"
+                                @change="contactTypeChange"
+                                class="zm-customize-tabs">
+                            <a-tab-pane key="CUSTOMER" :tab="`客户(${main.contactCustomerCount})`"></a-tab-pane>
+                            <a-tab-pane key="STAFF" :tab="`员工(${main.contactStaffCount})`"></a-tab-pane>
+                            <a-tab-pane key="GROUP" :tab="`群聊(${main.contactGroupCount})`"></a-tab-pane>
+                        </a-tabs>
+                        <ContactColleague
+                            v-show="main.contactType === 'STAFF'"
+                            @change="val => contactChange(val, 'STAFF')"
+                            @totalReport="val => contactTotalReport(val, 'STAFF')"
+                            :staffInfo="currentStaff"
+                            :filterData="filterData"
+                            :default="defaultParams"
+                            :key="contactCompKey"
+                            class="main-content-box"
+                        />
+                        <ContactCustomer
+                            v-show="main.contactType === 'CUSTOMER'"
+                            @change="val => contactChange(val, 'CUSTOMER')"
+                            @totalReport="val => contactTotalReport(val, 'CUSTOMER')"
+                            @cancelCollect="onCancelCollect"
+                            :staffInfo="currentStaff"
+                            :filterData="filterData"
+                            :default="defaultParams"
+                            :callbackData="callbackData"
+                            :key="contactCompKey * 100"
+                            :showSettings="showSettings"
+                            class="main-content-box"
+                        />
+                        <ContactGroup
+                            v-show="main.contactType === 'GROUP'"
+                            @change="val => contactChange(val, 'GROUP')"
+                            @totalReport="val => contactTotalReport(val, 'GROUP')"
+                            :staffInfo="currentStaff"
+                            :filterData="filterData"
+                            :default="defaultParams"
+                            :key="contactCompKey * 200"
+                            class="main-content-box"
+                        />
+                    </DragStretchBox>
+                    <ChatBox ref="chatRef"
+                             class="right-block"
+                             mainTab="LOAD_BY_STAFF"
+                             :chatInfo="chatInfo"
+                             :currentMsgCancelCollect="currentMsgCancelCollect"
+                             @changeCollect="onChangeCollect"
+                             :sessionType="main.contactType === 'GROUP' ? 'group' : 'session'"/>
+                </div>
             </div>
         </div>
 
+        <SetSessionStaffModal ref="setStfModalRef" @report="({total}) => archiveStfTotal = total" @change="staffCompKey += 1"/>
     </div>
 </template>
 
 <script setup>
 import {onMounted, reactive, computed, ref, nextTick} from 'vue';
-import {useRoute} from 'vue-router'
+import {useRoute, useRouter} from 'vue-router'
+import {useStore} from 'vuex';
 import {panelWinHandle} from "@/views/sessionArchive/components/panelWinHandle";
+import {staffList} from "@/api/company";
+import {getChatConfig} from "@/api/session";
+import {assignData} from "@/utils/tools";
 import StaffBox from "@/views/sessionArchive/components/modules/staffBox.vue";
 import ChatBox from "@/views/sessionArchive/components/modules/chatBox.vue";
 import ContactColleague from "@/views/sessionArchive/components/contacts/colleague.vue";
@@ -107,11 +127,11 @@ import ContactGroup from "@/views/sessionArchive/components/contacts/group.vue";
 import DragStretchBox from "@/components/dragStretchBox.vue";
 import FilterBoxByStaff from "@/views/sessionArchive/components/filter/filterBoxByStaff.vue";
 import LoadingBox from "@/components/loadingBox.vue";
-import {staffList} from "@/api/company";
-import {getChatConfig} from "@/api/session";
-import {assignData} from "@/utils/tools";
+import SetSessionStaffModal from "@/views/sessionArchive/components/modules/setSessionStaffModal.vue";
 
+const store = useStore()
 const route = useRoute()
+const router = useRouter()
 const props = defineProps({
     defaultParams: {
         type: Object,
@@ -134,10 +154,13 @@ const main = reactive({
     contactGroup: null,
 })
 const chatRef = ref(null)
+const setStfModalRef = ref(null)
 const filterData = ref(null)
 const loading = ref(null)
 const defaultStaff = ref(null)
+const archiveStfTotal = ref(0)
 const contactCompKey = ref(1)
+const staffCompKey = ref(1)
 const showSettings = reactive({
     show_customer_tag: 0,
     show_is_read: 0,
@@ -151,6 +174,14 @@ const CONTACT_TYPES = [
     'CUSTOMER',
     'GROUP',
 ]
+
+const archiveStfModule = computed(() => {
+    return store.getters.getArchiveStfInfo || {}
+})
+
+const archiveStfSettings = computed(() => {
+    return store.getters.getArchiveStfSetting || {}
+})
 
 const currentStaff = computed(() => {
     switch (main.staffType) {
@@ -271,8 +302,7 @@ const checkDefaultChat = async () => {
             if (type === 'STAFF' && (
                 !res?.data?.items
                 || !res?.data?.items.length
-                || res.data.items[0].chat_status != 1))
-            {
+                || res.data.items[0].chat_status != 1)) {
                 // 当接受者为员工
                 // 发送者为非回话存档员工或不存在时根据接受者查询员工
                 params.userid = props.defaultParams.receiver
@@ -349,6 +379,10 @@ const showSettingChange = config => {
     contactCompKey.value += 1
 }
 
+const showSetStaffModal = () => {
+    setStfModalRef.value.show()
+}
+
 const loadSessionMsg = () => {
     nextTick(() => {
         chatRef.value.init()
@@ -368,17 +402,38 @@ const contactTotalReport = (val, type) => {
             break
     }
 }
+
+const linkPlugHome = () => {
+    const link = router.resolve({
+        path: '/plug/index'
+    })
+    window.open(link.href)
+}
 </script>
 
 <style scoped lang="less">
-.session-main-container {
+._container {
+    display: flex;
+    flex-direction: column;
     background: #FFF;
     font-size: 12px;
     margin: 12px;
-    display: flex;
     height: calc(100vh - 126px); // 窗口 - 顶部菜单 - 面包屑 - padding（24）
     border-radius: 6px;
+    overflow: hidden;
 
+    ._header {
+        margin: 12px 12px 0;
+        :deep(.ant-alert-message) {
+            color: #3A4559;
+        }
+    }
+}
+.session-main-container {
+    height: 100%;
+    flex: 1;
+    overflow: hidden;
+    display: flex;
     > div {
         height: 100%;
     }
@@ -387,7 +442,8 @@ const contactTotalReport = (val, type) => {
         .ant-tabs-nav-wrap {
             height: 42px;
         }
-        & >.ant-tabs-nav::before {
+
+        & > .ant-tabs-nav::before {
             content: '';
             border-bottom: none;
         }

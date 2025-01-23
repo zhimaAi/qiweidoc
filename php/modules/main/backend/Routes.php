@@ -6,7 +6,6 @@ use Common\Broadcast;
 use Common\Controller\PublicController;
 use Common\Cron;
 use Common\Job\Consumer;
-use Common\Job\Producer;
 use Common\Micro;
 use Common\RouterProvider;
 use Common\Yii;
@@ -15,13 +14,13 @@ use Modules\Main\Consumer\DownloadChatSessionBitMediasConsumer;
 use Modules\Main\Consumer\DownloadChatSessionMediasConsumer;
 use Modules\Main\Consumer\MarkTagListener;
 use Modules\Main\Consumer\QwOpenPushConsumer;
-use Modules\Main\Consumer\RemoveExpiredLocalFilesConsumer;
 use Modules\Main\Consumer\SendEmailConsumer;
 use Modules\Main\Consumer\SyncCustomersConsumer;
 use Modules\Main\Consumer\SyncDepartmentConsumer;
 use Modules\Main\Consumer\SyncGroupConsumer;
-use Modules\Main\Consumer\SyncSessionMessageConsumer;
-use Modules\Main\Consumer\SyncStaffChatConsumer;
+use Modules\Main\Cron\CheckStaffEnableArchiveCron;
+use Modules\Main\Cron\RemoveExpiredLocalFilesCron;
+use Modules\Main\Cron\SyncSessionMessageCron;
 use Modules\Main\Controller\AuthController;
 use Modules\Main\Controller\ChatController;
 use Modules\Main\Controller\CloudStorageSettingController;
@@ -36,11 +35,13 @@ use Modules\Main\Controller\StaffController;
 use Modules\Main\Controller\StorageController;
 use Modules\Main\Controller\TagsController;
 use Modules\Main\Controller\UserController;
+use Modules\Main\Cron\SyncStaffChatCron;
 use Modules\Main\Library\Middlewares\CurrentCorpInfoMiddleware;
 use Modules\Main\Library\Middlewares\UserRoleMiddleware;
 use Modules\Main\Library\Middlewares\WxAuthMiddleware;
 use Modules\Main\Controller\WxController;
 use Modules\Main\Listener\TestBroadcastController;
+use Modules\Main\Micro\CheckStaffEnableArchiveMicro;
 use Modules\Main\Micro\TestMirco;
 use Modules\Main\Micro\ChangeRolePermissionConfigMirco;
 use Modules\Main\Micro\ChangeStaffRoleMirco;
@@ -85,10 +86,16 @@ class Routes extends RouterProvider
     {
         return [
             Cron::name("sync_session_message")->spec("@every 5s")
-                ->action(SyncSessionMessageConsumer::class, []),
+                ->action(SyncSessionMessageCron::class, []),
 
             Cron::name("remove_expire_local_files")->spec("* * * * *")
-                ->action(RemoveExpiredLocalFilesConsumer::class, []),
+                ->action(RemoveExpiredLocalFilesCron::class, []),
+
+            Cron::name("sync_staff_chat")->spec("* * * * *")
+                ->action(SyncStaffChatCron::class, []),
+
+            Cron::name("check_staff_enable_archive")->spec("@every 3s")
+                ->action(CheckStaffEnableArchiveCron::class, []),
         ];
     }
 
@@ -98,7 +105,7 @@ class Routes extends RouterProvider
             Micro::name('test')->action(TestMirco::class),
             Micro::name('change_staff_role')->action(ChangeStaffRoleMirco::class),
             Micro::name('change_role_permission_config')->action(ChangeRolePermissionConfigMirco::class),
-
+            Micro::name('check_staff_enable_archive')->action(CheckStaffEnableArchiveMicro::class),
         ];
     }
 
@@ -113,14 +120,12 @@ class Routes extends RouterProvider
             Consumer::name("sync_department")->count(1)->action(SyncDepartmentConsumer::class),
             Consumer::name("sync_group")->count(1)->action(SyncGroupConsumer::class),
             Consumer::name("sync_customer")->count(1)->action(SyncCustomersConsumer::class),
-            Consumer::name("sync_staff_chat")->count(1)->action(SyncStaffChatConsumer::class),
+            Consumer::name("sync_staff_chat")->count(1)->action(SyncStaffChatCron::class),
 
             Consumer::name("qw_open_push")->count(5)->action(QwOpenPushConsumer::class),
 
-            Consumer::name("sync_session_message")->count(1)->action(SyncSessionMessageConsumer::class),
             Consumer::name("download_session_medias")->count(5)->action(DownloadChatSessionBitMediasConsumer::class)->reserveOnStop(),
             Consumer::name("download_session_big_medias")->count(2)->action(DownloadChatSessionMediasConsumer::class)->reserveOnStop(),
-            Consumer::name("remove_expired_local_files")->count(1)->action(RemoveExpiredLocalFilesConsumer::class),
         ];
     }
 
@@ -190,7 +195,7 @@ class Routes extends RouterProvider
                     Route::put('/cloud-storage-settings')->action([CloudStorageSettingController::class, 'save'])->defaults(["permission_key" => 'main.oss_config.edit']),
                     Route::get('/cloud-storage-settings/provider-regions')->action([CloudStorageSettingController::class, 'getStorageProviderRegionList'])->defaults(["permission_key" => 'main.oss_config.list']),
 
-                    // 文件上传
+                    // 文件存储
                     Route::post('/storages')->action([StorageController::class, 'upload']),
 
                     // 企业相关接口
@@ -229,6 +234,8 @@ class Routes extends RouterProvider
 
                     // 员工相关接口
                     Route::get("/staff/list")->action([StaffController::class, "list"]),
+                    Route::get('/staff/archive/max-num')->action([StaffController::class, 'getMaxStaffArchiveNum']),
+                    Route::post('/staff/archive/enable')->action([StaffController::class, 'updateArchiveStaffEnable']),
 
                     // 部门相关接口
                     Route::get("/department/sync")->action([DepartmentController::class, "sync"])->defaults(["permission_key" => 'main.corp_staff.sync','filter_status'=>true]),

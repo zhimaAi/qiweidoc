@@ -112,6 +112,14 @@ export const getChatConfig = (data) => {
     return request.get("/api/chats/config/info", {params: data})
 }
 
+export const getArchiveMaxStf = (data) => {
+    return request.get("/api/staff/archive/max-num", {params: data})
+}
+
 export const setChatConfig = (data) => {
     return request.post("/api/chats/config/save", data)
+}
+
+export const setSessionStaffs = (data) => {
+    return request.post("/api/staff/archive/enable", data)
 }

@@ -91,6 +91,21 @@ export const openPluginRouteLink = (pluginName, link) => {
     window.open(url, '_blank')
 }
 
+export const getPluginRouteParams = (plugin) => {
+    let link = `/modules/${plugin.name}/`
+    if (process.env.NODE_ENV === 'development') {
+        let host = process.env.VUE_APP_HOST || 'http://hhdev2.xiaokefu.cn'
+        link = host + link
+    }
+    return {
+        path: '/plug/render',
+        query: {
+            _key: `zm-plugin-${plugin.name}`,
+            link: encodeURIComponent(link)
+        }
+    }
+}
+
 export const sessionRoleMap = {
     1: 'Customer',
     2: 'Staff',
@@ -819,5 +834,12 @@ export function  currentEnv(){
     }
     else {
         return 'other';
+    }
+}
+
+export function listScrollPullLoad(event, func) {
+    const {scrollTop, scrollHeight, clientHeight, scrollLeft, offsetWidth, scrollWidth} = event.target;
+    if (scrollTop + clientHeight >= scrollHeight - 15 && scrollLeft + offsetWidth >= scrollWidth - 15) {
+        func()
     }
 }

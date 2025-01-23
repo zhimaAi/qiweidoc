@@ -220,9 +220,8 @@ class StorageService
             $request = $s3Client->createPresignedRequest($cmd, '+1 hour');
 
             return self::convertMinioUrlToLocalPath($request->getUri());
-        } elseif (!empty($storage->get('cloud_storage_object_key'))) { // 云存储的话生成预签名地址
+        } elseif (!empty($storage->get('cloud_storage_object_key')) && $setting = CloudStorageSettingModel::query()->where(['id' => $storage->get('cloud_storage_setting_id')])->getOne()) { // 云存储的话生成预签名地址
             /* @var CloudStorageSettingModel $setting */
-            $setting = CloudStorageSettingModel::query()->where(['id' => $storage->get('cloud_storage_setting_id')])->getOne();
             $s3Client = self::getCloudS3Client($setting);
             $cmd = $s3Client->getCommand('GetObject', [
                 'Bucket' => $setting->get('bucket'),

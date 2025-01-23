@@ -8,6 +8,7 @@ use Common\Module;
 use Common\Yii;
 use LogicException;
 use Modules\Main\Model\CorpModel;
+use Modules\Main\Service\StaffService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -97,8 +98,10 @@ class ModuleController extends BaseController
     /**
      * 禁用模块
      */
-    public function disableModule(#[RouteArgument('name')] string $name): ResponseInterface
+    public function disableModule(ServerRequestInterface $request, #[RouteArgument('name')] string $name): ResponseInterface
     {
+        $corp = $request->getAttribute(CorpModel::class);
+
         $key = "mutex_disable_module_{$name}";
         Yii::mutex(10)->acquire($key);
 
@@ -106,6 +109,11 @@ class ModuleController extends BaseController
             Module::stopModule($name);
         } finally {
             Yii::mutex()->release($key);
+        }
+
+        // 还原设置的会话存档员工数量
+        if ($name == 'archive_staff') {
+            StaffService::checkStaffEnableArchive($corp);
         }
 
         return $this->jsonResponse();

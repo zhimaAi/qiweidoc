@@ -93,6 +93,7 @@ const loadData = () => {
         page: pagination.current,
         size: pagination.pageSize,
         chat_status: props.type,
+        enable_archive: 1
     }
     filterData.keyword = filterData.keyword.trim()
     if (filterData.keyword) {

@@ -112,7 +112,7 @@
                     <span class="ml8">语音消息 {{formatSeconds(messageInfo.raw_content.play_length)}}</span>
                     <a-divider type="vertical"/>
                     <a-tooltip title="停止播放">
-                        <PauseCircleOutlined @click="playingVoice(messageInfo)" class="icon-btn"/>
+                        <PauseCircleOutlined @click.stop="playingVoice(messageInfo)" class="icon-btn"/>
                     </a-tooltip>
                 </template>
                 <template v-else>
@@ -120,10 +120,12 @@
                     <span class="ml8">语音消息 {{formatSeconds(messageInfo.raw_content.play_length)}}</span>
                     <a-divider type="vertical"/>
                     <a-tooltip title="播放语音">
-                        <PlayCircleOutlined @click="playingVoice(messageInfo)" class="icon-btn"/>
+                        <PlayCircleOutlined @click.stop="playingVoice(messageInfo)" class="icon-btn"/>
                     </a-tooltip>
                 </template>
-                <DownloadOutlined @click="downloadMsgFile" class="icon-btn ml8"/>
+                <DownloadOutlined @click.stop="downloadMsgFile" class="icon-btn ml8"/>
+                <!--未购买时-->
+                <span v-if="showPaymentTag" @click="payenmtModalShow" class="zm-payment-tag"></span>
             </div>
         </div>
         <!-- 混合消息 -->
@@ -134,6 +136,8 @@
 
 <script setup>
 import {ref, computed} from 'vue';
+import {useStore} from 'vuex';
+import {useRouter} from 'vue-router';
 import dayjs from 'dayjs';
 import {Modal, message} from 'ant-design-vue';
 import {DownloadOutlined, PlayCircleOutlined, PauseCircleOutlined, PhoneOutlined} from '@ant-design/icons-vue';
@@ -159,8 +163,23 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['playVoice'])
+const router = useRouter()
+const store = useStore()
 const amrPlayer = ref(null)
 const totalStorage = ref(10)
+
+const archiveStfModule = computed(() => {
+    return store.getters.getArchiveStfInfo || {}
+})
+
+const archiveStfSetting = computed(() => {
+    return store.getters.getArchiveStfSetting || {}
+})
+
+const showPaymentTag = computed(() => {
+    const val = archiveStfModule.value
+    return !val.is_install || val.is_expired || val.has_bought != 1
+})
 
 const getVoiceCallDuration = computed(() => {
     const msg = props.messageInfo
@@ -178,7 +197,46 @@ const getVoiceCallDuration = computed(() => {
     return '00:00'
 })
 
+const payenmtModalShow = () => {
+    Modal.confirm({
+        title: '语音播放插件需购买开启后使用',
+        content: '确认去购买吗？',
+        okText: '去购买',
+        onOk: () => {
+            const link = router.resolve({
+                path: '/plug/index'
+            })
+            window.open(link.href)
+        }
+    })
+}
+
+const existArchivePlug = () => {
+    if (!archiveStfModule.value.is_install || archiveStfModule.value.is_expired) {
+        payenmtModalShow()
+        return false
+    }
+    if (archiveStfSetting.value.enable_voice_play != 1) {
+        Modal.confirm({
+            title: '提示',
+            content: '语音播放下载已禁用，如需使用需启用插件「存档消息管理」设置',
+            okText: '去设置',
+            onOk: () => {
+                const link = router.resolve({
+                    path: '/plug/index'
+                })
+                window.open(link.href)
+            }
+        })
+        return false
+    }
+    return true
+}
+
 const playingVoice = (msg) => {
+    if (!existArchivePlug()) {
+        return
+    }
     if (!msg.msg_content) {
         message.error('播放失败，文件正在下载中！')
         return;
@@ -199,6 +257,9 @@ const getTotalStorageSizeTitle = () => {
 }
 
 const downloadMsgFile = () => {
+    if (!existArchivePlug()) {
+        return
+    }
     const msg = props.messageInfo
     switch (msg.msg_type) {
         case 'file':

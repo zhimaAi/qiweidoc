@@ -310,7 +310,7 @@ export default {
       this.loading = true
       this.staff_list_Loading = true
       if (this.isSession) {
-        this.staff_list_params.is_session = this.isSession
+        this.staff_list_params.chat_status = this.isSession
       }
       if (this.isAuthMode) {
         this.staff_list_params.is_auth_mode = 1

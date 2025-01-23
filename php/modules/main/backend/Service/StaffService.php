@@ -5,9 +5,10 @@ namespace Modules\Main\Service;
 
 use Basis\Nats\Message\Payload;
 use Common\Job\Producer;
+use Common\Micro;
 use Common\Module;
 use Common\Yii;
-use Modules\Main\Consumer\SyncStaffChatConsumer;
+use Modules\Main\Consumer\SyncStaffChatCron;
 use Modules\Main\Enum\EnumUserRoleType;
 use Modules\Main\Model\CorpModel;
 use Modules\Main\Model\DepartmentModel;
@@ -41,9 +42,6 @@ class StaffService
      */
     public static function list(CorpModel $corp, $data): array
     {
-        // 同步一下会话存档员工状态
-        Producer::dispatch(SyncStaffChatConsumer::class, ['corp' => $corp]);
-
         $query = StaffModel::query()->where(['corp_id' => $corp->get('id')]);
 
         // 搜索关键字
@@ -53,17 +51,18 @@ class StaffService
                 ['userid' => $data['keyword']],
             ]);
         }
-
         // 是否在会话存档中
         if (!empty($data['chat_status'])) {
             $query->andWhere(["chat_status" => $data["chat_status"]]);
         }
-
+        // 是否启用了会话存档
+        if (!empty($data['enable_archive'])) {
+            $query->andWhere(['enable_archive' => $data['enable_archive']]);
+        }
         // 员工ID筛选
         if (!empty($data["userid"])) {
             $query->andWhere(["userid" => $data["userid"]]);
         }
-
         // 部门筛选
         if (!empty($data["department_id"])) {
             // 查询所有部门列表
@@ -75,7 +74,6 @@ class StaffService
 
             // 获取当前部门下面的所有部门ID
             $subDepartment = DepartmentService::getSubDepartments($departmentList->toArray(), $data["department_id"]);
-
             $subDepartment[] = (int) $data["department_id"];
 
             if (empty($subDepartment)) {
@@ -88,17 +86,13 @@ class StaffService
                 $query->andWhere(['in', 'main_department', $subDepartment]);
             }
         }
-
         $query->orderBy(['id' => SORT_DESC]);
-
 
         //排序字段
         if (!empty($data["order_fields"]) && !empty($data["order_by"]) && in_array($data["order_fields"], ["cst_total"])) {
             $query->orderBy([$data["order_fields"] => $data["order_by"]]);
         }
-
         $res = $query->paginate($data['page'] ?? 1, $data['limit'] ?? 10);
-
         if (!$res['items']->isEmpty()) {
 
             //员工角色列表
@@ -183,93 +177,41 @@ class StaffService
     }
 
     /**
-     * @param CorpModel $corp
-     * @param UserModel $user
-     * @param $data
-     * Notes: 变更账户可登陆状态
-     * User: rand
-     * Date: 2024/12/11 19:46
-     * @return void
+     * 检查会话存档员工数量
      */
-    public static function changeLogin(CorpModel $corp, UserModel $user, $data): void
+    public static function checkStaffEnableArchive(CorpModel $corp)
     {
+        // 默认最多5个存档员工名额
+        $maxNumCount = 5;
 
-        if (!in_array($user->get("role_id"), [EnumUserRoleType::ADMIN, EnumUserRoleType::SUPPER_ADMIN])) {
-            throw new \Exception("您不是管理员，不可进行此操作");
+        // 如果购买了存档员工管理模块则获取模块里配置配置值作为最大名额
+        $archiveStaffModule = Module::getLocalModuleConfig('archive_staff');
+        if (!empty($archiveStaffModule) && isset($archiveStaffModule['paused']) && !$archiveStaffModule['paused']) {
+            $data = Micro::call('archive_staff', 'query', '');
+            $maxNumCount = $data['max_staff_num'] ?? 5;
         }
 
-        $staffInfo = StaffModel::query()->where(["corp_id" => $corp->get("id"), "id" => $data["id"]])->getOne();
+        $staffList = StaffModel::query()
+            ->where([
+                'corp_id' => $corp->get('id'),
+                'enable_archive' => true,
+            ])
+            ->orderBy(['id' => SORT_ASC])
+            ->getAll();
 
-        if (empty($staffInfo)) {
-            throw new \Exception("账号不存在");
+        // 如果数据库中已经配置的名额没有超过最大名额就不管了
+        if (count($staffList) <= $maxNumCount) {
+            return;
         }
 
-        if ($staffInfo->get("role_id") == EnumUserRoleType::SUPPER_ADMIN && $data["can_login"] == 0) {
-            throw new \Exception("超级管理员不可关闭登陆权限");
+        // 计算需要禁用的数量
+        $needDisableCount = count($staffList) - $maxNumCount;
+
+        // 遍历需要禁用的员工并更新
+        foreach ($staffList as $index => $staff) {
+            if ($index < $needDisableCount) {
+                StaffModel::query()->where(['id' => $staff->get('id')])->update(['enable_archive' => false]);
+            }
         }
-
-        StaffModel::query()->where(["corp_id" => $corp->get("id"), "id" => $data["id"]])->update([
-            "can_login" => $data["can_login"]
-        ]);
-
-        //继续变更一下用户表
-        $where = ["corp_id" => $corp->get("id"), "userid" => $staffInfo->get("userid")];
-        $update = [
-            "can_login" => $data["can_login"],
-            "role_id"=>$staffInfo->get("role_id")->value
-        ];
-
-        $changeRes = UserModel::query()->where($where)->update($update);
-
-        if (empty($changeRes)) {
-            $update["account"] = $staffInfo->get("userid");
-            UserModel::firstOrCreate($where,array_merge($where,$update));
-        }
-
-        return;
-    }
-
-
-    /**
-     * @param CorpModel $corp
-     * @param UserModel $user
-     * @param $data
-     * Notes: 变更账户角色
-     * User: rand
-     * Date: 2024/12/11 19:46
-     * @return void
-     */
-    public static function changeRole(CorpModel $corp, UserModel $user, $data): void
-    {
-
-        if ($user->get("role_id") !=  EnumUserRoleType::SUPPER_ADMIN) {
-            throw new \Exception("您不是超级管理员，不可进行此操作");
-        }
-
-        $staffInfo = StaffModel::query()->where(["corp_id" => $corp->get("id"), "id" => $data["id"]])->getOne();
-
-        if (empty($staffInfo)) {
-            throw new \Exception("账号不存在");
-        }
-
-        StaffModel::query()->where(["corp_id" => $corp->get("id"), "id" => $data["id"]])->update([
-            "role_id" => $data["role_id"]
-        ]);
-
-        //继续变更一下用户表
-        $where = ["corp_id" => $corp->get("id"), "userid" => $staffInfo->get("userid")];
-        $update = [
-            "can_login" => $staffInfo->get("can_login"),
-            "role_id" => $data["role_id"],
-        ];
-
-        $changeRes = UserModel::query()->where($where)->update($update);
-
-        if (empty($changeRes)) {
-            $update["account"] = $staffInfo->get("userid");
-            UserModel::firstOrCreate($where,array_merge($where,$update));
-        }
-
-        return;
     }
 }

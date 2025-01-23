@@ -348,6 +348,10 @@ export default {
       type: Array,
       default: ()=>[],
     },
+    maxStaffNum: {
+      type: Number,
+      default: -1
+    },
   },
   data() {
     return {
@@ -520,6 +524,10 @@ export default {
     },
     setSelect (data) {
       let time = Date.now();
+      if (this.maxStaffNum > -1 && data.length > this.maxStaffNum) {
+          data = data.slice(0, this.maxStaffNum)
+          this.$emit('limit')
+      }
       this.selectDataAll = data.map((el) => {
         el.id = time++;
       });

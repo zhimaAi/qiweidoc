@@ -218,6 +218,10 @@ a {
     color: #8C8C8C;
 }
 
+.zm-relative {
+    position: relative;
+}
+
 .zm-main-box {
     margin: 12px;
     position: relative;
@@ -406,3 +410,23 @@ a {
 }
 
 /* @end */
+
+/**
+ * 芝麻付费标识
+ */
+.zm-payment-tag {
+    display: flex;
+    align-items: center;
+    &::after {
+        content: "付费";
+        display: inline-block;
+        padding: 1px 4px;
+        border-radius: 4px;
+        background: #ED744A;
+        margin-left: 4px;
+        color: #ffffff;
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 16px;
+    }
+}

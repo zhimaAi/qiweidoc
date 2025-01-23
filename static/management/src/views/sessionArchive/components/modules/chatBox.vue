@@ -50,7 +50,9 @@
                         <a-radio-button value="all">消息</a-radio-button>
                         <a-radio-button value="file">文件</a-radio-button>
                         <a-radio-button value="image">图片</a-radio-button>
-                        <a-radio-button value="voice">语音</a-radio-button>
+                        <a-radio-button value="voice">
+                           <StaffPaymentTag :type="2">语音</StaffPaymentTag>
+                        </a-radio-button>
                         <a-radio-button value="video">视频</a-radio-button>
                         <a-radio-button v-if="sessionType === 'session'" value="voiptext">音视频通话</a-radio-button>
                     </a-radio-group>
@@ -128,15 +130,17 @@
 </template>
 <script setup>
 import {onMounted, ref, reactive, nextTick, computed} from 'vue';
+import {useStore} from 'vuex';
 import dayjs from 'dayjs';
 import {DownloadOutlined} from '@ant-design/icons-vue';
 import ZmScroll from "@/components/zmScroll.vue";
-import {groupMessage, sessionMessage} from "@/api/session";
 import ChatUser from "@/views/sessionArchive/components/modules/childs/chatUser.vue";
 import ChatCollection from './childs/chatCollection.vue';
-import {VoicePlayHandle} from "@/utils/voicePlay";
 import MessageRender from "@/components/session-message/messageRender.vue";
 import lookVideo from "@/components/common/look-video.vue";
+import {groupMessage, sessionMessage} from "@/api/session";
+import {VoicePlayHandle} from "@/utils/voicePlay";
+import StaffPaymentTag from "@/views/sessionArchive/components/modules/staffPaymentTag.vue";
 
 const emit = defineEmits('changeCollect')
 const defaultAvatar = require('@/assets/default-avatar.png')
@@ -175,6 +179,7 @@ const props = defineProps({
 })
 const {play, getPlayerKey} = VoicePlayHandle()
 
+const store = useStore()
 const list = ref([])
 const oldHeight = ref(0)
 const lookVideoRef = ref(null)
@@ -193,6 +198,10 @@ const filterData = reactive({
     keyword: '',
     msg_type: 'all',
     dates: []
+})
+
+const archiveStfModule = computed(() => {
+    return store.getters.getArchiveStfInfo || []
 })
 
 const showCollectReason = computed(() => {

@@ -31,6 +31,9 @@ const ModuleConfig = {
     timeout_reply_group: {
         buildOutputPath: '/php/modules/timeout_reply_group/public/build/',
     },
+    archive_staff: {
+        buildOutputPath: '/php/modules/archive_staff/public/build/',
+    },
 }
 
 module.exports = ModuleConfig;

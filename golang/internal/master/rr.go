@@ -113,6 +113,7 @@ func startRR(name string, rpcPort, httpPort int, needPlugins []string) (*endure.
 		overrides = append(overrides, "tcp.pool.debug=true")
 		overrides = append(overrides, "jobs.pool.debug=true")
 		overrides = append(overrides, "micro.pool.debug=true")
+		overrides = append(overrides, "cron.pool.debug=true")
 		overrides = append(overrides, "http.access_logs=false")
 	}
 	logLevel := os.Getenv(`LOG_LEVEL`)

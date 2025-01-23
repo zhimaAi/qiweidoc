@@ -34,7 +34,7 @@
                             <span v-if="item.is_expired" class="expired-tag ml4">已到期</span>
                         </div>
                         <div class="zm-line-clamp2 plugin-desc mt8">
-                            <a-tooltip :title="item.intro.length > 40 ? item.intro : null">{{ item.intro }}</a-tooltip>
+                            <a-tooltip :title="item?.intro?.length > 40 ? item.intro : null">{{ item.intro }}</a-tooltip>
                         </div>
                         <div class="plug-item-bottom">
                             <div v-if="!item.is_install && !item.is_compatible_main" class="version-warn">

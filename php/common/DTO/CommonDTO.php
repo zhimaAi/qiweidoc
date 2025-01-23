@@ -44,7 +44,7 @@ abstract class CommonDTO extends \stdClass implements RulesProviderInterface
         }
     }
 
-    public function get(string $key)
+    public function get(string $key): mixed
     {
         if (isset($this->$key)) {
             return $this->$key;

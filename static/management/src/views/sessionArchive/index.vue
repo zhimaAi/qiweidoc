@@ -4,7 +4,11 @@
             <a-tabs v-model:active-key="BASE_TYPE"
                     @change="mainTabChange"
                     class="zm-nav-tabs">
-                <a-tab-pane key="LOAD_BY_STAFF" tab="按员工"/>
+                <a-tab-pane key="LOAD_BY_STAFF">
+                    <template #tab>
+                        <StaffPaymentTag>按员工</StaffPaymentTag>
+                    </template>
+                </a-tab-pane>
                 <a-tab-pane key="LOAD_BY_CUSTOMER" tab="按客户"/>
                 <a-tab-pane key="LOAD_BY_GROUP" tab="按群聊"/>
                 <a-tab-pane key="LOAD_BY_COLLECT" tab="收藏聊天"/>
@@ -29,6 +33,7 @@ import {useRouter, useRoute} from 'vue-router';
 import LoadingBox from "@/components/loadingBox.vue";
 import {copyObj} from "@/utils/tools";
 import SelectTagModal from "@/components/select-customer-tag/selectTagModal.vue";
+import StaffPaymentTag from "@/views/sessionArchive/components/modules/staffPaymentTag.vue";
 
 const router = useRouter()
 const route = useRoute()
@@ -62,7 +67,6 @@ onMounted(() => {
     /**
      * 检测queru参数是否携带指定聊天信息
      */
-    console.log('route.query', route.query)
     if (route.query.group_chat_id) {
         // 跳转指定群聊
         BASE_TYPE.value = 'LOAD_BY_GROUP'
