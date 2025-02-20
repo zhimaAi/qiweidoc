@@ -32,7 +32,6 @@ class SyncStaffChatCron
         $staffUserIds = StaffModel::query()
             ->where(['and',
                 ['corp_id' => $corp->get('id')],
-                ['chat_status' => 1],
             ])
             ->getAll();
         $hisStaffChatUserid = array_column($staffUserIds->toArray(), "userid");
