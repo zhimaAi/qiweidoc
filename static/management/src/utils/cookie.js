@@ -41,14 +41,10 @@ var Cookie = {
 };
 
 function formatLocation (domain) {
-    // zhimahuihua.com
-    // demo.zhimahuihua.com
-    if (/^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z0-9]{2,}$/.test(domain)) {
-        // 如果是一级域名，则添加点
-        return '.' + domain;
+    if (domain === 'zhimahuihua.com' || domain === 'demo.zhimahuihua.com') {
+        return 'zhimahuihua.com'
     } else {
-        // 取第二个.后面的内容
-        return domain.match(/^[^.]*(.*)/)[1]
+        return domain
     }
 }
 
