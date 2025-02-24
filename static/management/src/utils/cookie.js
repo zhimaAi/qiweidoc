@@ -41,15 +41,28 @@ var Cookie = {
 };
 
 function formatLocation (domain) {
+    const [hostname, port] = domain.split(':');
     if (domain === 'zhimahuihua.com' || domain === 'demo.zhimahuihua.com') {
         return 'zhimahuihua.com'
     } else {
-        return domain
+        // 如果有端口号且不是标准端口(80,443)，则需要包含端口
+        if (port && port !== '80' && port !== '443') {
+            return `${hostname}:${port}`;
+        }
+        return hostname;
     }
 }
 
 export function setCookieAcrossSubdomain(data) {
-    Cookie.setCookieAcrossSubdomains(USER_INFO_KEY, data, 1, formatLocation(window.location.host))
+    const domain = formatLocation(window.location.host);
+    // 如果域名包含端口号，则不设置domain属性
+    if (domain.includes(':')) {
+        // 直接设置cookie，不指定domain
+        Cookie.set(USER_INFO_KEY, data, new Date(Date.now() + 24 * 60 * 60 * 1000));
+    } else {
+        // 正常设置跨子域cookie
+        Cookie.setCookieAcrossSubdomains(USER_INFO_KEY, data, 1, domain);
+    }
 }
 
 export function getCookieUserInfo() {
