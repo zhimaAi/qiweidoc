@@ -1,51 +1,55 @@
 package master
 
 import (
-	"context"
-	"fmt"
-	"github.com/jackc/pgx/v5"
-	"os"
-	"session_archive/golang/internal/master/define"
+    "context"
+    "fmt"
+    "github.com/jackc/pgx/v5/pgxpool"
+    "os"
+    "session_archive/golang/internal/master/define"
 )
 
 // InitPostgres 初始化数据库
 func InitPostgres() {
 
-	dbHost := os.Getenv(`DB_HOST`)
-	dbPort := os.Getenv(`DB_PORT`)
-	dbDatabase := os.Getenv(`DB_DATABASE`)
-	dbUsername := os.Getenv(`DB_USERNAME`)
-	dbPassword := os.Getenv(`DB_PASSWORD`)
-	if len(dbHost) == 0 {
-		dbHost = "db"
-	}
-	if len(dbPort) == 0 {
-		dbPort = "5432"
-	}
-	if len(dbDatabase) == 0 {
-		dbDatabase = "postgres"
-	}
-	if len(dbUsername) == 0 {
-		dbUsername = "postgres"
-	}
-	if len(dbPassword) == 0 {
-		dbPassword = "postgres"
-	}
+    dbHost := os.Getenv(`DB_HOST`)
+    dbPort := os.Getenv(`DB_PORT`)
+    dbDatabase := os.Getenv(`DB_DATABASE`)
+    dbUsername := os.Getenv(`DB_USERNAME`)
+    dbPassword := os.Getenv(`DB_PASSWORD`)
+    if len(dbHost) == 0 {
+        dbHost = "db"
+    }
+    if len(dbPort) == 0 {
+        dbPort = "5432"
+    }
+    if len(dbDatabase) == 0 {
+        dbDatabase = "postgres"
+    }
+    if len(dbUsername) == 0 {
+        dbUsername = "postgres"
+    }
+    if len(dbPassword) == 0 {
+        dbPassword = "postgres"
+    }
 
-	ctx := context.Background()
+    ctx := context.Background()
 
-	// 连接数据库
-	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", dbUsername, dbPassword, dbHost, dbPort, dbDatabase)
-	var err error
-	define.PgConn, err = pgx.Connect(ctx, dsn)
-	if err != nil {
-		panic(err)
-	}
+    // 连接数据库
+    dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", dbUsername, dbPassword, dbHost, dbPort, dbDatabase)
+    config, err := pgxpool.ParseConfig(dsn)
+    if err != nil {
+        panic(err)
+    }
+
+    define.PgPool, err = pgxpool.NewWithConfig(ctx, config)
+    if err != nil {
+        panic(err)
+    }
 }
 
 // createModuleSchema 创建指定模块的专属schema
 func createModuleSchema(name string) error {
-	sql := `
+    sql := `
 		DO $$
 		BEGIN
 			-- 检查并创建角色
@@ -84,10 +88,10 @@ func createModuleSchema(name string) error {
 		    END IF;
 		END $$;
 	`
-	_, err := define.PgConn.Exec(context.Background(), sql)
-	if err != nil {
-		return err
-	}
 
-	return nil
+    _, err := define.PgPool.Exec(context.Background(), sql)
+    if err != nil {
+        return err
+    }
+    return nil
 }

@@ -43,6 +43,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.18.7 // indirect
 	github.com/aws/smithy-go v1.22.1 // indirect
 	github.com/goccy/go-json v0.10.4 // indirect
+	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/spf13/cast v1.7.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 )

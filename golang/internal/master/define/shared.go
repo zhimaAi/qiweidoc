@@ -2,7 +2,7 @@ package define
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/nats-io/nats.go"
 	"github.com/roadrunner-server/endure/v2"
 	"sync"
@@ -38,7 +38,7 @@ var (
 	MinioUrl    = "http://minio:9000"
 	ModuleList  = make(map[string]ModuleInfo)
 	FiberApp    *fiber.App
-	PgConn      *pgx.Conn
+	PgPool      *pgxpool.Pool
 	NatsConn    *nats.Conn
 	ModuleMutex sync.Mutex
 )
