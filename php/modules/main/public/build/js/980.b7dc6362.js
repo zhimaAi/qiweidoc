@@ -1,0 +1,1 @@
+"use strict";(self["webpackChunkzmwk_session_archive"]=self["webpackChunkzmwk_session_archive"]||[]).push([[980],{94980:function(n,e,s){function r(n,e,s,r,u,t){return null}s.r(e),s.d(e,{default:function(){return c}});var u={name:"staff"},t=s(71241);const a=(0,t.A)(u,[["render",r]]);var c=a}}]);

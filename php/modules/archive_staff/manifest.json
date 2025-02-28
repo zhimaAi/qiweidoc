@@ -1,0 +1,5 @@
+{
+    "name": "archive_staff",
+    "version": "1.0.2",
+    "plugins": ["http", "cron", "micro"]
+}

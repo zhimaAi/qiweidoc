@@ -1,0 +1,37 @@
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" class="design-iconfont">
+  <g clip-path="url(#1oy4kxnxj__clip0_5613_40321)">
+    <path d="M0 0H49.5C55.299 0 60 4.70101 60 10.5V60H0V0Z" fill="#E6EFFF"/>
+    <g clip-path="url(#1oy4kxnxj__clip1_5613_40321)">
+      <path d="M52.5 7.5H40V20H52.5V7.5Z" stroke="#2475FC" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M52.5003 39.998H40.0003V52.498H52.5003V39.998Z" stroke="#2475FC" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M20 39.998H7.5V52.498H20V39.998Z" stroke="#2475FC" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M20 7.5H7.5V20H20V7.5Z" stroke="#2475FC" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M10 30H37.5" stroke="#2475FC" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M47.5 30H50" stroke="#2475FC" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M30 46.252V48.752" stroke="#2475FC" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M30 21.248V38.748" stroke="#2475FC" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M30 9.99805V12.498" stroke="#2475FC" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <g filter="url(#1oy4kxnxj__filter0_d_5613_40321)">
+        <path transform="rotate(-45 -51 23.6406)" fill="#fff" d="M-51 23.6406H1.9498000000000033V139.8886H-51z"/>
+      </g>
+    </g>
+  </g>
+  <defs>
+    <clipPath id="1oy4kxnxj__clip0_5613_40321">
+      <path d="M0 0H49.5C55.299 0 60 4.70101 60 10.5V60H0V0Z" fill="#fff"/>
+    </clipPath>
+    <clipPath id="1oy4kxnxj__clip1_5613_40321">
+      <path fill="#fff" d="M0 0H60V60H0z"/>
+    </clipPath>
+    <filter id="1oy4kxnxj__filter0_d_5613_40321" x="-60.6" y="-28.2008" width="148.441" height="148.441" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dx="4.8"/>
+      <feGaussianBlur stdDeviation="7.2"/>
+      <feComposite in2="hardAlpha" operator="out"/>
+      <feColorMatrix values="0 0 0 0 0.0756164 0 0 0 0 0.160489 0 0 0 0 0.301944 0 0 0 0.12 0"/>
+      <feBlend in2="BackgroundImageFix" result="effect1_dropShadow_5613_40321"/>
+      <feBlend in="SourceGraphic" in2="effect1_dropShadow_5613_40321" result="shape"/>
+    </filter>
+  </defs>
+</svg>
