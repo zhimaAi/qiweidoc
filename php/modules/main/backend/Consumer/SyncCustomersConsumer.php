@@ -30,9 +30,11 @@ class SyncCustomersConsumer
      */
     public function handle(): void
     {
+        Yii::logger()->info("准备同步客户数据");
         $mutexKey = self::class . $this->corp->get('id');
         if (Yii::mutex(100)->acquire($mutexKey)) {
             try {
+                Yii::logger()->info("开始同步客户数据");
                 $this->_handle();
             } catch (Throwable $e) {
                 Yii::logger()->error($e);
