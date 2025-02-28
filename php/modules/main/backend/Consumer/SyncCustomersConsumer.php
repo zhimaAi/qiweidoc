@@ -31,7 +31,7 @@ class SyncCustomersConsumer
     public function handle(): void
     {
         $mutexKey = self::class . $this->corp->get('id');
-        if (Yii::mutex(300)->acquire($mutexKey)) {
+        if (Yii::mutex(100)->acquire($mutexKey)) {
             try {
                 $this->_handle();
             } catch (Throwable $e) {
@@ -68,7 +68,12 @@ class SyncCustomersConsumer
                 if (!empty($cursor)) {
                     $reqData["cursor"] = $cursor;
                 }
-                $customerRes = $this->corp->postWechatApi("/cgi-bin/externalcontact/batch/get_by_user", $reqData, "json");
+                try {
+                    $customerRes = $this->corp->postWechatApi("/cgi-bin/externalcontact/batch/get_by_user", $reqData, "json");
+                } catch (Throwable $e) {
+                    Yii::logger()->error($e);
+                    continue;
+                }
                 if (empty($customerRes["external_contact_list"])) {
                     break;
                 }
