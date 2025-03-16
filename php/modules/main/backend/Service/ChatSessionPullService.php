@@ -93,7 +93,7 @@ class ChatSessionPullService
         }
     }
 
-    private static function isLargeFile(ChatMessageModel $message): bool
+    public static function isLargeFile(ChatMessageModel $message): bool
     {
         return $message->get('msg_type') === 'file' && $message->get('raw_content')['filesize'] > self::LARGE_FILE_THRESHOLD;
     }
@@ -159,6 +159,9 @@ class ChatSessionPullService
         Yii::getNatsClient()->request('wxfinance.FetchAndStreamMediaData', json_encode($request), function (Payload $payload) use (&$fileInfo) {
             $fileInfo = json_decode($payload->body, true);
         });
+        if (empty($fileInfo) || empty($fileInfo['hash'])) {
+            throw new LogicException("下载资源失败");
+        }
 
         $retentionDays = (int)SettingModel::getValue('local_session_file_retention_days');
         $storage = StorageModel::create([
