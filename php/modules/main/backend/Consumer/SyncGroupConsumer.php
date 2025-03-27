@@ -29,7 +29,7 @@ class SyncGroupConsumer
     public function handle(): void
     {
         $cursor = "";
-        $limit = 100;
+        $limit = 1000;
 
         $data = [
             "limit" => $limit,
