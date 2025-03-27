@@ -66,8 +66,8 @@ class SyncGroupConsumer
 
             $batchRes = $this->corp->batchPostWechatApi([
                 "requests" => $requestData,
-                "concurrency" => 10,
-                "qps" => 20,
+                "concurrency" => 50,
+                "qps" => 50,
                 "timeout" => 120,
             ]);
 
