@@ -39,6 +39,7 @@ enum EnumMessageType: string
     case ExternalRedpacket      = 'external_redpacket';
     case SphFeed                = 'sphfeed';
     case VoipText               = 'voiptext';
+    case QyDiskFile             = 'qydiskfile';
 
     public function getLabel(): string
     {
@@ -73,6 +74,7 @@ enum EnumMessageType: string
             self::ExternalRedpacket     => '互通红包消息',
             self::SphFeed               => '视频号消息',
             self::VoipText              => '音视频通话',
+            self::QyDiskFile            => '微盘文件',
         };
     }
 
@@ -109,6 +111,7 @@ enum EnumMessageType: string
             self::ExternalRedpacket => fn ($data) => ['raw_content' => $data['redpacket']],
             self::SphFeed => fn ($data) => ['raw_content' => $data['sphfeed']],
             self::VoipText => fn ($data) => ['raw_content' => $data['info']],
+            self::QyDiskFile => fn ($data) => ['raw_content' => $data['info']],
         };
     }
 }

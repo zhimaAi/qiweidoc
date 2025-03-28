@@ -59,6 +59,9 @@ class ChatSessionPullService
 
             //处理消息内容
             $messageData = self::processMessage($msg);
+            if (!$messageData) {
+                continue;
+            }
 
             // 创建会话
             $conversation = self::saveConversation($messageData);
@@ -329,11 +332,14 @@ class ChatSessionPullService
      * 统一成能够被保存到数据库中的字段格式
      * @throws Throwable
      */
-    private static function processMessage(array $msg): ChatMessageModel
+    private static function processMessage(array $msg): ?ChatMessageModel
     {
         $decryptedData = json_decode($msg['decrypted_data'], true);
         $msgType = $decryptedData['msgtype'] ?? '';
-        $enumMsgType = EnumMessageType::from($msgType);
+        $enumMsgType = EnumMessageType::tryFrom($msgType);
+        if (!$enumMsgType) {
+            return null;
+        }
         $content = $enumMsgType->getMessageHandler()($decryptedData);
 
         $messageData = ChatMessageModel::create(array_merge([
