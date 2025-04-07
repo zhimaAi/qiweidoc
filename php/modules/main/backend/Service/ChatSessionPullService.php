@@ -59,6 +59,9 @@ class ChatSessionPullService
 
             //处理消息内容
             $messageData = self::processMessage($msg);
+            if (!$messageData) {
+                continue;
+            }
 
             // 创建会话
             $conversation = self::saveConversation($messageData);
@@ -93,7 +96,7 @@ class ChatSessionPullService
         }
     }
 
-    private static function isLargeFile(ChatMessageModel $message): bool
+    public static function isLargeFile(ChatMessageModel $message): bool
     {
         return $message->get('msg_type') === 'file' && $message->get('raw_content')['filesize'] > self::LARGE_FILE_THRESHOLD;
     }
@@ -159,6 +162,9 @@ class ChatSessionPullService
         Yii::getNatsClient()->request('wxfinance.FetchAndStreamMediaData', json_encode($request), function (Payload $payload) use (&$fileInfo) {
             $fileInfo = json_decode($payload->body, true);
         });
+        if (empty($fileInfo) || empty($fileInfo['hash'])) {
+            throw new LogicException("下载资源失败");
+        }
 
         $retentionDays = (int)SettingModel::getValue('local_session_file_retention_days');
         $storage = StorageModel::create([
@@ -232,7 +238,7 @@ class ChatSessionPullService
         $validStaffList = StaffModel::query()
             ->select('userid')
             ->where(["chat_status" => 1])
-            ->andWhere(['enable_archive' => true])
+            // ->andWhere(['enable_archive' => true])
             ->all();
         $validStaffList = array_column($validStaffList, 'userid');
         if (in_array($decryptedData['from'], $validStaffList)) {
@@ -326,11 +332,14 @@ class ChatSessionPullService
      * 统一成能够被保存到数据库中的字段格式
      * @throws Throwable
      */
-    private static function processMessage(array $msg): ChatMessageModel
+    private static function processMessage(array $msg): ?ChatMessageModel
     {
         $decryptedData = json_decode($msg['decrypted_data'], true);
         $msgType = $decryptedData['msgtype'] ?? '';
-        $enumMsgType = EnumMessageType::from($msgType);
+        $enumMsgType = EnumMessageType::tryFrom($msgType);
+        if (!$enumMsgType) {
+            return null;
+        }
         $content = $enumMsgType->getMessageHandler()($decryptedData);
 
         $messageData = ChatMessageModel::create(array_merge([

@@ -30,9 +30,11 @@ class SyncCustomersConsumer
      */
     public function handle(): void
     {
+        Yii::logger()->info("准备同步客户数据");
         $mutexKey = self::class . $this->corp->get('id');
         if (Yii::mutex(100)->acquire($mutexKey)) {
             try {
+                Yii::logger()->info("开始同步客户数据");
                 $this->_handle();
             } catch (Throwable $e) {
                 Yii::logger()->error($e);
@@ -50,7 +52,7 @@ class SyncCustomersConsumer
         $limit = 100;
 
         $staffInfoList = StaffModel::query()->where(['corp_id' => $this->corp->get('id')])->andWhere(["!=", "status", 5])->getAll();
-        $staffInfoSplit = arraySplit($staffInfoList->toArray(), 50);
+        $staffInfoSplit = arraySplit($staffInfoList->toArray(), 1);
 
         foreach ($staffInfoSplit as $item) {
             $reqData = [
@@ -71,8 +73,9 @@ class SyncCustomersConsumer
                 try {
                     $customerRes = $this->corp->postWechatApi("/cgi-bin/externalcontact/batch/get_by_user", $reqData, "json");
                 } catch (Throwable $e) {
+                    Yii::logger()->error(json_encode($reqData));
                     Yii::logger()->error($e);
-                    continue;
+                    break;
                 }
                 if (empty($customerRes["external_contact_list"])) {
                     break;

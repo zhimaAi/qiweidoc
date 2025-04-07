@@ -287,6 +287,13 @@ export const MessageTypeTextMap = {
     external_redpacket: "企业互通红包",
 }
 
+//1 普通红包、2 拼手气群红包、3 激励群红包
+export const RedpacketTypeMap = {
+    1: '普通红包',
+    2: '拼手气群红包',
+    3: '激励群红包'
+}
+
 export const formatMessage = (item) => {
     item.content = jsonDecode(item.content)
     switch (item.msg_type) {

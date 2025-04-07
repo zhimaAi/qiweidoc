@@ -97,6 +97,21 @@
                 <DownloadOutlined @click="downloadMsgFile" class="icon-btn ml8"/>
             </div>
         </div>
+        <!-- 红包消息-->
+        <div v-else-if="messageInfo.msg_type == 'external_redpacket'" class="message-box red-envelope-box">
+            <div class="zm-flex-center">
+                <img class="cover" src="@/assets/image/session/red-envelope-cover.png"/>
+                <div class="ml8">
+                    <div class="price">¥{{formatPrice(messageInfo?.raw_content?.totalamount)}}</div>
+                    <div class="desc">{{messageInfo?.raw_content?.wish}}</div>
+                </div>
+            </div>
+            <!--1 普通红包、2 拼手气群红包-->
+            <div class="extra-info">
+                {{RedpacketTypeMap[messageInfo?.raw_content?.type]}}
+                {{messageInfo?.raw_content?.totalcnt}}个
+            </div>
+        </div>
         <!-- 混合消息 -->
         <div v-else class="message-box">[{{ MessageTypeTextMap[messageInfo.msg_type] }}]</div>
         <span v-if="messageInfo.is_revoke" class="message-box" style="color: rgba(0,0,0,.25);">已撤回</span>
@@ -108,7 +123,16 @@ import {ref, computed} from 'vue';
 import dayjs from 'dayjs';
 import {Modal, message} from 'ant-design-vue';
 import {DownloadOutlined, PlayCircleOutlined, PauseCircleOutlined, PhoneOutlined} from '@ant-design/icons-vue';
-import {downloadFile, formatBytes, secondsToDate, formatSeconds, getFileIcon, MessageTypeTextMap} from "@/utils/tools";
+import {
+    downloadFile,
+    formatBytes,
+    secondsToDate,
+    formatSeconds,
+    getFileIcon,
+    formatPrice,
+    MessageTypeTextMap,
+    RedpacketTypeMap
+} from "@/utils/tools";
 import BenzAMRRecorder from 'benz-amr-recorder';
 
 const props = defineProps({
@@ -308,6 +332,41 @@ const showBuyFileStorage = () => {
                 color: #8C8C8C;
                 text-align: right;
             }
+        }
+    }
+    &.red-envelope-box {
+        background: #FF5443;
+        width: 26rem;
+        &::after {
+            content: '';
+            background: none;
+            border: none;
+        }
+        .cover {
+            width: 4.8rem;
+            height: 4.8rem;
+        }
+        .price {
+            color: #ffeeec;
+            font-size: 1.6rem;
+            font-weight: 600;
+            line-height: 2.4rem;
+            margin-bottom: .2rem;
+        }
+        .desc {
+            color: #ffe3e0;
+            font-size: 1.4rem;
+            font-weight: 400;
+        }
+        .extra-info {
+            margin-top: 1.2rem;
+            margin-left: .4rem;
+            color: #ffc7c2;
+            font-size: 1.2rem;
+            font-weight: 400;
+            line-height: 1.6rem;
+            padding-top: .8rem;
+            border-top: 1px solid #D9D9D9;
         }
     }
 }

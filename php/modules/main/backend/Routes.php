@@ -19,6 +19,7 @@ use Modules\Main\Consumer\SyncCustomersConsumer;
 use Modules\Main\Consumer\SyncDepartmentConsumer;
 use Modules\Main\Consumer\SyncGroupConsumer;
 use Modules\Main\Cron\CheckStaffEnableArchiveCron;
+use Modules\Main\Cron\DownloadMessageMediasCron;
 use Modules\Main\Cron\RemoveExpiredLocalFilesCron;
 use Modules\Main\Cron\SyncSessionMessageCron;
 use Modules\Main\Controller\AuthController;
@@ -96,6 +97,9 @@ class Routes extends RouterProvider
 
             Cron::name("check_staff_enable_archive")->spec("@every 3s")
                 ->action(CheckStaffEnableArchiveCron::class, []),
+
+            Cron::name("download_message_medias")->spec("@every 1h")
+                ->action(DownloadMessageMediasCron::class, []),
         ];
     }
 

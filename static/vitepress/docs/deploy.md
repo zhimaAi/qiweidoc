@@ -2,7 +2,7 @@
 
 ## 一，准备工作
 
-- 联网的 x86-64 架构的 Linux 服务器一台（示例：ubuntu 24.04 LTS 64 bit），配置不低于 2 核 2 GB（如果会话聊天内容包含大量文件，还需要有较大的磁盘空间）
+- 联网的 x86-64 架构的 Linux 服务器一台（示例：ubuntu 24.04 LTS 64 bit），配置不低于 2 核 4 GB（如果会话聊天内容包含大量文件，还需要有较大的磁盘空间）
 - 已经备案的域名，且备案主体与当前企业主体相同或有关联关系的域名，详情参考[企微官方配置指引](https://open.work.weixin.qq.com/wwopen/common/readDocument/40754)
 - 已开通企业微信
 ## 二，服务部署
@@ -16,12 +16,6 @@ sudo curl -sSL https://get.docker.com/ | CHANNEL=stable sh
 如果是境内服务器，可能会安装不了，请参考华为云提供的[安装方法](https://mirrors.huaweicloud.com/mirrorDetail/5ea14d84b58d16ef329c5c13?mirrorName=docker-ce&catalog=docker)。
 
 #### 2，下载部署文件
-
-创建一个目录，比如：
-
-```shell
-mkdir ~/zm_session_archive
-```
 
 下载最新 docker-compose 配置文件：
 

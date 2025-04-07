@@ -291,6 +291,7 @@ const loadData = () => {
                 items[findIx] && (items[findIx].is_revoke = true)
             }
         })
+
         oldHeight.value = listRef.value.getListDom().scrollHeight
         items.reverse()
         list.value.unshift(...items)

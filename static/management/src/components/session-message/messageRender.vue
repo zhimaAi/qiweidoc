@@ -128,6 +128,35 @@
                 <span v-if="showPaymentTag" @click="payenmtModalShow" class="zm-payment-tag"></span>
             </div>
         </div>
+        <!-- 红包消息-->
+        <div v-else-if="['external_redpacket', 'redpacket'].includes(messageInfo.msg_type)"
+             class="message-box red-envelope-box">
+            <div class="zm-flex-center">
+                <img class="cover" src="@/assets/image/session/red-envelope-cover.png"/>
+                <div class="ml8">
+                    <div class="price">¥{{formatPrice(messageInfo?.raw_content?.totalamount)}}</div>
+                    <div class="desc">{{messageInfo?.raw_content?.wish}}</div>
+                </div>
+            </div>
+            <div class="extra-info">
+                {{RedpacketTypeMap[messageInfo?.raw_content?.type]}}
+                {{messageInfo?.raw_content?.totalcnt}}个
+            </div>
+        </div>
+<!--        &lt;!&ndash; 转发消息&ndash;&gt;-->
+<!--        <div v-else-if="messageInfo.msg_type == 'chatrecord'" class="message-box msg-forwarding-box">-->
+<!--            <div class="title">{{ messageInfo?.raw_content?.title }}</div>-->
+<!--            <div class="list">-->
+<!--                <div>咸鱼：你好 我知道你什么意思了嘻嘻</div>-->
+<!--                <div>咸鱼：[图片]</div>-->
+<!--                <div>咸鱼：[表情]</div>-->
+<!--                <div>咸鱼：[语音]</div>-->
+<!--            </div>-->
+<!--            <div class="bottom zm-flex-between zm-tip-info">-->
+<!--                <span>详情</span>-->
+<!--                <RightOutlined class="icon-14"/>-->
+<!--            </div>-->
+<!--        </div>-->
         <!-- 混合消息 -->
         <div v-else class="message-box">[{{ MessageTypeTextMap[messageInfo.msg_type] }}]</div>
         <span v-if="messageInfo.is_revoke" class="message-box" style="color: rgba(0,0,0,.25);">已撤回</span>
@@ -140,9 +169,18 @@ import {useStore} from 'vuex';
 import {useRouter} from 'vue-router';
 import dayjs from 'dayjs';
 import {Modal, message} from 'ant-design-vue';
-import {DownloadOutlined, PlayCircleOutlined, PauseCircleOutlined, PhoneOutlined} from '@ant-design/icons-vue';
-import {downloadFile, formatBytes, secondsToDate, formatSeconds, getFileIcon, MessageTypeTextMap} from "@/utils/tools";
+import {DownloadOutlined, PlayCircleOutlined, PauseCircleOutlined, PhoneOutlined, RightOutlined} from '@ant-design/icons-vue';
+import {
+    downloadFile,
+    formatBytes,
+    secondsToDate,
+    formatSeconds,
+    getFileIcon,
+    MessageTypeTextMap,
+    RedpacketTypeMap
+} from "@/utils/tools";
 import BenzAMRRecorder from 'benz-amr-recorder';
+import {formatPrice} from "@/utils/tools";
 
 const props = defineProps({
     messageInfo: {
@@ -325,7 +363,7 @@ const showBuyFileStorage = () => {
     max-width: 40vw;
     white-space: normal;
     word-break: break-all;
-    border-radius: 2px;
+    border-radius: 8px;
     opacity: 1;
     border: 1px solid #e6e6e6;
     position: relative;
@@ -409,6 +447,64 @@ const showBuyFileStorage = () => {
                 color: #8C8C8C;
                 text-align: right;
             }
+        }
+    }
+    &.red-envelope-box {
+        background: #FF5443;
+        width: 260px;
+        &::after {
+            content: '';
+            background: none;
+            border: none;
+        }
+        .cover {
+            width: 48px;
+            height: 48px;
+        }
+        .price {
+            color: #ffeeec;
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 24px;
+            margin-bottom: 2px;
+        }
+        .desc {
+            color: #ffe3e0;
+            font-size: 14px;
+            font-weight: 400;
+        }
+        .extra-info {
+            margin-top: 12px;
+            margin-left: 4px;
+            color: #ffc7c2;
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 16px;
+            padding-top: 8px;
+            border-top: 1px solid #D9D9D9;
+        }
+    }
+    &.msg-forwarding-box {
+        padding: 0;
+        .title {
+            color: #262626;
+            padding: 8px 0 0 12px;
+        }
+        .list {
+            padding: 0 12px;
+            margin-bottom: 8px;
+            > div {
+                margin-top: 4px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+        .bottom {
+            font-size: 12px;
+            padding: 8px 12px;
+            border-top: 1px solid #D9D9D9;
+            cursor: pointer;
         }
     }
 }

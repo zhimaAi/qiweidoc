@@ -332,7 +332,7 @@ SQL;
                 ['type' => EnumChatConversationType::Group->value],
                 ['in', 'to', array_keys($groupChatIDMap)],
             ])
-            ->orderBy('last_msg_time')
+            ->orderBy(['last_msg_time' => SORT_DESC])
             ->paginate($page, $size);
 
         foreach ($result['items'] as $item) {
