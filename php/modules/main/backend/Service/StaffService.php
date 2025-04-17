@@ -64,8 +64,6 @@ class StaffService
         if (!empty($data['enable_archive'])) {
             if (isset($settings["is_staff_designated"]) && $settings["is_staff_designated"]) {
                 $query->andWhere(['enable_archive' => $data['enable_archive']]);//指定会话存档员工
-            } else {
-                $query->andWhere(['chat_status' => 1]);//全部会话存档员工列表
             }
         }
 
