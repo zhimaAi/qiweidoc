@@ -159,7 +159,7 @@ class ChatSessionPullService
             'storage_object_key' => $objectKey,
         ];
         $fileInfo = [];
-        Yii::getNatsClient()->request('wxfinance.FetchAndStreamMediaData', json_encode($request), function (Payload $payload) use (&$fileInfo) {
+        Yii::getNatsClient(300)->request('wxfinance.FetchAndStreamMediaData', json_encode($request), function (Payload $payload) use (&$fileInfo) {
             $fileInfo = json_decode($payload->body, true);
         });
         if (empty($fileInfo) || empty($fileInfo['hash'])) {
