@@ -93,7 +93,6 @@ const loadData = () => {
         page: pagination.current,
         size: pagination.pageSize,
         chat_status: props.type,
-        enable_archive: 1
     }
     if (params.chat_status === 1) { // 会话存档中
         params.enable_archive = 1
