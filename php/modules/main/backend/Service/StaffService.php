@@ -4,17 +4,14 @@
 namespace Modules\Main\Service;
 
 use Basis\Nats\Message\Payload;
-use Common\Job\Producer;
 use Common\Micro;
 use Common\Module;
 use Common\Yii;
-use Modules\Main\Consumer\SyncStaffChatCron;
 use Modules\Main\Enum\EnumUserRoleType;
 use Modules\Main\Model\CorpModel;
 use Modules\Main\Model\DepartmentModel;
 use Modules\Main\Model\StaffModel;
 use Modules\Main\Model\StaffTagModel;
-use Modules\Main\Model\UserModel;
 use Modules\Main\Model\UserRoleModel;
 use Throwable;
 use Yiisoft\Arrays\ArrayHelper;
@@ -55,14 +52,17 @@ class StaffService
         if (!empty($data['chat_status'])) {
             $query->andWhere(["chat_status" => $data["chat_status"]]);
         }
-
+        // 是否有过会话记录
+        if (!empty($data['has_conversation'])) {
+            $query->andWhere(['has_conversation' => $data['has_conversation']]);
+        }
         $moduleConfig = Module::getLocalModuleConfig("archive_staff");
         $settings = [];
         if (isset($moduleConfig['paused']) && !$moduleConfig["paused"]) {
             $settings = Micro::call('archive_staff', 'query', '');
         }
         if (!empty($data['enable_archive'])) {
-            if (isset($settings["is_staff_designated"]) && $settings["is_staff_designated"]) {
+            if (empty($settings) || (isset($settings["is_staff_designated"]) && $settings["is_staff_designated"])) {
                 $query->andWhere(['enable_archive' => $data['enable_archive']]);//指定会话存档员工
             }
         }

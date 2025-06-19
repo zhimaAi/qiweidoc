@@ -74,7 +74,7 @@ return [
         $logger = new Logger(
             [
                 $fileTarget,
-                new RoadRunnerAppLogTarget(1),
+                // new RoadRunnerAppLogTarget(1),
             ],
             contextProvider: new CompositeContextProvider(
                 new SystemContextProvider(

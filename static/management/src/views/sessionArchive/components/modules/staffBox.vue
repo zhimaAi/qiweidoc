@@ -95,6 +95,12 @@ const loadData = () => {
         chat_status: props.type,
         enable_archive: 1
     }
+    if (params.chat_status === 1) { // 会话存档中
+        params.enable_archive = 1
+    }
+    if (params.chat_status === 2) { // 历史员工
+        params.has_conversation = 1
+    }
     filterData.keyword = filterData.keyword.trim()
     if (filterData.keyword) {
         params.keyword = filterData.keyword

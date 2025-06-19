@@ -3,6 +3,7 @@ package main
 import (
     "context"
     "encoding/json"
+    "fmt"
     "github.com/joho/godotenv"
     "github.com/nats-io/nats.go"
     "github.com/nats-io/nats.go/micro"

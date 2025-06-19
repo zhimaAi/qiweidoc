@@ -47,21 +47,14 @@ class SyncStaffChatCron
                     ['in', 'userid', $chatUserIds],
                 ])
                 ->update(['chat_status' => 1]);
-        } else {//没查出来，把所有会话存档中的数据变更一下
-            StaffModel::query()
-                ->where(['and',
-                    ['corp_id' => $corp->get('id')],
-                    ['chat_status' => 1],
-                ])
-                ->update(['chat_status' => 2]);
         }
-
 
         //没有会话存档的员工
         $removeUserid = array_diff($hisStaffChatUserid, $chatUserIds);
         StaffModel::query()
             ->where(['and',
                 ['corp_id' => $corp->get('id')],
+                ['chat_status' => 1],
                 ['in', 'userid', $removeUserid],
             ])
             ->update(['chat_status' => 2]);
