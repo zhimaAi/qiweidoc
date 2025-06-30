@@ -33,8 +33,9 @@ class CloudStorageSettingController extends BaseController
 
     public function save(ServerRequestInterface $request)
     {
+        /** @var UserModel $user */
         $user = $request->getAttribute(Authentication::class);
-        if ($user->get('role_id') != EnumUserRoleType::SUPPER_ADMIN) {
+        if ($user->get('role_id') != EnumUserRoleType::SUPPER_ADMIN->value) {
             throw new LogicException("没有权限");
         }
 
