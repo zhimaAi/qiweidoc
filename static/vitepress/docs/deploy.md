@@ -113,8 +113,8 @@ server {
 
 ```shell
 git pull
-docker compose pull
 cd docker
+docker compose pull
 docker compose restart
 ```
 
