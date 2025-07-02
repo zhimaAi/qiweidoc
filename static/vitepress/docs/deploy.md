@@ -19,6 +19,7 @@ sudo curl -sSL https://get.docker.com/ | CHANNEL=stable sh
 
 ```shell
 git clone https://gitee.com/zmxkf/qiweidoc.git
+cp .env.prod .env
 ```
 
 #### 3，运行容器
