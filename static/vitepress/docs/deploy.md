@@ -62,6 +62,10 @@ COMPOSE_FILE=docker-compose-prod.yml
 > zm_session_archive
 > ```
 > 那么 .env 中的 COMPOSE_PROJECT_NAME 应该填写 `zm_session_archive`
+> 最后把旧的容器停止并删除: 
+> ```shell
+> docker compose down
+> ```
 
 
 再运行：
