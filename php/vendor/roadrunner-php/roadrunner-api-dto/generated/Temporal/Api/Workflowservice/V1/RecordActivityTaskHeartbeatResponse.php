@@ -21,6 +21,12 @@ class RecordActivityTaskHeartbeatResponse extends \Google\Protobuf\Internal\Mess
      * Generated from protobuf field <code>bool cancel_requested = 1;</code>
      */
     protected $cancel_requested = false;
+    /**
+     * Will be set to true if the activity is paused.
+     *
+     * Generated from protobuf field <code>bool activity_paused = 2;</code>
+     */
+    protected $activity_paused = false;
 
     /**
      * Constructor.
@@ -31,6 +37,8 @@ class RecordActivityTaskHeartbeatResponse extends \Google\Protobuf\Internal\Mess
      *     @type bool $cancel_requested
      *           Will be set to true if the activity has been asked to cancel itself. The SDK should then
      *           notify the activity of cancellation if it is still running.
+     *     @type bool $activity_paused
+     *           Will be set to true if the activity is paused.
      * }
      */
     public function __construct($data = NULL) {
@@ -62,6 +70,32 @@ class RecordActivityTaskHeartbeatResponse extends \Google\Protobuf\Internal\Mess
     {
         GPBUtil::checkBool($var);
         $this->cancel_requested = $var;
+
+        return $this;
+    }
+
+    /**
+     * Will be set to true if the activity is paused.
+     *
+     * Generated from protobuf field <code>bool activity_paused = 2;</code>
+     * @return bool
+     */
+    public function getActivityPaused()
+    {
+        return $this->activity_paused;
+    }
+
+    /**
+     * Will be set to true if the activity is paused.
+     *
+     * Generated from protobuf field <code>bool activity_paused = 2;</code>
+     * @param bool $var
+     * @return $this
+     */
+    public function setActivityPaused($var)
+    {
+        GPBUtil::checkBool($var);
+        $this->activity_paused = $var;
 
         return $this;
     }

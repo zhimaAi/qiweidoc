@@ -1384,7 +1384,7 @@ class Request
     public function getProtocolVersion(): ?string
     {
         if ($this->isFromTrustedProxy()) {
-            preg_match('~^(HTTP/)?([1-9]\.[0-9]) ~', $this->headers->get('Via') ?? '', $matches);
+            preg_match('~^(HTTP/)?([1-9]\.[0-9])\b~', $this->headers->get('Via') ?? '', $matches);
 
             if ($matches) {
                 return 'HTTP/'.$matches[2];
@@ -1551,10 +1551,6 @@ class Request
         $locales = array_map($this->formatLocale(...), $locales);
         if (!$preferredLanguages) {
             return $locales[0];
-        }
-
-        if ($matches = array_intersect($preferredLanguages, $locales)) {
-            return current($matches);
         }
 
         $combinations = array_merge(...array_map($this->getLanguageCombinations(...), $preferredLanguages));

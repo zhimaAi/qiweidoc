@@ -87,7 +87,7 @@ final class HttpStreamCollector implements SummaryCollectorInterface
             return [];
         }
         return [
-            'http_stream' => array_merge(
+            'streams' => array_merge(
                 ...array_map(
                     fn (string $operation) => [
                         $operation => count($this->requests[$operation]),

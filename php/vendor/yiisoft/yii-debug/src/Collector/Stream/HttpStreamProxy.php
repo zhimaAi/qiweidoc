@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Yii\Debug\Collector\Stream;
 
 use Yiisoft\Strings\CombinedRegexp;
-use Yiisoft\Yii\Debug\Helper\BacktraceIgnoreMatcher;
+use Yiisoft\Strings\StringHelper;
+use Yiisoft\Yii\Debug\Helper\BacktraceMatcher;
 use Yiisoft\Yii\Debug\Helper\StreamWrapper\StreamWrapper;
 use Yiisoft\Yii\Debug\Helper\StreamWrapper\StreamWrapperInterface;
 
@@ -94,9 +95,10 @@ final class HttpStreamProxy implements StreamWrapperInterface
         /**
          * It's important to trigger autoloader before unregistering the file stream handler
          */
-        class_exists(BacktraceIgnoreMatcher::class);
+        class_exists(BacktraceMatcher::class);
         class_exists(StreamWrapper::class);
         class_exists(CombinedRegexp::class);
+        class_exists(StringHelper::class);
         stream_wrapper_unregister('http');
         stream_wrapper_register('http', self::class, STREAM_IS_URL);
 
@@ -303,12 +305,12 @@ final class HttpStreamProxy implements StreamWrapperInterface
 
     private function isIgnored(string $url): bool
     {
-        if (BacktraceIgnoreMatcher::doesStringMatchPattern($url, self::$ignoredUrls)) {
+        if (StringHelper::matchAnyRegex($url, self::$ignoredUrls)) {
             return true;
         }
 
         $backtrace = debug_backtrace();
-        return BacktraceIgnoreMatcher::isIgnoredByClass($backtrace, self::$ignoredClasses)
-            || BacktraceIgnoreMatcher::isIgnoredByFile($backtrace, self::$ignoredPathPatterns);
+        return BacktraceMatcher::matchesClass($backtrace[3], self::$ignoredClasses)
+            || BacktraceMatcher::matchesFile($backtrace[3], self::$ignoredPathPatterns);
     }
 }

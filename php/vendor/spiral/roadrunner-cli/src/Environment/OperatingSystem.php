@@ -45,20 +45,14 @@ final class OperatingSystem
     public const OS_ALPINE = 'unknown-musl';
 
     /**
-     * @param array|null $variables
      * @return OperatingSystemType
      */
     #[ExpectedValues(valuesFromClass: OperatingSystem::class)]
-    public static function createFromGlobals(array $variables = null): string
+    public static function createFromGlobals(?array $variables = null): string
     {
         return (new Factory())->createFromGlobals($variables);
     }
 
-
-    /**
-     * @param string $value
-     * @return bool
-     */
     public static function isValid(string $value): bool
     {
         return \in_array($value, self::all(), true);

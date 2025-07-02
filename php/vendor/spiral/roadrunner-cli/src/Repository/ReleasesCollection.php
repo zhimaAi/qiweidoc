@@ -20,7 +20,6 @@ use Spiral\RoadRunner\Console\Environment\Stability;
 final class ReleasesCollection extends Collection
 {
     /**
-     * @param string ...$constraints
      * @return $this
      */
     public function satisfies(string ...$constraints): self
@@ -35,7 +34,6 @@ final class ReleasesCollection extends Collection
     }
 
     /**
-     * @param string ...$constraints
      * @return $this
      */
     public function notSatisfies(string ...$constraints): self
@@ -50,33 +48,13 @@ final class ReleasesCollection extends Collection
     }
 
     /**
-     * @param array<string> $constraints
-     * @return array<string>
-     */
-    private function constraints(array $constraints): array
-    {
-        $result = [];
-
-        foreach ($constraints as $constraint) {
-            foreach (\explode('|', $constraint) as $expression) {
-                $result[] = $expression;
-            }
-        }
-
-        return \array_unique(
-            \array_filter(
-                \array_map('\\trim', $result)
-            )
-        );
-    }
-
-    /**
      * @return $this
      */
     public function withAssets(): self
     {
-        return $this->filter(static fn(ReleaseInterface $r): bool => ! $r->getAssets()
-            ->empty()
+        return $this->filter(
+            static fn(ReleaseInterface $r): bool => ! $r->getAssets()
+                ->empty(),
         );
     }
 
@@ -94,18 +72,6 @@ final class ReleasesCollection extends Collection
         \uasort($result, $sort);
 
         return new self($result);
-    }
-
-    /**
-     * @param ReleaseInterface $release
-     * @return string
-     */
-    private function comparisonVersionString(ReleaseInterface $release): string
-    {
-        $stability = $release->getStability();
-        $weight = Stability::toInt($stability);
-
-        return \str_replace('-' . $stability, '.' . $weight . '.', $release->getVersion());
     }
 
     /**
@@ -135,8 +101,37 @@ final class ReleasesCollection extends Collection
     {
         $weight = Stability::toInt($stability);
 
-        return $this->filter(function (ReleaseInterface $release) use ($weight): bool {
+        return $this->filter(static function (ReleaseInterface $release) use ($weight): bool {
             return Stability::toInt($release->getStability()) >= $weight;
         });
+    }
+
+    /**
+     * @param array<string> $constraints
+     * @return array<string>
+     */
+    private function constraints(array $constraints): array
+    {
+        $result = [];
+
+        foreach ($constraints as $constraint) {
+            foreach (\explode('|', $constraint) as $expression) {
+                $result[] = $expression;
+            }
+        }
+
+        return \array_unique(
+            \array_filter(
+                \array_map('\\trim', $result),
+            ),
+        );
+    }
+
+    private function comparisonVersionString(ReleaseInterface $release): string
+    {
+        $stability = $release->getStability();
+        $weight = Stability::toInt($stability);
+
+        return \str_replace('-' . $stability, '.' . $weight . '.', $release->getVersion());
     }
 }

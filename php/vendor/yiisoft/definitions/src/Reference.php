@@ -33,8 +33,10 @@ final class Reference implements ReferenceInterface
     /**
      * @throws InvalidConfigException
      */
-    private function __construct(mixed $id, private bool $optional)
-    {
+    private function __construct(
+        mixed $id,
+        private readonly bool $optional,
+    ) {
         if (!is_string($id)) {
             throw new InvalidConfigException('Reference ID must be string.');
         }

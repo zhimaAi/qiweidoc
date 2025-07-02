@@ -36,9 +36,10 @@ class Worker implements StreamWorkerInterface
     /** @var array<int, Payload> */
     private array $payloads = [];
 
-    private bool $streamMode = false;
     /** @var int<0, max> Count of frames sent in stream mode */
     private int $framesSent = 0;
+
+    private bool $streamMode = false;
     private bool $shouldPing = false;
     private bool $waitingPong = false;
 
@@ -50,6 +51,38 @@ class Worker implements StreamWorkerInterface
         if ($interceptSideEffects) {
             StdoutHandler::register();
         }
+    }
+
+    /**
+     * Create a new RoadRunner {@see Worker} using global
+     * environment ({@see Environment}) configuration.
+     */
+    public static function create(bool $interceptSideEffects = true, LoggerInterface $logger = new Logger()): self
+    {
+        return static::createFromEnvironment(
+            env: Environment::fromGlobals(),
+            interceptSideEffects: $interceptSideEffects,
+            logger: $logger,
+        );
+    }
+
+    /**
+     * Create a new RoadRunner {@see Worker} using passed environment
+     * configuration.
+     */
+    public static function createFromEnvironment(
+        EnvironmentInterface $env,
+        bool $interceptSideEffects = true,
+        LoggerInterface $logger = new Logger(),
+    ): self {
+        $address = $env->getRelayAddress();
+        \assert($address !== '', 'Relay address must be specified in environment');
+
+        return new self(
+            relay: Relay::create($address),
+            interceptSideEffects: $interceptSideEffects,
+            logger: $logger,
+        );
     }
 
     public function getLogger(): LoggerInterface
@@ -235,45 +268,13 @@ class Worker implements StreamWorkerInterface
         } catch (GoridgeException $e) {
             throw new TransportException($e->getMessage(), $e->getCode(), $e);
         } catch (\Throwable $e) {
-            throw new RoadRunnerException($e->getMessage(), (int)$e->getCode(), $e);
+            throw new RoadRunnerException($e->getMessage(), (int) $e->getCode(), $e);
         }
     }
 
     private function encode(array $payload): string
     {
         return \json_encode($payload, self::JSON_ENCODE_FLAGS);
-    }
-
-    /**
-     * Create a new RoadRunner {@see Worker} using global
-     * environment ({@see Environment}) configuration.
-     */
-    public static function create(bool $interceptSideEffects = true, LoggerInterface $logger = new Logger()): self
-    {
-        return static::createFromEnvironment(
-            env: Environment::fromGlobals(),
-            interceptSideEffects: $interceptSideEffects,
-            logger: $logger,
-        );
-    }
-
-    /**
-     * Create a new RoadRunner {@see Worker} using passed environment
-     * configuration.
-     */
-    public static function createFromEnvironment(
-        EnvironmentInterface $env,
-        bool $interceptSideEffects = true,
-        LoggerInterface $logger = new Logger(),
-    ): self {
-        $address = $env->getRelayAddress();
-        \assert($address !== '', 'Relay address must be specified in environment');
-
-        return new self(
-            relay: Relay::create($address),
-            interceptSideEffects: $interceptSideEffects,
-            logger: $logger
-        );
     }
 
     private function sendProcessId(): void

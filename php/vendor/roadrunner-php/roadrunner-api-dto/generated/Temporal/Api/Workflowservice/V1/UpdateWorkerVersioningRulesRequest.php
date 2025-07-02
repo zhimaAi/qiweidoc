@@ -14,6 +14,7 @@ use Google\Protobuf\Internal\GPBUtil;
  *     aip.dev/not-precedent: UpdateNamespace RPC doesn't follow Google API format. --)
  * (-- api-linter: core::0134::request-resource-required=disabled
  *     aip.dev/not-precedent: GetWorkerBuildIdCompatibilityRequest RPC doesn't follow Google API format. --)
+ * [cleanup-wv-pre-release]
  *
  * Generated from protobuf message <code>temporal.api.workflowservice.v1.UpdateWorkerVersioningRulesRequest</code>
  */

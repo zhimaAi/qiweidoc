@@ -88,6 +88,7 @@ class Failure extends \Google\Protobuf\Internal\Message
      *     @type \Temporal\Api\Failure\V1\ActivityFailureInfo $activity_failure_info
      *     @type \Temporal\Api\Failure\V1\ChildWorkflowExecutionFailureInfo $child_workflow_execution_failure_info
      *     @type \Temporal\Api\Failure\V1\NexusOperationFailureInfo $nexus_operation_execution_failure_info
+     *     @type \Temporal\Api\Failure\V1\NexusHandlerFailureInfo $nexus_handler_failure_info
      * }
      */
     public function __construct($data = NULL) {
@@ -498,6 +499,33 @@ class Failure extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Temporal\Api\Failure\V1\NexusOperationFailureInfo::class);
         $this->writeOneof(13, $var);
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>.temporal.api.failure.v1.NexusHandlerFailureInfo nexus_handler_failure_info = 14;</code>
+     * @return \Temporal\Api\Failure\V1\NexusHandlerFailureInfo|null
+     */
+    public function getNexusHandlerFailureInfo()
+    {
+        return $this->readOneof(14);
+    }
+
+    public function hasNexusHandlerFailureInfo()
+    {
+        return $this->hasOneof(14);
+    }
+
+    /**
+     * Generated from protobuf field <code>.temporal.api.failure.v1.NexusHandlerFailureInfo nexus_handler_failure_info = 14;</code>
+     * @param \Temporal\Api\Failure\V1\NexusHandlerFailureInfo $var
+     * @return $this
+     */
+    public function setNexusHandlerFailureInfo($var)
+    {
+        GPBUtil::checkMessage($var, \Temporal\Api\Failure\V1\NexusHandlerFailureInfo::class);
+        $this->writeOneof(14, $var);
 
         return $this;
     }

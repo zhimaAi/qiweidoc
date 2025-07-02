@@ -8,6 +8,11 @@ final class Kv extends AbstractSection
 {
     private const NAME = 'kv';
 
+    public static function getShortName(): string
+    {
+        return self::NAME;
+    }
+
     public function render(): array
     {
         return [
@@ -15,23 +20,18 @@ final class Kv extends AbstractSection
                 'local' => [
                     'driver' => 'memory',
                     'config' => [
-                        'interval' => 60
-                    ]
+                        'interval' => 60,
+                    ],
                 ],
-//                'redis' => [
-//                    'driver' => 'redis',
-//                    'config' => [
-//                        'addrs' => [
-//                            'localhost:6379'
-//                        ]
-//                    ]
-//                ]
-            ]
+                //                'redis' => [
+                //                    'driver' => 'redis',
+                //                    'config' => [
+                //                        'addrs' => [
+                //                            'localhost:6379'
+                //                        ]
+                //                    ]
+                //                ]
+            ],
         ];
-    }
-
-    public static function getShortName(): string
-    {
-        return self::NAME;
     }
 }

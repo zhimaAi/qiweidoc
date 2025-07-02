@@ -23,12 +23,12 @@ final class DataModifiers
     /**
      * @psalm-var array<string, int|null>
      */
-    private array $mergedGroupsRecursionDepthMap;
+    private readonly array $mergedGroupsRecursionDepthMap;
 
     /**
      * @psalm-var array<string, array-key>
      */
-    private array $reverseMergeGroupsIndex;
+    private readonly array $reverseMergeGroupsIndex;
 
     /**
      * @psalm-var array<string, true>

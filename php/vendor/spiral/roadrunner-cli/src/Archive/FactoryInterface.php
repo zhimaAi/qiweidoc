@@ -24,17 +24,7 @@ interface FactoryInterface
      */
     public function extend(\Closure $matcher): self;
 
-    /**
-     * @param \SplFileInfo $file
-     * @return ArchiveInterface
-     */
     public function create(\SplFileInfo $file): ArchiveInterface;
 
-    /**
-     * @param AssetInterface $asset
-     * @param \Closure|null $progress
-     * @param string|null $temp
-     * @return ArchiveInterface
-     */
-    public function fromAsset(AssetInterface $asset, \Closure $progress = null, string $temp = null): ArchiveInterface;
+    public function fromAsset(AssetInterface $asset, ?\Closure $progress = null, ?string $temp = null): ArchiveInterface;
 }

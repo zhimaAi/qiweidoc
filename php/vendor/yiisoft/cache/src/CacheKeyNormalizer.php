@@ -34,7 +34,7 @@ final class CacheKeyNormalizer
      *
      * @return string The normalized cache key.
      */
-    public function normalize(mixed $key): string
+    public static function normalize(mixed $key): string
     {
         if (is_string($key) || is_int($key)) {
             $key = (string) $key;

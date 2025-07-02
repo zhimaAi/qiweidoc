@@ -12,7 +12,7 @@ final class Target implements TargetInterface
 {
     /**
      * @param list<string> $path
-     * @param TController|null $object The object associated with the target.
+     * @param TController $object The object associated with the target.
      * @param \Closure|array{class-string|object, non-empty-string}|null $callable
      */
     private function __construct(
@@ -21,13 +21,7 @@ final class Target implements TargetInterface
         private readonly ?object $object = null,
         private string $delimiter = '.',
         private readonly \Closure|array|null $callable = null,
-    ) {
-    }
-
-    public function __toString(): string
-    {
-        return \implode($this->delimiter, $this->path);
-    }
+    ) {}
 
     /**
      * Create a target from a method reflection.
@@ -170,5 +164,10 @@ final class Target implements TargetInterface
     public function getCallable(): callable|array|null
     {
         return $this->callable;
+    }
+
+    public function __toString(): string
+    {
+        return \implode($this->delimiter, $this->path);
     }
 }

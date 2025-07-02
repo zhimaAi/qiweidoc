@@ -11,14 +11,14 @@ use Symfony\Component\Yaml\Yaml;
 
 class Generator
 {
-    /** @var SectionInterface[] */
-    protected array $sections = [];
-
     /** @psalm-var non-empty-array<class-string<SectionInterface>> */
     protected const REQUIRED_SECTIONS = [
         Version::class,
         Rpc::class,
     ];
+
+    /** @var SectionInterface[] */
+    protected array $sections = [];
 
     public function generate(Plugins $plugins): string
     {
@@ -46,7 +46,9 @@ class Generator
         }
     }
 
-    /** @psalm-return non-empty-array<SectionInterface> */
+    /**
+     * @psalm-return non-empty-array<SectionInterface>
+     */
     protected function fromSection(SectionInterface $section): void
     {
         if (!isset($this->sections[\get_class($section)])) {

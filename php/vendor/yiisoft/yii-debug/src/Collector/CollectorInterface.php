@@ -11,6 +11,7 @@ interface CollectorInterface
 {
     /**
      * @return string Collector's name.
+     * @psalm-return non-empty-string
      */
     public function getName(): string;
 
@@ -22,7 +23,7 @@ interface CollectorInterface
 
     /**
      * Called once at application shutdown.
-     * Cleanup could be done here.
+     * Cleanup could be done here. Implementation must be idempotent.
      */
     public function shutdown(): void;
 

@@ -9,6 +9,7 @@ use Composer\Package\BasePackage;
 use Composer\Package\PackageInterface;
 
 use function array_key_exists;
+use function in_array;
 
 /**
  * @internal
@@ -16,8 +17,8 @@ use function array_key_exists;
 final class PackagesListBuilder
 {
     public function __construct(
-        private Composer $composer,
-        private array $packageTypes,
+        private readonly Composer $composer,
+        private readonly array $packageTypes,
     ) {
     }
 

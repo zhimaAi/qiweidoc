@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace Yiisoft\Log\Message;
 
+use function array_key_exists;
+use function count;
+use function is_array;
+use function sprintf;
+use function strlen;
+
 /**
  * @internal
  */
@@ -18,8 +24,9 @@ final class ContextValueExtractor
 
         $lastKey = array_pop($path);
         $array = $context;
+
         foreach ($path as $pathItem) {
-            $array = array_key_exists($pathItem, $array) ? $array[$pathItem] : null;
+            $array = $array[$pathItem] ?? null;
             if (!is_array($array)) {
                 return [false, null];
             }
@@ -31,12 +38,12 @@ final class ContextValueExtractor
     }
 
     /**
-     * @psalm-return list<string>
+     * @psalm-return non-empty-list<string>
      */
     private static function parsePath(string $path): array
     {
         if ($path === '') {
-            return [];
+            return [''];
         }
 
         if (!str_contains($path, '.')) {

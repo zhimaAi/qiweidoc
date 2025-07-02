@@ -10,7 +10,7 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * The outcome of a workflow update - success or failure.
+ * The outcome of a Workflow Update: success or failure.
  *
  * Generated from protobuf message <code>temporal.api.update.v1.Outcome</code>
  */

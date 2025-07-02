@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\Debug\Collector;
 
+use function count;
+
 class LogCollector implements SummaryCollectorInterface
 {
     use CollectorTrait;
@@ -50,9 +52,7 @@ class LogCollector implements SummaryCollectorInterface
             return [];
         }
         return [
-            'logger' => [
-                'total' => count($this->messages),
-            ],
+            'total' => count($this->messages),
         ];
     }
 }

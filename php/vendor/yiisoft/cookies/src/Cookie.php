@@ -9,6 +9,7 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Exception;
 use InvalidArgumentException;
+use Psr\Clock\ClockInterface;
 use Psr\Http\Message\ResponseInterface;
 use Yiisoft\Http\Header;
 
@@ -121,6 +122,8 @@ final class Cookie
      */
     private ?string $sameSite = null;
 
+    private ?ClockInterface $clock;
+
     /**
      * Cookie constructor.
      *
@@ -145,7 +148,8 @@ final class Cookie
         ?bool $secure = true,
         ?bool $httpOnly = true,
         ?string $sameSite = self::SAME_SITE_LAX,
-        bool $encodeValue = true
+        bool $encodeValue = true,
+        ?ClockInterface $clock = null
     ) {
         if (!preg_match(self::PATTERN_TOKEN, $name)) {
             throw new InvalidArgumentException("The cookie name \"$name\" contains invalid characters or is empty.");
@@ -160,6 +164,7 @@ final class Cookie
         $this->secure = $secure;
         $this->httpOnly = $httpOnly;
         $this->setSameSite($sameSite);
+        $this->clock = $clock;
     }
 
     /**
@@ -249,7 +254,7 @@ final class Cookie
      */
     public function isExpired(): bool
     {
-        return $this->expires !== null && $this->expires->getTimestamp() < time();
+        return $this->expires !== null && $this->expires->getTimestamp() < $this->getCurrentTimestamp();
     }
 
     /**
@@ -263,7 +268,7 @@ final class Cookie
     public function withMaxAge(DateInterval $interval): self
     {
         $new = clone $this;
-        $new->expires = (new DateTimeImmutable())->add($interval);
+        $new->expires = $this->getCurrentTime()->add($interval);
         return $new;
     }
 
@@ -275,7 +280,7 @@ final class Cookie
     public function expire(): self
     {
         $new = clone $this;
-        $new->expires = new DateTimeImmutable('-1 year');
+        $new->expires = $this->getCurrentTime()->modify('-1 year');
         return $new;
     }
 
@@ -451,7 +456,7 @@ final class Cookie
 
         if ($this->expires !== null) {
             $cookieParts[] = 'Expires=' . $this->expires->format(DateTimeInterface::RFC7231);
-            $cookieParts[] = 'Max-Age=' . ($this->expires->getTimestamp() - time());
+            $cookieParts[] = 'Max-Age=' . ($this->expires->getTimestamp() - $this->getCurrentTimestamp());
         }
 
         if ($this->domain !== null) {
@@ -486,7 +491,7 @@ final class Cookie
      *
      * @return static
      */
-    public static function fromCookieString(string $string): self
+    public static function fromCookieString(string $string, ?ClockInterface $clock = null): self
     {
         /** @psalm-var list<string> $rawAttributes */
         $rawAttributes = preg_split('~\s*[;]\s*~', $string);
@@ -517,6 +522,8 @@ final class Cookie
                 continue;
             }
 
+            $currentTimestamp = $clock === null ? time() : $clock->now()->getTimestamp();
+
             /** @var string $attributeValue */
 
             switch ($attributeKey) {
@@ -524,7 +531,8 @@ final class Cookie
                     $params['expires'] = new DateTimeImmutable($attributeValue);
                     break;
                 case 'max-age':
-                    $params['expires'] = (new DateTimeImmutable())->setTimestamp(time() + (int)$attributeValue);
+                    $params['expires'] = (new DateTimeImmutable())
+                        ->setTimestamp($currentTimestamp + (int) $attributeValue);
                     break;
                 case 'domain':
                     $params['domain'] = $attributeValue;
@@ -552,7 +560,9 @@ final class Cookie
             $params['path'] ?? null,
             $params['secure'] ?? null,
             $params['httpOnly'] ?? null,
-            $params['sameSite'] ?? null
+            $params['sameSite'] ?? null,
+            true,
+            $clock
         );
     }
 
@@ -565,5 +575,19 @@ final class Cookie
         $parts[1] ??= null;
 
         return $parts;
+    }
+
+    private function getCurrentTime(): DateTimeImmutable
+    {
+        return $this->clock === null
+            ? new DateTimeImmutable()
+            : $this->clock->now();
+    }
+
+    private function getCurrentTimestamp(): int
+    {
+        return $this->clock === null
+            ? time()
+            : $this->clock->now()->getTimestamp();
     }
 }

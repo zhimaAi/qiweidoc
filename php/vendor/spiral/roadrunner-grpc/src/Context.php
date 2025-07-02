@@ -16,9 +16,9 @@ final class Context implements ContextInterface, \IteratorAggregate, \Countable,
      */
     public function __construct(
         private array $values,
-    ) {
-    }
+    ) {}
 
+    #[\Override]
     public function withValue(string $key, mixed $value): ContextInterface
     {
         $ctx = clone $this;
@@ -27,16 +27,19 @@ final class Context implements ContextInterface, \IteratorAggregate, \Countable,
         return $ctx;
     }
 
+    #[\Override]
     public function getValue(string $key, mixed $default = null): mixed
     {
         return $this->values[$key] ?? $default;
     }
 
+    #[\Override]
     public function getValues(): array
     {
         return $this->values;
     }
 
+    #[\Override]
     public function offsetExists(mixed $offset): bool
     {
         \assert(\is_string($offset), 'Offset argument must be a type of string');
@@ -50,6 +53,7 @@ final class Context implements ContextInterface, \IteratorAggregate, \Countable,
         return isset($this->values[$offset]) || \array_key_exists($offset, $this->values);
     }
 
+    #[\Override]
     public function offsetGet(mixed $offset): mixed
     {
         \assert(\is_string($offset), 'Offset argument must be a type of string');
@@ -57,6 +61,7 @@ final class Context implements ContextInterface, \IteratorAggregate, \Countable,
         return $this->values[$offset] ?? null;
     }
 
+    #[\Override]
     public function offsetSet(mixed $offset, mixed $value): void
     {
         \assert(\is_string($offset), 'Offset argument must be a type of string');
@@ -64,6 +69,7 @@ final class Context implements ContextInterface, \IteratorAggregate, \Countable,
         $this->values[$offset] = $value;
     }
 
+    #[\Override]
     public function offsetUnset(mixed $offset): void
     {
         \assert(\is_string($offset), 'Offset argument must be a type of string');
@@ -71,11 +77,13 @@ final class Context implements ContextInterface, \IteratorAggregate, \Countable,
         unset($this->values[$offset]);
     }
 
+    #[\Override]
     public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->values);
     }
 
+    #[\Override]
     public function count(): int
     {
         return \count($this->values);

@@ -13,12 +13,22 @@
     "license": "BSD-3-Clause",
     "support": {
         "issues": "https://github.com/yiisoft/cache-file/issues?state=open",
+        "source": "https://github.com/yiisoft/cache-file",
         "forum": "https://www.yiiframework.com/forum/",
         "wiki": "https://www.yiiframework.com/wiki/",
-        "irc": "irc://irc.freenode.net/yii",
-        "chat": "https://t.me/yii3en",
-        "source": "https://github.com/yiisoft/cache-file"
+        "irc": "ircs://irc.libera.chat:6697/yii",
+        "chat": "https://t.me/yii3en"
     },
+    "funding": [
+        {
+            "type": "opencollective",
+            "url": "https://opencollective.com/yiisoft"
+        },
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/yiisoft"
+        }
+    ],
     "require": {
         "php": "^8.0",
         "psr/simple-cache": "^2.0|^3.0"
@@ -27,10 +37,10 @@
         "maglnet/composer-require-checker": "^4.4",
         "php-mock/php-mock-phpunit": "^2.6",
         "phpunit/phpunit": "^9.5",
-        "rector/rector": "^0.18.3",
+        "rector/rector": "^2.0",
         "roave/infection-static-analysis-plugin": "^1.16",
         "spatie/phpunit-watcher": "^1.23",
-        "vimeo/psalm": "^4.30|^5.6",
+        "vimeo/psalm": "^4.30|^5.21",
         "yiisoft/aliases": "^3.0",
         "yiisoft/di": "^1.2"
     },

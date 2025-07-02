@@ -17,12 +17,12 @@ if (!(bool)($params['yiisoft/yii-debug']['enabled'] ?? false)) {
 
 return [
     ApplicationStartup::class => [
-        [Debugger::class, 'startup'],
+        [Debugger::class, 'start'],
         [ConsoleAppInfoCollector::class, 'collect'],
     ],
     ApplicationShutdown::class => [
         [ConsoleAppInfoCollector::class, 'collect'],
-        [Debugger::class, 'shutdown'],
+        [Debugger::class, 'stop'],
     ],
     ConsoleCommandEvent::class => [
         [ConsoleAppInfoCollector::class, 'collect'],

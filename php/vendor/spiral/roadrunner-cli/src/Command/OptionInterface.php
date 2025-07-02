@@ -16,15 +16,7 @@ use Symfony\Component\Console\Style\StyleInterface;
 
 interface OptionInterface
 {
-    /**
-     * @return string
-     */
     public function getName(): string;
 
-    /**
-     * @param InputInterface $input
-     * @param StyleInterface $io
-     * @return string
-     */
     public function get(InputInterface $input, StyleInterface $io): string;
 }

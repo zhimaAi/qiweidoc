@@ -16,6 +16,9 @@ use function count;
  * The data will be exposed by `ArrayAccessTrait` to support accessing the class object like an array.
  *
  * @property array $data
+ *
+ * @psalm-template TKey as array-key
+ * @psalm-template TValue as mixed
  */
 trait ArrayAccessTrait
 {
@@ -46,6 +49,8 @@ trait ArrayAccessTrait
      * This method is required by the interface {@see \ArrayAccess}.
      *
      * @param mixed $offset The offset to check on.
+     *
+     * @psalm-param TKey $offset
      */
     public function offsetExists(mixed $offset): bool
     {
@@ -58,6 +63,9 @@ trait ArrayAccessTrait
      * @param mixed $offset The offset to retrieve element.
      *
      * @return mixed The element at the offset, null if no element is found at the offset.
+     *
+     * @psalm-param TKey $offset
+     * @psalm-return TValue
      */
     public function offsetGet(mixed $offset): mixed
     {
@@ -69,6 +77,9 @@ trait ArrayAccessTrait
      *
      * @param mixed $offset The offset to set element.
      * @param mixed $value The element value.
+     *
+     * @psalm-param TKey|null $offset
+     * @psalm-param TValue $value
      */
     public function offsetSet(mixed $offset, mixed $value): void
     {
@@ -83,6 +94,8 @@ trait ArrayAccessTrait
      * This method is required by the interface {@see \ArrayAccess}.
      *
      * @param mixed $offset The offset to unset element.
+     *
+     * @psalm-param TKey $offset
      */
     public function offsetUnset(mixed $offset): void
     {

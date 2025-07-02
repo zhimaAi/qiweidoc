@@ -26,16 +26,9 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 final class GitHubRelease extends Release
 {
-    /**
-     * @var HttpClientInterface
-     */
     private HttpClientInterface $client;
 
     /**
-     * @param HttpClientInterface $client
-     * @param string $name
-     * @param string $version
-     * @param string $repository
      * @param iterable|array $assets
      */
     public function __construct(
@@ -43,7 +36,7 @@ final class GitHubRelease extends Release
         string $name,
         string $version,
         string $repository,
-        iterable $assets = []
+        iterable $assets = [],
     ) {
         $this->client = $client;
 
@@ -51,23 +44,6 @@ final class GitHubRelease extends Release
     }
 
     /**
-     * {@inheritDoc}
-     */
-    public function getConfig(): string
-    {
-        $config = \vsprintf('https://raw.githubusercontent.com/%s/%s/.rr.yaml', [
-            $this->getRepositoryName(),
-            $this->getVersion(),
-        ]);
-
-        $response = $this->client->request('GET', $config);
-
-        return $response->getContent();
-    }
-
-    /**
-     * @param GitHubRepository $repository
-     * @param HttpClientInterface $client
      * @param GitHubReleaseApiResponse $release
      * @return static
      */
@@ -75,7 +51,7 @@ final class GitHubRelease extends Release
     {
         if (! isset($release['name'])) {
             throw new \InvalidArgumentException(
-                'Passed array must contain "name" value of type string'
+                'Passed array must contain "name" value of type string',
             );
         }
 
@@ -91,6 +67,18 @@ final class GitHubRelease extends Release
         return new self($client, $name, $version, $repository->getName(), AssetsCollection::from($instantiator));
     }
 
+    public function getConfig(): string
+    {
+        $config = \vsprintf('https://raw.githubusercontent.com/%s/%s/.rr.yaml', [
+            $this->getRepositoryName(),
+            $this->getVersion(),
+        ]);
+
+        $response = $this->client->request('GET', $config);
+
+        return $response->getContent();
+    }
+
     /**
      * Returns pretty-formatted tag (release) name.
      *
@@ -98,7 +86,6 @@ final class GitHubRelease extends Release
      * tag physically exists.
      *
      * @param array { tag_name: string, name: string } $release
-     * @return string
      */
     private static function getTagName(array $release): string
     {

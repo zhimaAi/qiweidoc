@@ -47,6 +47,7 @@ abstract class Collection implements \IteratorAggregate, \Countable
             case $items instanceof \Traversable:
                 $items = \iterator_to_array($items);
 
+                // no break
             case \is_array($items):
                 return new static($items);
 
@@ -55,13 +56,12 @@ abstract class Collection implements \IteratorAggregate, \Countable
 
             default:
                 throw new \InvalidArgumentException(
-                    \sprintf('Unsupported iterable type %s', \get_debug_type($items))
+                    \sprintf('Unsupported iterable type %s', \get_debug_type($items)),
                 );
         }
     }
 
     /**
-     * @param \Closure $generator
      * @return static
      */
     public static function from(\Closure $generator): self
@@ -96,7 +96,7 @@ abstract class Collection implements \IteratorAggregate, \Countable
      */
     public function except(callable $filter): self
     {
-        $callback = static fn (...$args): bool => ! $filter(...$args);
+        $callback = static fn(...$args): bool => ! $filter(...$args);
 
         return new static(\array_filter($this->items, $callback));
     }
@@ -105,7 +105,7 @@ abstract class Collection implements \IteratorAggregate, \Countable
      * @param null|callable(T): bool $filter
      * @return T|null
      */
-    public function first(callable $filter = null): ?object
+    public function first(?callable $filter = null): ?object
     {
         $self = $filter === null ? $this : $this->filter($filter);
 
@@ -117,29 +117,22 @@ abstract class Collection implements \IteratorAggregate, \Countable
      * @param null|callable(T): bool $filter
      * @return T
      */
-    public function firstOr(callable $otherwise, callable $filter = null): object
+    public function firstOr(callable $otherwise, ?callable $filter = null): object
     {
         return $this->first($filter) ?? $otherwise();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->items);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function count(): int
     {
         return \count($this->items);
     }
 
     /**
-     * @param callable $then
      * @return $this
      */
     public function whenEmpty(callable $then): self
@@ -151,9 +144,6 @@ abstract class Collection implements \IteratorAggregate, \Countable
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function empty(): bool
     {
         return $this->items === [];

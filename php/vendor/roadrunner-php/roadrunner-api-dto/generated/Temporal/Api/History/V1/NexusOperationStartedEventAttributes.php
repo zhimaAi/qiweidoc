@@ -28,6 +28,7 @@ class NexusOperationStartedEventAttributes extends \Google\Protobuf\Internal\Mes
     /**
      * The operation ID returned by the Nexus handler in the response to the StartOperation request.
      * This ID is used when canceling the operation.
+     * Deprecated: Renamed to operation_token.
      *
      * Generated from protobuf field <code>string operation_id = 3;</code>
      */
@@ -38,6 +39,13 @@ class NexusOperationStartedEventAttributes extends \Google\Protobuf\Internal\Mes
      * Generated from protobuf field <code>string request_id = 4;</code>
      */
     protected $request_id = '';
+    /**
+     * The operation token returned by the Nexus handler in the response to the StartOperation request.
+     * This token is used when canceling the operation.
+     *
+     * Generated from protobuf field <code>string operation_token = 5;</code>
+     */
+    protected $operation_token = '';
 
     /**
      * Constructor.
@@ -50,8 +58,12 @@ class NexusOperationStartedEventAttributes extends \Google\Protobuf\Internal\Mes
      *     @type string $operation_id
      *           The operation ID returned by the Nexus handler in the response to the StartOperation request.
      *           This ID is used when canceling the operation.
+     *           Deprecated: Renamed to operation_token.
      *     @type string $request_id
      *           The request ID allocated at schedule time.
+     *     @type string $operation_token
+     *           The operation token returned by the Nexus handler in the response to the StartOperation request.
+     *           This token is used when canceling the operation.
      * }
      */
     public function __construct($data = NULL) {
@@ -88,6 +100,7 @@ class NexusOperationStartedEventAttributes extends \Google\Protobuf\Internal\Mes
     /**
      * The operation ID returned by the Nexus handler in the response to the StartOperation request.
      * This ID is used when canceling the operation.
+     * Deprecated: Renamed to operation_token.
      *
      * Generated from protobuf field <code>string operation_id = 3;</code>
      * @return string
@@ -100,6 +113,7 @@ class NexusOperationStartedEventAttributes extends \Google\Protobuf\Internal\Mes
     /**
      * The operation ID returned by the Nexus handler in the response to the StartOperation request.
      * This ID is used when canceling the operation.
+     * Deprecated: Renamed to operation_token.
      *
      * Generated from protobuf field <code>string operation_id = 3;</code>
      * @param string $var
@@ -135,6 +149,34 @@ class NexusOperationStartedEventAttributes extends \Google\Protobuf\Internal\Mes
     {
         GPBUtil::checkString($var, True);
         $this->request_id = $var;
+
+        return $this;
+    }
+
+    /**
+     * The operation token returned by the Nexus handler in the response to the StartOperation request.
+     * This token is used when canceling the operation.
+     *
+     * Generated from protobuf field <code>string operation_token = 5;</code>
+     * @return string
+     */
+    public function getOperationToken()
+    {
+        return $this->operation_token;
+    }
+
+    /**
+     * The operation token returned by the Nexus handler in the response to the StartOperation request.
+     * This token is used when canceling the operation.
+     *
+     * Generated from protobuf field <code>string operation_token = 5;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setOperationToken($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->operation_token = $var;
 
         return $this;
     }

@@ -118,12 +118,10 @@ final class CommandCollector implements SummaryCollectorInterface
         }
 
         return [
-            'command' => [
-                'name' => $commandEvent['name'],
-                'class' => $commandEvent['command'] instanceof Command ? $commandEvent['command']::class : null,
-                'input' => $commandEvent['input'],
-                'exitCode' => $commandEvent['exitCode'] ?? self::UNDEFINED_EXIT_CODE,
-            ],
+            'name' => $commandEvent['name'],
+            'class' => $commandEvent['command'] instanceof Command ? $commandEvent['command']::class : null,
+            'input' => $commandEvent['input'],
+            'exitCode' => $commandEvent['exitCode'] ?? self::UNDEFINED_EXIT_CODE,
         ];
     }
 

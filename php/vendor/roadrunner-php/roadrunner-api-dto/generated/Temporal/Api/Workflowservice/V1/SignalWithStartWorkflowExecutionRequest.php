@@ -130,20 +130,13 @@ class SignalWithStartWorkflowExecutionRequest extends \Google\Protobuf\Internal\
     /**
      * Time to wait before dispatching the first workflow task. Cannot be used with `cron_schedule`.
      * Note that the signal will be delivered with the first workflow task. If the workflow gets
-     * another SignalWithStartWorkflow before the delay and `skip_generate_workflow_task` is false
-     * or not set, a workflow task will be dispatched immediately and the rest of the delay period
-     * will be ignored, even if that request also had a delay. Signal via SignalWorkflowExecution
-     * will not unblock the workflow.
+     * another SignalWithStartWorkflow before the delay a workflow task will be dispatched immediately
+     * and the rest of the delay period will be ignored, even if that request also had a delay.
+     * Signal via SignalWorkflowExecution will not unblock the workflow.
      *
      * Generated from protobuf field <code>.google.protobuf.Duration workflow_start_delay = 20;</code>
      */
     protected $workflow_start_delay = null;
-    /**
-     * Indicates that a new workflow task should not be generated when this signal is received.
-     *
-     * Generated from protobuf field <code>bool skip_generate_workflow_task = 21;</code>
-     */
-    protected $skip_generate_workflow_task = false;
     /**
      * Metadata on the workflow if it is started. This is carried over to the WorkflowExecutionInfo
      * for use by user interfaces to display the fixed as-of-start summary and details of the
@@ -152,6 +145,25 @@ class SignalWithStartWorkflowExecutionRequest extends \Google\Protobuf\Internal\
      * Generated from protobuf field <code>.temporal.api.sdk.v1.UserMetadata user_metadata = 23;</code>
      */
     protected $user_metadata = null;
+    /**
+     * Links to be associated with the WorkflowExecutionStarted and WorkflowExecutionSignaled events.
+     *
+     * Generated from protobuf field <code>repeated .temporal.api.common.v1.Link links = 24;</code>
+     */
+    private $links;
+    /**
+     * If set, takes precedence over the Versioning Behavior sent by the SDK on Workflow Task completion.
+     * To unset the override after the workflow is running, use UpdateWorkflowExecutionOptions.
+     *
+     * Generated from protobuf field <code>.temporal.api.workflow.v1.VersioningOverride versioning_override = 25;</code>
+     */
+    protected $versioning_override = null;
+    /**
+     * Priority metadata
+     *
+     * Generated from protobuf field <code>.temporal.api.common.v1.Priority priority = 26;</code>
+     */
+    protected $priority = null;
 
     /**
      * Constructor.
@@ -201,16 +213,20 @@ class SignalWithStartWorkflowExecutionRequest extends \Google\Protobuf\Internal\
      *     @type \Google\Protobuf\Duration $workflow_start_delay
      *           Time to wait before dispatching the first workflow task. Cannot be used with `cron_schedule`.
      *           Note that the signal will be delivered with the first workflow task. If the workflow gets
-     *           another SignalWithStartWorkflow before the delay and `skip_generate_workflow_task` is false
-     *           or not set, a workflow task will be dispatched immediately and the rest of the delay period
-     *           will be ignored, even if that request also had a delay. Signal via SignalWorkflowExecution
-     *           will not unblock the workflow.
-     *     @type bool $skip_generate_workflow_task
-     *           Indicates that a new workflow task should not be generated when this signal is received.
+     *           another SignalWithStartWorkflow before the delay a workflow task will be dispatched immediately
+     *           and the rest of the delay period will be ignored, even if that request also had a delay.
+     *           Signal via SignalWorkflowExecution will not unblock the workflow.
      *     @type \Temporal\Api\Sdk\V1\UserMetadata $user_metadata
      *           Metadata on the workflow if it is started. This is carried over to the WorkflowExecutionInfo
      *           for use by user interfaces to display the fixed as-of-start summary and details of the
      *           workflow.
+     *     @type array<\Temporal\Api\Common\V1\Link>|\Google\Protobuf\Internal\RepeatedField $links
+     *           Links to be associated with the WorkflowExecutionStarted and WorkflowExecutionSignaled events.
+     *     @type \Temporal\Api\Workflow\V1\VersioningOverride $versioning_override
+     *           If set, takes precedence over the Versioning Behavior sent by the SDK on Workflow Task completion.
+     *           To unset the override after the workflow is running, use UpdateWorkflowExecutionOptions.
+     *     @type \Temporal\Api\Common\V1\Priority $priority
+     *           Priority metadata
      * }
      */
     public function __construct($data = NULL) {
@@ -837,10 +853,9 @@ class SignalWithStartWorkflowExecutionRequest extends \Google\Protobuf\Internal\
     /**
      * Time to wait before dispatching the first workflow task. Cannot be used with `cron_schedule`.
      * Note that the signal will be delivered with the first workflow task. If the workflow gets
-     * another SignalWithStartWorkflow before the delay and `skip_generate_workflow_task` is false
-     * or not set, a workflow task will be dispatched immediately and the rest of the delay period
-     * will be ignored, even if that request also had a delay. Signal via SignalWorkflowExecution
-     * will not unblock the workflow.
+     * another SignalWithStartWorkflow before the delay a workflow task will be dispatched immediately
+     * and the rest of the delay period will be ignored, even if that request also had a delay.
+     * Signal via SignalWorkflowExecution will not unblock the workflow.
      *
      * Generated from protobuf field <code>.google.protobuf.Duration workflow_start_delay = 20;</code>
      * @return \Google\Protobuf\Duration|null
@@ -863,10 +878,9 @@ class SignalWithStartWorkflowExecutionRequest extends \Google\Protobuf\Internal\
     /**
      * Time to wait before dispatching the first workflow task. Cannot be used with `cron_schedule`.
      * Note that the signal will be delivered with the first workflow task. If the workflow gets
-     * another SignalWithStartWorkflow before the delay and `skip_generate_workflow_task` is false
-     * or not set, a workflow task will be dispatched immediately and the rest of the delay period
-     * will be ignored, even if that request also had a delay. Signal via SignalWorkflowExecution
-     * will not unblock the workflow.
+     * another SignalWithStartWorkflow before the delay a workflow task will be dispatched immediately
+     * and the rest of the delay period will be ignored, even if that request also had a delay.
+     * Signal via SignalWorkflowExecution will not unblock the workflow.
      *
      * Generated from protobuf field <code>.google.protobuf.Duration workflow_start_delay = 20;</code>
      * @param \Google\Protobuf\Duration $var
@@ -876,32 +890,6 @@ class SignalWithStartWorkflowExecutionRequest extends \Google\Protobuf\Internal\
     {
         GPBUtil::checkMessage($var, \Google\Protobuf\Duration::class);
         $this->workflow_start_delay = $var;
-
-        return $this;
-    }
-
-    /**
-     * Indicates that a new workflow task should not be generated when this signal is received.
-     *
-     * Generated from protobuf field <code>bool skip_generate_workflow_task = 21;</code>
-     * @return bool
-     */
-    public function getSkipGenerateWorkflowTask()
-    {
-        return $this->skip_generate_workflow_task;
-    }
-
-    /**
-     * Indicates that a new workflow task should not be generated when this signal is received.
-     *
-     * Generated from protobuf field <code>bool skip_generate_workflow_task = 21;</code>
-     * @param bool $var
-     * @return $this
-     */
-    public function setSkipGenerateWorkflowTask($var)
-    {
-        GPBUtil::checkBool($var);
-        $this->skip_generate_workflow_task = $var;
 
         return $this;
     }
@@ -942,6 +930,106 @@ class SignalWithStartWorkflowExecutionRequest extends \Google\Protobuf\Internal\
     {
         GPBUtil::checkMessage($var, \Temporal\Api\Sdk\V1\UserMetadata::class);
         $this->user_metadata = $var;
+
+        return $this;
+    }
+
+    /**
+     * Links to be associated with the WorkflowExecutionStarted and WorkflowExecutionSignaled events.
+     *
+     * Generated from protobuf field <code>repeated .temporal.api.common.v1.Link links = 24;</code>
+     * @return \Google\Protobuf\Internal\RepeatedField
+     */
+    public function getLinks()
+    {
+        return $this->links;
+    }
+
+    /**
+     * Links to be associated with the WorkflowExecutionStarted and WorkflowExecutionSignaled events.
+     *
+     * Generated from protobuf field <code>repeated .temporal.api.common.v1.Link links = 24;</code>
+     * @param array<\Temporal\Api\Common\V1\Link>|\Google\Protobuf\Internal\RepeatedField $var
+     * @return $this
+     */
+    public function setLinks($var)
+    {
+        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Temporal\Api\Common\V1\Link::class);
+        $this->links = $arr;
+
+        return $this;
+    }
+
+    /**
+     * If set, takes precedence over the Versioning Behavior sent by the SDK on Workflow Task completion.
+     * To unset the override after the workflow is running, use UpdateWorkflowExecutionOptions.
+     *
+     * Generated from protobuf field <code>.temporal.api.workflow.v1.VersioningOverride versioning_override = 25;</code>
+     * @return \Temporal\Api\Workflow\V1\VersioningOverride|null
+     */
+    public function getVersioningOverride()
+    {
+        return $this->versioning_override;
+    }
+
+    public function hasVersioningOverride()
+    {
+        return isset($this->versioning_override);
+    }
+
+    public function clearVersioningOverride()
+    {
+        unset($this->versioning_override);
+    }
+
+    /**
+     * If set, takes precedence over the Versioning Behavior sent by the SDK on Workflow Task completion.
+     * To unset the override after the workflow is running, use UpdateWorkflowExecutionOptions.
+     *
+     * Generated from protobuf field <code>.temporal.api.workflow.v1.VersioningOverride versioning_override = 25;</code>
+     * @param \Temporal\Api\Workflow\V1\VersioningOverride $var
+     * @return $this
+     */
+    public function setVersioningOverride($var)
+    {
+        GPBUtil::checkMessage($var, \Temporal\Api\Workflow\V1\VersioningOverride::class);
+        $this->versioning_override = $var;
+
+        return $this;
+    }
+
+    /**
+     * Priority metadata
+     *
+     * Generated from protobuf field <code>.temporal.api.common.v1.Priority priority = 26;</code>
+     * @return \Temporal\Api\Common\V1\Priority|null
+     */
+    public function getPriority()
+    {
+        return $this->priority;
+    }
+
+    public function hasPriority()
+    {
+        return isset($this->priority);
+    }
+
+    public function clearPriority()
+    {
+        unset($this->priority);
+    }
+
+    /**
+     * Priority metadata
+     *
+     * Generated from protobuf field <code>.temporal.api.common.v1.Priority priority = 26;</code>
+     * @param \Temporal\Api\Common\V1\Priority $var
+     * @return $this
+     */
+    public function setPriority($var)
+    {
+        GPBUtil::checkMessage($var, \Temporal\Api\Common\V1\Priority::class);
+        $this->priority = $var;
 
         return $this;
     }

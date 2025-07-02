@@ -80,6 +80,7 @@ final class WildcardPattern
      */
     public static function isDynamic(string $pattern): bool
     {
+        /** @var string $pattern `$rule` and `$replacement` always correct, so `preg_replace` always returns string */
         $pattern = preg_replace('/\\\\./', '', $pattern);
         return preg_match('/[*{?\[]/', $pattern) === 1;
     }
@@ -93,6 +94,7 @@ final class WildcardPattern
      */
     public static function quote(string $string): string
     {
+        /** @var string `$rule` and `$replacement` always correct, so `preg_replace` always returns string */
         return preg_replace('#([\\\\?*\\[\\]])#', '\\\\$1', $string);
     }
 

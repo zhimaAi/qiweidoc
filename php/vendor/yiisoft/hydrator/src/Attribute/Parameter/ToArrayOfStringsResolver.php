@@ -32,6 +32,10 @@ final class ToArrayOfStringsResolver implements ParameterAttributeResolverInterf
             );
         } else {
             $value = $this->castValueToString($resolvedValue);
+            /**
+             * @var string[] $array We assume valid regular expression is used here, so `preg_split()` always returns
+             * an array of strings.
+             */
             $array = $attribute->splitResolvedValue
                 ? preg_split('~' . $attribute->separator . '~u', $value)
                 : [$value];

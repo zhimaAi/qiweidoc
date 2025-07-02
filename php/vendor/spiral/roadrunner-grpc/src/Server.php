@@ -10,6 +10,7 @@ use Spiral\RoadRunner\GRPC\Exception\GRPCException;
 use Spiral\RoadRunner\GRPC\Exception\GRPCExceptionInterface;
 use Spiral\RoadRunner\GRPC\Exception\NotFoundException;
 use Spiral\RoadRunner\GRPC\Exception\ServiceException;
+use Spiral\RoadRunner\GRPC\Internal\CallContext;
 use Spiral\RoadRunner\GRPC\Internal\Json;
 use Spiral\RoadRunner\Payload;
 use Spiral\RoadRunner\Worker;
@@ -20,12 +21,6 @@ use Spiral\RoadRunner\WorkerInterface;
  *
  * @psalm-type ServerOptions = array{
  *  debug?: bool
- * }
- *
- * @psalm-type ContextResponse = array{
- *  service: class-string<ServiceInterface>,
- *  method:  non-empty-string,
- *  context: array<string, array<string>>
  * }
  */
 final class Server
@@ -39,8 +34,7 @@ final class Server
     public function __construct(
         private readonly InvokerInterface $invoker = new Invoker(),
         private readonly array $options = [],
-    ) {
-    }
+    ) {}
 
     /**
      * Register new GRPC service.
@@ -64,39 +58,6 @@ final class Server
     }
 
     /**
-     * @param ContextResponse $data
-     * @return array{0: string, 1: string}
-     * @throws \JsonException
-     * @throws \Throwable
-     */
-    private function tick(string $body, array $data): array
-    {
-        $context = (new Context($data['context']))
-            ->withValue(ResponseHeaders::class, new ResponseHeaders());
-
-        $response = $this->invoke($data['service'], $data['method'], $context, $body);
-
-        /** @var ResponseHeaders|null $responseHeaders */
-        $responseHeaders = $context->getValue(ResponseHeaders::class);
-        $responseHeadersString = $responseHeaders ? $responseHeaders->packHeaders() : '{}';
-
-        return [$response, $responseHeadersString];
-    }
-
-    /**
-     * @psalm-suppress InaccessibleMethod
-     */
-    private function workerSend(WorkerInterface $worker, string $body, string $headers): void
-    {
-        $worker->respond(new Payload($body, $headers));
-    }
-
-    private function workerError(WorkerInterface $worker, string $message): void
-    {
-        $worker->error($message);
-    }
-
-    /**
      * Serve GRPC over given RoadRunner worker.
      */
     public function serve(?WorkerInterface $worker = null, ?callable $finalize = null): void
@@ -111,17 +72,45 @@ final class Server
                 return;
             }
 
+            $responseHeaders = new ResponseHeaders();
+            $responseTrailers = new ResponseTrailers();
+
             try {
-                /** @var ContextResponse $context */
-                $context = Json::decode($request->header);
+                $call = CallContext::decode($request->header);
 
-                [$answerBody, $answerHeaders] = $this->tick($request->body, $context);
+                $context = new Context(\array_merge(
+                    $call->context,
+                    [
+                        ResponseHeaders::class => $responseHeaders,
+                        ResponseTrailers::class => $responseTrailers,
+                    ],
+                ));
 
-                $this->workerSend($worker, $answerBody, $answerHeaders);
+                $response = $this->invoke($call->service, $call->method, $context, $request->body);
+
+                $headers = [];
+                $responseHeaders->count() === 0 or $headers['headers'] = $responseHeaders->packHeaders();
+                $responseTrailers->count() === 0 or $headers['trailers'] = $responseTrailers->packTrailers();
+
+                $this->workerSend(
+                    worker: $worker,
+                    body: $response,
+                    headers: $headers === [] ? '{}' : Json::encode($headers),
+                );
             } catch (GRPCExceptionInterface $e) {
-                $this->workerGrpcError($worker, $e);
+                $headers = [
+                    'error' => $this->createGrpcError($e),
+                ];
+                $responseHeaders->count() === 0 or $headers['headers'] = $responseHeaders->packHeaders();
+                $responseTrailers->count() === 0 or $headers['trailers'] = $responseTrailers->packTrailers();
+
+                $this->workerSend(
+                    worker: $worker,
+                    body: '',
+                    headers: Json::encode($headers),
+                );
             } catch (\Throwable $e) {
-                $this->workerError($worker, $this->isDebugMode() ? (string)$e : $e->getMessage());
+                $this->workerError($worker, $this->isDebugMode() ? (string) $e : $e->getMessage());
             } finally {
                 if ($finalize !== null) {
                     isset($e) ? $finalize($e) : $finalize();
@@ -146,7 +135,20 @@ final class Server
         return $this->services[$service]->invoke($method, $context, $body);
     }
 
-    private function workerGrpcError(WorkerInterface $worker, GRPCExceptionInterface $e): void
+    private function workerError(WorkerInterface $worker, string $message): void
+    {
+        $worker->error($message);
+    }
+
+    /**
+     * @psalm-suppress InaccessibleMethod
+     */
+    private function workerSend(WorkerInterface $worker, string $body, string $headers): void
+    {
+        $worker->respond(new Payload($body, $headers));
+    }
+
+    private function createGrpcError(GRPCExceptionInterface $e): string
     {
         $status = new Status([
             'code' => $e->getCode(),
@@ -162,13 +164,7 @@ final class Server
             ),
         ]);
 
-        $this->workerSend(
-            $worker,
-            '',
-            Json::encode([
-                'error' => \base64_encode($status->serializeToString()),
-            ]),
-        );
+        return \base64_encode($status->serializeToString());
     }
 
     /**

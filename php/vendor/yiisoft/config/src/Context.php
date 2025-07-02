@@ -17,11 +17,11 @@ final class Context
     private string $originalGroup = '';
 
     public function __construct(
-        private string $group,
-        private string $package,
-        private int $layer,
-        private string $file,
-        private bool $isVariable,
+        private readonly string $group,
+        private readonly string $package,
+        private readonly int $layer,
+        private readonly string $file,
+        private readonly bool $isVariable,
     ) {
     }
 

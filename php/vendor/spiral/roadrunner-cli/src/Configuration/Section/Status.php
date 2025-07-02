@@ -8,18 +8,18 @@ final class Status extends AbstractSection
 {
     private const NAME = 'status';
 
+    public static function getShortName(): string
+    {
+        return self::NAME;
+    }
+
     public function render(): array
     {
         return [
             self::NAME => [
                 'address' => '127.0.0.1:2114',
-                'unavailable_status_code' => 503
-            ]
+                'unavailable_status_code' => 503,
+            ],
         ];
-    }
-
-    public static function getShortName(): string
-    {
-        return self::NAME;
     }
 }

@@ -10,6 +10,7 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
+ * [cleanup-wv-pre-release]
  * Deprecated. Use `DescribeTaskQueue`.
  *
  * Generated from protobuf message <code>temporal.api.workflowservice.v1.GetWorkerTaskReachabilityRequest</code>

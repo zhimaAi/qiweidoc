@@ -1,4 +1,11 @@
-# Yii FileCache Change Log
+# Yii Cache Library - File Handler Change Log
+
+## 3.2.0 January 13, 2025
+
+- Enh #88: Don't create cache directory on `FileCache` initialization (@vjik)
+- Bug #85: Clear stat cache in `FileCache::set()` (@samdark)
+- Bug #86: Handle race condition when creating cache directory (@vjik)
+- Bug #88: Set correct permissions for nested directories (@vjik)
 
 ## 3.1.0 October 09, 2023
 

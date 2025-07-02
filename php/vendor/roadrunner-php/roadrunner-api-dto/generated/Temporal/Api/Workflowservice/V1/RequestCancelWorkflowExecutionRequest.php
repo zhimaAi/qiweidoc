@@ -48,6 +48,12 @@ class RequestCancelWorkflowExecutionRequest extends \Google\Protobuf\Internal\Me
      * Generated from protobuf field <code>string reason = 6;</code>
      */
     protected $reason = '';
+    /**
+     * Links to be associated with the WorkflowExecutionCanceled event.
+     *
+     * Generated from protobuf field <code>repeated .temporal.api.common.v1.Link links = 7;</code>
+     */
+    private $links;
 
     /**
      * Constructor.
@@ -67,6 +73,8 @@ class RequestCancelWorkflowExecutionRequest extends \Google\Protobuf\Internal\Me
      *           execution chain as this id.
      *     @type string $reason
      *           Reason for requesting the cancellation
+     *     @type array<\Temporal\Api\Common\V1\Link>|\Google\Protobuf\Internal\RepeatedField $links
+     *           Links to be associated with the WorkflowExecutionCanceled event.
      * }
      */
     public function __construct($data = NULL) {
@@ -232,6 +240,32 @@ class RequestCancelWorkflowExecutionRequest extends \Google\Protobuf\Internal\Me
     {
         GPBUtil::checkString($var, True);
         $this->reason = $var;
+
+        return $this;
+    }
+
+    /**
+     * Links to be associated with the WorkflowExecutionCanceled event.
+     *
+     * Generated from protobuf field <code>repeated .temporal.api.common.v1.Link links = 7;</code>
+     * @return \Google\Protobuf\Internal\RepeatedField
+     */
+    public function getLinks()
+    {
+        return $this->links;
+    }
+
+    /**
+     * Links to be associated with the WorkflowExecutionCanceled event.
+     *
+     * Generated from protobuf field <code>repeated .temporal.api.common.v1.Link links = 7;</code>
+     * @param array<\Temporal\Api\Common\V1\Link>|\Google\Protobuf\Internal\RepeatedField $var
+     * @return $this
+     */
+    public function setLinks($var)
+    {
+        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Temporal\Api\Common\V1\Link::class);
+        $this->links = $arr;
 
         return $this;
     }

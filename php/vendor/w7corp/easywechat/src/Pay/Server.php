@@ -6,22 +6,24 @@ use Closure;
 use EasyWeChat\Kernel\Contracts\Server as ServerInterface;
 use EasyWeChat\Kernel\Exceptions\InvalidArgumentException;
 use EasyWeChat\Kernel\Exceptions\RuntimeException;
-use EasyWeChat\Kernel\HttpClient\RequestUtil;
 use EasyWeChat\Kernel\ServerResponse;
 use EasyWeChat\Kernel\Support\AesEcb;
 use EasyWeChat\Kernel\Support\AesGcm;
 use EasyWeChat\Kernel\Support\Xml;
 use EasyWeChat\Kernel\Traits\InteractWithHandlers;
+use EasyWeChat\Kernel\Traits\InteractWithServerRequest;
 use EasyWeChat\Pay\Contracts\Merchant as MerchantInterface;
 use Exception;
 use Nyholm\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Throwable;
 
+use function array_key_exists;
 use function is_array;
+use function is_string;
 use function json_decode;
 use function json_encode;
+use function str_contains;
 use function strval;
 
 /**
@@ -31,17 +33,13 @@ use function strval;
 class Server implements ServerInterface
 {
     use InteractWithHandlers;
+    use InteractWithServerRequest;
 
-    protected ServerRequestInterface $request;
-
-    /**
-     * @throws Throwable
-     */
     public function __construct(
         protected MerchantInterface $merchant,
         ?ServerRequestInterface $request,
     ) {
-        $this->request = $request ?? RequestUtil::createDefaultServerRequest();
+        $this->request = $request;
     }
 
     /**
@@ -113,11 +111,11 @@ class Server implements ServerInterface
      */
     public function getRequestMessage(?ServerRequestInterface $request = null): \EasyWeChat\Kernel\Message|Message
     {
-        $originContent = (string) ($request ?? $this->request)->getBody();
+        $originContent = (string) ($request ?? $this->getRequest())->getBody();
 
         // 微信支付的回调数据回调，偶尔是 XML https://github.com/w7corp/easywechat/issues/2737
-        // PS: 这帮傻逼，真的是该死啊
-        $isXml = str_starts_with($originContent, '<xml');
+        $contentType = ($request ?? $this->getRequest())->getHeaderLine('content-type');
+        $isXml = (str_contains($contentType, 'text/xml') || str_contains($contentType, 'application/xml')) && str_starts_with($originContent, '<xml');
         $attributes = $isXml ? $this->decodeXmlMessage($originContent) : $this->decodeJsonMessage($originContent);
 
         return new Message($attributes, $originContent);
@@ -145,6 +143,20 @@ class Server implements ServerInterface
             $attributes = Xml::parse(AesEcb::decrypt($attributes['req_info'], md5($key), iv: ''));
         }
 
+        if (
+            is_array($attributes)
+            && array_key_exists('event_ciphertext', $attributes) && is_string($attributes['event_ciphertext'])
+            && array_key_exists('event_nonce', $attributes) && is_string($attributes['event_nonce'])
+            && array_key_exists('event_associated_data', $attributes) && is_string($attributes['event_associated_data'])
+        ) {
+            $attributes += Xml::parse(AesGcm::decrypt(
+                $attributes['event_ciphertext'],
+                $this->merchant->getSecretKey(),
+                $attributes['event_nonce'],
+                $attributes['event_associated_data'] // maybe empty string
+            ));
+        }
+
         if (! is_array($attributes)) {
             throw new RuntimeException('Failed to decrypt request message.');
         }
@@ -160,11 +172,11 @@ class Server implements ServerInterface
     {
         $attributes = json_decode($contents, true);
 
-        if (! is_array($attributes)) {
+        if (! (is_array($attributes) && is_array($attributes['resource']))) {
             throw new RuntimeException('Invalid request body.');
         }
 
-        if (empty($attributes['resource']['ciphertext'])) {
+        if (empty($attributes['resource']['ciphertext'] ?? null)) {
             throw new RuntimeException('Invalid request.');
         }
 

@@ -10,6 +10,8 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
+ * [cleanup-wv-pre-release]
+ *
  * Generated from protobuf message <code>temporal.api.workflowservice.v1.GetWorkerBuildIdCompatibilityResponse</code>
  */
 class GetWorkerBuildIdCompatibilityResponse extends \Google\Protobuf\Internal\Message

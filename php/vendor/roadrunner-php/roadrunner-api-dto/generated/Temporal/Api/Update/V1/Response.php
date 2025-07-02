@@ -10,7 +10,7 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * An update protocol message indicating that a workflow execution update has
+ * An Update protocol message indicating that a Workflow Update has
  * completed with the contained outcome.
  *
  * Generated from protobuf message <code>temporal.api.update.v1.Response</code>

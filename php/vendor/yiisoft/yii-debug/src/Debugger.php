@@ -4,144 +4,211 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\Debug;
 
-use Psr\Http\Message\ServerRequestInterface;
-use Yiisoft\Strings\WildcardPattern;
-use Yiisoft\Yii\Console\Event\ApplicationStartup;
+use LogicException;
 use Yiisoft\Yii\Debug\Collector\CollectorInterface;
+use Yiisoft\Yii\Debug\Collector\SummaryCollectorInterface;
+use Yiisoft\Yii\Debug\StartupPolicy\Collector\AllowAllCollectorPolicy;
+use Yiisoft\Yii\Debug\StartupPolicy\Collector\CollectorStartupPolicyInterface;
+use Yiisoft\Yii\Debug\StartupPolicy\Debugger\AlwaysOnDebuggerPolicy;
+use Yiisoft\Yii\Debug\StartupPolicy\Debugger\DebuggerStartupPolicyInterface;
 use Yiisoft\Yii\Debug\Storage\StorageInterface;
-use Yiisoft\Yii\Http\Event\BeforeRequest;
 
 /**
- * @psalm-type BacktraceType = list<array{file?:string,line?:int,function?:string,class?:class-string,object?:object,type?:string,args?:array}>
+ * Debugger collects data from collectors and stores it in a storage.
+ *
+ * @psalm-type TSummary = array{
+ *     id: non-empty-string,
+ *     collectors: list<non-empty-string>,
+ *     summary: array<non-empty-string, array>,
+ * }
  */
 final class Debugger
 {
-    private bool $skipCollect = false;
-    private bool $active = false;
+    /**
+     * @var CollectorInterface[] Collectors, indexed by their names.
+     *
+     * @psalm-var array<non-empty-string, CollectorInterface>
+     */
+    private readonly array $collectors;
 
     /**
-     * @param CollectorInterface[] $collectors
-     * @param string[] $ignoredRequests
-     * @param string[] $ignoredCommands
+     * @var DataNormalizer Data normalizer that prepares data for storage.
+     */
+    private readonly DataNormalizer $dataNormalizer;
+
+    /**
+     * @var non-empty-string|null ID of the current request. `null` if debugger is not active.
+     */
+    private ?string $id = null;
+
+    /**
+     * @var bool Whether debugger startup is allowed.
+     */
+    private bool $allowStart = true;
+
+    /**
+     * @param StorageInterface $storage The storage to store collected data.
+     * @param CollectorInterface[] $collectors Collectors to be used.
+     * @param DebuggerStartupPolicyInterface $debuggerStartupPolicy Policy to decide whether debugger should be started.
+     * Default {@see AlwaysOnDebuggerPolicy} that always allows to startup debugger.
+     * @param CollectorStartupPolicyInterface $collectorStartupPolicy Policy to decide whether collector should be
+     * started. Default {@see AllowAllCollectorPolicy} that always allows to use all collectors.
+     * @param array $excludedClasses List of classes to be excluded from collected data before storing.
      */
     public function __construct(
-        private readonly DebuggerIdGenerator $idGenerator,
-        private readonly StorageInterface $target,
-        private readonly array $collectors,
-        private array $ignoredRequests = [],
-        private array $ignoredCommands = [],
+        private readonly StorageInterface $storage,
+        array $collectors,
+        private readonly DebuggerStartupPolicyInterface $debuggerStartupPolicy = new AlwaysOnDebuggerPolicy(),
+        private readonly CollectorStartupPolicyInterface $collectorStartupPolicy = new AllowAllCollectorPolicy(),
+        array $excludedClasses = [],
     ) {
-        register_shutdown_function([$this, 'shutdown']);
+        $preparedCollectors = [];
+        foreach ($collectors as $collector) {
+            $preparedCollectors[$collector->getName()] = $collector;
+        }
+        $this->collectors = $preparedCollectors;
+
+        $this->dataNormalizer = new DataNormalizer($excludedClasses);
+
+        register_shutdown_function([$this, 'stop']);
     }
 
+    /**
+     * Returns whether debugger is active.
+     *
+     * @return bool Whether debugger is active.
+     */
+    public function isActive(): bool
+    {
+        return $this->id !== null;
+    }
+
+    /**
+     * Returns ID of the current request.
+     *
+     * Throws `LogicException` if debugger is not started. Use {@see isActive()} to check if debugger is active.
+     *
+     * @return string ID of the current request.
+     *
+     * @psalm-return non-empty-string
+     */
     public function getId(): string
     {
-        return $this->idGenerator->getId();
+        return $this->id ?? throw new LogicException('Debugger is not started.');
     }
 
-    public function startup(object $event): void
+    /**
+     * Starts debugger and collectors.
+     *
+     * @param object $event Event that triggered debugger startup.
+     */
+    public function start(object $event): void
     {
-        $this->active = true;
-        $this->skipCollect = false;
-
-        if ($event instanceof BeforeRequest && $this->isRequestIgnored($event->getRequest())) {
-            $this->skipCollect = true;
+        if (!$this->allowStart) {
             return;
         }
 
-        if ($event instanceof ApplicationStartup && $this->isCommandIgnored($event->commandName)) {
-            $this->skipCollect = true;
+        if (!$this->debuggerStartupPolicy->satisfies($event)) {
+            $this->allowStart = false;
+            $this->kill();
             return;
         }
 
-        $this->idGenerator->reset();
+        if ($this->isActive()) {
+            return;
+        }
+
+        /** @var non-empty-string */
+        $this->id = str_replace('.', '', uniqid('', true));
+
         foreach ($this->collectors as $collector) {
-            $this->target->addCollector($collector);
-            $collector->startup();
+            if ($this->collectorStartupPolicy->satisfies($collector, $event)) {
+                $collector->startup();
+            }
         }
     }
 
-    public function shutdown(): void
+    /**
+     * Stops the debugger for listening. Collected data will be flushed to storage.
+     */
+    public function stop(): void
     {
-        if (!$this->active) {
+        if (!$this->isActive()) {
             return;
         }
 
         try {
-            if (!$this->skipCollect) {
-                $this->target->flush();
-            }
+            $this->flush();
         } finally {
-            foreach ($this->collectors as $collector) {
-                $collector->shutdown();
-            }
-            $this->active = false;
+            $this->deactivate();
         }
     }
 
-    public function stop(): void
+    /**
+     * Stops the debugger from listening. Collected data will not be flushed to storage.
+     */
+    public function kill(): void
     {
-        if (!$this->active) {
+        if (!$this->isActive()) {
             return;
         }
 
+        $this->deactivate();
+    }
+
+    /**
+     * Collects data from collectors and stores it in a storage.
+     */
+    private function flush(): void
+    {
+        $collectedData = array_map(
+            static fn (CollectorInterface $collector) => $collector->getCollected(),
+            $this->collectors
+        );
+
+        /** @var array[] $data */
+        [$data, $objectsMap] = $this->dataNormalizer->prepareDataAndObjectsMap($collectedData, 30);
+
+        /** @var array $summary */
+        $summary = $this->dataNormalizer->prepareData($this->collectSummaryData(), 30);
+
+        $this->storage->write($this->getId(), $data, $objectsMap, $summary);
+    }
+
+    /**
+     * Stops debugger and collectors.
+     */
+    private function deactivate(): void
+    {
         foreach ($this->collectors as $collector) {
             $collector->shutdown();
         }
-        $this->active = false;
-    }
-
-    private function isRequestIgnored(ServerRequestInterface $request): bool
-    {
-        if ($request->hasHeader('X-Debug-Ignore') && $request->getHeaderLine('X-Debug-Ignore') === 'true') {
-            return true;
-        }
-        $path = $request->getUri()->getPath();
-        foreach ($this->ignoredRequests as $pattern) {
-            if ((new WildcardPattern($pattern))->match($path)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private function isCommandIgnored(?string $command): bool
-    {
-        if ($command === null || $command === '') {
-            return true;
-        }
-        if (getenv('YII_DEBUG_IGNORE') === 'true') {
-            return true;
-        }
-        foreach ($this->ignoredCommands as $pattern) {
-            if ((new WildcardPattern($pattern))->match($command)) {
-                return true;
-            }
-        }
-        return false;
+        $this->id = null;
     }
 
     /**
-     * @param string[] $ignoredRequests Patterns for ignored request URLs.
+     * Collects summary data of current request. Structure of the summary data is:
      *
-     * @see WildcardPattern
+     * - `id` - ID of the current request,
+     * - `collectors` - list of collector names used in the current request,
+     * - `summary` - summary data collected by collectors indexed by collector names.
+     *
+     * @psalm-return TSummary
      */
-    public function withIgnoredRequests(array $ignoredRequests): self
+    private function collectSummaryData(): array
     {
-        $new = clone $this;
-        $new->ignoredRequests = $ignoredRequests;
-        return $new;
-    }
+        $summaryData = [
+            'id' => $this->getId(),
+            'collectors' => array_keys($this->collectors),
+            'summary' => [],
+        ];
 
-    /**
-     * @param string[] $ignoredCommands Patterns for ignored commands names.
-     *
-     * @see WildcardPattern
-     */
-    public function withIgnoredCommands(array $ignoredCommands): self
-    {
-        $new = clone $this;
-        $new->ignoredCommands = $ignoredCommands;
-        return $new;
+        foreach ($this->collectors as $collector) {
+            if ($collector instanceof SummaryCollectorInterface) {
+                $summaryData['summary'][$collector->getName()] = $collector->getSummary();
+            }
+        }
+
+        return $summaryData;
     }
 }

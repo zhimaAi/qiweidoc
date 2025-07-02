@@ -97,6 +97,13 @@ class StartChildWorkflowExecutionCommandAttributes extends \Google\Protobuf\Inte
      * Generated from protobuf field <code>bool inherit_build_id = 17;</code>
      */
     protected $inherit_build_id = false;
+    /**
+     * Priority metadata. If this message is not present, or any fields are not
+     * present, they inherit the values from the workflow.
+     *
+     * Generated from protobuf field <code>.temporal.api.common.v1.Priority priority = 18;</code>
+     */
+    protected $priority = null;
 
     /**
      * Constructor.
@@ -129,6 +136,9 @@ class StartChildWorkflowExecutionCommandAttributes extends \Google\Protobuf\Inte
      *     @type bool $inherit_build_id
      *           If this is set, the child workflow inherits the Build ID of the parent. Otherwise, the assignment
      *           rules of the child's Task Queue will be used to independently assign a Build ID to it.
+     *     @type \Temporal\Api\Common\V1\Priority $priority
+     *           Priority metadata. If this message is not present, or any fields are not
+     *           present, they inherit the values from the workflow.
      * }
      */
     public function __construct($data = NULL) {
@@ -636,6 +646,44 @@ class StartChildWorkflowExecutionCommandAttributes extends \Google\Protobuf\Inte
     {
         GPBUtil::checkBool($var);
         $this->inherit_build_id = $var;
+
+        return $this;
+    }
+
+    /**
+     * Priority metadata. If this message is not present, or any fields are not
+     * present, they inherit the values from the workflow.
+     *
+     * Generated from protobuf field <code>.temporal.api.common.v1.Priority priority = 18;</code>
+     * @return \Temporal\Api\Common\V1\Priority|null
+     */
+    public function getPriority()
+    {
+        return $this->priority;
+    }
+
+    public function hasPriority()
+    {
+        return isset($this->priority);
+    }
+
+    public function clearPriority()
+    {
+        unset($this->priority);
+    }
+
+    /**
+     * Priority metadata. If this message is not present, or any fields are not
+     * present, they inherit the values from the workflow.
+     *
+     * Generated from protobuf field <code>.temporal.api.common.v1.Priority priority = 18;</code>
+     * @param \Temporal\Api\Common\V1\Priority $var
+     * @return $this
+     */
+    public function setPriority($var)
+    {
+        GPBUtil::checkMessage($var, \Temporal\Api\Common\V1\Priority::class);
+        $this->priority = $var;
 
         return $this;
     }

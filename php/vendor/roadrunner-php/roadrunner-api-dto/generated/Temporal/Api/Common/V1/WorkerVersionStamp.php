@@ -10,6 +10,7 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
+ * Deprecated. This message is replaced with `Deployment` and `VersioningBehavior`.
  * Identifies the version(s) of a worker that processed a task
  *
  * Generated from protobuf message <code>temporal.api.common.v1.WorkerVersionStamp</code>

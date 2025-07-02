@@ -10,6 +10,8 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
+ * Deprecated: Use with `ListWorkflowExecutions`.
+ *
  * Generated from protobuf message <code>temporal.api.workflowservice.v1.ScanWorkflowExecutionsRequest</code>
  */
 class ScanWorkflowExecutionsRequest extends \Google\Protobuf\Internal\Message

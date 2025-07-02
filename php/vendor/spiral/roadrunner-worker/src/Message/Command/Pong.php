@@ -10,6 +10,4 @@ use Spiral\RoadRunner\Payload;
 /**
  * @psalm-immutable
  */
-final class Pong extends Payload implements SkipMessage
-{
-}
+final class Pong extends Payload implements SkipMessage {}

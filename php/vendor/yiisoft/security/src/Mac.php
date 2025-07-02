@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Security;
 
+use SensitiveParameter;
 use Yiisoft\Strings\StringHelper;
 
 /**
@@ -14,20 +15,13 @@ use Yiisoft\Strings\StringHelper;
 final class Mac
 {
     /**
-     * @var string Hash algorithm for message authentication. Recommend sha256, sha384 or sha512.
-     *
-     * @see http://php.net/manual/en/function.hash-algos.php
-     */
-    private string $algorithm;
-
-    /**
      * @param string $algorithm Hash algorithm for message authentication. Recommend sha256, sha384 or sha512.
      *
-     * @see http://php.net/manual/en/function.hash-algos.php
+     * @see https://php.net/manual/en/function.hash-algos.php
      */
-    public function __construct(string $algorithm = 'sha256')
-    {
-        $this->algorithm = $algorithm;
+    public function __construct(
+        private readonly string $algorithm = 'sha256'
+    ) {
     }
 
     /**
@@ -51,8 +45,12 @@ final class Mac
      * @see hkdf()
      * @see pbkdf2()
      */
-    public function sign(string $data, string $key, bool $rawHash = false): string
-    {
+    public function sign(
+        string $data,
+        #[SensitiveParameter]
+        string $key,
+        bool $rawHash = false
+    ): string {
         $hash = hash_hmac($this->algorithm, $data, $key, $rawHash);
         if (!$hash) {
             throw new \RuntimeException("Failed to generate HMAC with hash algorithm: {$this->algorithm}.");
@@ -80,8 +78,12 @@ final class Mac
      *
      * @see hash()
      */
-    public function getMessage(string $data, string $key, bool $rawHash = false): string
-    {
+    public function getMessage(
+        string $data,
+        #[SensitiveParameter]
+        string $key,
+        bool $rawHash = false
+    ): string {
         $test = hash_hmac($this->algorithm, '', '', $rawHash);
         if (!$test) {
             throw new \RuntimeException("Failed to generate HMAC with hash algorithm: {$this->algorithm}.");

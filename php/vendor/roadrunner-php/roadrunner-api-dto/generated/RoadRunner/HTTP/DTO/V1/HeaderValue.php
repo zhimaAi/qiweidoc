@@ -15,7 +15,7 @@ use Google\Protobuf\Internal\GPBUtil;
 class HeaderValue extends \Google\Protobuf\Internal\Message
 {
     /**
-     * Generated from protobuf field <code>repeated string value = 1;</code>
+     * Generated from protobuf field <code>repeated bytes value = 1;</code>
      */
     private $value;
 
@@ -34,7 +34,7 @@ class HeaderValue extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>repeated string value = 1;</code>
+     * Generated from protobuf field <code>repeated bytes value = 1;</code>
      * @return \Google\Protobuf\Internal\RepeatedField
      */
     public function getValue()
@@ -43,13 +43,13 @@ class HeaderValue extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>repeated string value = 1;</code>
+     * Generated from protobuf field <code>repeated bytes value = 1;</code>
      * @param array<string>|\Google\Protobuf\Internal\RepeatedField $var
      * @return $this
      */
     public function setValue($var)
     {
-        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::STRING);
+        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::BYTES);
         $this->value = $arr;
 
         return $this;

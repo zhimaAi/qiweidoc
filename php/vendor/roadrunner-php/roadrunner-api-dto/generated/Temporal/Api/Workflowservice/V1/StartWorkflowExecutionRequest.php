@@ -152,6 +152,34 @@ class StartWorkflowExecutionRequest extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>.temporal.api.sdk.v1.UserMetadata user_metadata = 23;</code>
      */
     protected $user_metadata = null;
+    /**
+     * Links to be associated with the workflow.
+     *
+     * Generated from protobuf field <code>repeated .temporal.api.common.v1.Link links = 24;</code>
+     */
+    private $links;
+    /**
+     * If set, takes precedence over the Versioning Behavior sent by the SDK on Workflow Task completion.
+     * To unset the override after the workflow is running, use UpdateWorkflowExecutionOptions.
+     *
+     * Generated from protobuf field <code>.temporal.api.workflow.v1.VersioningOverride versioning_override = 25;</code>
+     */
+    protected $versioning_override = null;
+    /**
+     * Defines actions to be done to the existing running workflow when the conflict policy
+     * WORKFLOW_ID_CONFLICT_POLICY_USE_EXISTING is used. If not set (ie., nil value) or set to a
+     * empty object (ie., all options with default value), it won't do anything to the existing
+     * running workflow. If set, it will add a history event to the running workflow.
+     *
+     * Generated from protobuf field <code>.temporal.api.workflow.v1.OnConflictOptions on_conflict_options = 26;</code>
+     */
+    protected $on_conflict_options = null;
+    /**
+     * Priority metadata
+     *
+     * Generated from protobuf field <code>.temporal.api.common.v1.Priority priority = 27;</code>
+     */
+    protected $priority = null;
 
     /**
      * Constructor.
@@ -213,6 +241,18 @@ class StartWorkflowExecutionRequest extends \Google\Protobuf\Internal\Message
      *           Metadata on the workflow if it is started. This is carried over to the WorkflowExecutionInfo
      *           for use by user interfaces to display the fixed as-of-start summary and details of the
      *           workflow.
+     *     @type array<\Temporal\Api\Common\V1\Link>|\Google\Protobuf\Internal\RepeatedField $links
+     *           Links to be associated with the workflow.
+     *     @type \Temporal\Api\Workflow\V1\VersioningOverride $versioning_override
+     *           If set, takes precedence over the Versioning Behavior sent by the SDK on Workflow Task completion.
+     *           To unset the override after the workflow is running, use UpdateWorkflowExecutionOptions.
+     *     @type \Temporal\Api\Workflow\V1\OnConflictOptions $on_conflict_options
+     *           Defines actions to be done to the existing running workflow when the conflict policy
+     *           WORKFLOW_ID_CONFLICT_POLICY_USE_EXISTING is used. If not set (ie., nil value) or set to a
+     *           empty object (ie., all options with default value), it won't do anything to the existing
+     *           running workflow. If set, it will add a history event to the running workflow.
+     *     @type \Temporal\Api\Common\V1\Priority $priority
+     *           Priority metadata
      * }
      */
     public function __construct($data = NULL) {
@@ -954,6 +994,148 @@ class StartWorkflowExecutionRequest extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Temporal\Api\Sdk\V1\UserMetadata::class);
         $this->user_metadata = $var;
+
+        return $this;
+    }
+
+    /**
+     * Links to be associated with the workflow.
+     *
+     * Generated from protobuf field <code>repeated .temporal.api.common.v1.Link links = 24;</code>
+     * @return \Google\Protobuf\Internal\RepeatedField
+     */
+    public function getLinks()
+    {
+        return $this->links;
+    }
+
+    /**
+     * Links to be associated with the workflow.
+     *
+     * Generated from protobuf field <code>repeated .temporal.api.common.v1.Link links = 24;</code>
+     * @param array<\Temporal\Api\Common\V1\Link>|\Google\Protobuf\Internal\RepeatedField $var
+     * @return $this
+     */
+    public function setLinks($var)
+    {
+        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Temporal\Api\Common\V1\Link::class);
+        $this->links = $arr;
+
+        return $this;
+    }
+
+    /**
+     * If set, takes precedence over the Versioning Behavior sent by the SDK on Workflow Task completion.
+     * To unset the override after the workflow is running, use UpdateWorkflowExecutionOptions.
+     *
+     * Generated from protobuf field <code>.temporal.api.workflow.v1.VersioningOverride versioning_override = 25;</code>
+     * @return \Temporal\Api\Workflow\V1\VersioningOverride|null
+     */
+    public function getVersioningOverride()
+    {
+        return $this->versioning_override;
+    }
+
+    public function hasVersioningOverride()
+    {
+        return isset($this->versioning_override);
+    }
+
+    public function clearVersioningOverride()
+    {
+        unset($this->versioning_override);
+    }
+
+    /**
+     * If set, takes precedence over the Versioning Behavior sent by the SDK on Workflow Task completion.
+     * To unset the override after the workflow is running, use UpdateWorkflowExecutionOptions.
+     *
+     * Generated from protobuf field <code>.temporal.api.workflow.v1.VersioningOverride versioning_override = 25;</code>
+     * @param \Temporal\Api\Workflow\V1\VersioningOverride $var
+     * @return $this
+     */
+    public function setVersioningOverride($var)
+    {
+        GPBUtil::checkMessage($var, \Temporal\Api\Workflow\V1\VersioningOverride::class);
+        $this->versioning_override = $var;
+
+        return $this;
+    }
+
+    /**
+     * Defines actions to be done to the existing running workflow when the conflict policy
+     * WORKFLOW_ID_CONFLICT_POLICY_USE_EXISTING is used. If not set (ie., nil value) or set to a
+     * empty object (ie., all options with default value), it won't do anything to the existing
+     * running workflow. If set, it will add a history event to the running workflow.
+     *
+     * Generated from protobuf field <code>.temporal.api.workflow.v1.OnConflictOptions on_conflict_options = 26;</code>
+     * @return \Temporal\Api\Workflow\V1\OnConflictOptions|null
+     */
+    public function getOnConflictOptions()
+    {
+        return $this->on_conflict_options;
+    }
+
+    public function hasOnConflictOptions()
+    {
+        return isset($this->on_conflict_options);
+    }
+
+    public function clearOnConflictOptions()
+    {
+        unset($this->on_conflict_options);
+    }
+
+    /**
+     * Defines actions to be done to the existing running workflow when the conflict policy
+     * WORKFLOW_ID_CONFLICT_POLICY_USE_EXISTING is used. If not set (ie., nil value) or set to a
+     * empty object (ie., all options with default value), it won't do anything to the existing
+     * running workflow. If set, it will add a history event to the running workflow.
+     *
+     * Generated from protobuf field <code>.temporal.api.workflow.v1.OnConflictOptions on_conflict_options = 26;</code>
+     * @param \Temporal\Api\Workflow\V1\OnConflictOptions $var
+     * @return $this
+     */
+    public function setOnConflictOptions($var)
+    {
+        GPBUtil::checkMessage($var, \Temporal\Api\Workflow\V1\OnConflictOptions::class);
+        $this->on_conflict_options = $var;
+
+        return $this;
+    }
+
+    /**
+     * Priority metadata
+     *
+     * Generated from protobuf field <code>.temporal.api.common.v1.Priority priority = 27;</code>
+     * @return \Temporal\Api\Common\V1\Priority|null
+     */
+    public function getPriority()
+    {
+        return $this->priority;
+    }
+
+    public function hasPriority()
+    {
+        return isset($this->priority);
+    }
+
+    public function clearPriority()
+    {
+        unset($this->priority);
+    }
+
+    /**
+     * Priority metadata
+     *
+     * Generated from protobuf field <code>.temporal.api.common.v1.Priority priority = 27;</code>
+     * @param \Temporal\Api\Common\V1\Priority $var
+     * @return $this
+     */
+    public function setPriority($var)
+    {
+        GPBUtil::checkMessage($var, \Temporal\Api\Common\V1\Priority::class);
+        $this->priority = $var;
 
         return $this;
     }

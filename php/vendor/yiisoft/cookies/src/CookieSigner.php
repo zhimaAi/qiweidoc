@@ -75,7 +75,15 @@ final class CookieSigner
         }
 
         try {
+            /**
+             * @psalm-suppress PossiblyFalseArgument Length of the cookie value is checked in the {@see isEncrypted()}
+             * method and it is greater than 32, so `substr()` never returns false. This is actual for PHP 7.4 only.
+             */
             $value = $this->mac->getMessage(substr($cookie->getValue(), 32), $this->key);
+            /**
+             * @psalm-suppress PossiblyFalseArgument Minimal length of value is 32, so `substr()` never returns false.
+             * This is actual for PHP 7.4 only.
+             */
             return $cookie->withValue(substr($value, 32));
         } catch (DataIsTamperedException $e) {
             throw new RuntimeException("The \"{$cookie->getName()}\" cookie value was tampered with.");

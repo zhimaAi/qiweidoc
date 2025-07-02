@@ -18,35 +18,11 @@ use Symfony\Component\Console\Style\StyleInterface;
 
 class OperatingSystemOption extends Option
 {
-    /**
-     * @param Command $command
-     * @param string $name
-     * @param string $short
-     */
     public function __construct(Command $command, string $name = 'os', string $short = 'o')
     {
         parent::__construct($command, $name, $short);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function getDescription(): string
-    {
-        return 'Required operating system (one of: ' . $this->choices() . ')';
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function default(): string
-    {
-        return OperatingSystem::createFromGlobals();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function get(InputInterface $input, StyleInterface $io): string
     {
         $os = parent::get($input, $io);
@@ -59,9 +35,16 @@ class OperatingSystemOption extends Option
         return $os;
     }
 
-    /**
-     * @return string
-     */
+    protected function getDescription(): string
+    {
+        return 'Required operating system (one of: ' . $this->choices() . ')';
+    }
+
+    protected function default(): string
+    {
+        return OperatingSystem::createFromGlobals();
+    }
+
     private function choices(): string
     {
         return \implode(', ', OperatingSystem::all());

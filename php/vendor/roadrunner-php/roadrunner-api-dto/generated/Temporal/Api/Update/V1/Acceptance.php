@@ -10,7 +10,7 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * An update protocol message indicating that a workflow execution update has
+ * An Update protocol message indicating that a Workflow Update has
  * been accepted (i.e. passed the worker-side validation phase).
  *
  * Generated from protobuf message <code>temporal.api.update.v1.Acceptance</code>

@@ -50,6 +50,12 @@ class NexusOperationCancellationState
      * Generated from protobuf enum <code>NEXUS_OPERATION_CANCELLATION_STATE_TIMED_OUT = 5;</code>
      */
     const NEXUS_OPERATION_CANCELLATION_STATE_TIMED_OUT = 5;
+    /**
+     * Cancellation request is blocked (eg: by circuit breaker).
+     *
+     * Generated from protobuf enum <code>NEXUS_OPERATION_CANCELLATION_STATE_BLOCKED = 6;</code>
+     */
+    const NEXUS_OPERATION_CANCELLATION_STATE_BLOCKED = 6;
 
     private static $valueToName = [
         self::NEXUS_OPERATION_CANCELLATION_STATE_UNSPECIFIED => 'NEXUS_OPERATION_CANCELLATION_STATE_UNSPECIFIED',
@@ -58,6 +64,7 @@ class NexusOperationCancellationState
         self::NEXUS_OPERATION_CANCELLATION_STATE_SUCCEEDED => 'NEXUS_OPERATION_CANCELLATION_STATE_SUCCEEDED',
         self::NEXUS_OPERATION_CANCELLATION_STATE_FAILED => 'NEXUS_OPERATION_CANCELLATION_STATE_FAILED',
         self::NEXUS_OPERATION_CANCELLATION_STATE_TIMED_OUT => 'NEXUS_OPERATION_CANCELLATION_STATE_TIMED_OUT',
+        self::NEXUS_OPERATION_CANCELLATION_STATE_BLOCKED => 'NEXUS_OPERATION_CANCELLATION_STATE_BLOCKED',
     ];
 
     public static function name($value)

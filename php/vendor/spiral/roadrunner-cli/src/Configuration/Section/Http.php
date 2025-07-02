@@ -8,6 +8,11 @@ final class Http extends AbstractSection
 {
     private const NAME = 'http';
 
+    public static function getShortName(): string
+    {
+        return self::NAME;
+    }
+
     public function render(): array
     {
         return [
@@ -15,7 +20,7 @@ final class Http extends AbstractSection
                 'address' => '0.0.0.0:8080',
                 'middleware' => [
                     'gzip',
-                    'static'
+                    'static',
                 ],
                 'static' => [
                     'dir' => 'public',
@@ -24,22 +29,17 @@ final class Http extends AbstractSection
                 'pool' => [
                     'num_workers' => 1,
                     'supervisor' => [
-                        'max_worker_memory' => 100
-                    ]
-                ]
-            ]
+                        'max_worker_memory' => 100,
+                    ],
+                ],
+            ],
         ];
     }
 
     public function getRequired(): array
     {
         return [
-            Server::class
+            Server::class,
         ];
-    }
-
-    public static function getShortName(): string
-    {
-        return self::NAME;
     }
 }

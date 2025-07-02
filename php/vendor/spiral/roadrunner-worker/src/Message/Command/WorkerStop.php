@@ -10,6 +10,4 @@ use Spiral\RoadRunner\Payload;
 /**
  * @psalm-immutable
  */
-final class WorkerStop extends Payload implements ControlMessage
-{
-}
+final class WorkerStop extends Payload implements ControlMessage {}

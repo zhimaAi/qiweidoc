@@ -12,6 +12,7 @@ use EasyWeChat\Kernel\Traits\InteractWithConfig;
 use EasyWeChat\Kernel\Traits\InteractWithHttpClient;
 use EasyWeChat\Kernel\Traits\InteractWithServerRequest;
 use EasyWeChat\Pay\Contracts\Validator as ValidatorInterface;
+use Psr\Log\LoggerAwareTrait;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class Application implements \EasyWeChat\Pay\Contracts\Application
@@ -19,6 +20,7 @@ class Application implements \EasyWeChat\Pay\Contracts\Application
     use InteractWithConfig;
     use InteractWithHttpClient;
     use InteractWithServerRequest;
+    use LoggerAwareTrait;
 
     protected ?ServerInterface $server = null;
 
@@ -117,7 +119,7 @@ class Application implements \EasyWeChat\Pay\Contracts\Application
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
-    public function getClient(): HttpClientInterface
+    public function getClient(): Client|HttpClientInterface
     {
         return $this->client ?? $this->client = (new Client(
             $this->getMerchant(),

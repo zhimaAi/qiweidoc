@@ -76,10 +76,6 @@ final class Stability
         return $values;
     }
 
-    /**
-     * @param string $value
-     * @return bool
-     */
     public static function isValid(string $value): bool
     {
         return \in_array($value, self::all(), true);

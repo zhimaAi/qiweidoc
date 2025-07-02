@@ -36,7 +36,7 @@ final class StdoutHandler
      */
     public static function register(int $chunkSize = self::OB_CHUNK_SIZE): void
     {
-        assert($chunkSize >= 0, 'Invalid chunk size argument value');
+        \assert($chunkSize >= 0, 'Invalid chunk size argument value');
 
         self::restreamOutputBuffer($chunkSize);
         self::restreamHeaders();
@@ -50,7 +50,7 @@ final class StdoutHandler
      */
     private static function restreamHeaders(): void
     {
-        \header_register_callback(static function(): void {
+        \header_register_callback(static function (): void {
             $headers = \headers_list();
 
             if ($headers !== []) {

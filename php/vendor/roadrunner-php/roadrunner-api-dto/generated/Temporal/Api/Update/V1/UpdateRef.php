@@ -10,8 +10,7 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * The data needed by a client to refer to a previously invoked workflow
- * execution update process.
+ * The data needed by a client to refer to a previously invoked Workflow Update.
  *
  * Generated from protobuf message <code>temporal.api.update.v1.UpdateRef</code>
  */

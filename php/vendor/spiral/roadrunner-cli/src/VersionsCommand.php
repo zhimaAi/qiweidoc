@@ -24,30 +24,12 @@ use Symfony\Component\Console\Style\StyleInterface;
 
 class VersionsCommand extends Command
 {
-    /**
-     * @var OperatingSystemOption
-     */
     private OperatingSystemOption $os;
-
-    /**
-     * @var ArchitectureOption
-     */
     private ArchitectureOption $arch;
-
-    /**
-     * @var VersionFilterOption
-     */
     private VersionFilterOption $version;
-
-    /**
-     * @var StabilityOption
-     */
     private StabilityOption $stability;
 
-    /**
-     * @param string|null $name
-     */
-    public function __construct(string $name = null)
+    public function __construct(?string $name = null)
     {
         parent::__construct($name ?? 'versions');
 
@@ -63,17 +45,11 @@ class VersionsCommand extends Command
         };
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getDescription(): string
     {
         return 'Returns a list of all available RoadRunner versions';
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = $this->io($input, $output);
@@ -108,12 +84,6 @@ class VersionsCommand extends Command
         return 0;
     }
 
-    /**
-     * @param ReleaseInterface $release
-     * @param InputInterface $input
-     * @param StyleInterface $io
-     * @return string
-     */
     private function compatibilityToString(ReleaseInterface $release, InputInterface $input, StyleInterface $io): string
     {
         $template = '<fg=red> ✖ </> (reason: <comment>%s</comment>)';
@@ -132,7 +102,7 @@ class VersionsCommand extends Command
 
         // Validate OS
         $assets = $assets->whereOperatingSystem(
-            $os = $this->os->get($input, $io)
+            $os = $this->os->get($input, $io),
         );
 
         if ($assets->empty()) {
@@ -141,7 +111,7 @@ class VersionsCommand extends Command
 
         // Validate architecture
         $assets = $assets->whereArchitecture(
-            $arch = $this->arch->get($input, $io)
+            $arch = $this->arch->get($input, $io),
         );
 
         if ($assets->empty()) {
@@ -151,19 +121,11 @@ class VersionsCommand extends Command
         return '<fg=green> ✓ </>';
     }
 
-    /**
-     * @param ReleaseInterface $release
-     * @return string
-     */
     private function versionToString(ReleaseInterface $release): string
     {
         return $release->getName();
     }
 
-    /**
-     * @param ReleaseInterface $release
-     * @return string
-     */
     private function stabilityToString(ReleaseInterface $release): string
     {
         $stability = $release->getStability();
@@ -186,10 +148,6 @@ class VersionsCommand extends Command
         }
     }
 
-    /**
-     * @param ReleaseInterface $release
-     * @return string
-     */
     private function assetsToString(ReleaseInterface $release): string
     {
         $count = $release->getAssets()

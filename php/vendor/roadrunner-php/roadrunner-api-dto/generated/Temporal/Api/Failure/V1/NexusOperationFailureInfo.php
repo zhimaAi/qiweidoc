@@ -40,10 +40,17 @@ class NexusOperationFailureInfo extends \Google\Protobuf\Internal\Message
     protected $operation = '';
     /**
      * Operation ID - may be empty if the operation completed synchronously.
+     * Deprecated: Renamed to operation_token.
      *
      * Generated from protobuf field <code>string operation_id = 5;</code>
      */
     protected $operation_id = '';
+    /**
+     * Operation token - may be empty if the operation completed synchronously.
+     *
+     * Generated from protobuf field <code>string operation_token = 6;</code>
+     */
+    protected $operation_token = '';
 
     /**
      * Constructor.
@@ -61,6 +68,9 @@ class NexusOperationFailureInfo extends \Google\Protobuf\Internal\Message
      *           Operation name.
      *     @type string $operation_id
      *           Operation ID - may be empty if the operation completed synchronously.
+     *           Deprecated: Renamed to operation_token.
+     *     @type string $operation_token
+     *           Operation token - may be empty if the operation completed synchronously.
      * }
      */
     public function __construct($data = NULL) {
@@ -174,6 +184,7 @@ class NexusOperationFailureInfo extends \Google\Protobuf\Internal\Message
 
     /**
      * Operation ID - may be empty if the operation completed synchronously.
+     * Deprecated: Renamed to operation_token.
      *
      * Generated from protobuf field <code>string operation_id = 5;</code>
      * @return string
@@ -185,6 +196,7 @@ class NexusOperationFailureInfo extends \Google\Protobuf\Internal\Message
 
     /**
      * Operation ID - may be empty if the operation completed synchronously.
+     * Deprecated: Renamed to operation_token.
      *
      * Generated from protobuf field <code>string operation_id = 5;</code>
      * @param string $var
@@ -194,6 +206,32 @@ class NexusOperationFailureInfo extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->operation_id = $var;
+
+        return $this;
+    }
+
+    /**
+     * Operation token - may be empty if the operation completed synchronously.
+     *
+     * Generated from protobuf field <code>string operation_token = 6;</code>
+     * @return string
+     */
+    public function getOperationToken()
+    {
+        return $this->operation_token;
+    }
+
+    /**
+     * Operation token - may be empty if the operation completed synchronously.
+     *
+     * Generated from protobuf field <code>string operation_token = 6;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setOperationToken($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->operation_token = $var;
 
         return $this;
     }

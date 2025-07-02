@@ -29,14 +29,7 @@ final class GitHubRepository implements RepositoryInterface
      */
     private const URL_RELEASES = 'https://api.github.com/repos/%s/releases';
 
-    /**
-     * @var HttpClientInterface
-     */
     private HttpClientInterface $client;
-
-    /**
-     * @var string
-     */
     private string $name;
 
     /**
@@ -46,30 +39,19 @@ final class GitHubRepository implements RepositoryInterface
         'accept' => 'application/vnd.github.v3+json',
     ];
 
-    /**
-     * @param string $owner
-     * @param string $repository
-     * @param HttpClientInterface|null $client
-     */
-    public function __construct(string $owner, string $repository, HttpClientInterface $client = null)
+    public function __construct(string $owner, string $repository, ?HttpClientInterface $client = null)
     {
         $this->name = $owner . '/' . $repository;
         $this->client = $client ?? HttpClient::create();
     }
 
-    /**
-     * @param string $owner
-     * @param string $name
-     * @param HttpClientInterface|null $client
-     * @return GitHubRepository
-     */
-    public static function create(string $owner, string $name, HttpClientInterface $client = null): GitHubRepository
+    public static function create(string $owner, string $name, ?HttpClientInterface $client = null): GitHubRepository
     {
         return new GitHubRepository($owner, $name, $client);
     }
 
     /**
-     * {@inheritDoc}
+     *
      * @throws ExceptionInterface
      */
     public function getReleases(): ReleasesCollection
@@ -88,9 +70,25 @@ final class GitHubRepository implements RepositoryInterface
         });
     }
 
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @see HttpClientInterface::request()
+     */
+    protected function request(string $method, string $uri, array $options = []): ResponseInterface
+    {
+        // Merge headers with defaults
+        $options['headers'] = \array_merge($this->headers, (array) ($options['headers'] ?? []));
+
+        return $this->client->request($method, $uri, $options);
+    }
+
     /**
      * @param positive-int $page
-     * @return ResponseInterface
      * @throws TransportExceptionInterface
      */
     private function releasesRequest(int $page): ResponseInterface
@@ -102,42 +100,12 @@ final class GitHubRepository implements RepositoryInterface
         ]);
     }
 
-    /**
-     * @param string $method
-     * @param string $uri
-     * @param array $options
-     * @return ResponseInterface
-     * @throws TransportExceptionInterface
-     * @see HttpClientInterface::request()
-     */
-    protected function request(string $method, string $uri, array $options = []): ResponseInterface
-    {
-        // Merge headers with defaults
-        $options['headers'] = \array_merge($this->headers, (array)($options['headers'] ?? []));
-
-        return $this->client->request($method, $uri, $options);
-    }
-
-    /**
-     * @param string $pattern
-     * @return string
-     */
     private function uri(string $pattern): string
     {
         return \sprintf($pattern, $this->getName());
     }
 
     /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * @param ResponseInterface $response
-     * @return bool
      * @throws ExceptionInterface
      */
     private function hasNextPage(ResponseInterface $response): bool

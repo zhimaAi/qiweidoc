@@ -15,6 +15,9 @@ namespace Yiisoft\Arrays;
  * The methods {@see ArrayableInterface::fields()} and {@see ArrayableInterface::extraFields()} allow
  * the implementing classes to customize how and which of their data should be formatted and put into
  * the result of {@see ArrayableInterface::toArray()}.
+ *
+ * @psalm-type CallableFieldDefinition = callable(object, string): string
+ * @psalm-type FieldsArray = array<int, string>|array<string, string|CallableFieldDefinition>
  */
 interface ArrayableInterface
 {
@@ -58,6 +61,8 @@ interface ArrayableInterface
      * @return array The list of field names or field definitions.
      *
      * @see toArray()
+     *
+     * @psalm-return FieldsArray
      */
     public function fields(): array;
 
@@ -74,16 +79,18 @@ interface ArrayableInterface
      *
      * @see toArray()
      * @see fields()
+     *
+     * @psalm-return FieldsArray
      */
     public function extraFields(): array;
 
     /**
      * Converts the object into an array.
      *
-     * @param array $fields the fields that the output array should contain. Fields not specified
+     * @param string[] $fields the fields that the output array should contain. Fields not specified
      * in {@see fields()} will be ignored. If this parameter is empty, all fields as specified
      * in {@see fields()} will be returned.
-     * @param array $expand the additional fields that the output array should contain.
+     * @param string[] $expand the additional fields that the output array should contain.
      * Fields not specified in {@see extraFields()} will be ignored. If this parameter is empty, no extra fields
      * will be returned.
      * @param bool $recursive Whether to recursively return array representation of embedded objects.

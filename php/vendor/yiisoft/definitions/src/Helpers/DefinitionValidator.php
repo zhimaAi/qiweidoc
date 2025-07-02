@@ -6,15 +6,19 @@ namespace Yiisoft\Definitions\Helpers;
 
 use ReflectionClass;
 use ReflectionException;
+use ReflectionProperty;
 use Yiisoft\Definitions\ArrayDefinition;
 use Yiisoft\Definitions\Contract\DefinitionInterface;
 use Yiisoft\Definitions\Contract\ReferenceInterface;
 use Yiisoft\Definitions\Exception\InvalidConfigException;
 
+use function count;
+use function in_array;
 use function is_array;
 use function is_callable;
 use function is_object;
 use function is_string;
+use function sprintf;
 
 /**
  * Definition validator checks if definition is valid.
@@ -43,7 +47,7 @@ final class DefinitionValidator
         }
 
         // Callable definition
-        if ($definition !== '' && is_callable($definition, true)) {
+        if (is_callable($definition, true)) {
             return;
         }
 
@@ -55,7 +59,7 @@ final class DefinitionValidator
 
         throw new InvalidConfigException(
             'Invalid definition: '
-            . ($definition === '' ? 'empty string.' : var_export($definition, true))
+            . ($definition === '' ? 'empty string.' : var_export($definition, true)),
         );
     }
 
@@ -71,7 +75,7 @@ final class DefinitionValidator
     {
         /** @var class-string $className */
         $className = $definition[ArrayDefinition::CLASS_NAME] ?? $id ?? throw new InvalidConfigException(
-            'Invalid definition: no class name specified.'
+            'Invalid definition: no class name specified.',
         );
         self::validateString($className);
         $classReflection = new ReflectionClass($className);
@@ -83,7 +87,7 @@ final class DefinitionValidator
         }
         $classPublicProperties = [];
         foreach ($classReflection->getProperties() as $reflectionProperty) {
-            if ($reflectionProperty->isPublic()) {
+            if (self::isPublicWritableProperty($reflectionProperty)) {
                 $classPublicProperties[] = $reflectionProperty->getName();
             }
         }
@@ -119,7 +123,7 @@ final class DefinitionValidator
                 $classPublicMethods,
                 $classPublicProperties,
                 $classReflection,
-                $className
+                $className,
             );
 
             throw new InvalidConfigException(
@@ -141,13 +145,13 @@ final class DefinitionValidator
         array $classPublicMethods,
         array $classPublicProperties,
         ReflectionClass $classReflection,
-        string $className
+        string $className,
     ): string {
         $parsedKey = trim(
             strtr($key, [
                 '()' => '',
                 '$' => '',
-            ])
+            ]),
         );
         if (in_array($parsedKey, $classPublicMethods, true)) {
             return sprintf(
@@ -187,7 +191,7 @@ final class DefinitionValidator
         ReflectionClass $classReflection,
         array $classPublicMethods,
         string $className,
-        mixed $value
+        mixed $value,
     ): void {
         if (!$classReflection->hasMethod($methodName)) {
             if ($classReflection->hasMethod('__call') || $classReflection->hasMethod('__callStatic')) {
@@ -207,7 +211,7 @@ final class DefinitionValidator
                     'Invalid definition: class "%s" does not have the public method with name "%s". ' . $possiblePropertiesMessage,
                     $className,
                     $methodName,
-                )
+                ),
             );
         }
         if (!in_array($methodName, $classPublicMethods, true)) {
@@ -215,7 +219,7 @@ final class DefinitionValidator
                 sprintf(
                     'Invalid definition: method "%s" must be public.',
                     $className . '::' . $methodName . '()',
-                )
+                ),
             );
         }
         if (!is_array($value)) {
@@ -232,7 +236,7 @@ final class DefinitionValidator
         string $key,
         ReflectionClass $classReflection,
         array $classPublicProperties,
-        string $className
+        string $className,
     ): void {
         $parsedKey = substr($key, 1);
         if (!$classReflection->hasProperty($parsedKey)) {
@@ -259,9 +263,9 @@ final class DefinitionValidator
         } elseif (!in_array($parsedKey, $classPublicProperties, true)) {
             throw new InvalidConfigException(
                 sprintf(
-                    'Invalid definition: property "%s" must be public.',
+                    'Invalid definition: property "%s" must be public and writable.',
                     $className . '::' . $key,
-                )
+                ),
             );
         }
     }
@@ -279,7 +283,7 @@ final class DefinitionValidator
             if (is_object($argument) && !self::isValidObject($argument)) {
                 throw new InvalidConfigException(
                     'Only references are allowed in constructor arguments, a definition object was provided: ' .
-                    var_export($argument, true)
+                    var_export($argument, true),
                 );
             }
         }
@@ -318,11 +322,33 @@ final class DefinitionValidator
                 sprintf(
                     'Invalid definition: class name must be a non-empty string, got %s.',
                     get_debug_type($class),
-                )
+                ),
             );
         }
         if (trim($class) === '') {
             throw new InvalidConfigException('Invalid definition: class name must be a non-empty string.');
         }
+    }
+
+    private static function isPublicWritableProperty(ReflectionProperty $property): bool
+    {
+        if (!$property->isPublic()) {
+            return false;
+        }
+
+        if ($property->isReadOnly()) {
+            return false;
+        }
+
+        if (PHP_VERSION_ID < 80400) {
+            return true;
+        }
+
+        $modifiers = $property->getModifiers();
+
+        /**
+         * @psalm-suppress UndefinedConstant, MixedOperand Needs for PHP 8.3 or lower
+         */
+        return ($modifiers & (ReflectionProperty::IS_PRIVATE_SET | ReflectionProperty::IS_PROTECTED_SET)) === 0;
     }
 }

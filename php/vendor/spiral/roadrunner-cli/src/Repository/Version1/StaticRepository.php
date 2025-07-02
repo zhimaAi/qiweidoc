@@ -1213,15 +1213,9 @@ final class StaticRepository implements RepositoryInterface
      */
     private array $releases = [];
 
-    /**
-     * @var HttpClientInterface
-     */
     private HttpClientInterface $client;
 
-    /**
-     * @param HttpClientInterface|null $client
-     */
-    public function __construct(HttpClientInterface $client = null)
+    public function __construct(?HttpClientInterface $client = null)
     {
         $this->client = $client ?? HttpClient::create();
 
@@ -1230,9 +1224,18 @@ final class StaticRepository implements RepositoryInterface
         }
     }
 
+    public function getName(): string
+    {
+        return 'spiral/roadrunner';
+    }
+
+    public function getReleases(): ReleasesCollection
+    {
+        return new ReleasesCollection($this->releases);
+    }
+
     /**
      * @param array{name: string, version: string, assets: array<array{name: string, uri: string}>} $release
-     * @return ReleaseInterface
      */
     private function createRelease(array $release): ReleaseInterface
     {
@@ -1247,27 +1250,9 @@ final class StaticRepository implements RepositoryInterface
 
     /**
      * @param array{name: string, uri: string} $asset
-     * @return AssetInterface
      */
     private function createAsset(array $asset): AssetInterface
     {
         return new GitHubAsset($this->client, $asset['name'], $asset['uri']);
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getName(): string
-    {
-        return 'spiral/roadrunner';
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getReleases(): ReleasesCollection
-    {
-        return new ReleasesCollection($this->releases);
-    }
 }
-

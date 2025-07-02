@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Security;
 
+use SensitiveParameter;
 use Yiisoft\Strings\StringHelper;
 
 /**
@@ -22,8 +23,10 @@ final class TokenMask
      *
      * @return string A masked token.
      */
-    public static function apply(string $token): string
-    {
+    public static function apply(
+        #[SensitiveParameter]
+        string $token
+    ): string {
         // The number of bytes in a mask is always equal to the number of bytes in a token.
         /** @psalm-suppress ArgumentTypeCoercion */
         $mask = random_bytes(StringHelper::byteLength($token));
@@ -37,8 +40,10 @@ final class TokenMask
      *
      * @return string An unmasked token, or an empty string in case of token format is invalid.
      */
-    public static function remove(string $maskedToken): string
-    {
+    public static function remove(
+        #[SensitiveParameter]
+        string $maskedToken
+    ): string {
         $decoded = StringHelper::base64UrlDecode($maskedToken);
         $length = StringHelper::byteLength($decoded) / 2;
         // Check if the masked token has an even length.

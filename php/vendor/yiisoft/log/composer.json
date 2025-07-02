@@ -31,16 +31,16 @@
     ],
     "require": {
         "php": "^8.0",
-        "psr/log": "^2.0|^3.0",
+        "psr/log": "^2.0 || ^3.0",
         "yiisoft/var-dumper": "^1.0"
     },
     "require-dev": {
         "maglnet/composer-require-checker": "^4.4",
-        "phpunit/phpunit": "^9.5",
-        "rector/rector": "^1.2",
-        "roave/infection-static-analysis-plugin": "^1.18",
-        "spatie/phpunit-watcher": "^1.23",
-        "vimeo/psalm": "^4.30|^5.25"
+        "phpunit/phpunit": "^9.6.23",
+        "rector/rector": "^2.0.17",
+        "roave/infection-static-analysis-plugin": "^1.25",
+        "spatie/phpunit-watcher": "^1.23.6",
+        "vimeo/psalm": "^4.30 || ^5.26.1 || ^6.12"
     },
     "provide": {
         "psr/log-implementation": "1.0.0"

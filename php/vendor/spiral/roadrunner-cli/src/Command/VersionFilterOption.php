@@ -21,36 +21,11 @@ use Symfony\Component\Console\Style\StyleInterface;
 
 class VersionFilterOption extends Option
 {
-    /**
-     * @param Command $command
-     * @param string $name
-     * @param string $short
-     */
     public function __construct(Command $command, string $name = 'filter', string $short = 'f')
     {
         parent::__construct($command, $name, $short);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function getDescription(): string
-    {
-        return 'Required version of RoadRunner binaries';
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function default(): string
-    {
-        return RoadRunnerVersion::constraint();
-    }
-
-    /**
-     * @param ReleasesCollection $releases
-     * @return string
-     */
     public function choices(ReleasesCollection $releases): string
     {
         $versions = $releases
@@ -61,12 +36,6 @@ class VersionFilterOption extends Option
         return \implode(', ', \array_unique($versions));
     }
 
-    /**
-     * @param InputInterface $input
-     * @param StyleInterface $io
-     * @param RepositoryInterface $repo
-     * @return ReleasesCollection
-     */
     public function find(InputInterface $input, StyleInterface $io, RepositoryInterface $repo): ReleasesCollection
     {
         $constraint = $this->get($input, $io);
@@ -84,11 +53,16 @@ class VersionFilterOption extends Option
         return $filtered;
     }
 
-    /**
-     * @param ReleasesCollection $filtered
-     * @param ReleasesCollection $all
-     * @param string $constraint
-     */
+    protected function getDescription(): string
+    {
+        return 'Required version of RoadRunner binaries';
+    }
+
+    protected function default(): string
+    {
+        return RoadRunnerVersion::constraint();
+    }
+
     private function validateNotEmpty(ReleasesCollection $filtered, ReleasesCollection $all, string $constraint): void
     {
         if ($filtered->empty()) {

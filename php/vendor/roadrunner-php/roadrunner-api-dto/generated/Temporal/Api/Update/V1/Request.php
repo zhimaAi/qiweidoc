@@ -10,7 +10,7 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * The client request that triggers a workflow execution update
+ * The client request that triggers a Workflow Update.
  *
  * Generated from protobuf message <code>temporal.api.update.v1.Request</code>
  */

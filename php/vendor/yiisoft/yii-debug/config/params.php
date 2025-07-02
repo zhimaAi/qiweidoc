@@ -58,7 +58,7 @@ return [
             EventDispatcherInterface::class => [EventDispatcherInterfaceProxy::class, EventCollector::class],
             ClientInterface::class => [HttpClientInterfaceProxy::class, HttpClientCollector::class],
         ],
-        'dumper.excludedClasses' => [
+        'excludedClasses' => [
             'PhpParser\\Parser\\Php7',
             'PhpParser\\NodeTraverser',
             'PhpParser\\NodeVisitor\\NameResolver',

@@ -33,7 +33,7 @@ final class DebugResetCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->debugger->stop();
+        $this->debugger->kill();
         $this->storage->clear();
 
         return ExitCode::OK;

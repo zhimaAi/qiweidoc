@@ -32,8 +32,8 @@ final class Merger
      * @param DataModifiers $dataModifiers The data modifiers that affect merge process.
      */
     public function __construct(
-        private ConfigPaths $configPaths,
-        private DataModifiers $dataModifiers,
+        private readonly ConfigPaths $configPaths,
+        private readonly DataModifiers $dataModifiers,
     ) {
     }
 

@@ -15,27 +15,26 @@ use Google\Protobuf\Internal\GPBUtil;
 class PollWorkflowExecutionUpdateRequest extends \Google\Protobuf\Internal\Message
 {
     /**
-     * The namespace of the workflow execution to which the update was
+     * The namespace of the Workflow Execution to which the Update was
      * originally issued.
      *
      * Generated from protobuf field <code>string namespace = 1;</code>
      */
     protected $namespace = '';
     /**
-     * The update reference returned in the initial
-     * UpdateWorkflowExecutionResponse
+     * The Update reference returned in the initial UpdateWorkflowExecutionResponse.
      *
      * Generated from protobuf field <code>.temporal.api.update.v1.UpdateRef update_ref = 2;</code>
      */
     protected $update_ref = null;
     /**
-     * The identity of the worker/client who is polling this update outcome
+     * The identity of the worker/client who is polling this Update outcome.
      *
      * Generated from protobuf field <code>string identity = 3;</code>
      */
     protected $identity = '';
     /**
-     * Describes when this poll request should return a response.
+     * Specifies client's intent to wait for Update results.
      * Omit to request a non-blocking poll.
      *
      * Generated from protobuf field <code>.temporal.api.update.v1.WaitPolicy wait_policy = 4;</code>
@@ -49,15 +48,14 @@ class PollWorkflowExecutionUpdateRequest extends \Google\Protobuf\Internal\Messa
      *     Optional. Data for populating the Message object.
      *
      *     @type string $namespace
-     *           The namespace of the workflow execution to which the update was
+     *           The namespace of the Workflow Execution to which the Update was
      *           originally issued.
      *     @type \Temporal\Api\Update\V1\UpdateRef $update_ref
-     *           The update reference returned in the initial
-     *           UpdateWorkflowExecutionResponse
+     *           The Update reference returned in the initial UpdateWorkflowExecutionResponse.
      *     @type string $identity
-     *           The identity of the worker/client who is polling this update outcome
+     *           The identity of the worker/client who is polling this Update outcome.
      *     @type \Temporal\Api\Update\V1\WaitPolicy $wait_policy
-     *           Describes when this poll request should return a response.
+     *           Specifies client's intent to wait for Update results.
      *           Omit to request a non-blocking poll.
      * }
      */
@@ -67,7 +65,7 @@ class PollWorkflowExecutionUpdateRequest extends \Google\Protobuf\Internal\Messa
     }
 
     /**
-     * The namespace of the workflow execution to which the update was
+     * The namespace of the Workflow Execution to which the Update was
      * originally issued.
      *
      * Generated from protobuf field <code>string namespace = 1;</code>
@@ -79,7 +77,7 @@ class PollWorkflowExecutionUpdateRequest extends \Google\Protobuf\Internal\Messa
     }
 
     /**
-     * The namespace of the workflow execution to which the update was
+     * The namespace of the Workflow Execution to which the Update was
      * originally issued.
      *
      * Generated from protobuf field <code>string namespace = 1;</code>
@@ -95,8 +93,7 @@ class PollWorkflowExecutionUpdateRequest extends \Google\Protobuf\Internal\Messa
     }
 
     /**
-     * The update reference returned in the initial
-     * UpdateWorkflowExecutionResponse
+     * The Update reference returned in the initial UpdateWorkflowExecutionResponse.
      *
      * Generated from protobuf field <code>.temporal.api.update.v1.UpdateRef update_ref = 2;</code>
      * @return \Temporal\Api\Update\V1\UpdateRef|null
@@ -117,8 +114,7 @@ class PollWorkflowExecutionUpdateRequest extends \Google\Protobuf\Internal\Messa
     }
 
     /**
-     * The update reference returned in the initial
-     * UpdateWorkflowExecutionResponse
+     * The Update reference returned in the initial UpdateWorkflowExecutionResponse.
      *
      * Generated from protobuf field <code>.temporal.api.update.v1.UpdateRef update_ref = 2;</code>
      * @param \Temporal\Api\Update\V1\UpdateRef $var
@@ -133,7 +129,7 @@ class PollWorkflowExecutionUpdateRequest extends \Google\Protobuf\Internal\Messa
     }
 
     /**
-     * The identity of the worker/client who is polling this update outcome
+     * The identity of the worker/client who is polling this Update outcome.
      *
      * Generated from protobuf field <code>string identity = 3;</code>
      * @return string
@@ -144,7 +140,7 @@ class PollWorkflowExecutionUpdateRequest extends \Google\Protobuf\Internal\Messa
     }
 
     /**
-     * The identity of the worker/client who is polling this update outcome
+     * The identity of the worker/client who is polling this Update outcome.
      *
      * Generated from protobuf field <code>string identity = 3;</code>
      * @param string $var
@@ -159,7 +155,7 @@ class PollWorkflowExecutionUpdateRequest extends \Google\Protobuf\Internal\Messa
     }
 
     /**
-     * Describes when this poll request should return a response.
+     * Specifies client's intent to wait for Update results.
      * Omit to request a non-blocking poll.
      *
      * Generated from protobuf field <code>.temporal.api.update.v1.WaitPolicy wait_policy = 4;</code>
@@ -181,7 +177,7 @@ class PollWorkflowExecutionUpdateRequest extends \Google\Protobuf\Internal\Messa
     }
 
     /**
-     * Describes when this poll request should return a response.
+     * Specifies client's intent to wait for Update results.
      * Omit to request a non-blocking poll.
      *
      * Generated from protobuf field <code>.temporal.api.update.v1.WaitPolicy wait_policy = 4;</code>

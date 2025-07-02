@@ -23,6 +23,7 @@ final class Architecture
      * @var string
      */
     public const ARCH_X86_64 = 'amd64';
+
     /**
      * @var string
      */
@@ -52,10 +53,6 @@ final class Architecture
         return $values;
     }
 
-    /**
-     * @param string $value
-     * @return bool
-     */
     public static function isValid(string $value): bool
     {
         return \in_array($value, self::all(), true);

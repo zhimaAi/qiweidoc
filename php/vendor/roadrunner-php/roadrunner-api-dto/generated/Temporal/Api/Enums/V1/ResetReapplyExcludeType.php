@@ -8,7 +8,7 @@ namespace Temporal\Api\Enums\V1;
 use UnexpectedValueException;
 
 /**
- * Event types to exclude when reapplying events.
+ * Event types to exclude when reapplying events beyond the reset point.
  *
  * Protobuf type <code>temporal.api.enums.v1.ResetReapplyExcludeType</code>
  */
@@ -19,22 +19,36 @@ class ResetReapplyExcludeType
      */
     const RESET_REAPPLY_EXCLUDE_TYPE_UNSPECIFIED = 0;
     /**
-     * Exclude signals when reapplying events.
+     * Exclude signals when reapplying events beyond the reset point.
      *
      * Generated from protobuf enum <code>RESET_REAPPLY_EXCLUDE_TYPE_SIGNAL = 1;</code>
      */
     const RESET_REAPPLY_EXCLUDE_TYPE_SIGNAL = 1;
     /**
-     * Exclude updates when reapplying events.
+     * Exclude updates when reapplying events beyond the reset point.
      *
      * Generated from protobuf enum <code>RESET_REAPPLY_EXCLUDE_TYPE_UPDATE = 2;</code>
      */
     const RESET_REAPPLY_EXCLUDE_TYPE_UPDATE = 2;
+    /**
+     * Exclude nexus events when reapplying events beyond the reset point.
+     *
+     * Generated from protobuf enum <code>RESET_REAPPLY_EXCLUDE_TYPE_NEXUS = 3;</code>
+     */
+    const RESET_REAPPLY_EXCLUDE_TYPE_NEXUS = 3;
+    /**
+     * Deprecated, unimplemented option.
+     *
+     * Generated from protobuf enum <code>RESET_REAPPLY_EXCLUDE_TYPE_CANCEL_REQUEST = 4 [deprecated = true];</code>
+     */
+    const RESET_REAPPLY_EXCLUDE_TYPE_CANCEL_REQUEST = 4;
 
     private static $valueToName = [
         self::RESET_REAPPLY_EXCLUDE_TYPE_UNSPECIFIED => 'RESET_REAPPLY_EXCLUDE_TYPE_UNSPECIFIED',
         self::RESET_REAPPLY_EXCLUDE_TYPE_SIGNAL => 'RESET_REAPPLY_EXCLUDE_TYPE_SIGNAL',
         self::RESET_REAPPLY_EXCLUDE_TYPE_UPDATE => 'RESET_REAPPLY_EXCLUDE_TYPE_UPDATE',
+        self::RESET_REAPPLY_EXCLUDE_TYPE_NEXUS => 'RESET_REAPPLY_EXCLUDE_TYPE_NEXUS',
+        self::RESET_REAPPLY_EXCLUDE_TYPE_CANCEL_REQUEST => 'RESET_REAPPLY_EXCLUDE_TYPE_CANCEL_REQUEST',
     ];
 
     public static function name($value)

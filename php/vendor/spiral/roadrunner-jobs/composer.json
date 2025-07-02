@@ -48,7 +48,7 @@
         "ramsey/uuid": "^3 || ^4",
         "roadrunner-php/roadrunner-api-dto": "^1.0",
         "spiral/goridge": "^4.0",
-        "spiral/roadrunner": "^2023.1 || ^2024.1",
+        "spiral/roadrunner": "^2024.2 || ^2025.1",
         "spiral/roadrunner-worker": "^3.0"
     },
     "require-dev": {

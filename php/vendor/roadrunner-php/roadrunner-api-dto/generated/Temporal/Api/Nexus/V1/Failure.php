@@ -26,6 +26,8 @@ class Failure extends \Google\Protobuf\Internal\Message
      */
     private $metadata;
     /**
+     * UTF-8 encoded JSON serializable details.
+     *
      * Generated from protobuf field <code>bytes details = 3;</code>
      */
     protected $details = '';
@@ -39,6 +41,7 @@ class Failure extends \Google\Protobuf\Internal\Message
      *     @type string $message
      *     @type array|\Google\Protobuf\Internal\MapField $metadata
      *     @type string $details
+     *           UTF-8 encoded JSON serializable details.
      * }
      */
     public function __construct($data = NULL) {
@@ -91,6 +94,8 @@ class Failure extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * UTF-8 encoded JSON serializable details.
+     *
      * Generated from protobuf field <code>bytes details = 3;</code>
      * @return string
      */
@@ -100,6 +105,8 @@ class Failure extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * UTF-8 encoded JSON serializable details.
+     *
      * Generated from protobuf field <code>bytes details = 3;</code>
      * @param string $var
      * @return $this

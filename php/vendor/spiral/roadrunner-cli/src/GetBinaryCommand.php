@@ -39,35 +39,13 @@ class GetBinaryCommand extends Command
         'Could not find any available RoadRunner binary version which meets criterion (--%s=%s --%s=%s --%s=%s). ' .
         'Available: %s';
 
-    /**
-     * @var OperatingSystemOption
-     */
     private OperatingSystemOption $os;
-
-    /**
-     * @var ArchitectureOption
-     */
     private ArchitectureOption $arch;
-
-    /**
-     * @var VersionFilterOption
-     */
     private VersionFilterOption $version;
-
-    /**
-     * @var StabilityOption
-     */
     private StabilityOption $stability;
-
-    /**
-     * @var InstallationLocationOption
-     */
     private InstallationLocationOption $location;
 
-    /**
-     * @param string|null $name
-     */
-    public function __construct(string $name = null)
+    public function __construct(?string $name = null)
     {
         parent::__construct($name ?? 'get-binary');
 
@@ -78,40 +56,13 @@ class GetBinaryCommand extends Command
         $this->stability = new StabilityOption($this);
     }
 
-    protected function configure(): void
-    {
-        $this->addOption(
-            'plugin',
-            'p',
-            InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
-            'Generate configuration with selected plugins.'
-        );
-
-        $this->addOption(
-            'preset',
-            null,
-            InputOption::VALUE_OPTIONAL,
-            'Generate configuration with plugins in a selected preset.'
-        );
-
-        $this->addOption(
-            'no-config',
-            null,
-            InputOption::VALUE_NONE,
-            'Do not generate configuration at all.'
-        );
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function getDescription(): string
     {
         return 'Install or update RoadRunner binary';
     }
 
     /**
-     * {@inheritDoc}
+     *
      * @throws \Throwable
      */
     public function execute(InputInterface $input, OutputInterface $output): int
@@ -143,7 +94,7 @@ class GetBinaryCommand extends Command
         $output->writeln(
             \sprintf("  - <info>%s</info>", $release->getRepositoryName()) .
             \sprintf(' (<comment>%s</comment>):', $release->getVersion()) .
-            ' Downloading...'
+            ' Downloading...',
         );
 
         if ($output->isVerbose()) {
@@ -171,20 +122,38 @@ class GetBinaryCommand extends Command
             '<info><href=https://roadrunner.dev>https://roadrunner.dev</></info>',
 
             // 2)
-            'To run the application, use the following command: '.
+            'To run the application, use the following command: ' .
             '<comment>$ ' . $file->getFilename() . ' serve</comment>',
         ]);
 
         return 0;
     }
 
+    protected function configure(): void
+    {
+        $this->addOption(
+            'plugin',
+            'p',
+            InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+            'Generate configuration with selected plugins.',
+        );
+
+        $this->addOption(
+            'preset',
+            null,
+            InputOption::VALUE_OPTIONAL,
+            'Generate configuration with plugins in a selected preset.',
+        );
+
+        $this->addOption(
+            'no-config',
+            null,
+            InputOption::VALUE_NONE,
+            'Do not generate configuration at all.',
+        );
+    }
+
     /**
-     * @param string $target
-     * @param ReleaseInterface $release
-     * @param AssetInterface $asset
-     * @param StyleInterface $io
-     * @param OutputInterface $out
-     * @return \SplFileInfo|null
      * @throws \Throwable
      */
     private function installBinary(
@@ -192,7 +161,7 @@ class GetBinaryCommand extends Command
         ReleaseInterface $release,
         AssetInterface $asset,
         StyleInterface $io,
-        OutputInterface $out
+        OutputInterface $out,
     ): ?\SplFileInfo {
         $extractor = $this->assetToArchive($asset, $out)
             ->extract([
@@ -219,7 +188,7 @@ class GetBinaryCommand extends Command
             $extractor->next();
 
             if (! $file->isExecutable()) {
-                @chmod($file->getRealPath(), 0755);
+                @\chmod($file->getRealPath(), 0755);
             }
         }
 
@@ -230,7 +199,7 @@ class GetBinaryCommand extends Command
     {
         $to .= '/.rr.yaml';
 
-        if (\is_file($to) || \is_file(\getcwd().'/.rr.yaml')) {
+        if (\is_file($to) || \is_file(\getcwd() . '/.rr.yaml')) {
             return false;
         }
 
@@ -254,11 +223,6 @@ class GetBinaryCommand extends Command
         return true;
     }
 
-    /**
-     * @param \SplFileInfo $bin
-     * @param StyleInterface $io
-     * @return bool
-     */
     private function checkExisting(\SplFileInfo $bin, StyleInterface $io): bool
     {
         if (\is_file($bin->getPathname())) {
@@ -275,17 +239,13 @@ class GetBinaryCommand extends Command
     }
 
     /**
-     * @param RepositoryInterface $repo
-     * @param ReleasesCollection $releases
-     * @param InputInterface $in
-     * @param StyleInterface $io
      * @return array{0: AssetInterface, 1: ReleaseInterface}
      */
     private function findAsset(
         RepositoryInterface $repo,
         ReleasesCollection $releases,
         InputInterface $in,
-        StyleInterface $io
+        StyleInterface $io,
     ): array {
         $osOption = $this->os->get($in, $io);
         $archOption = $this->arch->get($in, $io);
@@ -332,13 +292,9 @@ class GetBinaryCommand extends Command
     }
 
     /**
-     * @param AssetInterface $asset
-     * @param OutputInterface $out
-     * @param string|null $temp
-     * @return ArchiveInterface
      * @throws \Throwable
      */
-    private function assetToArchive(AssetInterface $asset, OutputInterface $out, string $temp = null): ArchiveInterface
+    private function assetToArchive(AssetInterface $asset, OutputInterface $out, ?string $temp = null): ArchiveInterface
     {
         $factory = new Factory();
 
@@ -349,7 +305,7 @@ class GetBinaryCommand extends Command
         $progress->display();
 
         try {
-            return $factory->fromAsset($asset, function (int $size, int $total) use ($progress) {
+            return $factory->fromAsset($asset, static function (int $size, int $total) use ($progress): void {
                 if ($progress->getMaxSteps() !== $total) {
                     $progress->setMaxSteps($total);
                 }

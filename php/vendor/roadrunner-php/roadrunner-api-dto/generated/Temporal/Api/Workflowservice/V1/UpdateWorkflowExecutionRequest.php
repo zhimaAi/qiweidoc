@@ -18,13 +18,13 @@ use Google\Protobuf\Internal\GPBUtil;
 class UpdateWorkflowExecutionRequest extends \Google\Protobuf\Internal\Message
 {
     /**
-     * The namespace name of the target workflow
+     * The namespace name of the target Workflow.
      *
      * Generated from protobuf field <code>string namespace = 1;</code>
      */
     protected $namespace = '';
     /**
-     * The target workflow id and (optionally) a specific run thereof
+     * The target Workflow Id and (optionally) a specific Run Id thereof.
      * (-- api-linter: core::0203::optional=disabled
      *     aip.dev/not-precedent: false positive triggered by the word "optional" --)
      *
@@ -32,23 +32,26 @@ class UpdateWorkflowExecutionRequest extends \Google\Protobuf\Internal\Message
      */
     protected $workflow_execution = null;
     /**
-     * If set, this call will error if the most recent (if no run id is set on
-     * `workflow_execution`), or specified (if it is) workflow execution is not
-     * part of the same execution chain as this id.
+     * If set, this call will error if the most recent (if no Run Id is set on
+     * `workflow_execution`), or specified (if it is) Workflow Execution is not
+     * part of the same execution chain as this Id.
      *
      * Generated from protobuf field <code>string first_execution_run_id = 3;</code>
      */
     protected $first_execution_run_id = '';
     /**
-     * Describes when this request should return - basically whether the
-     * update is synchronous, asynchronous, or somewhere in between.
+     * Specifies client's intent to wait for Update results.
+     * NOTE: This field works together with API call timeout which is limited by
+     * server timeout (maximum wait time). If server timeout is expired before
+     * user specified timeout, API call returns even if specified stage is not reached.
+     * Actual reached stage will be included in the response.
      *
      * Generated from protobuf field <code>.temporal.api.update.v1.WaitPolicy wait_policy = 4;</code>
      */
     protected $wait_policy = null;
     /**
      * The request information that will be delivered all the way down to the
-     * workflow execution.
+     * Workflow Execution.
      *
      * Generated from protobuf field <code>.temporal.api.update.v1.Request request = 5;</code>
      */
@@ -61,21 +64,24 @@ class UpdateWorkflowExecutionRequest extends \Google\Protobuf\Internal\Message
      *     Optional. Data for populating the Message object.
      *
      *     @type string $namespace
-     *           The namespace name of the target workflow
+     *           The namespace name of the target Workflow.
      *     @type \Temporal\Api\Common\V1\WorkflowExecution $workflow_execution
-     *           The target workflow id and (optionally) a specific run thereof
+     *           The target Workflow Id and (optionally) a specific Run Id thereof.
      *           (-- api-linter: core::0203::optional=disabled
      *               aip.dev/not-precedent: false positive triggered by the word "optional" --)
      *     @type string $first_execution_run_id
-     *           If set, this call will error if the most recent (if no run id is set on
-     *           `workflow_execution`), or specified (if it is) workflow execution is not
-     *           part of the same execution chain as this id.
+     *           If set, this call will error if the most recent (if no Run Id is set on
+     *           `workflow_execution`), or specified (if it is) Workflow Execution is not
+     *           part of the same execution chain as this Id.
      *     @type \Temporal\Api\Update\V1\WaitPolicy $wait_policy
-     *           Describes when this request should return - basically whether the
-     *           update is synchronous, asynchronous, or somewhere in between.
+     *           Specifies client's intent to wait for Update results.
+     *           NOTE: This field works together with API call timeout which is limited by
+     *           server timeout (maximum wait time). If server timeout is expired before
+     *           user specified timeout, API call returns even if specified stage is not reached.
+     *           Actual reached stage will be included in the response.
      *     @type \Temporal\Api\Update\V1\Request $request
      *           The request information that will be delivered all the way down to the
-     *           workflow execution.
+     *           Workflow Execution.
      * }
      */
     public function __construct($data = NULL) {
@@ -84,7 +90,7 @@ class UpdateWorkflowExecutionRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The namespace name of the target workflow
+     * The namespace name of the target Workflow.
      *
      * Generated from protobuf field <code>string namespace = 1;</code>
      * @return string
@@ -95,7 +101,7 @@ class UpdateWorkflowExecutionRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The namespace name of the target workflow
+     * The namespace name of the target Workflow.
      *
      * Generated from protobuf field <code>string namespace = 1;</code>
      * @param string $var
@@ -110,7 +116,7 @@ class UpdateWorkflowExecutionRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The target workflow id and (optionally) a specific run thereof
+     * The target Workflow Id and (optionally) a specific Run Id thereof.
      * (-- api-linter: core::0203::optional=disabled
      *     aip.dev/not-precedent: false positive triggered by the word "optional" --)
      *
@@ -133,7 +139,7 @@ class UpdateWorkflowExecutionRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The target workflow id and (optionally) a specific run thereof
+     * The target Workflow Id and (optionally) a specific Run Id thereof.
      * (-- api-linter: core::0203::optional=disabled
      *     aip.dev/not-precedent: false positive triggered by the word "optional" --)
      *
@@ -150,9 +156,9 @@ class UpdateWorkflowExecutionRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * If set, this call will error if the most recent (if no run id is set on
-     * `workflow_execution`), or specified (if it is) workflow execution is not
-     * part of the same execution chain as this id.
+     * If set, this call will error if the most recent (if no Run Id is set on
+     * `workflow_execution`), or specified (if it is) Workflow Execution is not
+     * part of the same execution chain as this Id.
      *
      * Generated from protobuf field <code>string first_execution_run_id = 3;</code>
      * @return string
@@ -163,9 +169,9 @@ class UpdateWorkflowExecutionRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * If set, this call will error if the most recent (if no run id is set on
-     * `workflow_execution`), or specified (if it is) workflow execution is not
-     * part of the same execution chain as this id.
+     * If set, this call will error if the most recent (if no Run Id is set on
+     * `workflow_execution`), or specified (if it is) Workflow Execution is not
+     * part of the same execution chain as this Id.
      *
      * Generated from protobuf field <code>string first_execution_run_id = 3;</code>
      * @param string $var
@@ -180,8 +186,11 @@ class UpdateWorkflowExecutionRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Describes when this request should return - basically whether the
-     * update is synchronous, asynchronous, or somewhere in between.
+     * Specifies client's intent to wait for Update results.
+     * NOTE: This field works together with API call timeout which is limited by
+     * server timeout (maximum wait time). If server timeout is expired before
+     * user specified timeout, API call returns even if specified stage is not reached.
+     * Actual reached stage will be included in the response.
      *
      * Generated from protobuf field <code>.temporal.api.update.v1.WaitPolicy wait_policy = 4;</code>
      * @return \Temporal\Api\Update\V1\WaitPolicy|null
@@ -202,8 +211,11 @@ class UpdateWorkflowExecutionRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Describes when this request should return - basically whether the
-     * update is synchronous, asynchronous, or somewhere in between.
+     * Specifies client's intent to wait for Update results.
+     * NOTE: This field works together with API call timeout which is limited by
+     * server timeout (maximum wait time). If server timeout is expired before
+     * user specified timeout, API call returns even if specified stage is not reached.
+     * Actual reached stage will be included in the response.
      *
      * Generated from protobuf field <code>.temporal.api.update.v1.WaitPolicy wait_policy = 4;</code>
      * @param \Temporal\Api\Update\V1\WaitPolicy $var
@@ -219,7 +231,7 @@ class UpdateWorkflowExecutionRequest extends \Google\Protobuf\Internal\Message
 
     /**
      * The request information that will be delivered all the way down to the
-     * workflow execution.
+     * Workflow Execution.
      *
      * Generated from protobuf field <code>.temporal.api.update.v1.Request request = 5;</code>
      * @return \Temporal\Api\Update\V1\Request|null
@@ -241,7 +253,7 @@ class UpdateWorkflowExecutionRequest extends \Google\Protobuf\Internal\Message
 
     /**
      * The request information that will be delivered all the way down to the
-     * workflow execution.
+     * Workflow Execution.
      *
      * Generated from protobuf field <code>.temporal.api.update.v1.Request request = 5;</code>
      * @param \Temporal\Api\Update\V1\Request $var

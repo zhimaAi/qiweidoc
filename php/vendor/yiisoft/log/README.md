@@ -6,18 +6,18 @@
     <br>
 </p>
 
-[![Latest Stable Version](https://poser.pugx.org/yiisoft/log/v/stable.png)](https://packagist.org/packages/yiisoft/log)
-[![Total Downloads](https://poser.pugx.org/yiisoft/log/downloads.png)](https://github.com/yiisoft/log/actions?query=workflow%3Abuild)
-[![Build status](https://github.com/yiisoft/log/workflows/build/badge.svg)](https://github.com/yiisoft/log/actions?query=workflow%3Abuild)
+[![Latest Stable Version](https://poser.pugx.org/yiisoft/log/v)](https://packagist.org/packages/yiisoft/log)
+[![Total Downloads](https://poser.pugx.org/yiisoft/log/downloads)](https://packagist.org/packages/yiisoft/log)
+[![Build status](https://github.com/yiisoft/log/actions/workflows/build.yml/badge.svg)](https://github.com/yiisoft/log/actions/workflows/build.yml)
 [![Code coverage](https://codecov.io/gh/yiisoft/log/graph/badge.svg?token=4CSPCRMGQM)](https://codecov.io/gh/yiisoft/log)
 [![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fyiisoft%2Flog%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/yiisoft/log/master)
 [![static analysis](https://github.com/yiisoft/log/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/log/actions?query=workflow%3A%22static+analysis%22)
 [![type-coverage](https://shepherd.dev/github/yiisoft/log/coverage.svg)](https://shepherd.dev/github/yiisoft/log)
 
-This package provides [PSR-3](https://www.php-fig.org/psr/psr-3/) compatible logging library. It is used in
-[Yii Framework](https://www.yiiframework.com/) but is usable separately.
+This package provides a [PSR-3](https://www.php-fig.org/psr/psr-3/) compatible logging library. It is used extensively in the
+[Yii Framework](https://www.yiiframework.com/) but it can also be used as a separate package.
 
-The logger sends passes messages to multiple targets. Each target may filter messages by their severity levels and categories and then export them to some medium such as file, email or syslog.
+The logger sends or passes messages to multiple targets. Each target may filter these messages according to their severity level, and category, and then export them to some medium such as a file, an email or a syslog.
 
 ## Requirements
 
@@ -25,7 +25,7 @@ The logger sends passes messages to multiple targets. Each target may filter mes
 
 ## Installation
 
-The package could be installed with [Composer](https://getcomposer.org):
+The package can be installed with [Composer](https://getcomposer.org):
 
 ```shell
 composer require yiisoft/log
@@ -93,7 +93,7 @@ Extra logging targets are implemented as separate packages:
 ### Context providers
 
 Context providers are used to provide additional context data for log messages. You can define your own context provider
-in `Logger` constructor:
+in the `Logger` constructor:
 
 ```php
 $logger = new \Yiisoft\Log\Logger(contextProvider: $myContextProvider);
@@ -105,11 +105,11 @@ Out of the box, the following context providers are available:
 - `CommonContextProvider` — adds common data;
 - `CompositeContextProvider` — allows combining multiple context providers.
 
-By default, the logger uses built-in `SystemContextProvider`.
+By default, the logger uses the built-in `SystemContextProvider`.
 
 #### `SystemContextProvider`
 
-`SystemContextProvider` added following data to context:
+The `SystemContextProvider` adds the following data to the context:
 
 - `time` — current Unix timestamp with microseconds (float value);
 - `trace` — array of call stack information;
@@ -119,11 +119,11 @@ By default, the logger uses built-in `SystemContextProvider`.
 `Yiisoft\Log\ContextProvider\SystemContextProvider` constructor parameters:
 
 - `traceLevel` — how much call stack information (file name and line number) should be logged for each
-  log message. If it is greater than 0, at most that number of call stacks will be logged. Note that only
+  log message. If the traceLevel is greater than 0, a similar number of call stacks will be logged at most. Note that only
   application call stacks are counted.
 - `excludedTracePaths` — array of paths to exclude from tracing when tracing is enabled with `traceLevel`.
 
-Example of custom parameters' usage:
+An example of custom parameters' usage:
 
 ```php
 $logger = new \Yiisoft\Log\Logger(
@@ -138,7 +138,7 @@ $logger = new \Yiisoft\Log\Logger(
 
 #### `CommonContextProvider`
 
-`CommonContextProvider` allows to add additional common information to the log context. For example:
+The `CommonContextProvider` allows the adding of additional common information to the log context, for example:
 
 ```php
 $logger = new \Yiisoft\Log\Logger(
@@ -150,7 +150,7 @@ $logger = new \Yiisoft\Log\Logger(
 
 #### `CompositeContextProvider`
 
-`CompositeContextProvider` allows to combine multiple context providers into one. For example:
+The `CompositeContextProvider` allows the combining of multiple context providers into one, for example:
 
 ```php
 $logger = new \Yiisoft\Log\Logger(
@@ -166,7 +166,7 @@ $logger = new \Yiisoft\Log\Logger(
 - [Yii guide to logging](https://github.com/yiisoft/docs/blob/master/guide/en/runtime/logging.md)
 - [Internals](docs/internals.md)
 
-If you need help or have a question, the [Yii Forum](https://forum.yiiframework.com/c/yii-3-0/63) is a good place for that.
+If you need help or have a question, the [Yii Forum](https://forum.yiiframework.com/c/yii-3-0/63) is available.
 You may also check out other [Yii Community Resources](https://www.yiiframework.com/community).
 
 ## License

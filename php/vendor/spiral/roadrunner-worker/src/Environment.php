@@ -23,7 +23,14 @@ class Environment implements EnvironmentInterface
      */
     public function __construct(
         private array $env = [],
-    ) {
+    ) {}
+
+    public static function fromGlobals(): self
+    {
+        /** @var array<string, string> $env */
+        $env = [...$_ENV, ...$_SERVER];
+
+        return new self($env);
     }
 
     public function getMode(): string
@@ -57,17 +64,9 @@ class Environment implements EnvironmentInterface
     {
         if (isset($this->env[$name]) || \array_key_exists($name, $this->env)) {
             /** @psalm-suppress RedundantCastGivenDocblockType */
-            return (string)$this->env[$name];
+            return (string) $this->env[$name];
         }
 
         return $default;
-    }
-
-    public static function fromGlobals(): self
-    {
-        /** @var array<string, string> $env */
-        $env = [...$_ENV, ...$_SERVER];
-
-        return new self($env);
     }
 }

@@ -8,8 +8,6 @@ namespace Spiral\Core;
  * DTO to define Container Scope.
  *
  * @psalm-import-type TResolver from BinderInterface
- *
- * @internal We are testing this feature, it may be changed in the future.
  */
 final class Scope
 {
@@ -23,6 +21,5 @@ final class Scope
         public readonly string|\BackedEnum|null $name = null,
         public readonly array $bindings = [],
         public readonly bool $autowire = true,
-    ) {
-    }
+    ) {}
 }

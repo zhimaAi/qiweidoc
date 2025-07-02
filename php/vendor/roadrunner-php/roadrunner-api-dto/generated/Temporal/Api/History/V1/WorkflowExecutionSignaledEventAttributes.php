@@ -40,9 +40,10 @@ class WorkflowExecutionSignaledEventAttributes extends \Google\Protobuf\Internal
      */
     protected $header = null;
     /**
-     * Indicates the signal did not generate a new workflow task when received.
+     * This field is deprecated and never respected. It should always be set to false.
      *
-     * Generated from protobuf field <code>bool skip_generate_workflow_task = 5;</code>
+     * Generated from protobuf field <code>bool skip_generate_workflow_task = 5 [deprecated = true];</code>
+     * @deprecated
      */
     protected $skip_generate_workflow_task = false;
     /**
@@ -68,7 +69,7 @@ class WorkflowExecutionSignaledEventAttributes extends \Google\Protobuf\Internal
      *           Headers that were passed by the sender of the signal and copied by temporal 
      *           server into the workflow task.
      *     @type bool $skip_generate_workflow_task
-     *           Indicates the signal did not generate a new workflow task when received.
+     *           This field is deprecated and never respected. It should always be set to false.
      *     @type \Temporal\Api\Common\V1\WorkflowExecution $external_workflow_execution
      *           When signal origin is a workflow execution, this field is set.
      * }
@@ -205,25 +206,31 @@ class WorkflowExecutionSignaledEventAttributes extends \Google\Protobuf\Internal
     }
 
     /**
-     * Indicates the signal did not generate a new workflow task when received.
+     * This field is deprecated and never respected. It should always be set to false.
      *
-     * Generated from protobuf field <code>bool skip_generate_workflow_task = 5;</code>
+     * Generated from protobuf field <code>bool skip_generate_workflow_task = 5 [deprecated = true];</code>
      * @return bool
+     * @deprecated
      */
     public function getSkipGenerateWorkflowTask()
     {
+        if ($this->skip_generate_workflow_task !== false) {
+            @trigger_error('skip_generate_workflow_task is deprecated.', E_USER_DEPRECATED);
+        }
         return $this->skip_generate_workflow_task;
     }
 
     /**
-     * Indicates the signal did not generate a new workflow task when received.
+     * This field is deprecated and never respected. It should always be set to false.
      *
-     * Generated from protobuf field <code>bool skip_generate_workflow_task = 5;</code>
+     * Generated from protobuf field <code>bool skip_generate_workflow_task = 5 [deprecated = true];</code>
      * @param bool $var
      * @return $this
+     * @deprecated
      */
     public function setSkipGenerateWorkflowTask($var)
     {
+        @trigger_error('skip_generate_workflow_task is deprecated.', E_USER_DEPRECATED);
         GPBUtil::checkBool($var);
         $this->skip_generate_workflow_task = $var;
 

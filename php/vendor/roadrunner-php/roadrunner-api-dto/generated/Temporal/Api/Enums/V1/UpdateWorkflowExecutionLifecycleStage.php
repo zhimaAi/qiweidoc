@@ -9,27 +9,29 @@ use UnexpectedValueException;
 
 /**
  * UpdateWorkflowExecutionLifecycleStage is specified by clients invoking
- * workflow execution updates and used to indicate to the server how long the
- * client wishes to wait for a return value from the RPC. If any value other
+ * Workflow Updates and used to indicate to the server how long the
+ * client wishes to wait for a return value from the API. If any value other
  * than UPDATE_WORKFLOW_EXECUTION_LIFECYCLE_STAGE_COMPLETED is sent by the
- * client then the RPC will complete before the update is finished and will
- * return a handle to the running update so that it can later be polled for
+ * client then the API will complete before the Update is finished and will
+ * return a handle to the running Update so that it can later be polled for
  * completion.
+ * If specified stage wasn't reached before server timeout, server returns
+ * actual stage reached.
  *
  * Protobuf type <code>temporal.api.enums.v1.UpdateWorkflowExecutionLifecycleStage</code>
  */
 class UpdateWorkflowExecutionLifecycleStage
 {
     /**
-     * An unspecified vale for this enum.
+     * An unspecified value for this enum.
      *
      * Generated from protobuf enum <code>UPDATE_WORKFLOW_EXECUTION_LIFECYCLE_STAGE_UNSPECIFIED = 0;</code>
      */
     const UPDATE_WORKFLOW_EXECUTION_LIFECYCLE_STAGE_UNSPECIFIED = 0;
     /**
-     * The gRPC call will not return until the update request has been admitted
+     * The API call will not return until the Update request has been admitted
      * by the server - it may be the case that due to a considerations like load
-     * or resource limits that an update is made to wait before the server will
+     * or resource limits that an Update is made to wait before the server will
      * indicate that it has been received and will be processed. This value
      * does not wait for any sort of acknowledgement from a worker.
      *
@@ -37,14 +39,13 @@ class UpdateWorkflowExecutionLifecycleStage
      */
     const UPDATE_WORKFLOW_EXECUTION_LIFECYCLE_STAGE_ADMITTED = 1;
     /**
-     * The gRPC call will not return until the update has passed validation on
-     * a worker.
+     * The API call will not return until the Update has passed validation on a worker.
      *
      * Generated from protobuf enum <code>UPDATE_WORKFLOW_EXECUTION_LIFECYCLE_STAGE_ACCEPTED = 2;</code>
      */
     const UPDATE_WORKFLOW_EXECUTION_LIFECYCLE_STAGE_ACCEPTED = 2;
     /**
-     * The gRPC call will not return until the update has executed to completion
+     * The API call will not return until the Update has executed to completion
      * on a worker and has either been rejected or returned a value or an error.
      *
      * Generated from protobuf enum <code>UPDATE_WORKFLOW_EXECUTION_LIFECYCLE_STAGE_COMPLETED = 3;</code>

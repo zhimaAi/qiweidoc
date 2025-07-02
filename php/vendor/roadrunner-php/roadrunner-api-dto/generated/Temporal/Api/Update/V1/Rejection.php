@@ -10,8 +10,7 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * An update protocol message indicating that a workflow execution update has
- * been rejected.
+ * An Update protocol message indicating that a Workflow Update has been rejected.
  *
  * Generated from protobuf message <code>temporal.api.update.v1.Rejection</code>
  */

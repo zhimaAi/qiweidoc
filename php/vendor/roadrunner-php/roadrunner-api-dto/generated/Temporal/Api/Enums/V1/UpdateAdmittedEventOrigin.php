@@ -9,7 +9,7 @@ use UnexpectedValueException;
 
 /**
  * Records why a WorkflowExecutionUpdateAdmittedEvent was written to history.
- * Note that not all admitted updates result in this event.
+ * Note that not all admitted Updates result in this event.
  *
  * Protobuf type <code>temporal.api.enums.v1.UpdateAdmittedEventOrigin</code>
  */
@@ -21,8 +21,8 @@ class UpdateAdmittedEventOrigin
     const UPDATE_ADMITTED_EVENT_ORIGIN_UNSPECIFIED = 0;
     /**
      * The UpdateAdmitted event was created when reapplying events during reset
-     * or replication. I.e. an accepted update on one branch of workflow history
-     * was converted into an admitted update on a different branch.
+     * or replication. I.e. an accepted Update on one branch of Workflow history
+     * was converted into an admitted Update on a different branch.
      *
      * Generated from protobuf enum <code>UPDATE_ADMITTED_EVENT_ORIGIN_REAPPLY = 1;</code>
      */

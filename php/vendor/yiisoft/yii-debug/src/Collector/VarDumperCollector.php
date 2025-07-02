@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\Debug\Collector;
 
+use function count;
+
 final class VarDumperCollector implements SummaryCollectorInterface
 {
     use CollectorTrait;
@@ -40,9 +42,7 @@ final class VarDumperCollector implements SummaryCollectorInterface
         }
 
         return [
-            'var-dumper' => [
-                'total' => count($this->vars),
-            ],
+            'total' => count($this->vars),
         ];
     }
 }

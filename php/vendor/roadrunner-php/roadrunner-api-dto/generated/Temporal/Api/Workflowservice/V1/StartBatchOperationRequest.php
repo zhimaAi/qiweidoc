@@ -89,6 +89,8 @@ class StartBatchOperationRequest extends \Google\Protobuf\Internal\Message
      *     @type \Temporal\Api\Batch\V1\BatchOperationCancellation $cancellation_operation
      *     @type \Temporal\Api\Batch\V1\BatchOperationDeletion $deletion_operation
      *     @type \Temporal\Api\Batch\V1\BatchOperationReset $reset_operation
+     *     @type \Temporal\Api\Batch\V1\BatchOperationUpdateWorkflowExecutionOptions $update_workflow_options_operation
+     *     @type \Temporal\Api\Batch\V1\BatchOperationUnpauseActivities $unpause_activities_operation
      * }
      */
     public function __construct($data = NULL) {
@@ -397,6 +399,60 @@ class StartBatchOperationRequest extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Temporal\Api\Batch\V1\BatchOperationReset::class);
         $this->writeOneof(14, $var);
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>.temporal.api.batch.v1.BatchOperationUpdateWorkflowExecutionOptions update_workflow_options_operation = 15;</code>
+     * @return \Temporal\Api\Batch\V1\BatchOperationUpdateWorkflowExecutionOptions|null
+     */
+    public function getUpdateWorkflowOptionsOperation()
+    {
+        return $this->readOneof(15);
+    }
+
+    public function hasUpdateWorkflowOptionsOperation()
+    {
+        return $this->hasOneof(15);
+    }
+
+    /**
+     * Generated from protobuf field <code>.temporal.api.batch.v1.BatchOperationUpdateWorkflowExecutionOptions update_workflow_options_operation = 15;</code>
+     * @param \Temporal\Api\Batch\V1\BatchOperationUpdateWorkflowExecutionOptions $var
+     * @return $this
+     */
+    public function setUpdateWorkflowOptionsOperation($var)
+    {
+        GPBUtil::checkMessage($var, \Temporal\Api\Batch\V1\BatchOperationUpdateWorkflowExecutionOptions::class);
+        $this->writeOneof(15, $var);
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>.temporal.api.batch.v1.BatchOperationUnpauseActivities unpause_activities_operation = 16;</code>
+     * @return \Temporal\Api\Batch\V1\BatchOperationUnpauseActivities|null
+     */
+    public function getUnpauseActivitiesOperation()
+    {
+        return $this->readOneof(16);
+    }
+
+    public function hasUnpauseActivitiesOperation()
+    {
+        return $this->hasOneof(16);
+    }
+
+    /**
+     * Generated from protobuf field <code>.temporal.api.batch.v1.BatchOperationUnpauseActivities unpause_activities_operation = 16;</code>
+     * @param \Temporal\Api\Batch\V1\BatchOperationUnpauseActivities $var
+     * @return $this
+     */
+    public function setUnpauseActivitiesOperation($var)
+    {
+        GPBUtil::checkMessage($var, \Temporal\Api\Batch\V1\BatchOperationUnpauseActivities::class);
+        $this->writeOneof(16, $var);
 
         return $this;
     }

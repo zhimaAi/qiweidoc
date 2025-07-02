@@ -10,12 +10,12 @@
     "homepage": "https://www.yiiframework.com/",
     "license": "BSD-3-Clause",
     "support": {
-        "issues": "https://github.com/yiisoft/arrays/issues",
+        "issues": "https://github.com/yiisoft/arrays/issues?state=open",
+        "source": "https://github.com/yiisoft/arrays",
         "forum": "https://forum.yiiframework.com/",
         "wiki": "https://www.yiiframework.com/wiki/",
         "irc": "ircs://irc.libera.chat:6697/yii",
-        "chat": "https://t.me/yii3en",
-        "source": "https://github.com/yiisoft/arrays"
+        "chat": "https://t.me/yii3en"
     },
     "funding": [
         {
@@ -28,16 +28,16 @@
         }
     ],
     "require": {
-        "php": "^8.0",
+        "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
         "yiisoft/strings": "^2.1"
     },
     "require-dev": {
-        "maglnet/composer-require-checker": "^4.4",
-        "phpunit/phpunit": "^9.5",
-        "rector/rector": "^1.0.0",
-        "roave/infection-static-analysis-plugin": "^1.25",
-        "spatie/phpunit-watcher": "^1.23",
-        "vimeo/psalm": "^4.30|^5.20"
+        "bamarni/composer-bin-plugin": "^1.8.2",
+        "phpunit/phpunit": "^10.5.43",
+        "rector/rector": "^2.0.7",
+        "roave/infection-static-analysis-plugin": "^1.35",
+        "spatie/phpunit-watcher": "^1.24",
+        "vimeo/psalm": "^5.26.1|^6.1"
     },
     "autoload": {
         "psr-4": {
@@ -51,9 +51,18 @@
     },
     "config": {
         "sort-packages": true,
+        "bump-after-update": "dev",
         "allow-plugins": {
+            "bamarni/composer-bin-plugin": true,
             "infection/extension-installer": true,
             "composer/package-versions-deprecated": true
+        }
+    },
+    "extra": {
+        "bamarni-bin": {
+            "bin-links": true,
+            "target-directory": "tools",
+            "forward-command": true
         }
     },
     "scripts": {

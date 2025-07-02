@@ -10,6 +10,4 @@ use Spiral\RoadRunner\Payload;
 /**
  * @psalm-immutable
  */
-final class StreamStop extends Payload implements SkipMessage
-{
-}
+final class StreamStop extends Payload implements SkipMessage {}

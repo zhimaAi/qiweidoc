@@ -15,7 +15,7 @@
 [![type-coverage](https://shepherd.dev/github/yiisoft/request-provider/coverage.svg)](https://shepherd.dev/github/yiisoft/request-provider)
 [![psalm-level](https://shepherd.dev/github/yiisoft/request-provider/level.svg)](https://shepherd.dev/github/yiisoft/request-provider)
 
-The package provides current PSR-7 request as a dependency.
+The package provides the current PSR-7 request as a dependency.
 
 ## Requirements
 
@@ -23,7 +23,7 @@ The package provides current PSR-7 request as a dependency.
 
 ## Installation
 
-The package could be installed with [Composer](https://getcomposer.org):
+The package can be installed with [Composer](https://getcomposer.org):
 
 ```shell
 composer require yiisoft/request-provider
@@ -31,9 +31,9 @@ composer require yiisoft/request-provider
 
 ## General usage
 
-First, add `Yiisoft\RequestProvider\RequestCatcherMiddleware` to your application middleware stack.
+First, add the `Yiisoft\RequestProvider\RequestCatcherMiddleware` to your application middleware stack.
 
-Then, when you need current request, get `RequestProviderInterface` as dependency and obtain the request from it:
+Then, when you need the current request, get the `RequestProviderInterface` as a dependency and obtain the request from it:
 
 ```php
 use Yiisoft\RequestProvider\RequestProviderInterface;
@@ -54,15 +54,15 @@ final class MyService
 }
 ```
 
-### Request cookies collection
+### Request cookies provider
 
-You can work with cookies like the following:
+You can work with cookies as follows:
 
 ```php
 class MyClass
 {
   public function __construct(
-    private \Yiisoft\RequestProvider\RequestCookies $cookies
+    private \Yiisoft\RequestProvider\RequestCookieProvider $cookies
   ) {}
   
   public function go(): void
@@ -73,12 +73,34 @@ class MyClass
 }
 ```
 
+### Request headers provider
+
+You can work with headers as follows:
+
+```php
+class MyClass
+{
+  public function __construct(
+    private \Yiisoft\RequestProvider\RequestHeaderProvider $headers
+  ) {}
+  
+  public function go(): void
+  {
+    $this->headers->has('X-Foo');
+    $this->headers->get('X-Foo');
+    $this->headers->getLine('X-Foo');
+    $this->headers->getAll();
+    $this->headers->getFirstHeaders();
+  }
+}
+```
+
 ## Documentation
 
 - [Internals](docs/internals.md)
 
-If you need help or have a question, the [Yii Forum](https://forum.yiiframework.com/c/yii-3-0/63) is a good place for that.
-You may also check out other [Yii Community Resources](https://www.yiiframework.com/community).
+If you need help or have a question, the [Yii Forum](https://forum.yiiframework.com/c/yii-3-0/63) is a helpful resource.
+You may also check out other resources at [Yii Community Resources](https://www.yiiframework.com/community).
 
 ## License
 

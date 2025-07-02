@@ -8,17 +8,17 @@ final class Rpc extends AbstractSection
 {
     private const NAME = 'rpc';
 
+    public static function getShortName(): string
+    {
+        return self::NAME;
+    }
+
     public function render(): array
     {
         return [
             self::NAME => [
-                'listen' => 'tcp://127.0.0.1:6001'
-            ]
+                'listen' => 'tcp://127.0.0.1:6001',
+            ],
         ];
-    }
-
-    public static function getShortName(): string
-    {
-        return self::NAME;
     }
 }

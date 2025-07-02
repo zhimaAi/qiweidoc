@@ -23,16 +23,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 final class GitHubAsset extends Asset
 {
-    /**
-     * @var HttpClientInterface
-     */
     private HttpClientInterface $client;
 
-    /**
-     * @param HttpClientInterface $client
-     * @param string $name
-     * @param string $uri
-     */
     public function __construct(HttpClientInterface $client, string $name, string $uri)
     {
         $this->client = $client;
@@ -41,7 +33,6 @@ final class GitHubAsset extends Asset
     }
 
     /**
-     * @param HttpClientInterface $client
      * @param GitHubAssetApiResponse $asset
      * @return static
      *
@@ -52,14 +43,14 @@ final class GitHubAsset extends Asset
         // Validate name
         if (! isset($asset['name']) || ! \is_string($asset['name'])) {
             throw new \InvalidArgumentException(
-                'Passed array must contain "name" value of type string'
+                'Passed array must contain "name" value of type string',
             );
         }
 
         // Validate uri
         if (! isset($asset['browser_download_url']) || ! \is_string($asset['browser_download_url'])) {
             throw new \InvalidArgumentException(
-                'Passed array must contain "browser_download_url" key of type string'
+                'Passed array must contain "browser_download_url" key of type string',
             );
         }
 
@@ -67,10 +58,10 @@ final class GitHubAsset extends Asset
     }
 
     /**
-     * {@inheritDoc}
+     *
      * @throws ExceptionInterface
      */
-    public function download(\Closure $progress = null): \Traversable
+    public function download(?\Closure $progress = null): \Traversable
     {
         $response = $this->client->request('GET', $this->getUri(), [
             'on_progress' => $progress,

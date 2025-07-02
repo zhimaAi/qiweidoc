@@ -29,10 +29,18 @@ class PollerInfo extends \Google\Protobuf\Internal\Message
     /**
      * If a worker has opted into the worker versioning feature while polling, its capabilities will
      * appear here.
+     * Deprecated. Replaced by deployment_options.
      *
-     * Generated from protobuf field <code>.temporal.api.common.v1.WorkerVersionCapabilities worker_version_capabilities = 4;</code>
+     * Generated from protobuf field <code>.temporal.api.common.v1.WorkerVersionCapabilities worker_version_capabilities = 4 [deprecated = true];</code>
+     * @deprecated
      */
     protected $worker_version_capabilities = null;
+    /**
+     * Worker deployment options that SDK sent to server.
+     *
+     * Generated from protobuf field <code>.temporal.api.deployment.v1.WorkerDeploymentOptions deployment_options = 5;</code>
+     */
+    protected $deployment_options = null;
 
     /**
      * Constructor.
@@ -46,6 +54,9 @@ class PollerInfo extends \Google\Protobuf\Internal\Message
      *     @type \Temporal\Api\Common\V1\WorkerVersionCapabilities $worker_version_capabilities
      *           If a worker has opted into the worker versioning feature while polling, its capabilities will
      *           appear here.
+     *           Deprecated. Replaced by deployment_options.
+     *     @type \Temporal\Api\Deployment\V1\WorkerDeploymentOptions $deployment_options
+     *           Worker deployment options that SDK sent to server.
      * }
      */
     public function __construct($data = NULL) {
@@ -132,37 +143,85 @@ class PollerInfo extends \Google\Protobuf\Internal\Message
     /**
      * If a worker has opted into the worker versioning feature while polling, its capabilities will
      * appear here.
+     * Deprecated. Replaced by deployment_options.
      *
-     * Generated from protobuf field <code>.temporal.api.common.v1.WorkerVersionCapabilities worker_version_capabilities = 4;</code>
+     * Generated from protobuf field <code>.temporal.api.common.v1.WorkerVersionCapabilities worker_version_capabilities = 4 [deprecated = true];</code>
      * @return \Temporal\Api\Common\V1\WorkerVersionCapabilities|null
+     * @deprecated
      */
     public function getWorkerVersionCapabilities()
     {
+        if (isset($this->worker_version_capabilities)) {
+            @trigger_error('worker_version_capabilities is deprecated.', E_USER_DEPRECATED);
+        }
         return $this->worker_version_capabilities;
     }
 
     public function hasWorkerVersionCapabilities()
     {
+        if (isset($this->worker_version_capabilities)) {
+            @trigger_error('worker_version_capabilities is deprecated.', E_USER_DEPRECATED);
+        }
         return isset($this->worker_version_capabilities);
     }
 
     public function clearWorkerVersionCapabilities()
     {
+        @trigger_error('worker_version_capabilities is deprecated.', E_USER_DEPRECATED);
         unset($this->worker_version_capabilities);
     }
 
     /**
      * If a worker has opted into the worker versioning feature while polling, its capabilities will
      * appear here.
+     * Deprecated. Replaced by deployment_options.
      *
-     * Generated from protobuf field <code>.temporal.api.common.v1.WorkerVersionCapabilities worker_version_capabilities = 4;</code>
+     * Generated from protobuf field <code>.temporal.api.common.v1.WorkerVersionCapabilities worker_version_capabilities = 4 [deprecated = true];</code>
      * @param \Temporal\Api\Common\V1\WorkerVersionCapabilities $var
      * @return $this
+     * @deprecated
      */
     public function setWorkerVersionCapabilities($var)
     {
+        @trigger_error('worker_version_capabilities is deprecated.', E_USER_DEPRECATED);
         GPBUtil::checkMessage($var, \Temporal\Api\Common\V1\WorkerVersionCapabilities::class);
         $this->worker_version_capabilities = $var;
+
+        return $this;
+    }
+
+    /**
+     * Worker deployment options that SDK sent to server.
+     *
+     * Generated from protobuf field <code>.temporal.api.deployment.v1.WorkerDeploymentOptions deployment_options = 5;</code>
+     * @return \Temporal\Api\Deployment\V1\WorkerDeploymentOptions|null
+     */
+    public function getDeploymentOptions()
+    {
+        return $this->deployment_options;
+    }
+
+    public function hasDeploymentOptions()
+    {
+        return isset($this->deployment_options);
+    }
+
+    public function clearDeploymentOptions()
+    {
+        unset($this->deployment_options);
+    }
+
+    /**
+     * Worker deployment options that SDK sent to server.
+     *
+     * Generated from protobuf field <code>.temporal.api.deployment.v1.WorkerDeploymentOptions deployment_options = 5;</code>
+     * @param \Temporal\Api\Deployment\V1\WorkerDeploymentOptions $var
+     * @return $this
+     */
+    public function setDeploymentOptions($var)
+    {
+        GPBUtil::checkMessage($var, \Temporal\Api\Deployment\V1\WorkerDeploymentOptions::class);
+        $this->deployment_options = $var;
 
         return $this;
     }

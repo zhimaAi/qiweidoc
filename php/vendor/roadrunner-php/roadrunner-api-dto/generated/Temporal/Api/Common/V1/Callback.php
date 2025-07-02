@@ -16,6 +16,13 @@ use Google\Protobuf\Internal\GPBUtil;
  */
 class Callback extends \Google\Protobuf\Internal\Message
 {
+    /**
+     * Links associated with the callback. It can be used to link to underlying resources of the
+     * callback.
+     *
+     * Generated from protobuf field <code>repeated .temporal.api.common.v1.Link links = 100;</code>
+     */
+    private $links;
     protected $variant;
 
     /**
@@ -25,6 +32,10 @@ class Callback extends \Google\Protobuf\Internal\Message
      *     Optional. Data for populating the Message object.
      *
      *     @type \Temporal\Api\Common\V1\Callback\Nexus $nexus
+     *     @type \Temporal\Api\Common\V1\Callback\Internal $internal
+     *     @type array<\Temporal\Api\Common\V1\Link>|\Google\Protobuf\Internal\RepeatedField $links
+     *           Links associated with the callback. It can be used to link to underlying resources of the
+     *           callback.
      * }
      */
     public function __construct($data = NULL) {
@@ -55,6 +66,61 @@ class Callback extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Temporal\Api\Common\V1\Callback\Nexus::class);
         $this->writeOneof(2, $var);
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>.temporal.api.common.v1.Callback.Internal internal = 3;</code>
+     * @return \Temporal\Api\Common\V1\Callback\Internal|null
+     */
+    public function getInternal()
+    {
+        return $this->readOneof(3);
+    }
+
+    public function hasInternal()
+    {
+        return $this->hasOneof(3);
+    }
+
+    /**
+     * Generated from protobuf field <code>.temporal.api.common.v1.Callback.Internal internal = 3;</code>
+     * @param \Temporal\Api\Common\V1\Callback\Internal $var
+     * @return $this
+     */
+    public function setInternal($var)
+    {
+        GPBUtil::checkMessage($var, \Temporal\Api\Common\V1\Callback\Internal::class);
+        $this->writeOneof(3, $var);
+
+        return $this;
+    }
+
+    /**
+     * Links associated with the callback. It can be used to link to underlying resources of the
+     * callback.
+     *
+     * Generated from protobuf field <code>repeated .temporal.api.common.v1.Link links = 100;</code>
+     * @return \Google\Protobuf\Internal\RepeatedField
+     */
+    public function getLinks()
+    {
+        return $this->links;
+    }
+
+    /**
+     * Links associated with the callback. It can be used to link to underlying resources of the
+     * callback.
+     *
+     * Generated from protobuf field <code>repeated .temporal.api.common.v1.Link links = 100;</code>
+     * @param array<\Temporal\Api\Common\V1\Link>|\Google\Protobuf\Internal\RepeatedField $var
+     * @return $this
+     */
+    public function setLinks($var)
+    {
+        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Temporal\Api\Common\V1\Link::class);
+        $this->links = $arr;
 
         return $this;
     }

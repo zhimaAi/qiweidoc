@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Log\Message;
 
 use InvalidArgumentException;
-
 use Yiisoft\Log\Message;
 
 use function is_string;

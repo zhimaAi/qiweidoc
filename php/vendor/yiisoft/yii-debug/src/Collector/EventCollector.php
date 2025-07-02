@@ -8,6 +8,8 @@ use ReflectionClass;
 use Yiisoft\Yii\Console\Event\ApplicationStartup as ConsoleApplicationStartup;
 use Yiisoft\Yii\Http\Event\ApplicationStartup as HttpApplicationStartup;
 
+use function count;
+
 final class EventCollector implements SummaryCollectorInterface
 {
     use CollectorTrait;
@@ -53,9 +55,7 @@ final class EventCollector implements SummaryCollectorInterface
             return [];
         }
         return [
-            'event' => [
-                'total' => count($this->events),
-            ],
+            'total' => count($this->events),
         ];
     }
 

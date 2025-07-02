@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Config;
 
+use Yiisoft\Config\Composer\Options;
+
 /**
  * @internal
  */

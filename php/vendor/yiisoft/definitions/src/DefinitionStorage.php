@@ -12,6 +12,8 @@ use Throwable;
 use Yiisoft\Definitions\Exception\CircularReferenceException;
 use Yiisoft\Definitions\Helpers\DefinitionExtractor;
 
+use function sprintf;
+
 /**
  * Stores service definitions and checks if a definition could be instantiated.
  */
@@ -30,9 +32,8 @@ final class DefinitionStorage
      */
     public function __construct(
         private array $definitions = [],
-        private bool $useStrictMode = false
-    ) {
-    }
+        private readonly bool $useStrictMode = false,
+    ) {}
 
     /**
      * @param ContainerInterface $delegateContainer Container to fall back to when dependency is not found.
@@ -111,7 +112,7 @@ final class DefinitionStorage
             throw new CircularReferenceException(sprintf(
                 'Circular reference to "%s" detected while building: %s.',
                 $id,
-                implode(', ', array_keys($building))
+                implode(', ', array_keys($building)),
             ));
         }
 
@@ -157,7 +158,7 @@ final class DefinitionStorage
                     $unionTypes = [];
                     foreach ($type->getTypes() as $unionType) {
                         /**
-                         * @psalm-suppress DocblockTypeContradiction Need for PHP 8.0 and 8.1 only
+                         * @psalm-suppress DocblockTypeContradiction Need for PHP 8.1 only
                          */
                         if (!$unionType instanceof ReflectionNamedType || $unionType->isBuiltin()) {
                             continue;
@@ -210,8 +211,8 @@ final class DefinitionStorage
                             sprintf(
                                 'Circular reference to "%s" detected while building: %s.',
                                 $id,
-                                implode(', ', array_keys($building))
-                            )
+                                implode(', ', array_keys($building)),
+                            ),
                         );
                     }
 

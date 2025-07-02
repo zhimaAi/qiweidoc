@@ -11,16 +11,21 @@
 
 namespace Symfony\Component\TypeInfo\TypeContext;
 
+use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocNode;
 use PHPStan\PhpDocParser\Ast\PhpDoc\TemplateTagValueNode;
+use PHPStan\PhpDocParser\Ast\PhpDoc\TypeAliasImportTagValueNode;
+use PHPStan\PhpDocParser\Ast\PhpDoc\TypeAliasTagValueNode;
 use PHPStan\PhpDocParser\Lexer\Lexer;
 use PHPStan\PhpDocParser\Parser\ConstExprParser;
 use PHPStan\PhpDocParser\Parser\PhpDocParser;
 use PHPStan\PhpDocParser\Parser\TokenIterator;
 use PHPStan\PhpDocParser\Parser\TypeParser;
 use PHPStan\PhpDocParser\ParserConfig;
+use Symfony\Component\TypeInfo\Exception\LogicException;
 use Symfony\Component\TypeInfo\Exception\RuntimeException;
 use Symfony\Component\TypeInfo\Exception\UnsupportedException;
 use Symfony\Component\TypeInfo\Type;
+use Symfony\Component\TypeInfo\Type\ObjectType;
 use Symfony\Component\TypeInfo\TypeResolver\StringTypeResolver;
 
 /**
@@ -66,6 +71,7 @@ final class TypeContextFactory
             $typeContext->namespace,
             $typeContext->uses,
             $this->collectTemplates($declaringClassReflection, $typeContext),
+            $this->collectTypeAliases($declaringClassReflection, $typeContext),
         );
     }
 
@@ -103,6 +109,7 @@ final class TypeContextFactory
             $typeContext->namespace,
             $typeContext->uses,
             $templates,
+            $this->collectTypeAliases($declaringClassReflection, $typeContext),
         );
     }
 
@@ -116,7 +123,7 @@ final class TypeContextFactory
             return [];
         }
 
-        if (false === $lines = @file($fileName)) {
+        if (false === $lines = @file($fileName, \FILE_IGNORE_NEW_LINES)) {
             throw new RuntimeException(\sprintf('Unable to read file "%s".', $fileName));
         }
 
@@ -126,7 +133,7 @@ final class TypeContextFactory
         foreach ($lines as $line) {
             if (str_starts_with($line, 'use ')) {
                 $inUseSection = true;
-                $use = explode(' as ', substr($line, 4, -2), 2);
+                $use = explode(' as ', substr($line, 4, -1), 2);
 
                 $alias = 1 === \count($use) ? substr($use[0], false !== ($p = strrpos($use[0], '\\')) ? 1 + $p : 0) : $use[1];
                 $uses[$alias] = $use[0];
@@ -156,19 +163,8 @@ final class TypeContextFactory
             return [];
         }
 
-        if (class_exists(ParserConfig::class)) {
-            $config = new ParserConfig([]);
-            $this->phpstanLexer ??= new Lexer($config);
-            $this->phpstanParser ??= new PhpDocParser($config, new TypeParser($config, new ConstExprParser($config)), new ConstExprParser($config));
-        } else {
-            $this->phpstanLexer ??= new Lexer();
-            $this->phpstanParser ??= new PhpDocParser(new TypeParser(new ConstExprParser()), new ConstExprParser());
-        }
-
-        $tokens = new TokenIterator($this->phpstanLexer->tokenize($rawDocNode));
-
         $templates = [];
-        foreach ($this->phpstanParser->parse($tokens)->getTagsByName('@template') as $tag) {
+        foreach ($this->getPhpDocNode($rawDocNode)->getTagsByName('@template') as $tag) {
             if (!$tag->value instanceof TemplateTagValueNode) {
                 continue;
             }
@@ -187,5 +183,113 @@ final class TypeContextFactory
         }
 
         return $templates;
+    }
+
+    /**
+     * @return array<string, Type>
+     */
+    private function collectTypeAliases(\ReflectionClass $reflection, TypeContext $typeContext): array
+    {
+        if (!$this->stringTypeResolver || !class_exists(PhpDocParser::class)) {
+            return [];
+        }
+
+        if (!$rawDocNode = $reflection->getDocComment()) {
+            return [];
+        }
+
+        $aliases = [];
+        $resolvedAliases = [];
+
+        foreach ($this->getPhpDocNode($rawDocNode)->getTagsByName('@psalm-import-type') + $this->getPhpDocNode($rawDocNode)->getTagsByName('@phpstan-import-type') as $tag) {
+            if (!$tag->value instanceof TypeAliasImportTagValueNode) {
+                continue;
+            }
+
+            $importedFromType = $this->stringTypeResolver->resolve((string) $tag->value->importedFrom, $typeContext);
+            if (!$importedFromType instanceof ObjectType) {
+                throw new LogicException(\sprintf('Type alias "%s" is not imported from a valid class name.', $tag->value->importedAlias));
+            }
+
+            $importedFromContext = $this->createFromClassName($importedFromType->getClassName());
+
+            $typeAlias = $importedFromContext->typeAliases[$tag->value->importedAlias] ?? null;
+            if (!$typeAlias) {
+                throw new LogicException(\sprintf('Cannot find any "%s" type alias in "%s".', $tag->value->importedAlias, $importedFromType->getClassName()));
+            }
+
+            $resolvedAliases[$tag->value->importedAs ?? $tag->value->importedAlias] = $typeAlias;
+        }
+
+        foreach ($this->getPhpDocNode($rawDocNode)->getTagsByName('@psalm-type') + $this->getPhpDocNode($rawDocNode)->getTagsByName('@phpstan-type') as $tag) {
+            if (!$tag->value instanceof TypeAliasTagValueNode) {
+                continue;
+            }
+
+            $aliases[$tag->value->alias] = (string) $tag->value->type;
+        }
+
+        return $this->resolveTypeAliases($aliases, $resolvedAliases, $typeContext);
+    }
+
+    /**
+     * @param array<string, string> $toResolve
+     * @param array<string, Type>   $resolved
+     *
+     * @return array<string, Type>
+     */
+    private function resolveTypeAliases(array $toResolve, array $resolved, TypeContext $typeContext): array
+    {
+        if (!$toResolve) {
+            return [];
+        }
+
+        $typeContext = new TypeContext(
+            $typeContext->calledClassName,
+            $typeContext->declaringClassName,
+            $typeContext->namespace,
+            $typeContext->uses,
+            $typeContext->templates,
+            $typeContext->typeAliases + $resolved,
+        );
+
+        $succeeded = false;
+        $lastFailure = null;
+        $lastFailingAlias = null;
+
+        foreach ($toResolve as $alias => $type) {
+            try {
+                $resolved[$alias] = $this->stringTypeResolver->resolve($type, $typeContext);
+                unset($toResolve[$alias]);
+                $succeeded = true;
+            } catch (UnsupportedException $lastFailure) {
+                $lastFailingAlias = $alias;
+            }
+        }
+
+        // nothing has succeeded, the result won't be different from the
+        // previous one, we can stop here.
+        if (!$succeeded) {
+            throw new LogicException(\sprintf('Cannot resolve "%s" type alias.', $lastFailingAlias), 0, $lastFailure);
+        }
+
+        if ($toResolve) {
+            return $this->resolveTypeAliases($toResolve, $resolved, $typeContext);
+        }
+
+        return $resolved;
+    }
+
+    private function getPhpDocNode(string $rawDocNode): PhpDocNode
+    {
+        if (class_exists(ParserConfig::class)) {
+            $this->phpstanLexer ??= new Lexer($config = new ParserConfig([]));
+            $this->phpstanParser ??= new PhpDocParser($config, new TypeParser($config, new ConstExprParser($config)), new ConstExprParser($config));
+        } else {
+            $this->phpstanLexer ??= new Lexer();
+            $this->phpstanParser ??= new PhpDocParser(new TypeParser(new ConstExprParser()), new ConstExprParser());
+        }
+
+        return $this->phpstanParser->parse(new TokenIterator($this->phpstanLexer->tokenize($rawDocNode)));
     }
 }

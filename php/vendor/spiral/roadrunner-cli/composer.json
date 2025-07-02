@@ -16,33 +16,44 @@
     "bin": [
         "bin/rr"
     ],
+    "homepage": "https://roadrunner.dev",
+    "support": {
+        "docs": "https://docs.roadrunner.dev",
+        "issues": "https://github.com/roadrunner-server/roadrunner/issues",
+        "chat": "https://discord.gg/V6EK4he"
+    },
+    "funding": [
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/roadrunner-server"
+        }
+    ],
     "require": {
-        "php": ">=7.4",
+        "php": ">=8.1",
         "ext-json": "*",
-        "composer/semver": "^3.2",
-        "spiral/roadrunner-worker": ">=2.0.2",
-        "spiral/tokenizer": "^2.13 || ^3.0",
+        "composer/semver": "^3.4",
+        "spiral/roadrunner-worker": "^2 || ^3",
+        "spiral/tokenizer": "^2.13 || ^3.15",
         "symfony/console": "^5.3 || ^6.0 || ^7.0",
-        "symfony/http-client": "^4.4.11 || ^5.0 || ^6.0 || ^7.0",
-        "symfony/polyfill-php80": "^1.22",
-        "symfony/yaml": "^5.4 || ^6.0 || ^7.0"
+        "symfony/http-client": "^4.4.51 || ^5.4.49 || ^6.4.17 || ^7.2",
+        "symfony/yaml": "^5.4.49 || ^6.4.17 || ^7.2"
     },
     "require-dev": {
-        "jetbrains/phpstorm-attributes": "^1.0",
-        "vimeo/psalm": "^5.17"
-    },
-    "scripts": {
-        "analyze": "psalm"
+        "jetbrains/phpstorm-attributes": "^1.2",
+        "spiral/code-style": "^2.2.2",
+        "spiral/dumper": "^3.3",
+        "vimeo/psalm": "^6.0"
     },
     "autoload": {
         "psr-4": {
             "Spiral\\RoadRunner\\Console\\": "src"
         }
     },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "2.1.x-dev"
-        }
+    "scripts": {
+        "cs:diff": "php-cs-fixer fix --dry-run -v --diff --show-progress dots",
+        "cs:fix": "php-cs-fixer fix -v",
+        "psalm": "psalm",
+        "psalm:baseline": "psalm --set-baseline=psalm-baseline.xml"
     },
     "config": {
         "sort-packages": true

@@ -11,11 +11,11 @@
     "license": "BSD-3-Clause",
     "support": {
         "issues": "https://github.com/yiisoft/cache/issues?state=open",
+        "source": "https://github.com/yiisoft/cache",
         "forum": "https://www.yiiframework.com/forum/",
         "wiki": "https://www.yiiframework.com/wiki/",
-        "irc": "irc://irc.freenode.net/yii",
-        "chat": "https://t.me/yii3en",
-        "source": "https://github.com/yiisoft/cache"
+        "irc": "ircs://irc.libera.chat:6697/yii",
+        "chat": "https://t.me/yii3en"
     },
     "funding": [
         {
@@ -28,22 +28,21 @@
         }
     ],
     "require": {
-        "php": "^8.0",
-        "ext-json": "*",
+        "php": "8.1 - 8.4",
         "ext-mbstring": "*",
-        "psr/simple-cache": "^2.0|^3.0"
+        "psr/simple-cache": "^2.0 || ^3.0"
     },
     "require-dev": {
-        "maglnet/composer-require-checker": "^4.2",
-        "phpunit/phpunit": "^9.5",
-        "rector/rector": "^0.15.2",
-        "roave/infection-static-analysis-plugin": "^1.16",
-        "spatie/phpunit-watcher": "^1.23",
-        "vimeo/psalm": "^4.30|^5.6",
-        "yiisoft/di": "^1.2"
+        "maglnet/composer-require-checker": "^4.7.1",
+        "phpunit/phpunit": "^10.5.46",
+        "rector/rector": "^2.0.17",
+        "roave/infection-static-analysis-plugin": "^1.35",
+        "spatie/phpunit-watcher": "^1.24.0",
+        "vimeo/psalm": "^5.26.1 || ^6.12",
+        "yiisoft/di": "^1.4.0"
     },
     "provide": {
-        "psr/simple-cache-implementation": "2.0|3.0"
+        "psr/simple-cache-implementation": "2.0 || 3.0"
     },
     "suggest": {
         "yiisoft/cache-apcu": "Allows to store cache using APCu PECL extension",

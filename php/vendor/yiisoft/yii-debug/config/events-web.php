@@ -20,14 +20,14 @@ if (!(bool) ($params['yiisoft/yii-debug']['enabled'] ?? false)) {
 
 return [
     ApplicationStartup::class => [
-        [Debugger::class, 'startup'],
+        [Debugger::class, 'start'],
         [WebAppInfoCollector::class, 'collect'],
     ],
     ApplicationShutdown::class => [
         [WebAppInfoCollector::class, 'collect'],
     ],
     BeforeRequest::class => [
-        [Debugger::class, 'startup'],
+        [Debugger::class, 'start'],
         [WebAppInfoCollector::class, 'collect'],
         [RequestCollector::class, 'collect'],
     ],
@@ -38,7 +38,7 @@ return [
     AfterEmit::class => [
         [ProfilerInterface::class, 'flush'],
         [WebAppInfoCollector::class, 'collect'],
-        [Debugger::class, 'shutdown'],
+        [Debugger::class, 'stop'],
     ],
     ApplicationError::class => [
         [ExceptionCollector::class, 'collect'],

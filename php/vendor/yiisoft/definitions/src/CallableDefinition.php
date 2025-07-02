@@ -45,11 +45,11 @@ final class CallableDefinition implements DefinitionInterface
     {
         try {
             $reflection = new ReflectionFunction(
-                $this->prepareClosure($this->callable, $container)
+                $this->prepareClosure($this->callable, $container),
             );
         } catch (ReflectionException) {
             throw new NotInstantiableException(
-                'Can not instantiate callable definition. Got ' . var_export($this->callable, true)
+                'Can not instantiate callable definition. Got ' . var_export($this->callable, true),
             );
         }
 

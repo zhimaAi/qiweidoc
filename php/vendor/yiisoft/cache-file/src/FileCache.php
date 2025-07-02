@@ -12,7 +12,6 @@ use Traversable;
 use function array_keys;
 use function array_map;
 use function closedir;
-use function dirname;
 use function error_get_last;
 use function filemtime;
 use function fileowner;
@@ -21,12 +20,16 @@ use function function_exists;
 use function is_dir;
 use function is_file;
 use function iterator_to_array;
+use function mkdir;
 use function opendir;
 use function posix_geteuid;
 use function random_int;
 use function readdir;
+use function restore_error_handler;
 use function rmdir;
 use function serialize;
+use function set_error_handler;
+use function sprintf;
 use function strpbrk;
 use function substr;
 use function unlink;
@@ -91,9 +94,6 @@ final class FileCache implements CacheInterface
         private string $cachePath,
         private int $directoryMode = 0775,
     ) {
-        if (!$this->createDirectoryIfNotExists($cachePath)) {
-            throw new CacheException("Failed to create cache directory \"$cachePath\".");
-        }
     }
 
     public function get(string $key, mixed $default = null): mixed
@@ -123,16 +123,9 @@ final class FileCache implements CacheInterface
             return $this->delete($key);
         }
 
-        $file = $this->getCacheFile($key);
-        $cacheDirectory = dirname($file);
+        $file = $this->getCacheFile($key, ensureDirectory: true);
 
-        if (!is_dir($this->cachePath)
-            || $this->directoryLevel > 0 && !$this->createDirectoryIfNotExists($cacheDirectory)
-        ) {
-            throw new CacheException("Failed to create cache directory \"$cacheDirectory\".");
-        }
-
-        // If ownership differs the touch call will fail, so we try to
+        // If ownership differs, the touch call will fail, so we try to
         // rebuild the file from scratch by deleting it first
         // https://github.com/yiisoft/yii2/pull/16120
         if (function_exists('posix_geteuid') && is_file($file) && fileowner($file) !== posix_geteuid()) {
@@ -150,7 +143,12 @@ final class FileCache implements CacheInterface
             }
         }
 
-        $result = @touch($file, $expiration);
+        $result = false;
+
+        if (@touch($file, $expiration)) {
+            clearstatcache();
+            $result = true;
+        }
 
         return $this->isLastErrorSafe($result);
     }
@@ -320,25 +318,38 @@ final class FileCache implements CacheInterface
     }
 
     /**
-     * Ensures that the directory is created.
+     * Ensures that the directory exists.
      *
      * @param string $path The path to the directory.
-     *
-     * @return bool Whether the directory was created.
      */
-    private function createDirectoryIfNotExists(string $path): bool
+    private function ensureDirectory(string $path): void
     {
         if (is_dir($path)) {
-            return true;
+            return;
         }
 
-        $result = !is_file($path) && mkdir(directory: $path, recursive: true) && is_dir($path);
-
-        if ($result) {
-            chmod($path, $this->directoryMode);
+        if (is_file($path)) {
+            throw new CacheException("Failed to create cache directory, file with the same name exists: \"$path\".");
         }
 
-        return $result;
+        set_error_handler(
+            static function (int $errorNumber, string $errorString) use ($path): bool {
+                if (is_dir($path)) {
+                    return true;
+                }
+                throw new CacheException(
+                    sprintf('Failed to create directory "%s". %s', $path, $errorString),
+                    $errorNumber,
+                );
+            }
+        );
+        try {
+            mkdir($path, recursive: true);
+        } finally {
+            restore_error_handler();
+        }
+
+        chmod($path, $this->directoryMode);
     }
 
     /**
@@ -348,8 +359,12 @@ final class FileCache implements CacheInterface
      *
      * @return string The cache file path.
      */
-    private function getCacheFile(string $key): string
+    private function getCacheFile(string $key, bool $ensureDirectory = false): string
     {
+        if ($ensureDirectory) {
+            $this->ensureDirectory($this->cachePath);
+        }
+
         if ($this->directoryLevel < 1) {
             return $this->cachePath . DIRECTORY_SEPARATOR . $key . $this->fileSuffix;
         }
@@ -359,6 +374,9 @@ final class FileCache implements CacheInterface
         for ($i = 0; $i < $this->directoryLevel; ++$i) {
             if (($prefix = substr($key, $i + $i, 2)) !== '') {
                 $base .= DIRECTORY_SEPARATOR . $prefix;
+                if ($ensureDirectory) {
+                    $this->ensureDirectory($base);
+                }
             }
         }
 
@@ -418,6 +436,9 @@ final class FileCache implements CacheInterface
         }
     }
 
+    /**
+     * @param string[] $keys
+     */
     private function validateKeys(array $keys): void
     {
         foreach ($keys as $key) {
@@ -432,6 +453,11 @@ final class FileCache implements CacheInterface
 
     /**
      * Converts iterable to array.
+     *
+     * @psalm-template TKey
+     * @psalm-template TValue
+     * @psalm-param iterable<TKey, TValue> $iterable
+     * @psalm-return array<TKey, TValue>
      */
     private function iterableToArray(iterable $iterable): array
     {

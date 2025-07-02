@@ -12,14 +12,13 @@ final class Version
         'spiral/roadrunner',
         'spiral/roadrunner-worker',
     ];
-
     public const VERSION_FALLBACK = 'dev-master';
 
     public static function current(): string
     {
         foreach (self::PACKAGE_NAMES as $name) {
             if (InstalledVersions::isInstalled($name)) {
-                return \ltrim((string)InstalledVersions::getPrettyVersion($name), 'v');
+                return \ltrim((string) InstalledVersions::getPrettyVersion($name), 'v');
             }
         }
 

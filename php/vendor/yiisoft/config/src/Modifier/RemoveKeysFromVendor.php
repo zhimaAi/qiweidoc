@@ -14,10 +14,11 @@ final class RemoveKeysFromVendor
     /**
      * @var string[][]
      */
-    private array $keys;
+    private readonly array $keys;
 
     /**
      * @var string[][]
+     * @psalm-var list<non-empty-array<string>>
      */
     private array $packages = [];
 
@@ -48,6 +49,7 @@ final class RemoveKeysFromVendor
 
     /**
      * @return string[][]
+     * @psalm-return list<non-empty-array<string>>
      */
     public function getPackages(): array
     {

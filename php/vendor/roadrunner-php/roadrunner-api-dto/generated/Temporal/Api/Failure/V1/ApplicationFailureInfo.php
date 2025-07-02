@@ -35,6 +35,10 @@ class ApplicationFailureInfo extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>.google.protobuf.Duration next_retry_delay = 4;</code>
      */
     protected $next_retry_delay = null;
+    /**
+     * Generated from protobuf field <code>.temporal.api.enums.v1.ApplicationErrorCategory category = 5;</code>
+     */
+    protected $category = 0;
 
     /**
      * Constructor.
@@ -50,6 +54,7 @@ class ApplicationFailureInfo extends \Google\Protobuf\Internal\Message
      *           retry interval calculated by the retry policy. Retry attempts will
      *           still be subject to the maximum retries limit and total time limit
      *           defined by the policy.
+     *     @type int $category
      * }
      */
     public function __construct($data = NULL) {
@@ -171,6 +176,28 @@ class ApplicationFailureInfo extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Google\Protobuf\Duration::class);
         $this->next_retry_delay = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>.temporal.api.enums.v1.ApplicationErrorCategory category = 5;</code>
+     * @return int
+     */
+    public function getCategory()
+    {
+        return $this->category;
+    }
+
+    /**
+     * Generated from protobuf field <code>.temporal.api.enums.v1.ApplicationErrorCategory category = 5;</code>
+     * @param int $var
+     * @return $this
+     */
+    public function setCategory($var)
+    {
+        GPBUtil::checkEnum($var, \Temporal\Api\Enums\V1\ApplicationErrorCategory::class);
+        $this->category = $var;
 
         return $this;
     }

@@ -24,6 +24,12 @@ class HandlerError extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>.temporal.api.nexus.v1.Failure failure = 2;</code>
      */
     protected $failure = null;
+    /**
+     * Retry behavior, defaults to the retry behavior of the error type as defined in the spec.
+     *
+     * Generated from protobuf field <code>.temporal.api.enums.v1.NexusHandlerErrorRetryBehavior retry_behavior = 3;</code>
+     */
+    protected $retry_behavior = 0;
 
     /**
      * Constructor.
@@ -34,6 +40,8 @@ class HandlerError extends \Google\Protobuf\Internal\Message
      *     @type string $error_type
      *           See https://github.com/nexus-rpc/api/blob/main/SPEC.md#predefined-handler-errors.
      *     @type \Temporal\Api\Nexus\V1\Failure $failure
+     *     @type int $retry_behavior
+     *           Retry behavior, defaults to the retry behavior of the error type as defined in the spec.
      * }
      */
     public function __construct($data = NULL) {
@@ -95,6 +103,32 @@ class HandlerError extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Temporal\Api\Nexus\V1\Failure::class);
         $this->failure = $var;
+
+        return $this;
+    }
+
+    /**
+     * Retry behavior, defaults to the retry behavior of the error type as defined in the spec.
+     *
+     * Generated from protobuf field <code>.temporal.api.enums.v1.NexusHandlerErrorRetryBehavior retry_behavior = 3;</code>
+     * @return int
+     */
+    public function getRetryBehavior()
+    {
+        return $this->retry_behavior;
+    }
+
+    /**
+     * Retry behavior, defaults to the retry behavior of the error type as defined in the spec.
+     *
+     * Generated from protobuf field <code>.temporal.api.enums.v1.NexusHandlerErrorRetryBehavior retry_behavior = 3;</code>
+     * @param int $var
+     * @return $this
+     */
+    public function setRetryBehavior($var)
+    {
+        GPBUtil::checkEnum($var, \Temporal\Api\Enums\V1\NexusHandlerErrorRetryBehavior::class);
+        $this->retry_behavior = $var;
 
         return $this;
     }

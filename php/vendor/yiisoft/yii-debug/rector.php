@@ -21,6 +21,6 @@ return static function (RectorConfig $rectorConfig): void {
     ]);
 
     $rectorConfig->skip([
-        __DIR__ . '/tests/Unit/DumperTest.php',
+        __DIR__ . '/tests/Unit/DataNormalizerTest.php',
     ]);
 };

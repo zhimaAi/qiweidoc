@@ -97,6 +97,20 @@ class CommandTest extends TestCase
         $this->assertSame('curl -v -L -L http://example.com', $command->build());
     }
 
+    public function testBuildDuplicatedOptionsAddOptions(): void
+    {
+        $command = $this->getNewCommand();
+        $command->addOptions(['-v', '-v']);
+        $this->assertSame('curl -v -v http://example.com', $command->build());
+    }
+
+    public function testBuildDuplicatedOptionsSetOptions(): void
+    {
+        $command = $this->getNewCommand();
+        $command->setOptions(['-v', '-v']);
+        $this->assertSame('curl -v -v http://example.com', $command->build());
+    }
+
     public function testBuildSetTemplate(): void
     {
         $command = $this->getNewCommand();
@@ -144,7 +158,7 @@ class CommandTest extends TestCase
         $command = $this->getNewCommand();
         $command->addOption('-d', 'arbitrary');
 
-        // default is singe
+        // default is single
         $this->assertSame("curl -d 'arbitrary' http://example.com", $command->build());
 
         $command->setQuoteCharacter(Command::QUOTE_DOUBLE);
@@ -293,5 +307,25 @@ EXP;
         $request = new Request('GET', 'http://example.com');
         $command->setRequest($request);
         $this->assertTrue($command->parseRequest());
+    }
+
+    public function testBuildPsrHttpRequestSkipHostHeader(): void
+    {
+        $request = new Request('GET', 'http://example.com', [
+            'Host' => ['example.com'],
+            'Custom' => ['value'],
+        ]);
+
+        $command = new Command();
+        $command->setRequest($request);
+        $this->assertSame("curl -H 'Custom: value' http://example.com", $command->build());
+    }
+
+    public function testBuildWithQuoteNoneAndSpaces(): void
+    {
+        $command = $this->getNewCommand();
+        $command->setQuoteCharacter(Command::QUOTE_NONE);
+        $command->addOption('-d', 'value with spaces');
+        $this->assertSame('curl -d value\\ with\\ spaces http://example.com', $command->build());
     }
 }

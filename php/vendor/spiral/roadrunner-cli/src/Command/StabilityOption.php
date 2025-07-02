@@ -21,34 +21,13 @@ use Symfony\Component\Console\Style\StyleInterface;
  */
 class StabilityOption extends Option
 {
-    /**
-     * @param Command $command
-     * @param string $name
-     * @param string $short
-     */
     public function __construct(Command $command, string $name = 'stability', string $short = 's')
     {
         parent::__construct($command, $name, $short);
     }
 
     /**
-     * @return string
-     */
-    protected function getDescription(): string
-    {
-        return 'Release minimum stability flag';
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function default(): string
-    {
-        return Stability::STABILITY_STABLE;
-    }
-
-    /**
-     * {@inheritDoc}
+     *
      * @return StabilityType|string
      */
     public function get(InputInterface $input, StyleInterface $io): string
@@ -63,9 +42,16 @@ class StabilityOption extends Option
         return $stability;
     }
 
-    /**
-     * @return string
-     */
+    protected function getDescription(): string
+    {
+        return 'Release minimum stability flag';
+    }
+
+    protected function default(): string
+    {
+        return Stability::STABILITY_STABLE;
+    }
+
     private function choices(): string
     {
         return \implode(', ', Stability::all());

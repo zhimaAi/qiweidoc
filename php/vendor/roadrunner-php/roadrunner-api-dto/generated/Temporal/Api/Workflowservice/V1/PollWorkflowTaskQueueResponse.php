@@ -51,14 +51,14 @@ class PollWorkflowTaskQueueResponse extends \Google\Protobuf\Internal\Message
      */
     protected $attempt = 0;
     /**
-     * A hint that there are more tasks already present in this task queue 
+     * A hint that there are more tasks already present in this task queue
      * partition. Can be used to prioritize draining a sticky queue.
      * Specifically, the returned number is the number of tasks remaining in
      * the in-memory buffer for this partition, which is currently capped at
-     * 1000. Because sticky queues only have one partition, this number is 
-     * more useful when draining them. Normal queues, typically having more than one 
-     * partition, will return a number representing only some portion of the 
-     * overall backlog. Subsequent RPCs may not hit the same partition as 
+     * 1000. Because sticky queues only have one partition, this number is
+     * more useful when draining them. Normal queues, typically having more than one
+     * partition, will return a number representing only some portion of the
+     * overall backlog. Subsequent RPCs may not hit the same partition as
      * this call.
      *
      * Generated from protobuf field <code>int64 backlog_count_hint = 7;</code>
@@ -120,6 +120,12 @@ class PollWorkflowTaskQueueResponse extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>repeated .temporal.api.protocol.v1.Message messages = 15;</code>
      */
     private $messages;
+    /**
+     * Server-advised information the SDK may use to adjust its poller count.
+     *
+     * Generated from protobuf field <code>.temporal.api.taskqueue.v1.PollerScalingDecision poller_scaling_decision = 16;</code>
+     */
+    protected $poller_scaling_decision = null;
 
     /**
      * Constructor.
@@ -142,14 +148,14 @@ class PollWorkflowTaskQueueResponse extends \Google\Protobuf\Internal\Message
      *     @type int $attempt
      *           Starting at 1, the number of attempts to complete this task by any worker.
      *     @type int|string $backlog_count_hint
-     *           A hint that there are more tasks already present in this task queue 
+     *           A hint that there are more tasks already present in this task queue
      *           partition. Can be used to prioritize draining a sticky queue.
      *           Specifically, the returned number is the number of tasks remaining in
      *           the in-memory buffer for this partition, which is currently capped at
-     *           1000. Because sticky queues only have one partition, this number is 
-     *           more useful when draining them. Normal queues, typically having more than one 
-     *           partition, will return a number representing only some portion of the 
-     *           overall backlog. Subsequent RPCs may not hit the same partition as 
+     *           1000. Because sticky queues only have one partition, this number is
+     *           more useful when draining them. Normal queues, typically having more than one
+     *           partition, will return a number representing only some portion of the
+     *           overall backlog. Subsequent RPCs may not hit the same partition as
      *           this call.
      *     @type \Temporal\Api\History\V1\History $history
      *           The history for this workflow, which will either be complete or partial. Partial histories
@@ -175,6 +181,8 @@ class PollWorkflowTaskQueueResponse extends \Google\Protobuf\Internal\Message
      *           attached to `RespondWorkflowTaskCompletedRequest::query_results`
      *     @type array<\Temporal\Api\Protocol\V1\Message>|\Google\Protobuf\Internal\RepeatedField $messages
      *           Protocol messages piggybacking on a WFT as a transport
+     *     @type \Temporal\Api\Taskqueue\V1\PollerScalingDecision $poller_scaling_decision
+     *           Server-advised information the SDK may use to adjust its poller count.
      * }
      */
     public function __construct($data = NULL) {
@@ -359,14 +367,14 @@ class PollWorkflowTaskQueueResponse extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * A hint that there are more tasks already present in this task queue 
+     * A hint that there are more tasks already present in this task queue
      * partition. Can be used to prioritize draining a sticky queue.
      * Specifically, the returned number is the number of tasks remaining in
      * the in-memory buffer for this partition, which is currently capped at
-     * 1000. Because sticky queues only have one partition, this number is 
-     * more useful when draining them. Normal queues, typically having more than one 
-     * partition, will return a number representing only some portion of the 
-     * overall backlog. Subsequent RPCs may not hit the same partition as 
+     * 1000. Because sticky queues only have one partition, this number is
+     * more useful when draining them. Normal queues, typically having more than one
+     * partition, will return a number representing only some portion of the
+     * overall backlog. Subsequent RPCs may not hit the same partition as
      * this call.
      *
      * Generated from protobuf field <code>int64 backlog_count_hint = 7;</code>
@@ -378,14 +386,14 @@ class PollWorkflowTaskQueueResponse extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * A hint that there are more tasks already present in this task queue 
+     * A hint that there are more tasks already present in this task queue
      * partition. Can be used to prioritize draining a sticky queue.
      * Specifically, the returned number is the number of tasks remaining in
      * the in-memory buffer for this partition, which is currently capped at
-     * 1000. Because sticky queues only have one partition, this number is 
-     * more useful when draining them. Normal queues, typically having more than one 
-     * partition, will return a number representing only some portion of the 
-     * overall backlog. Subsequent RPCs may not hit the same partition as 
+     * 1000. Because sticky queues only have one partition, this number is
+     * more useful when draining them. Normal queues, typically having more than one
+     * partition, will return a number representing only some portion of the
+     * overall backlog. Subsequent RPCs may not hit the same partition as
      * this call.
      *
      * Generated from protobuf field <code>int64 backlog_count_hint = 7;</code>
@@ -670,6 +678,42 @@ class PollWorkflowTaskQueueResponse extends \Google\Protobuf\Internal\Message
     {
         $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Temporal\Api\Protocol\V1\Message::class);
         $this->messages = $arr;
+
+        return $this;
+    }
+
+    /**
+     * Server-advised information the SDK may use to adjust its poller count.
+     *
+     * Generated from protobuf field <code>.temporal.api.taskqueue.v1.PollerScalingDecision poller_scaling_decision = 16;</code>
+     * @return \Temporal\Api\Taskqueue\V1\PollerScalingDecision|null
+     */
+    public function getPollerScalingDecision()
+    {
+        return $this->poller_scaling_decision;
+    }
+
+    public function hasPollerScalingDecision()
+    {
+        return isset($this->poller_scaling_decision);
+    }
+
+    public function clearPollerScalingDecision()
+    {
+        unset($this->poller_scaling_decision);
+    }
+
+    /**
+     * Server-advised information the SDK may use to adjust its poller count.
+     *
+     * Generated from protobuf field <code>.temporal.api.taskqueue.v1.PollerScalingDecision poller_scaling_decision = 16;</code>
+     * @param \Temporal\Api\Taskqueue\V1\PollerScalingDecision $var
+     * @return $this
+     */
+    public function setPollerScalingDecision($var)
+    {
+        GPBUtil::checkMessage($var, \Temporal\Api\Taskqueue\V1\PollerScalingDecision::class);
+        $this->poller_scaling_decision = $var;
 
         return $this;
     }

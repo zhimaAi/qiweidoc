@@ -28,12 +28,26 @@ class PendingActivityState
      * Generated from protobuf enum <code>PENDING_ACTIVITY_STATE_CANCEL_REQUESTED = 3;</code>
      */
     const PENDING_ACTIVITY_STATE_CANCEL_REQUESTED = 3;
+    /**
+     * PAUSED means activity is paused on the server, and is not running in the worker
+     *
+     * Generated from protobuf enum <code>PENDING_ACTIVITY_STATE_PAUSED = 4;</code>
+     */
+    const PENDING_ACTIVITY_STATE_PAUSED = 4;
+    /**
+     * PAUSE_REQUESTED means activity is currently running on the worker, but paused on the server
+     *
+     * Generated from protobuf enum <code>PENDING_ACTIVITY_STATE_PAUSE_REQUESTED = 5;</code>
+     */
+    const PENDING_ACTIVITY_STATE_PAUSE_REQUESTED = 5;
 
     private static $valueToName = [
         self::PENDING_ACTIVITY_STATE_UNSPECIFIED => 'PENDING_ACTIVITY_STATE_UNSPECIFIED',
         self::PENDING_ACTIVITY_STATE_SCHEDULED => 'PENDING_ACTIVITY_STATE_SCHEDULED',
         self::PENDING_ACTIVITY_STATE_STARTED => 'PENDING_ACTIVITY_STATE_STARTED',
         self::PENDING_ACTIVITY_STATE_CANCEL_REQUESTED => 'PENDING_ACTIVITY_STATE_CANCEL_REQUESTED',
+        self::PENDING_ACTIVITY_STATE_PAUSED => 'PENDING_ACTIVITY_STATE_PAUSED',
+        self::PENDING_ACTIVITY_STATE_PAUSE_REQUESTED => 'PENDING_ACTIVITY_STATE_PAUSE_REQUESTED',
     ];
 
     public static function name($value)

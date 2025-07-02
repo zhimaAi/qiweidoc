@@ -21,8 +21,9 @@ final class AssetsCollection extends Collection
      */
     public function onlyRoadrunner(): self
     {
-        return $this->filter(static fn (AssetInterface $asset): bool =>
-            \str_starts_with($asset->getName(), 'roadrunner')
+        return $this->filter(
+            static fn(AssetInterface $asset): bool =>
+            \str_starts_with($asset->getName(), 'roadrunner'),
         );
     }
 
@@ -31,30 +32,31 @@ final class AssetsCollection extends Collection
      */
     public function exceptDebPackages(): self
     {
-        return $this->except(static fn (AssetInterface $asset): bool =>
-            \str_ends_with(\strtolower($asset->getName()), '.deb')
+        return $this->except(
+            static fn(AssetInterface $asset): bool =>
+            \str_ends_with(\strtolower($asset->getName()), '.deb'),
         );
     }
 
     /**
-     * @param string $arch
      * @return $this
      */
     public function whereArchitecture(string $arch): self
     {
-        return $this->filter(static fn (AssetInterface $asset): bool =>
-            \str_contains($asset->getName(), '-' . \strtolower($arch) . '.')
+        return $this->filter(
+            static fn(AssetInterface $asset): bool =>
+            \str_contains($asset->getName(), '-' . \strtolower($arch) . '.'),
         );
     }
 
     /**
-     * @param string $os
      * @return $this
      */
     public function whereOperatingSystem(string $os): self
     {
-        return $this->filter(static fn (AssetInterface $asset): bool =>
-            \str_contains($asset->getName(), '-' . \strtolower($os) . '-')
+        return $this->filter(
+            static fn(AssetInterface $asset): bool =>
+            \str_contains($asset->getName(), '-' . \strtolower($os) . '-'),
         );
     }
 }

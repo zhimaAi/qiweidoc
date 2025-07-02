@@ -22,7 +22,6 @@ interface ReleaseInterface
     /**
      * Returns Composer's compatible "pretty" release version.
      *
-     * @return string
      */
     public function getName(): string;
 
@@ -31,13 +30,9 @@ interface ReleaseInterface
      * Please note that this version may not be compatible with Composer's
      * comparators.
      *
-     * @return string
      */
     public function getVersion(): string;
 
-    /**
-     * @return string
-     */
     public function getRepositoryName(): string;
 
     /**
@@ -51,14 +46,7 @@ interface ReleaseInterface
      */
     public function getAssets(): AssetsCollection;
 
-    /**
-     * @param string $constraint
-     * @return bool
-     */
     public function satisfies(string $constraint): bool;
 
-    /**
-     * @return string
-     */
     public function getConfig(): string;
 }

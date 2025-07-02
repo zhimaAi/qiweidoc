@@ -15,7 +15,6 @@ use Spiral\RoadRunner\Console\Environment\Environment;
 use Spiral\RoadRunner\Console\Repository\GitHub\GitHubRepository;
 use Spiral\RoadRunner\Console\Repository\RepositoriesCollection;
 use Spiral\RoadRunner\Console\Repository\RepositoryInterface;
-use Spiral\RoadRunner\Console\Repository\Version1\StaticRepository;
 use Symfony\Component\Console\Command\Command as BaseCommand;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -32,17 +31,14 @@ abstract class Command extends BaseCommand
      */
     private const ENV_GITHUB_TOKEN = 'GITHUB_TOKEN';
 
-    /**
-     * @return RepositoryInterface
-     */
     protected function getRepository(): RepositoryInterface
     {
         $token = Environment::get(self::ENV_GITHUB_TOKEN);
 
         $client = HttpClient::create([
             'headers' => \array_filter([
-                'authorization' => $token ? 'token ' . $token : null
-            ])
+                'authorization' => $token ? 'token ' . $token : null,
+            ]),
         ]);
 
         return new RepositoriesCollection([
@@ -50,22 +46,11 @@ abstract class Command extends BaseCommand
         ]);
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return StyleInterface
-     */
     protected function io(InputInterface $input, OutputInterface $output): StyleInterface
     {
         return new SymfonyStyle($input, $output);
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $out
-     * @param string $message
-     * @return bool
-     */
     protected function confirm(InputInterface $input, OutputInterface $out, string $message): bool
     {
         $question = new ConfirmationQuestion($message);
@@ -73,6 +58,6 @@ abstract class Command extends BaseCommand
         /** @var QuestionHelper $helper */
         $helper = $this->getHelper('question');
 
-        return (bool)$helper->ask($input, $out, $question);
+        return (bool) $helper->ask($input, $out, $question);
     }
 }

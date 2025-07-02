@@ -297,13 +297,21 @@ class EventType
      */
     const EVENT_TYPE_UPSERT_WORKFLOW_SEARCH_ATTRIBUTES = 40;
     /**
-     * An update was accepted (i.e. validated)
+     * An update was admitted. Note that not all admitted updates result in this
+     * event. See UpdateAdmittedEventOrigin for situations in which this event
+     * is created.
+     *
+     * Generated from protobuf enum <code>EVENT_TYPE_WORKFLOW_EXECUTION_UPDATE_ADMITTED = 47;</code>
+     */
+    const EVENT_TYPE_WORKFLOW_EXECUTION_UPDATE_ADMITTED = 47;
+    /**
+     * An update was accepted (i.e. passed validation, perhaps because no validator was defined)
      *
      * Generated from protobuf enum <code>EVENT_TYPE_WORKFLOW_EXECUTION_UPDATE_ACCEPTED = 41;</code>
      */
     const EVENT_TYPE_WORKFLOW_EXECUTION_UPDATE_ACCEPTED = 41;
     /**
-     * An update was rejected (i.e. failed validation)
+     * This event is never written to history.
      *
      * Generated from protobuf enum <code>EVENT_TYPE_WORKFLOW_EXECUTION_UPDATE_REJECTED = 42;</code>
      */
@@ -336,14 +344,6 @@ class EventType
      * Generated from protobuf enum <code>EVENT_TYPE_WORKFLOW_PROPERTIES_MODIFIED = 46;</code>
      */
     const EVENT_TYPE_WORKFLOW_PROPERTIES_MODIFIED = 46;
-    /**
-     * An update was admitted. Note that not all admitted updates result in this
-     * event. See UpdateAdmittedEventOrigin for situations in which this event
-     * is created.
-     *
-     * Generated from protobuf enum <code>EVENT_TYPE_WORKFLOW_EXECUTION_UPDATE_ADMITTED = 47;</code>
-     */
-    const EVENT_TYPE_WORKFLOW_EXECUTION_UPDATE_ADMITTED = 47;
     /**
      * A Nexus operation was scheduled using a ScheduleNexusOperation command.
      *
@@ -386,6 +386,24 @@ class EventType
      * Generated from protobuf enum <code>EVENT_TYPE_NEXUS_OPERATION_CANCEL_REQUESTED = 54;</code>
      */
     const EVENT_TYPE_NEXUS_OPERATION_CANCEL_REQUESTED = 54;
+    /**
+     * Workflow execution options updated by user.
+     *
+     * Generated from protobuf enum <code>EVENT_TYPE_WORKFLOW_EXECUTION_OPTIONS_UPDATED = 55;</code>
+     */
+    const EVENT_TYPE_WORKFLOW_EXECUTION_OPTIONS_UPDATED = 55;
+    /**
+     * A cancellation request for a Nexus operation was successfully delivered to the Nexus handler.
+     *
+     * Generated from protobuf enum <code>EVENT_TYPE_NEXUS_OPERATION_CANCEL_REQUEST_COMPLETED = 56;</code>
+     */
+    const EVENT_TYPE_NEXUS_OPERATION_CANCEL_REQUEST_COMPLETED = 56;
+    /**
+     * A cancellation request for a Nexus operation resulted in an error.
+     *
+     * Generated from protobuf enum <code>EVENT_TYPE_NEXUS_OPERATION_CANCEL_REQUEST_FAILED = 57;</code>
+     */
+    const EVENT_TYPE_NEXUS_OPERATION_CANCEL_REQUEST_FAILED = 57;
 
     private static $valueToName = [
         self::EVENT_TYPE_UNSPECIFIED => 'EVENT_TYPE_UNSPECIFIED',
@@ -429,13 +447,13 @@ class EventType
         self::EVENT_TYPE_SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_FAILED => 'EVENT_TYPE_SIGNAL_EXTERNAL_WORKFLOW_EXECUTION_FAILED',
         self::EVENT_TYPE_EXTERNAL_WORKFLOW_EXECUTION_SIGNALED => 'EVENT_TYPE_EXTERNAL_WORKFLOW_EXECUTION_SIGNALED',
         self::EVENT_TYPE_UPSERT_WORKFLOW_SEARCH_ATTRIBUTES => 'EVENT_TYPE_UPSERT_WORKFLOW_SEARCH_ATTRIBUTES',
+        self::EVENT_TYPE_WORKFLOW_EXECUTION_UPDATE_ADMITTED => 'EVENT_TYPE_WORKFLOW_EXECUTION_UPDATE_ADMITTED',
         self::EVENT_TYPE_WORKFLOW_EXECUTION_UPDATE_ACCEPTED => 'EVENT_TYPE_WORKFLOW_EXECUTION_UPDATE_ACCEPTED',
         self::EVENT_TYPE_WORKFLOW_EXECUTION_UPDATE_REJECTED => 'EVENT_TYPE_WORKFLOW_EXECUTION_UPDATE_REJECTED',
         self::EVENT_TYPE_WORKFLOW_EXECUTION_UPDATE_COMPLETED => 'EVENT_TYPE_WORKFLOW_EXECUTION_UPDATE_COMPLETED',
         self::EVENT_TYPE_WORKFLOW_PROPERTIES_MODIFIED_EXTERNALLY => 'EVENT_TYPE_WORKFLOW_PROPERTIES_MODIFIED_EXTERNALLY',
         self::EVENT_TYPE_ACTIVITY_PROPERTIES_MODIFIED_EXTERNALLY => 'EVENT_TYPE_ACTIVITY_PROPERTIES_MODIFIED_EXTERNALLY',
         self::EVENT_TYPE_WORKFLOW_PROPERTIES_MODIFIED => 'EVENT_TYPE_WORKFLOW_PROPERTIES_MODIFIED',
-        self::EVENT_TYPE_WORKFLOW_EXECUTION_UPDATE_ADMITTED => 'EVENT_TYPE_WORKFLOW_EXECUTION_UPDATE_ADMITTED',
         self::EVENT_TYPE_NEXUS_OPERATION_SCHEDULED => 'EVENT_TYPE_NEXUS_OPERATION_SCHEDULED',
         self::EVENT_TYPE_NEXUS_OPERATION_STARTED => 'EVENT_TYPE_NEXUS_OPERATION_STARTED',
         self::EVENT_TYPE_NEXUS_OPERATION_COMPLETED => 'EVENT_TYPE_NEXUS_OPERATION_COMPLETED',
@@ -443,6 +461,9 @@ class EventType
         self::EVENT_TYPE_NEXUS_OPERATION_CANCELED => 'EVENT_TYPE_NEXUS_OPERATION_CANCELED',
         self::EVENT_TYPE_NEXUS_OPERATION_TIMED_OUT => 'EVENT_TYPE_NEXUS_OPERATION_TIMED_OUT',
         self::EVENT_TYPE_NEXUS_OPERATION_CANCEL_REQUESTED => 'EVENT_TYPE_NEXUS_OPERATION_CANCEL_REQUESTED',
+        self::EVENT_TYPE_WORKFLOW_EXECUTION_OPTIONS_UPDATED => 'EVENT_TYPE_WORKFLOW_EXECUTION_OPTIONS_UPDATED',
+        self::EVENT_TYPE_NEXUS_OPERATION_CANCEL_REQUEST_COMPLETED => 'EVENT_TYPE_NEXUS_OPERATION_CANCEL_REQUEST_COMPLETED',
+        self::EVENT_TYPE_NEXUS_OPERATION_CANCEL_REQUEST_FAILED => 'EVENT_TYPE_NEXUS_OPERATION_CANCEL_REQUEST_FAILED',
     ];
 
     public static function name($value)

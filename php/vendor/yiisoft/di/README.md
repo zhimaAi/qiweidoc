@@ -31,6 +31,7 @@ and configure classes resolving dependencies.
 - Has state resetter for long-running workers serving many requests, such as [RoadRunner](https://roadrunner.dev/)
   or [Swoole](https://www.swoole.co.uk/).
 - Supports container delegates.
+- Does auto-wiring.
 
 ## Requirements
 
@@ -131,6 +132,35 @@ $config = ContainerConfig::create()
 
 $container = new Container($config);
 $object = $container->get('engine_one');
+```
+
+## Using class aliases for specific configuration
+
+To define another instance of a class with specific configuration, you can
+use native PHP `class_alias()`:
+
+```php
+class_alias(Yiisoft\Db\Pgsql\Connection::class, 'MyPgSql');
+
+$config = ContainerConfig::create()                                                                                                                                                     
+    ->withDefinitions([
+        MyPgSql::class => [ ... ]
+    ]);                                                                                                                                                                                 
+
+$container = new Container($config);
+$object = $container->get(MyPgSql::class);
+```
+
+It could be then conveniently used by type-hinting:
+
+```php
+final class MyService
+{
+    public function __construct(MyPgSql $myPgSql)
+    {
+        // ...    
+    }
+} 
 ```
 
 ## Composite containers
@@ -309,14 +339,6 @@ $config = ContainerConfig::create()
 $container = new Container($config);
 ```
 
-Now you can get tagged services from the container in the following way:
-
-```php
-$container->get(\Yiisoft\Di\Reference\TagReference::to('car'));
-```
-
-The result is an array that has two instances: `BlueCarService` and `RedCarService`.
-
 Another way to tag services is setting tags via container constructor:
 
 ```php
@@ -336,6 +358,30 @@ $config = ContainerConfig::create()
     ]);
 
 $container = new Container($config);
+```
+
+### Getting tagged services
+
+You can get tagged services from the container in the following way:
+
+```php
+$container->get(\Yiisoft\Di\Reference\TagReference::id('car'));
+```
+
+The result is an array that has two instances: `BlueCarService` and `RedCarService`.
+
+### Using tagged services in configuration
+
+Use `TagReference` to get tagged services in configuration:
+
+```php
+[
+    Garage::class => [
+        '__construct()' => [
+            \Yiisoft\Di\Reference\TagReference::to('car'),
+        ],    
+    ],
+],
 ```
 
 ## Resetting services state

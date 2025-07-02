@@ -126,9 +126,14 @@ final class CurlResponse implements ResponseInterface, StreamableInterface
             curl_setopt($ch, \CURLOPT_NOPROGRESS, false);
             curl_setopt($ch, \CURLOPT_PROGRESSFUNCTION, static function ($ch, $dlSize, $dlNow) use ($onProgress, &$info, $url, $multi, $debugBuffer) {
                 try {
+                    $info['debug'] ??= '';
                     rewind($debugBuffer);
-                    $debug = ['debug' => stream_get_contents($debugBuffer)];
-                    $onProgress($dlNow, $dlSize, $url + curl_getinfo($ch) + $info + $debug);
+                    if (fstat($debugBuffer)['size']) {
+                        $info['debug'] .= stream_get_contents($debugBuffer);
+                        rewind($debugBuffer);
+                        ftruncate($debugBuffer, 0);
+                    }
+                    $onProgress($dlNow, $dlSize, $url + curl_getinfo($ch) + $info);
                 } catch (\Throwable $e) {
                     $multi->handlesActivity[(int) $ch][] = null;
                     $multi->handlesActivity[(int) $ch][] = $e;
@@ -200,7 +205,6 @@ final class CurlResponse implements ResponseInterface, StreamableInterface
     {
         if (!$info = $this->finalInfo) {
             $info = array_merge($this->info, curl_getinfo($this->handle));
-            $info['url'] = $this->info['url'] ?? $info['url'];
             $info['redirect_url'] = $this->info['redirect_url'] ?? null;
 
             // workaround curl not subtracting the time offset for pushed responses
@@ -209,14 +213,18 @@ final class CurlResponse implements ResponseInterface, StreamableInterface
                 $info['starttransfer_time'] = 0.0;
             }
 
+            $info['debug'] ??= '';
             rewind($this->debugBuffer);
-            $info['debug'] = stream_get_contents($this->debugBuffer);
+            if (fstat($this->debugBuffer)['size']) {
+                $info['debug'] .= stream_get_contents($this->debugBuffer);
+                rewind($this->debugBuffer);
+                ftruncate($this->debugBuffer, 0);
+            }
+            $this->info = array_merge($this->info, $info);
             $waitFor = curl_getinfo($this->handle, \CURLINFO_PRIVATE);
 
             if ('H' !== $waitFor[0] && 'C' !== $waitFor[0]) {
                 curl_setopt($this->handle, \CURLOPT_VERBOSE, false);
-                rewind($this->debugBuffer);
-                ftruncate($this->debugBuffer, 0);
                 $this->finalInfo = $info;
             }
         }
@@ -269,11 +277,11 @@ final class CurlResponse implements ResponseInterface, StreamableInterface
     /**
      * @param CurlClientState $multi
      */
-    private static function perform(ClientState $multi, ?array &$responses = null): void
+    private static function perform(ClientState $multi, ?array $responses = null): void
     {
         if ($multi->performing) {
             if ($responses) {
-                $response = current($responses);
+                $response = $responses[array_key_first($responses)];
                 $multi->handlesActivity[(int) $response->handle][] = null;
                 $multi->handlesActivity[(int) $response->handle][] = new TransportException(\sprintf('Userland callback cannot use the client nor the response while processing "%s".', curl_getinfo($response->handle, \CURLINFO_EFFECTIVE_URL)));
             }
@@ -316,7 +324,16 @@ final class CurlResponse implements ResponseInterface, StreamableInterface
                 }
 
                 $multi->handlesActivity[$id][] = null;
-                $multi->handlesActivity[$id][] = \in_array($result, [\CURLE_OK, \CURLE_TOO_MANY_REDIRECTS], true) || '_0' === $waitFor || curl_getinfo($ch, \CURLINFO_SIZE_DOWNLOAD) === curl_getinfo($ch, \CURLINFO_CONTENT_LENGTH_DOWNLOAD) || ('OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0' === curl_error($ch) && -1.0 === curl_getinfo($ch, \CURLINFO_CONTENT_LENGTH_DOWNLOAD) && \in_array('close', array_map('strtolower', $responses[$id]->headers['connection']), true)) ? null : new TransportException(ucfirst(curl_error($ch) ?: curl_strerror($result)).\sprintf(' for "%s".', curl_getinfo($ch, \CURLINFO_EFFECTIVE_URL)));
+                $multi->handlesActivity[$id][] = \in_array($result, [\CURLE_OK, \CURLE_TOO_MANY_REDIRECTS], true)
+                    || '_0' === $waitFor
+                    || curl_getinfo($ch, \CURLINFO_SIZE_DOWNLOAD) === curl_getinfo($ch, \CURLINFO_CONTENT_LENGTH_DOWNLOAD)
+                    || ('C' === $waitFor[0]
+                        && 'OpenSSL SSL_read: SSL_ERROR_SYSCALL, errno 0' === curl_error($ch)
+                        && -1.0 === curl_getinfo($ch, \CURLINFO_CONTENT_LENGTH_DOWNLOAD)
+                        && \in_array('close', array_map('strtolower', $responses[$id]->headers['connection'] ?? []), true)
+                    )
+                    ? null
+                    : new TransportException(ucfirst(curl_error($ch) ?: curl_strerror($result)).\sprintf(' for "%s".', curl_getinfo($ch, \CURLINFO_EFFECTIVE_URL)));
             }
         } finally {
             $multi->performing = false;

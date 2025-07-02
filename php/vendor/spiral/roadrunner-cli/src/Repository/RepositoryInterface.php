@@ -13,9 +13,6 @@ namespace Spiral\RoadRunner\Console\Repository;
 
 interface RepositoryInterface
 {
-    /**
-     * @return string
-     */
     public function getName(): string;
 
     /**

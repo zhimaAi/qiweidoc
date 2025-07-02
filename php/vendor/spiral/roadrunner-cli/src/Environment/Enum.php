@@ -19,7 +19,6 @@ final class Enum
 {
     /**
      * @param class-string $class
-     * @param string $prefix
      * @return array<string, string|int>
      */
     public static function values(string $class, string $prefix): array

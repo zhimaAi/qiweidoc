@@ -1,5 +1,11 @@
 # Yii Hydrator Change Log
 
+## 1.6.0 March 14, 2025
+
+- New #63: Add nested mapping support via new `ObjectMap` class (@vjik)
+- Chg #103: Change PHP constraint in `composer.json` to `8.1 - 8.4` (@vjik)
+- Enh #99: Improve psalm annotation in `HydratorInterface::create()` method (@vjik)
+
 ## 1.5.0 September 17, 2024
 
 - New #96: Add `EnumTypeCaster` (@vjik)

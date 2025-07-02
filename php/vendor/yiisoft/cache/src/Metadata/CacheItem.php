@@ -33,7 +33,7 @@ final class CacheItem
      * @param Dependency|null $dependency The cache invalidation dependency or null for none.
      */
     public function __construct(
-        private string $key,
+        private readonly string $key,
         ?int $ttl,
         private ?Dependency $dependency
     ) {

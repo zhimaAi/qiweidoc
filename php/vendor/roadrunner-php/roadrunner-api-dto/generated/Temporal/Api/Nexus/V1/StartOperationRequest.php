@@ -52,6 +52,12 @@ class StartOperationRequest extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>map<string, string> callback_header = 6;</code>
      */
     private $callback_header;
+    /**
+     * Links contain caller information and can be attached to the operations started by the handler.
+     *
+     * Generated from protobuf field <code>repeated .temporal.api.nexus.v1.Link links = 7;</code>
+     */
+    private $links;
 
     /**
      * Constructor.
@@ -71,6 +77,8 @@ class StartOperationRequest extends \Google\Protobuf\Internal\Message
      *           Full request body from the incoming HTTP request.
      *     @type array|\Google\Protobuf\Internal\MapField $callback_header
      *           Header that is expected to be attached to the callback request when the operation completes.
+     *     @type array<\Temporal\Api\Nexus\V1\Link>|\Google\Protobuf\Internal\RepeatedField $links
+     *           Links contain caller information and can be attached to the operations started by the handler.
      * }
      */
     public function __construct($data = NULL) {
@@ -240,6 +248,32 @@ class StartOperationRequest extends \Google\Protobuf\Internal\Message
     {
         $arr = GPBUtil::checkMapField($var, \Google\Protobuf\Internal\GPBType::STRING, \Google\Protobuf\Internal\GPBType::STRING);
         $this->callback_header = $arr;
+
+        return $this;
+    }
+
+    /**
+     * Links contain caller information and can be attached to the operations started by the handler.
+     *
+     * Generated from protobuf field <code>repeated .temporal.api.nexus.v1.Link links = 7;</code>
+     * @return \Google\Protobuf\Internal\RepeatedField
+     */
+    public function getLinks()
+    {
+        return $this->links;
+    }
+
+    /**
+     * Links contain caller information and can be attached to the operations started by the handler.
+     *
+     * Generated from protobuf field <code>repeated .temporal.api.nexus.v1.Link links = 7;</code>
+     * @param array<\Temporal\Api\Nexus\V1\Link>|\Google\Protobuf\Internal\RepeatedField $var
+     * @return $this
+     */
+    public function setLinks($var)
+    {
+        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Temporal\Api\Nexus\V1\Link::class);
+        $this->links = $arr;
 
         return $this;
     }

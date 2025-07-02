@@ -19,6 +19,10 @@ class ResetWorkflowExecutionRequest extends \Google\Protobuf\Internal\Message
      */
     protected $namespace = '';
     /**
+     * The workflow to reset. If this contains a run ID then the workflow will be reset back to the
+     * provided event ID in that run. Otherwise it will be reset to the provided event ID in the
+     * current run. In all cases the current run will be terminated and a new run started.
+     *
      * Generated from protobuf field <code>.temporal.api.common.v1.WorkflowExecution workflow_execution = 2;</code>
      */
     protected $workflow_execution = null;
@@ -61,6 +65,9 @@ class ResetWorkflowExecutionRequest extends \Google\Protobuf\Internal\Message
      *
      *     @type string $namespace
      *     @type \Temporal\Api\Common\V1\WorkflowExecution $workflow_execution
+     *           The workflow to reset. If this contains a run ID then the workflow will be reset back to the
+     *           provided event ID in that run. Otherwise it will be reset to the provided event ID in the
+     *           current run. In all cases the current run will be terminated and a new run started.
      *     @type string $reason
      *     @type int|string $workflow_task_finish_event_id
      *           The id of a `WORKFLOW_TASK_COMPLETED`,`WORKFLOW_TASK_TIMED_OUT`, `WORKFLOW_TASK_FAILED`, or
@@ -102,6 +109,10 @@ class ResetWorkflowExecutionRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * The workflow to reset. If this contains a run ID then the workflow will be reset back to the
+     * provided event ID in that run. Otherwise it will be reset to the provided event ID in the
+     * current run. In all cases the current run will be terminated and a new run started.
+     *
      * Generated from protobuf field <code>.temporal.api.common.v1.WorkflowExecution workflow_execution = 2;</code>
      * @return \Temporal\Api\Common\V1\WorkflowExecution|null
      */
@@ -121,6 +132,10 @@ class ResetWorkflowExecutionRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * The workflow to reset. If this contains a run ID then the workflow will be reset back to the
+     * provided event ID in that run. Otherwise it will be reset to the provided event ID in the
+     * current run. In all cases the current run will be terminated and a new run started.
+     *
      * Generated from protobuf field <code>.temporal.api.common.v1.WorkflowExecution workflow_execution = 2;</code>
      * @param \Temporal\Api\Common\V1\WorkflowExecution $var
      * @return $this

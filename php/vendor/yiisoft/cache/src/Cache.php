@@ -28,23 +28,18 @@ final class Cache implements CacheInterface
     /**
      * @var DependencyAwareCache Decorator over the actual cache handler.
      */
-    private DependencyAwareCache $psr;
+    private readonly DependencyAwareCache $psr;
 
     /**
      * @var CacheItems The items that store the metadata of each cache.
      */
-    private CacheItems $items;
-
-    /**
-     * @var CacheKeyNormalizer Normalizes the cache key into a valid string.
-     */
-    private CacheKeyNormalizer $keyNormalizer;
+    private readonly CacheItems $items;
 
     /**
      * @var int|null The default TTL for a cache entry. null meaning infinity, negative or zero results in the
      * cache key deletion. This value is used by {@see getOrSet()}, if the duration is not explicitly given.
      */
-    private ?int $defaultTtl;
+    private readonly ?int $defaultTtl;
 
     /**
      * @param \Psr\SimpleCache\CacheInterface $handler The actual cache handler.
@@ -56,7 +51,6 @@ final class Cache implements CacheInterface
     {
         $this->psr = new DependencyAwareCache($this, $handler);
         $this->items = new CacheItems();
-        $this->keyNormalizer = new CacheKeyNormalizer();
         $this->defaultTtl = $this->normalizeTtl($defaultTtl);
     }
 
@@ -69,11 +63,10 @@ final class Cache implements CacheInterface
         mixed $key,
         callable $callable,
         DateInterval|int|null $ttl = null,
-        Dependency $dependency = null,
+        Dependency|null $dependency = null,
         float $beta = 1.0
     ) {
-        $key = $this->keyNormalizer->normalize($key);
-        /** @var mixed */
+        $key = CacheKeyNormalizer::normalize($key);
         $value = $this->getValue($key, $beta);
 
         return $value ?? $this->setAndGet($key, $callable, $ttl, $dependency);
@@ -81,7 +74,7 @@ final class Cache implements CacheInterface
 
     public function remove(mixed $key): void
     {
-        $key = $this->keyNormalizer->normalize($key);
+        $key = CacheKeyNormalizer::normalize($key);
 
         if (!$this->psr->delete($key)) {
             throw new RemoveCacheException($key);
@@ -104,7 +97,6 @@ final class Cache implements CacheInterface
             return null;
         }
 
-        /** @var mixed */
         $value = $this->psr->getRaw($key);
 
         if (is_array($value) && isset($value[1]) && $value[1] instanceof CacheItem) {
@@ -143,7 +135,6 @@ final class Cache implements CacheInterface
     ): mixed {
         $ttl = $this->normalizeTtl($ttl);
         $ttl ??= $this->defaultTtl;
-        /** @var mixed */
         $value = $callable($this->psr);
 
         if ($dependency !== null) {

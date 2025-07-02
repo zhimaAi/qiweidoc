@@ -33,7 +33,7 @@ final class DownloadProtocBinaryCommand extends Command
     private StabilityOption $stability;
     private InstallationLocationOption $location;
 
-    public function __construct(string $name = null)
+    public function __construct(?string $name = null)
     {
         parent::__construct($name ?? 'download-protoc-binary');
 
@@ -77,7 +77,7 @@ final class DownloadProtocBinaryCommand extends Command
         $output->writeln(
             \sprintf("  - <info>%s</info>", $release->getRepositoryName()) .
             \sprintf(' (<comment>%s</comment>):', $release->getVersion()) .
-            ' Downloading...'
+            ' Downloading...',
         );
 
         if ($output->isVerbose()) {
@@ -102,7 +102,7 @@ final class DownloadProtocBinaryCommand extends Command
         ReleaseInterface $release,
         AssetInterface $asset,
         StyleInterface $io,
-        OutputInterface $out
+        OutputInterface $out,
     ): ?\SplFileInfo {
         $extractor = $this->assetToArchive($asset, $out)
             ->extract([
@@ -128,7 +128,7 @@ final class DownloadProtocBinaryCommand extends Command
             $extractor->next();
 
             if (!$file->isExecutable()) {
-                @chmod($file->getRealPath(), 0755);
+                @\chmod($file->getRealPath(), 0755);
             }
         }
 
@@ -154,7 +154,7 @@ final class DownloadProtocBinaryCommand extends Command
         RepositoryInterface $repo,
         ReleasesCollection $releases,
         InputInterface $in,
-        StyleInterface $io
+        StyleInterface $io,
     ): array {
         $osOption = $this->os->get($in, $io);
         $archOption = $this->arch->get($in, $io);
@@ -168,8 +168,8 @@ final class DownloadProtocBinaryCommand extends Command
         foreach ($filtered as $release) {
             $asset = $release->getAssets()
                 ->filter(
-                    static fn (AssetInterface $asset): bool =>
-                    \str_starts_with($asset->getName(), 'protoc-gen-php-grpc')
+                    static fn(AssetInterface $asset): bool =>
+                    \str_starts_with($asset->getName(), 'protoc-gen-php-grpc'),
                 )
                 ->whereArchitecture($archOption)
                 ->whereOperatingSystem($osOption)
@@ -180,7 +180,7 @@ final class DownloadProtocBinaryCommand extends Command
                     \vsprintf('%s %s does not contain available assembly (further search in progress)', [
                         $repo->getName(),
                         $release->getVersion(),
-                    ])
+                    ]),
                 );
 
                 continue;
@@ -202,7 +202,7 @@ final class DownloadProtocBinaryCommand extends Command
         throw new \UnexpectedValueException($message);
     }
 
-    private function assetToArchive(AssetInterface $asset, OutputInterface $out, string $temp = null): ArchiveInterface
+    private function assetToArchive(AssetInterface $asset, OutputInterface $out, ?string $temp = null): ArchiveInterface
     {
         $factory = new Factory();
 
@@ -213,7 +213,7 @@ final class DownloadProtocBinaryCommand extends Command
         $progress->display();
 
         try {
-            return $factory->fromAsset($asset, function (int $size, int $total) use ($progress) {
+            return $factory->fromAsset($asset, static function (int $size, int $total) use ($progress): void {
                 if ($progress->getMaxSteps() !== $total) {
                     $progress->setMaxSteps($total);
                 }

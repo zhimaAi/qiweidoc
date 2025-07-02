@@ -20,6 +20,10 @@ class Sync extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>.temporal.api.common.v1.Payload payload = 1;</code>
      */
     protected $payload = null;
+    /**
+     * Generated from protobuf field <code>repeated .temporal.api.nexus.v1.Link links = 2;</code>
+     */
+    private $links;
 
     /**
      * Constructor.
@@ -28,6 +32,7 @@ class Sync extends \Google\Protobuf\Internal\Message
      *     Optional. Data for populating the Message object.
      *
      *     @type \Temporal\Api\Common\V1\Payload $payload
+     *     @type array<\Temporal\Api\Nexus\V1\Link>|\Google\Protobuf\Internal\RepeatedField $links
      * }
      */
     public function __construct($data = NULL) {
@@ -63,6 +68,28 @@ class Sync extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Temporal\Api\Common\V1\Payload::class);
         $this->payload = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>repeated .temporal.api.nexus.v1.Link links = 2;</code>
+     * @return \Google\Protobuf\Internal\RepeatedField
+     */
+    public function getLinks()
+    {
+        return $this->links;
+    }
+
+    /**
+     * Generated from protobuf field <code>repeated .temporal.api.nexus.v1.Link links = 2;</code>
+     * @param array<\Temporal\Api\Nexus\V1\Link>|\Google\Protobuf\Internal\RepeatedField $var
+     * @return $this
+     */
+    public function setLinks($var)
+    {
+        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Temporal\Api\Nexus\V1\Link::class);
+        $this->links = $arr;
 
         return $this;
     }

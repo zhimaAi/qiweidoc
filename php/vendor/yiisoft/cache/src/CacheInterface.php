@@ -59,7 +59,7 @@ interface CacheInterface
         mixed $key,
         callable $callable,
         DateInterval|int|null $ttl = null,
-        Dependency $dependency = null,
+        Dependency|null $dependency = null,
         float $beta = 1.0
     );
 

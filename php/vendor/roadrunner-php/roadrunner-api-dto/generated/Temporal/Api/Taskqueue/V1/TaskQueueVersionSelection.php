@@ -29,8 +29,8 @@ class TaskQueueVersionSelection extends \Google\Protobuf\Internal\Message
      */
     protected $unversioned = false;
     /**
-     * Include all active versions. A version is considered active if it has had new
-     * tasks or polls recently.
+     * Include all active versions. A version is considered active if, in the last few minutes,
+     * it has had new tasks or polls, or it has been the subject of certain task queue API calls.
      *
      * Generated from protobuf field <code>bool all_active = 3;</code>
      */
@@ -47,8 +47,8 @@ class TaskQueueVersionSelection extends \Google\Protobuf\Internal\Message
      *     @type bool $unversioned
      *           Include the unversioned queue.
      *     @type bool $all_active
-     *           Include all active versions. A version is considered active if it has had new
-     *           tasks or polls recently.
+     *           Include all active versions. A version is considered active if, in the last few minutes,
+     *           it has had new tasks or polls, or it has been the subject of certain task queue API calls.
      * }
      */
     public function __construct($data = NULL) {
@@ -109,8 +109,8 @@ class TaskQueueVersionSelection extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Include all active versions. A version is considered active if it has had new
-     * tasks or polls recently.
+     * Include all active versions. A version is considered active if, in the last few minutes,
+     * it has had new tasks or polls, or it has been the subject of certain task queue API calls.
      *
      * Generated from protobuf field <code>bool all_active = 3;</code>
      * @return bool
@@ -121,8 +121,8 @@ class TaskQueueVersionSelection extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Include all active versions. A version is considered active if it has had new
-     * tasks or polls recently.
+     * Include all active versions. A version is considered active if, in the last few minutes,
+     * it has had new tasks or polls, or it has been the subject of certain task queue API calls.
      *
      * Generated from protobuf field <code>bool all_active = 3;</code>
      * @param bool $var

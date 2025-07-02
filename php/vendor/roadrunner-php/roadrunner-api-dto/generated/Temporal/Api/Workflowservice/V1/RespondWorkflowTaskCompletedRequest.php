@@ -76,8 +76,10 @@ class RespondWorkflowTaskCompletedRequest extends \Google\Protobuf\Internal\Mess
      * Version info of the worker who processed this task. This message's `build_id` field should
      * always be set by SDKs. Workers opting into versioning will also set the `use_versioning`
      * field to true. See message docstrings for more.
+     * Deprecated. Use `deployment` and `versioning_behavior` instead.
      *
-     * Generated from protobuf field <code>.temporal.api.common.v1.WorkerVersionStamp worker_version_stamp = 10;</code>
+     * Generated from protobuf field <code>.temporal.api.common.v1.WorkerVersionStamp worker_version_stamp = 10 [deprecated = true];</code>
+     * @deprecated
      */
     protected $worker_version_stamp = null;
     /**
@@ -99,6 +101,34 @@ class RespondWorkflowTaskCompletedRequest extends \Google\Protobuf\Internal\Mess
      * Generated from protobuf field <code>.temporal.api.common.v1.MeteringMetadata metering_metadata = 13;</code>
      */
     protected $metering_metadata = null;
+    /**
+     * All capabilities the SDK supports.
+     *
+     * Generated from protobuf field <code>.temporal.api.workflowservice.v1.RespondWorkflowTaskCompletedRequest.Capabilities capabilities = 14;</code>
+     */
+    protected $capabilities = null;
+    /**
+     * Deployment info of the worker that completed this task. Must be present if user has set
+     * `WorkerDeploymentOptions` regardless of versioning being enabled or not.
+     * Deprecated. Replaced with `deployment_options`.
+     *
+     * Generated from protobuf field <code>.temporal.api.deployment.v1.Deployment deployment = 15 [deprecated = true];</code>
+     * @deprecated
+     */
+    protected $deployment = null;
+    /**
+     * Versioning behavior of this workflow execution as set on the worker that completed this task.
+     * UNSPECIFIED means versioning is not enabled in the worker.
+     *
+     * Generated from protobuf field <code>.temporal.api.enums.v1.VersioningBehavior versioning_behavior = 16;</code>
+     */
+    protected $versioning_behavior = 0;
+    /**
+     * Worker deployment options that user has set in the worker.
+     *
+     * Generated from protobuf field <code>.temporal.api.deployment.v1.WorkerDeploymentOptions deployment_options = 17;</code>
+     */
+    protected $deployment_options = null;
 
     /**
      * Constructor.
@@ -133,6 +163,7 @@ class RespondWorkflowTaskCompletedRequest extends \Google\Protobuf\Internal\Mess
      *           Version info of the worker who processed this task. This message's `build_id` field should
      *           always be set by SDKs. Workers opting into versioning will also set the `use_versioning`
      *           field to true. See message docstrings for more.
+     *           Deprecated. Use `deployment` and `versioning_behavior` instead.
      *     @type array<\Temporal\Api\Protocol\V1\Message>|\Google\Protobuf\Internal\RepeatedField $messages
      *           Protocol messages piggybacking on a WFT as a transport
      *     @type \Temporal\Api\Sdk\V1\WorkflowTaskCompletedMetadata $sdk_metadata
@@ -140,6 +171,17 @@ class RespondWorkflowTaskCompletedRequest extends \Google\Protobuf\Internal\Mess
      *           directly impact workflow state.
      *     @type \Temporal\Api\Common\V1\MeteringMetadata $metering_metadata
      *           Local usage data collected for metering
+     *     @type \Temporal\Api\Workflowservice\V1\RespondWorkflowTaskCompletedRequest\Capabilities $capabilities
+     *           All capabilities the SDK supports.
+     *     @type \Temporal\Api\Deployment\V1\Deployment $deployment
+     *           Deployment info of the worker that completed this task. Must be present if user has set
+     *           `WorkerDeploymentOptions` regardless of versioning being enabled or not.
+     *           Deprecated. Replaced with `deployment_options`.
+     *     @type int $versioning_behavior
+     *           Versioning behavior of this workflow execution as set on the worker that completed this task.
+     *           UNSPECIFIED means versioning is not enabled in the worker.
+     *     @type \Temporal\Api\Deployment\V1\WorkerDeploymentOptions $deployment_options
+     *           Worker deployment options that user has set in the worker.
      * }
      */
     public function __construct($data = NULL) {
@@ -403,22 +445,31 @@ class RespondWorkflowTaskCompletedRequest extends \Google\Protobuf\Internal\Mess
      * Version info of the worker who processed this task. This message's `build_id` field should
      * always be set by SDKs. Workers opting into versioning will also set the `use_versioning`
      * field to true. See message docstrings for more.
+     * Deprecated. Use `deployment` and `versioning_behavior` instead.
      *
-     * Generated from protobuf field <code>.temporal.api.common.v1.WorkerVersionStamp worker_version_stamp = 10;</code>
+     * Generated from protobuf field <code>.temporal.api.common.v1.WorkerVersionStamp worker_version_stamp = 10 [deprecated = true];</code>
      * @return \Temporal\Api\Common\V1\WorkerVersionStamp|null
+     * @deprecated
      */
     public function getWorkerVersionStamp()
     {
+        if (isset($this->worker_version_stamp)) {
+            @trigger_error('worker_version_stamp is deprecated.', E_USER_DEPRECATED);
+        }
         return $this->worker_version_stamp;
     }
 
     public function hasWorkerVersionStamp()
     {
+        if (isset($this->worker_version_stamp)) {
+            @trigger_error('worker_version_stamp is deprecated.', E_USER_DEPRECATED);
+        }
         return isset($this->worker_version_stamp);
     }
 
     public function clearWorkerVersionStamp()
     {
+        @trigger_error('worker_version_stamp is deprecated.', E_USER_DEPRECATED);
         unset($this->worker_version_stamp);
     }
 
@@ -426,13 +477,16 @@ class RespondWorkflowTaskCompletedRequest extends \Google\Protobuf\Internal\Mess
      * Version info of the worker who processed this task. This message's `build_id` field should
      * always be set by SDKs. Workers opting into versioning will also set the `use_versioning`
      * field to true. See message docstrings for more.
+     * Deprecated. Use `deployment` and `versioning_behavior` instead.
      *
-     * Generated from protobuf field <code>.temporal.api.common.v1.WorkerVersionStamp worker_version_stamp = 10;</code>
+     * Generated from protobuf field <code>.temporal.api.common.v1.WorkerVersionStamp worker_version_stamp = 10 [deprecated = true];</code>
      * @param \Temporal\Api\Common\V1\WorkerVersionStamp $var
      * @return $this
+     * @deprecated
      */
     public function setWorkerVersionStamp($var)
     {
+        @trigger_error('worker_version_stamp is deprecated.', E_USER_DEPRECATED);
         GPBUtil::checkMessage($var, \Temporal\Api\Common\V1\WorkerVersionStamp::class);
         $this->worker_version_stamp = $var;
 
@@ -535,6 +589,156 @@ class RespondWorkflowTaskCompletedRequest extends \Google\Protobuf\Internal\Mess
     {
         GPBUtil::checkMessage($var, \Temporal\Api\Common\V1\MeteringMetadata::class);
         $this->metering_metadata = $var;
+
+        return $this;
+    }
+
+    /**
+     * All capabilities the SDK supports.
+     *
+     * Generated from protobuf field <code>.temporal.api.workflowservice.v1.RespondWorkflowTaskCompletedRequest.Capabilities capabilities = 14;</code>
+     * @return \Temporal\Api\Workflowservice\V1\RespondWorkflowTaskCompletedRequest\Capabilities|null
+     */
+    public function getCapabilities()
+    {
+        return $this->capabilities;
+    }
+
+    public function hasCapabilities()
+    {
+        return isset($this->capabilities);
+    }
+
+    public function clearCapabilities()
+    {
+        unset($this->capabilities);
+    }
+
+    /**
+     * All capabilities the SDK supports.
+     *
+     * Generated from protobuf field <code>.temporal.api.workflowservice.v1.RespondWorkflowTaskCompletedRequest.Capabilities capabilities = 14;</code>
+     * @param \Temporal\Api\Workflowservice\V1\RespondWorkflowTaskCompletedRequest\Capabilities $var
+     * @return $this
+     */
+    public function setCapabilities($var)
+    {
+        GPBUtil::checkMessage($var, \Temporal\Api\Workflowservice\V1\RespondWorkflowTaskCompletedRequest\Capabilities::class);
+        $this->capabilities = $var;
+
+        return $this;
+    }
+
+    /**
+     * Deployment info of the worker that completed this task. Must be present if user has set
+     * `WorkerDeploymentOptions` regardless of versioning being enabled or not.
+     * Deprecated. Replaced with `deployment_options`.
+     *
+     * Generated from protobuf field <code>.temporal.api.deployment.v1.Deployment deployment = 15 [deprecated = true];</code>
+     * @return \Temporal\Api\Deployment\V1\Deployment|null
+     * @deprecated
+     */
+    public function getDeployment()
+    {
+        if (isset($this->deployment)) {
+            @trigger_error('deployment is deprecated.', E_USER_DEPRECATED);
+        }
+        return $this->deployment;
+    }
+
+    public function hasDeployment()
+    {
+        if (isset($this->deployment)) {
+            @trigger_error('deployment is deprecated.', E_USER_DEPRECATED);
+        }
+        return isset($this->deployment);
+    }
+
+    public function clearDeployment()
+    {
+        @trigger_error('deployment is deprecated.', E_USER_DEPRECATED);
+        unset($this->deployment);
+    }
+
+    /**
+     * Deployment info of the worker that completed this task. Must be present if user has set
+     * `WorkerDeploymentOptions` regardless of versioning being enabled or not.
+     * Deprecated. Replaced with `deployment_options`.
+     *
+     * Generated from protobuf field <code>.temporal.api.deployment.v1.Deployment deployment = 15 [deprecated = true];</code>
+     * @param \Temporal\Api\Deployment\V1\Deployment $var
+     * @return $this
+     * @deprecated
+     */
+    public function setDeployment($var)
+    {
+        @trigger_error('deployment is deprecated.', E_USER_DEPRECATED);
+        GPBUtil::checkMessage($var, \Temporal\Api\Deployment\V1\Deployment::class);
+        $this->deployment = $var;
+
+        return $this;
+    }
+
+    /**
+     * Versioning behavior of this workflow execution as set on the worker that completed this task.
+     * UNSPECIFIED means versioning is not enabled in the worker.
+     *
+     * Generated from protobuf field <code>.temporal.api.enums.v1.VersioningBehavior versioning_behavior = 16;</code>
+     * @return int
+     */
+    public function getVersioningBehavior()
+    {
+        return $this->versioning_behavior;
+    }
+
+    /**
+     * Versioning behavior of this workflow execution as set on the worker that completed this task.
+     * UNSPECIFIED means versioning is not enabled in the worker.
+     *
+     * Generated from protobuf field <code>.temporal.api.enums.v1.VersioningBehavior versioning_behavior = 16;</code>
+     * @param int $var
+     * @return $this
+     */
+    public function setVersioningBehavior($var)
+    {
+        GPBUtil::checkEnum($var, \Temporal\Api\Enums\V1\VersioningBehavior::class);
+        $this->versioning_behavior = $var;
+
+        return $this;
+    }
+
+    /**
+     * Worker deployment options that user has set in the worker.
+     *
+     * Generated from protobuf field <code>.temporal.api.deployment.v1.WorkerDeploymentOptions deployment_options = 17;</code>
+     * @return \Temporal\Api\Deployment\V1\WorkerDeploymentOptions|null
+     */
+    public function getDeploymentOptions()
+    {
+        return $this->deployment_options;
+    }
+
+    public function hasDeploymentOptions()
+    {
+        return isset($this->deployment_options);
+    }
+
+    public function clearDeploymentOptions()
+    {
+        unset($this->deployment_options);
+    }
+
+    /**
+     * Worker deployment options that user has set in the worker.
+     *
+     * Generated from protobuf field <code>.temporal.api.deployment.v1.WorkerDeploymentOptions deployment_options = 17;</code>
+     * @param \Temporal\Api\Deployment\V1\WorkerDeploymentOptions $var
+     * @return $this
+     */
+    public function setDeploymentOptions($var)
+    {
+        GPBUtil::checkMessage($var, \Temporal\Api\Deployment\V1\WorkerDeploymentOptions::class);
+        $this->deployment_options = $var;
 
         return $this;
     }

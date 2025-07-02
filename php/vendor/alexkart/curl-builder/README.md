@@ -113,10 +113,14 @@ Quoting character can be changed to double quote or removed
 ```php
 $command->addOption('-d', 'data1');
 $command->addOption('-d', 'data"2');
-$command->setQuoteCharacter(Command::QUOTE_CHARACTER_DOUBLE);
+$command->setQuoteCharacter(Command::QUOTE_DOUBLE);
 // curl -d "data" -d "data\"2"
 
 $command->addOption('-d', 'data');
-$command->setQuoteCharacter(Command::QUOTE_CHARACTER_NONE);
+$command->setQuoteCharacter(Command::QUOTE_NONE);
 // curl -d data
+
+$command->addOption('-d', 'value with spaces');
+$command->setQuoteCharacter(Command::QUOTE_NONE);
+// curl -d value\ with\ spaces
 ``` 

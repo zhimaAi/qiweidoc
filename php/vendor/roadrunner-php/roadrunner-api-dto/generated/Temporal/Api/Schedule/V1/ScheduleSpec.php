@@ -352,7 +352,9 @@ class ScheduleSpec extends \Google\Protobuf\Internal\Message
      */
     public function getExcludeCalendar()
     {
-        @trigger_error('exclude_calendar is deprecated.', E_USER_DEPRECATED);
+        if ($this->exclude_calendar->count() !== 0) {
+            @trigger_error('exclude_calendar is deprecated.', E_USER_DEPRECATED);
+        }
         return $this->exclude_calendar;
     }
 
@@ -366,8 +368,10 @@ class ScheduleSpec extends \Google\Protobuf\Internal\Message
      */
     public function setExcludeCalendar($var)
     {
-        @trigger_error('exclude_calendar is deprecated.', E_USER_DEPRECATED);
         $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Temporal\Api\Schedule\V1\CalendarSpec::class);
+        if ($arr->count() !== 0) {
+            @trigger_error('exclude_calendar is deprecated.', E_USER_DEPRECATED);
+        }
         $this->exclude_calendar = $arr;
 
         return $this;

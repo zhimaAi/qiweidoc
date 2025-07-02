@@ -10,8 +10,8 @@ final class SetCacheException extends CacheException
 {
     public function __construct(
         string $key,
-        private mixed $value,
-        private CacheItem $item
+        private readonly mixed $value,
+        private readonly CacheItem $item
     ) {
         parent::__construct($key, 'Failed to store the value in the cache.');
     }

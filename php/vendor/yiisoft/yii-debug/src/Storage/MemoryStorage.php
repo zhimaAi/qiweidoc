@@ -4,66 +4,35 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\Debug\Storage;
 
-use Yiisoft\Yii\Debug\Collector\CollectorInterface;
-use Yiisoft\Yii\Debug\DebuggerIdGenerator;
-
 final class MemoryStorage implements StorageInterface
 {
     /**
-     * @var CollectorInterface[]
+     * @psalm-var array<string, array{data: array, objects: array, summary: array}>
      */
-    private array $collectors = [];
-
-    public function __construct(
-        private readonly DebuggerIdGenerator $idGenerator
-    ) {
-    }
-
-    public function addCollector(CollectorInterface $collector): void
-    {
-        $this->collectors[$collector->getName()] = $collector;
-    }
+    private array $storage = [];
 
     public function read(string $type, ?string $id = null): array
     {
-        if ($type === self::TYPE_SUMMARY) {
-            return [
-                $this->idGenerator->getId() => [
-                    'id' => $this->idGenerator->getId(),
-                    'collectors' => array_keys($this->collectors),
-                ],
-            ];
+        if ($id === null) {
+            return array_map(
+                static fn (array $item): array => $item[$type] ?? [],
+                $this->storage,
+            );
         }
-
-        if ($type === self::TYPE_OBJECTS) {
-            return [
-                $this->idGenerator->getId() => array_merge(...array_values($this->getData())),
-            ];
-        }
-
-        return [$this->idGenerator->getId() => $this->getData()];
+        return [$id => $this->storage[$id][$type] ?? []];
     }
 
-    public function getData(): array
+    public function write(string $id, array $data, array $objectsMap, array $summary): void
     {
-        $data = [];
-
-        foreach ($this->collectors as $name => $collector) {
-            $data[$name] = $collector->getCollected();
-        }
-
-        return $data;
+        $this->storage[$id] = [
+            'data' => $data,
+            'objects' => $objectsMap,
+            'summary' => $summary,
+        ];
     }
 
-    public function flush(): void
-    {
-        $this->collectors = [];
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
     public function clear(): void
     {
+        $this->storage = [];
     }
 }

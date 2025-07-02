@@ -8,36 +8,36 @@ final class Reload extends AbstractSection
 {
     private const NAME = 'reload';
 
+    public static function getShortName(): string
+    {
+        return self::NAME;
+    }
+
     public function render(): array
     {
         return [
             self::NAME => [
                 'interval' => '1s',
                 'patterns' => [
-                    '.php'
+                    '.php',
                 ],
                 'services' => [
                     'http' => [
                         'dirs' => [
-                            '.'
+                            '.',
                         ],
                         'recursive' => true,
                         'ignore' => [
-                            'vendor'
+                            'vendor',
                         ],
                         'patterns' => [
                             '.php',
                             '.go',
-                            '.md'
-                        ]
-                    ]
-                ]
-            ]
+                            '.md',
+                        ],
+                    ],
+                ],
+            ],
         ];
-    }
-
-    public static function getShortName(): string
-    {
-        return self::NAME;
     }
 }

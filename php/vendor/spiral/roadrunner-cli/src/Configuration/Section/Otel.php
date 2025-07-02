@@ -8,6 +8,11 @@ final class Otel extends AbstractSection
 {
     private const NAME = 'otel';
 
+    public static function getShortName(): string
+    {
+        return self::NAME;
+    }
+
     public function render(): array
     {
         return [
@@ -19,13 +24,8 @@ final class Otel extends AbstractSection
                 'custom_url' => '',
                 'service_name' => 'RoadRunner',
                 'service_version' => '1.0.0',
-                'endpoint' => '127.0.0.1:4318'
-            ]
+                'endpoint' => '127.0.0.1:4318',
+            ],
         ];
-    }
-
-    public static function getShortName(): string
-    {
-        return self::NAME;
     }
 }

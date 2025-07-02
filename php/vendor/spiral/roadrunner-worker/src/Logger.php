@@ -16,10 +16,10 @@ class Logger implements LoggerInterface
      */
     public function log(mixed $level, string|\Stringable $message, array $context = []): void
     {
-        assert(\is_scalar($level), 'Invalid log level type');
-        assert(\is_string($message), 'Invalid log message type');
+        \assert(\is_scalar($level), 'Invalid log level type');
+        \assert(\is_string($message), 'Invalid log message type');
 
-        $this->write($this->format((string)$level, $message, $context));
+        $this->write($this->format((string) $level, $message, $context));
     }
 
     protected function write(string $message): void

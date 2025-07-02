@@ -23,17 +23,27 @@ class WorkflowQueryResult extends \Google\Protobuf\Internal\Message
      */
     protected $result_type = 0;
     /**
-     * Set when the query succeeds with the results
+     * Set when the query succeeds with the results.
+     * Mutually exclusive with `error_message` and `failure`.
      *
      * Generated from protobuf field <code>.temporal.api.common.v1.Payloads answer = 2;</code>
      */
     protected $answer = null;
     /**
      * Mutually exclusive with `answer`. Set when the query fails.
+     * See also the newer `failure` field.
      *
      * Generated from protobuf field <code>string error_message = 3;</code>
      */
     protected $error_message = '';
+    /**
+     * The full reason for this query failure. This field is newer than `error_message` and can be encoded by the SDK's
+     * failure converter to support E2E encryption of messages and stack traces.
+     * Mutually exclusive with `answer`. Set when the query fails.
+     *
+     * Generated from protobuf field <code>.temporal.api.failure.v1.Failure failure = 4;</code>
+     */
+    protected $failure = null;
 
     /**
      * Constructor.
@@ -44,8 +54,14 @@ class WorkflowQueryResult extends \Google\Protobuf\Internal\Message
      *     @type int $result_type
      *           Did the query succeed or fail?
      *     @type \Temporal\Api\Common\V1\Payloads $answer
-     *           Set when the query succeeds with the results
+     *           Set when the query succeeds with the results.
+     *           Mutually exclusive with `error_message` and `failure`.
      *     @type string $error_message
+     *           Mutually exclusive with `answer`. Set when the query fails.
+     *           See also the newer `failure` field.
+     *     @type \Temporal\Api\Failure\V1\Failure $failure
+     *           The full reason for this query failure. This field is newer than `error_message` and can be encoded by the SDK's
+     *           failure converter to support E2E encryption of messages and stack traces.
      *           Mutually exclusive with `answer`. Set when the query fails.
      * }
      */
@@ -81,7 +97,8 @@ class WorkflowQueryResult extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Set when the query succeeds with the results
+     * Set when the query succeeds with the results.
+     * Mutually exclusive with `error_message` and `failure`.
      *
      * Generated from protobuf field <code>.temporal.api.common.v1.Payloads answer = 2;</code>
      * @return \Temporal\Api\Common\V1\Payloads|null
@@ -102,7 +119,8 @@ class WorkflowQueryResult extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Set when the query succeeds with the results
+     * Set when the query succeeds with the results.
+     * Mutually exclusive with `error_message` and `failure`.
      *
      * Generated from protobuf field <code>.temporal.api.common.v1.Payloads answer = 2;</code>
      * @param \Temporal\Api\Common\V1\Payloads $var
@@ -118,6 +136,7 @@ class WorkflowQueryResult extends \Google\Protobuf\Internal\Message
 
     /**
      * Mutually exclusive with `answer`. Set when the query fails.
+     * See also the newer `failure` field.
      *
      * Generated from protobuf field <code>string error_message = 3;</code>
      * @return string
@@ -129,6 +148,7 @@ class WorkflowQueryResult extends \Google\Protobuf\Internal\Message
 
     /**
      * Mutually exclusive with `answer`. Set when the query fails.
+     * See also the newer `failure` field.
      *
      * Generated from protobuf field <code>string error_message = 3;</code>
      * @param string $var
@@ -138,6 +158,46 @@ class WorkflowQueryResult extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->error_message = $var;
+
+        return $this;
+    }
+
+    /**
+     * The full reason for this query failure. This field is newer than `error_message` and can be encoded by the SDK's
+     * failure converter to support E2E encryption of messages and stack traces.
+     * Mutually exclusive with `answer`. Set when the query fails.
+     *
+     * Generated from protobuf field <code>.temporal.api.failure.v1.Failure failure = 4;</code>
+     * @return \Temporal\Api\Failure\V1\Failure|null
+     */
+    public function getFailure()
+    {
+        return $this->failure;
+    }
+
+    public function hasFailure()
+    {
+        return isset($this->failure);
+    }
+
+    public function clearFailure()
+    {
+        unset($this->failure);
+    }
+
+    /**
+     * The full reason for this query failure. This field is newer than `error_message` and can be encoded by the SDK's
+     * failure converter to support E2E encryption of messages and stack traces.
+     * Mutually exclusive with `answer`. Set when the query fails.
+     *
+     * Generated from protobuf field <code>.temporal.api.failure.v1.Failure failure = 4;</code>
+     * @param \Temporal\Api\Failure\V1\Failure $var
+     * @return $this
+     */
+    public function setFailure($var)
+    {
+        GPBUtil::checkMessage($var, \Temporal\Api\Failure\V1\Failure::class);
+        $this->failure = $var;
 
         return $this;
     }

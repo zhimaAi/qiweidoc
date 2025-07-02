@@ -1,5 +1,11 @@
 # Yii Console Change Log
 
+## 2.3.0 January 23, 2025
+
+- Enh #207: Add `--open` option for `serve` command (@xepozz)
+- Enh #207: Print possible options for `serve` command (@xepozz)
+- Enh #218: Explicitly mark nullable parameters (@alexander-schranz)
+
 ## 2.2.0 February 17, 2024
 
 - Enh #194: Allow to use `ErrorListiner` without logger (@vjik)

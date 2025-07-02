@@ -83,8 +83,8 @@ final class RecursiveMerge
      * @psalm-param positive-int|null $depth
      */
     private function __construct(
-        private array $groups,
-        private ?int $depth = null,
+        private readonly array $groups,
+        private readonly ?int $depth = null,
     ) {
     }
 

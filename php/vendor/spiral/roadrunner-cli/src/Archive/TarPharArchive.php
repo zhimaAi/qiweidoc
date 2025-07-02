@@ -13,10 +13,6 @@ namespace Spiral\RoadRunner\Console\Archive;
 
 final class TarPharArchive extends PharAwareArchive
 {
-    /**
-     * @param \SplFileInfo $file
-     * @return \PharData
-     */
     protected function open(\SplFileInfo $file): \PharData
     {
         return new \PharData($file->getPathname());

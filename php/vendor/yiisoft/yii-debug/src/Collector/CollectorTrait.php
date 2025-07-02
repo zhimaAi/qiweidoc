@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\Debug\Collector;
 
+/**
+ * @psalm-require-implements CollectorInterface
+ */
 trait CollectorTrait
 {
     private bool $isActive = false;
@@ -19,6 +22,9 @@ trait CollectorTrait
         $this->isActive = false;
     }
 
+    /**
+     * @psalm-return non-empty-string
+     */
     public function getName(): string
     {
         return self::class;

@@ -15,31 +15,14 @@ class MakeConfigCommand extends Command
 {
     private InstallationLocationOption $location;
 
-    public function __construct(string $name = null)
+    public function __construct(?string $name = null)
     {
         parent::__construct($name ?? 'make-config');
         $this->location = new InstallationLocationOption($this);
     }
 
-    protected function configure(): void
-    {
-        $this->addOption(
-            'plugin',
-            'p',
-            InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
-            'Generate configuration with selected plugins.'
-        );
-
-        $this->addOption(
-            'preset',
-            null,
-            InputOption::VALUE_OPTIONAL,
-            'Generate configuration with plugins in a selected preset.'
-        );
-    }
-
     /**
-     * {@inheritDoc}
+     *
      * @throws \Throwable
      */
     public function execute(InputInterface $input, OutputInterface $output): int
@@ -67,5 +50,22 @@ class MakeConfigCommand extends Command
         }
 
         return self::SUCCESS;
+    }
+
+    protected function configure(): void
+    {
+        $this->addOption(
+            'plugin',
+            'p',
+            InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+            'Generate configuration with selected plugins.',
+        );
+
+        $this->addOption(
+            'preset',
+            null,
+            InputOption::VALUE_OPTIONAL,
+            'Generate configuration with plugins in a selected preset.',
+        );
     }
 }

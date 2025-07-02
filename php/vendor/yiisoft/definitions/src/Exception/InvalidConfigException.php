@@ -10,6 +10,4 @@ use Psr\Container\ContainerExceptionInterface;
 /**
  * `InvalidConfigException` is thrown when definition configuration is not valid.
  */
-final class InvalidConfigException extends Exception implements ContainerExceptionInterface
-{
-}
+final class InvalidConfigException extends Exception implements ContainerExceptionInterface {}

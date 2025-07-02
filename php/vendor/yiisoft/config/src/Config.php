@@ -6,6 +6,8 @@ namespace Yiisoft\Config;
 
 use ErrorException;
 
+use Yiisoft\Config\Composer\Options;
+
 use function extract;
 use function func_get_arg;
 use function restore_error_handler;
@@ -19,8 +21,8 @@ use function substr;
  */
 final class Config implements ConfigInterface
 {
-    private Merger $merger;
-    private FilesExtractor $filesExtractor;
+    private readonly Merger $merger;
+    private readonly FilesExtractor $filesExtractor;
     private bool $isBuildingParams = false;
 
     /**
@@ -39,9 +41,9 @@ final class Config implements ConfigInterface
      */
     public function __construct(
         ConfigPaths $paths,
-        string $environment = null,
+        ?string $environment = null,
         array $modifiers = [],
-        private ?string $paramsGroup = 'params',
+        private readonly ?string $paramsGroup = 'params',
         string $mergePlanFile = Options::DEFAULT_MERGE_PLAN_FILE,
     ) {
         $environment = empty($environment) ? Options::DEFAULT_ENVIRONMENT : $environment;
@@ -161,7 +163,7 @@ final class Config implements ConfigInterface
                 throw new ErrorException($errorString, $errorNumber, 0, $errorFile, $errorLine);
             });
 
-            /** @psalm-suppress MixedArgument */
+            /** @psalm-suppress MixedArgument, PossiblyFalseArgument */
             extract(func_get_arg(1), EXTR_SKIP);
 
             /**

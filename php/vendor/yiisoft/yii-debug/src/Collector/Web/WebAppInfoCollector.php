@@ -65,17 +65,15 @@ final class WebAppInfoCollector implements SummaryCollectorInterface
             return [];
         }
         return [
-            'web' => [
-                'php' => [
-                    'version' => PHP_VERSION,
-                ],
-                'request' => [
-                    'startTime' => $this->requestProcessingTimeStarted,
-                    'processingTime' => $this->requestProcessingTimeStopped - $this->requestProcessingTimeStarted,
-                ],
-                'memory' => [
-                    'peakUsage' => memory_get_peak_usage(),
-                ],
+            'php' => [
+                'version' => PHP_VERSION,
+            ],
+            'request' => [
+                'startTime' => $this->requestProcessingTimeStarted,
+                'processingTime' => $this->requestProcessingTimeStopped - $this->requestProcessingTimeStarted,
+            ],
+            'memory' => [
+                'peakUsage' => memory_get_peak_usage(),
             ],
         ];
     }

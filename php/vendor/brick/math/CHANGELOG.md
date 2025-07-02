@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.13.1](https://github.com/brick/math/releases/tag/0.13.1) - 2025-03-29
+
+✨ **Improvements**
+
+- `__toString()` methods of `BigInteger` and `BigDecimal` are now type-hinted as returning `numeric-string` instead of `string` (#90 by @vudaltsov)
+
+## [0.13.0](https://github.com/brick/math/releases/tag/0.13.0) - 2025-03-03
+
+💥 **Breaking changes**
+
+- `BigDecimal::ofUnscaledValue()` no longer throws an exception if the scale is negative
+- `MathException` now extends `RuntimeException` instead of `Exception`; this reverts the change introduced in version `0.11.0` (#82)
+
+✨ **New features**
+
+- `BigDecimal::ofUnscaledValue()` allows a negative scale (and converts the values to create a zero scale number)
+
+## [0.12.3](https://github.com/brick/math/releases/tag/0.12.3) - 2025-02-28
+
+✨ **New features**
+
+- `BigDecimal::getPrecision()` Returns the number of significant digits in a decimal number
+
+## [0.12.2](https://github.com/brick/math/releases/tag/0.12.2) - 2025-02-26
+
+⚡️ **Performance improvements**
+
+- Division in `NativeCalculator` is now faster for small divisors, thanks to [@Izumi-kun](https://github.com/Izumi-kun) in [#87](https://github.com/brick/math/pull/87).
+
+👌 **Improvements**
+
+- Add missing `RoundingNecessaryException` to the `@throws` annotation of `BigNumber::of()`
+
 ## [0.12.1](https://github.com/brick/math/releases/tag/0.12.1) - 2023-11-29
 
 ⚡️ **Performance improvements**

@@ -17,35 +17,11 @@ use Symfony\Component\Console\Style\StyleInterface;
 
 class InstallationLocationOption extends Option
 {
-    /**
-     * @param Command $command
-     * @param string $name
-     * @param string $short
-     */
     public function __construct(Command $command, string $name = 'location', string $short = 'l')
     {
         parent::__construct($command, $name, $short);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function getDescription(): string
-    {
-        return 'Installation directory';
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function default(): string
-    {
-        return \getcwd() ?: '.';
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function get(InputInterface $input, StyleInterface $io): string
     {
         $location = parent::get($input, $io);
@@ -60,5 +36,15 @@ class InstallationLocationOption extends Option
         }
 
         return $location;
+    }
+
+    protected function getDescription(): string
+    {
+        return 'Installation directory';
+    }
+
+    protected function default(): string
+    {
+        return \getcwd() ?: '.';
     }
 }

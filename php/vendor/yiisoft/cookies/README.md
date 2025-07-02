@@ -1,14 +1,14 @@
 <p align="center">
     <a href="https://github.com/yiisoft" target="_blank">
-        <img src="https://yiisoft.github.io/docs/images/yii_logo.svg" height="100px">
+        <img src="https://yiisoft.github.io/docs/images/yii_logo.svg" height="100px" alt="Yii">
     </a>
     <h1 align="center">Yii Cookies</h1>
     <br>
 </p>
 
-[![Latest Stable Version](https://poser.pugx.org/yiisoft/cookies/v/stable.png)](https://packagist.org/packages/yiisoft/cookies)
-[![Total Downloads](https://poser.pugx.org/yiisoft/cookies/downloads.png)](https://packagist.org/packages/yiisoft/cookies)
-[![Build status](https://github.com/yiisoft/cookies/workflows/build/badge.svg)](https://github.com/yiisoft/cookies/actions?query=workflow%3Abuild)
+[![Latest Stable Version](https://poser.pugx.org/yiisoft/cookies/v)](https://packagist.org/packages/yiisoft/cookies)
+[![Total Downloads](https://poser.pugx.org/yiisoft/cookies/downloads)](https://packagist.org/packages/yiisoft/cookies)
+[![Build status](https://github.com/yiisoft/cookies/actions/workflows/build.yml/badge.svg)](https://github.com/yiisoft/cookies/actions/workflows/build.yml)
 [![Code Coverage](https://codecov.io/gh/yiisoft/cookies/graph/badge.svg?token=6FONX93IM5)](https://codecov.io/gh/yiisoft/cookies)
 [![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fyiisoft%2Fcookies%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/yiisoft/cookies/master)
 [![static analysis](https://github.com/yiisoft/cookies/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/cookies/actions?query=workflow%3A%22static+analysis%22)
@@ -29,10 +29,10 @@ The package helps in working with HTTP cookies in a [PSR-7](https://www.php-fig.
 
 ## Installation
 
-The package could be installed with composer:
+The package could be installed with [Composer](https://getcomposer.org):
 
 ```shell
-composer require yiisoft/cookies --prefer-dist
+composer require yiisoft/cookies
 ```
 
 ## General usage
@@ -146,38 +146,17 @@ $cookie = (new \Yiisoft\Cookies\Cookie('cookieName'))
     ->withRawValue('ebaKUq90PhiHck_MR7st-E1SxhbYWiTsLo82mCTbNuAh7rgflx5LVsYfJJseyQCrODuVcJkTSYhm1WKte-l5lQ==')
 ```
 
-See [Yii guide to cookies](https://github.com/yiisoft/docs/blob/master/guide/en/runtime/cookies.md) for more info.
+## Documentation
 
-## Testing
+- [Internals](docs/internals.md)
 
-### Unit testing
-
-The package is tested with [PHPUnit](https://phpunit.de/). To run tests:
-
-```shell
-./vendor/bin/phpunit
-```
-
-### Mutation testing
-
-The package tests are checked with [Infection](https://infection.github.io/) mutation framework with
-[Infection Static Analysis Plugin](https://github.com/Roave/infection-static-analysis-plugin). To run it:
-
-```shell
-./vendor/bin/roave-infection-static-analysis-plugin
-```
-
-### Static analysis
-
-The code is statically analyzed with [Psalm](https://psalm.dev/). To run static analysis:
-
-```shell
-./vendor/bin/psalm
-```
+If you need help or have a question, the [Yii Forum](https://forum.yiiframework.com/c/yii-3-0/63) is a good place for that.
+You may also check out other [Yii Community Resources](https://www.yiiframework.com/community).
 
 ## License
 
-The Yii Cookies is free software. It is released under the terms of the BSD License. Please see [`LICENSE`](./LICENSE.md) for more information.
+The Yii Cookies is free software. It is released under the terms of the BSD License.
+Please see [`LICENSE`](./LICENSE.md) for more information.
 
 Maintained by [Yii Software](https://www.yiiframework.com/).
 

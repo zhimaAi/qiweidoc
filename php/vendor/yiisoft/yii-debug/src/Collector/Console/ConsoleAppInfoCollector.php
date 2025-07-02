@@ -74,17 +74,15 @@ final class ConsoleAppInfoCollector implements SummaryCollectorInterface
             return [];
         }
         return [
-            'console' => [
-                'php' => [
-                    'version' => PHP_VERSION,
-                ],
-                'request' => [
-                    'startTime' => $this->requestProcessingTimeStarted,
-                    'processingTime' => $this->requestProcessingTimeStopped - $this->requestProcessingTimeStarted,
-                ],
-                'memory' => [
-                    'peakUsage' => memory_get_peak_usage(),
-                ],
+            'php' => [
+                'version' => PHP_VERSION,
+            ],
+            'request' => [
+                'startTime' => $this->requestProcessingTimeStarted,
+                'processingTime' => $this->requestProcessingTimeStopped - $this->requestProcessingTimeStarted,
+            ],
+            'memory' => [
+                'peakUsage' => memory_get_peak_usage(),
             ],
         ];
     }

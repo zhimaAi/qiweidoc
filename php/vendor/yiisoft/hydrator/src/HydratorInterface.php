@@ -30,7 +30,7 @@ interface HydratorInterface
      * @throws NonInstantiableException
      * @return object Created and hydrated object.
      *
-     * @psalm-template T
+     * @psalm-template T as object
      * @psalm-param class-string<T> $class
      * @psalm-return T
      */

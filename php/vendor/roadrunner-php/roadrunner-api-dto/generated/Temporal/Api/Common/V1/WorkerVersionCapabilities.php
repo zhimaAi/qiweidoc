@@ -10,9 +10,10 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * Identifies the version(s) that a worker is compatible with when polling or identifying itself,
+ * Identifies the version that a worker is compatible with when polling or identifying itself,
  * and whether or not this worker is opting into the build-id based versioning feature. This is
  * used by matching to determine which workers ought to receive what tasks.
+ * Deprecated. Use WorkerDeploymentOptions instead.
  *
  * Generated from protobuf message <code>temporal.api.common.v1.WorkerVersionCapabilities</code>
  */
@@ -31,6 +32,12 @@ class WorkerVersionCapabilities extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>bool use_versioning = 2;</code>
      */
     protected $use_versioning = false;
+    /**
+     * Must be sent if user has set a deployment series name (versioning-3).
+     *
+     * Generated from protobuf field <code>string deployment_series_name = 4;</code>
+     */
+    protected $deployment_series_name = '';
 
     /**
      * Constructor.
@@ -43,6 +50,8 @@ class WorkerVersionCapabilities extends \Google\Protobuf\Internal\Message
      *     @type bool $use_versioning
      *           If set, the worker is opting in to worker versioning, and wishes to only receive appropriate
      *           tasks.
+     *     @type string $deployment_series_name
+     *           Must be sent if user has set a deployment series name (versioning-3).
      * }
      */
     public function __construct($data = NULL) {
@@ -100,6 +109,32 @@ class WorkerVersionCapabilities extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkBool($var);
         $this->use_versioning = $var;
+
+        return $this;
+    }
+
+    /**
+     * Must be sent if user has set a deployment series name (versioning-3).
+     *
+     * Generated from protobuf field <code>string deployment_series_name = 4;</code>
+     * @return string
+     */
+    public function getDeploymentSeriesName()
+    {
+        return $this->deployment_series_name;
+    }
+
+    /**
+     * Must be sent if user has set a deployment series name (versioning-3).
+     *
+     * Generated from protobuf field <code>string deployment_series_name = 4;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setDeploymentSeriesName($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->deployment_series_name = $var;
 
         return $this;
     }

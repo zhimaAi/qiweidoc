@@ -10,6 +10,13 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
+ * IMPORTANT: For [StartWorkflow, UpdateWorkflow] combination ("Update-with-Start") when both
+ *   1. the workflow update for the requested update ID has already completed, and
+ *   2. the workflow for the requested workflow ID has already been closed,
+ * then you'll receive
+ *   - an update response containing the update's outcome, and
+ *   - a start response with a `status` field that reflects the workflow's current state.
+ *
  * Generated from protobuf message <code>temporal.api.workflowservice.v1.ExecuteMultiOperationResponse</code>
  */
 class ExecuteMultiOperationResponse extends \Google\Protobuf\Internal\Message

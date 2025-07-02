@@ -21,8 +21,8 @@ class UpdateWorkflowExecutionResponse extends \Google\Protobuf\Internal\Message
      */
     protected $update_ref = null;
     /**
-     * The outcome of the update if and only if the workflow execution update
-     * has completed. If this response is being returned before the update has
+     * The outcome of the Update if and only if the Workflow Update
+     * has completed. If this response is being returned before the Update has
      * completed then this field will not be set.
      *
      * Generated from protobuf field <code>.temporal.api.update.v1.Outcome outcome = 2;</code>
@@ -53,8 +53,8 @@ class UpdateWorkflowExecutionResponse extends \Google\Protobuf\Internal\Message
      *     @type \Temporal\Api\Update\V1\UpdateRef $update_ref
      *           Enough information for subsequent poll calls if needed. Never null.
      *     @type \Temporal\Api\Update\V1\Outcome $outcome
-     *           The outcome of the update if and only if the workflow execution update
-     *           has completed. If this response is being returned before the update has
+     *           The outcome of the Update if and only if the Workflow Update
+     *           has completed. If this response is being returned before the Update has
      *           completed then this field will not be set.
      *     @type int $stage
      *           The most advanced lifecycle stage that the Update is known to have
@@ -111,8 +111,8 @@ class UpdateWorkflowExecutionResponse extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The outcome of the update if and only if the workflow execution update
-     * has completed. If this response is being returned before the update has
+     * The outcome of the Update if and only if the Workflow Update
+     * has completed. If this response is being returned before the Update has
      * completed then this field will not be set.
      *
      * Generated from protobuf field <code>.temporal.api.update.v1.Outcome outcome = 2;</code>
@@ -134,8 +134,8 @@ class UpdateWorkflowExecutionResponse extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The outcome of the update if and only if the workflow execution update
-     * has completed. If this response is being returned before the update has
+     * The outcome of the Update if and only if the Workflow Update
+     * has completed. If this response is being returned before the Update has
      * completed then this field will not be set.
      *
      * Generated from protobuf field <code>.temporal.api.update.v1.Outcome outcome = 2;</code>

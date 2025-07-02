@@ -5,6 +5,7 @@ namespace Tests\Functional;
 use Basis\Nats\Client;
 use Basis\Nats\Message\Payload;
 use Basis\Nats\Service\Service;
+use Exception;
 use Tests\FunctionalTestCase;
 use Tests\Utils\TestEndpoint;
 
@@ -23,6 +24,22 @@ class ServiceTest extends FunctionalTestCase
         );
 
         return $service;
+    }
+
+    public function testNestedServiceGroups()
+    {
+        $service = $this->createTestService();
+        $service->addGroup('basis')->addGroup('v2')->addEndpoint('greet', TestEndpoint::class);
+        $this->assertSame($service->info()->endpoints['greet']['subject'], 'basis.v2.greet');
+    }
+
+    public function testServiceEndpointCustomSubject()
+    {
+        $service = $this->createTestService();
+        $service->addGroup('basis')->addEndpoint('empty', TestEndpoint::class, [
+            'subject' => 'greet',
+        ]);
+        $this->assertSame($service->info()->endpoints['empty']['subject'], 'basis.greet');
     }
 
     public function testServiceInfo()
@@ -85,6 +102,26 @@ class ServiceTest extends FunctionalTestCase
         $this->assertNotSame($stats['endpoints'][0]['average_processing_time'], 0.0);
 
         $this->assertEquals((array) $service->stats(), $stats);
+
+        $service->reset();
+        $stats = $service->stats();
+        $this->assertSame($stats->endpoints[0]['average_processing_time'], 0.0);
+    }
+
+    public function testServiceRunner()
+    {
+        $service = $this->createTestService();
+        $called = false;
+
+        $service->addGroup('v1')->addEndpoint('test_runner', function () use (&$called) {
+            $called = true;
+            throw new Exception("Runtime error");
+        });
+
+        $service->client->publish('v1.test_runner', []);
+        $service->client->setLogger($this->getLogger());
+        $service->run(0.1);
+        $this->assertTrue($called);
     }
 
     public function testServiceRequestReplyClass()

@@ -23,6 +23,9 @@ use function substr;
  *
  * `ArrayableTrait` implements {@see ArrayableInterface::toArray()} by respecting the field definitions as declared
  * in {@see ArrayableInterface::fields()} and {@see ArrayableInterface::extraFields()}.
+ *
+ * @psalm-import-type CallableFieldDefinition from ArrayableInterface
+ * @psalm-import-type FieldsArray from ArrayableInterface
  */
 trait ArrayableTrait
 {
@@ -72,6 +75,8 @@ trait ArrayableTrait
      * @return array The list of field names or field definitions.
      *
      * @see toArray()
+     *
+     * @psalm-return FieldsArray
      */
     public function fields(): array
     {
@@ -83,7 +88,7 @@ trait ArrayableTrait
      * Returns the list of fields that can be expanded further and returned by {@see ArrayableInterface::toArray()}.
      *
      * This method is similar to {@see ArrayableInterface::fields()} except that the list of fields returned
-     * by this method are not returned by default by {@see ArrayableInterface::toArray()}]. Only when field names
+     * by this method are not returned by default by {@see ArrayableInterface::toArray()}. Only when field names
      * to be expanded are explicitly specified when calling {@see ArrayableInterface::toArray()}, will their values
      * be exported.
      *
@@ -97,6 +102,8 @@ trait ArrayableTrait
      *
      * @see toArray()
      * @see fields()
+     *
+     * @psalm-return FieldsArray
      */
     public function extraFields(): array
     {
@@ -112,12 +119,12 @@ trait ArrayableTrait
      * When embedded objects are {@see ArrayableInterface}, their respective nested fields
      * will be extracted and passed to {@see ArrayableInterface::toArray()}.
      *
-     * @param array $fields The fields being requested.
+     * @param string[] $fields The fields being requested.
      * If empty or if it contains '*', all fields as specified by {@see ArrayableInterface::fields()} will be returned.
      * Fields can be nested, separated with dots (.). e.g.: item.field.sub-field
      * `$recursive` must be true for nested fields to be extracted. If `$recursive` is false, only the root fields
      * will be extracted.
-     * @param array $expand The additional fields being requested for exporting. Only fields declared
+     * @param string[] $expand The additional fields being requested for exporting. Only fields declared
      * in {@see ArrayableInterface::extraFields()} will be considered.
      * Expand can also be nested, separated with dots (.). e.g.: item.expand1.expand2
      * `$recursive` must be true for nested expands to be extracted. If `$recursive` is false, only the root expands
@@ -147,6 +154,10 @@ trait ArrayableTrait
         return $recursive ? ArrayHelper::toArray($data) : $data;
     }
 
+    /**
+     * @param string[] $fields
+     * @param string[] $expand
+     */
     private function filterAndExpand(array $array, array $fields = [], array $expand = []): array
     {
         $data = [];
@@ -173,15 +184,16 @@ trait ArrayableTrait
      * Nested fields are separated with dots (.). e.g: "item.id"
      * The previous example would extract "item".
      *
-     * @param array $fields The fields requested for extraction
+     * @param string[] $fields The fields requested for extraction
      *
-     * @return array root Fields extracted from the given nested fields.
+     * @return string[] Root fields extracted from the given nested fields.
      */
     protected function extractRootFields(array $fields): array
     {
         $result = [];
 
         foreach ($fields as $field) {
+            /** @var string */
             $result[] = strstr($field . '.', '.', true);
         }
 
@@ -197,10 +209,10 @@ trait ArrayableTrait
      * Nested fields are separated with dots (.). e.g: "item.id"
      * The previous example would extract "id".
      *
-     * @param array $fields The fields requested for extraction.
+     * @param string[] $fields The fields requested for extraction.
      * @param string $rootField The root field for which we want to extract the nested fields.
      *
-     * @return array Nested fields extracted for the given field.
+     * @return string[] Nested fields extracted for the given field.
      */
     protected function extractFieldsFor(array $fields, string $rootField): array
     {
@@ -221,11 +233,13 @@ trait ArrayableTrait
      * Then it will check the requested root fields against those declared in {@see ArrayableInterface::fields()}
      * and {@see ArrayableInterface::extraFields()} to determine which fields can be returned.
      *
-     * @param array $fields The fields being requested for exporting.
-     * @param array $expand The additional fields being requested for exporting.
+     * @param string[] $fields The fields being requested for exporting.
+     * @param string[] $expand The additional fields being requested for exporting.
      *
      * @return array The list of fields to be exported. The array keys are the field names, and the array values
      * are the corresponding object property names or PHP callables returning the field values.
+     *
+     * @psalm-return array<string, string|CallableFieldDefinition>
      */
     protected function resolveFields(array $fields, array $expand): array
     {
@@ -235,6 +249,7 @@ trait ArrayableTrait
 
         foreach ($this->fields() as $field => $definition) {
             if (is_int($field)) {
+                /** @var string $definition */
                 $field = $definition;
             }
             if (empty($fields) || in_array($field, $fields, true)) {
@@ -248,6 +263,7 @@ trait ArrayableTrait
 
         foreach ($this->extraFields() as $field => $definition) {
             if (is_int($field)) {
+                /** @var string $definition */
                 $field = $definition;
             }
             if (in_array($field, $expand, true)) {

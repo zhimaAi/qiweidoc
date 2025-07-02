@@ -24,6 +24,5 @@ final class Worker
         public float $cpuUsage,
         public string $command,
         public string $status,
-    ) {
-    }
+    ) {}
 }

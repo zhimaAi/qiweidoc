@@ -36,6 +36,10 @@ class BatchOperationType
      * Generated from protobuf enum <code>BATCH_OPERATION_TYPE_RESET = 5;</code>
      */
     const BATCH_OPERATION_TYPE_RESET = 5;
+    /**
+     * Generated from protobuf enum <code>BATCH_OPERATION_TYPE_UPDATE_EXECUTION_OPTIONS = 6;</code>
+     */
+    const BATCH_OPERATION_TYPE_UPDATE_EXECUTION_OPTIONS = 6;
 
     private static $valueToName = [
         self::BATCH_OPERATION_TYPE_UNSPECIFIED => 'BATCH_OPERATION_TYPE_UNSPECIFIED',
@@ -44,6 +48,7 @@ class BatchOperationType
         self::BATCH_OPERATION_TYPE_SIGNAL => 'BATCH_OPERATION_TYPE_SIGNAL',
         self::BATCH_OPERATION_TYPE_DELETE => 'BATCH_OPERATION_TYPE_DELETE',
         self::BATCH_OPERATION_TYPE_RESET => 'BATCH_OPERATION_TYPE_RESET',
+        self::BATCH_OPERATION_TYPE_UPDATE_EXECUTION_OPTIONS => 'BATCH_OPERATION_TYPE_UPDATE_EXECUTION_OPTIONS',
     ];
 
     public static function name($value)

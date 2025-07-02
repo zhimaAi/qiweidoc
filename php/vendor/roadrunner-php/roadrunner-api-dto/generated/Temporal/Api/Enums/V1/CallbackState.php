@@ -50,6 +50,12 @@ class CallbackState
      * Generated from protobuf enum <code>CALLBACK_STATE_SUCCEEDED = 5;</code>
      */
     const CALLBACK_STATE_SUCCEEDED = 5;
+    /**
+     * Callback is blocked (eg: by circuit breaker).
+     *
+     * Generated from protobuf enum <code>CALLBACK_STATE_BLOCKED = 6;</code>
+     */
+    const CALLBACK_STATE_BLOCKED = 6;
 
     private static $valueToName = [
         self::CALLBACK_STATE_UNSPECIFIED => 'CALLBACK_STATE_UNSPECIFIED',
@@ -58,6 +64,7 @@ class CallbackState
         self::CALLBACK_STATE_BACKING_OFF => 'CALLBACK_STATE_BACKING_OFF',
         self::CALLBACK_STATE_FAILED => 'CALLBACK_STATE_FAILED',
         self::CALLBACK_STATE_SUCCEEDED => 'CALLBACK_STATE_SUCCEEDED',
+        self::CALLBACK_STATE_BLOCKED => 'CALLBACK_STATE_BLOCKED',
     ];
 
     public static function name($value)

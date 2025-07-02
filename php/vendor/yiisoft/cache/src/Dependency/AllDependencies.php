@@ -19,7 +19,7 @@ final class AllDependencies extends Dependency
     /**
      * @var Dependency[]
      */
-    private array $dependencies;
+    private readonly array $dependencies;
 
     /**
      * @param Dependency[] $dependencies list of dependencies that this dependency is composed of.

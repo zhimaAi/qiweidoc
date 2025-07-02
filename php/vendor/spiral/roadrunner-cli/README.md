@@ -1,6 +1,10 @@
-<p align="center">
- <img src="https://user-images.githubusercontent.com/796136/50286124-6f7f3780-046f-11e9-9f45-e8fedd4f786d.png" height="75px" alt="RoadRunner">
-</p>
+<a href="https://roadrunner.dev" target="_blank">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://github.com/roadrunner-server/.github/assets/8040338/e6bde856-4ec6-4a52-bd5b-bfe78736c1ff">
+    <img align="center" src="https://github.com/roadrunner-server/.github/assets/8040338/040fb694-1dd3-4865-9d29-8e0748c2c8b8">
+  </picture>
+</a>
+
 <p align="center">
  <a href="https://packagist.org/packages/spiral/roadrunner"><img src="https://poser.pugx.org/spiral/roadrunner/version"></a>
 	<a href="https://pkg.go.dev/github.com/spiral/roadrunner?tab=doc"><img src="https://godoc.org/github.com/spiral/roadrunner?status.svg"></a>
@@ -18,7 +22,7 @@ RoadRunner includes PSR-7/PSR-17 compatible HTTP and HTTP/2 server and can be us
 
 <p align="center">
 	<a href="https://roadrunner.dev/"><b>Official Website</b></a> | 
-	<a href="https://roadrunner.dev/docs"><b>Documentation</b></a>
+	<a href="https://docs.roadrunner.dev"><b>Documentation</b></a>
 </p>
 
 ## RoadRunner CLI
@@ -43,7 +47,7 @@ This repository contains commands to help you work with the RoadRunner, such as:
 Testing:
 --------
 
-This codebase is automatically tested via host repository - [spiral/roadrunner](https://github.com/spiral/roadrunner).
+This codebase is automatically tested via host repository - [roadrunner-server/roadrunner](https://github.com/roadrunner-server/roadrunner).
 
 License:
 --------

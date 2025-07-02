@@ -1,25 +1,24 @@
 <p align="center">
     <a href="https://github.com/yiisoft" target="_blank">
-        <img src="https://yiisoft.github.io/docs/images/yii_logo.svg" height="100px">
+        <img src="https://yiisoft.github.io/docs/images/yii_logo.svg" height="100px" alt="Yii">
     </a>
     <h1 align="center">Yii Console</h1>
     <br>
 </p>
 
-[![Latest Stable Version](https://poser.pugx.org/yiisoft/yii-console/v/stable.png)](https://packagist.org/packages/yiisoft/yii-console)
-[![Total Downloads](https://poser.pugx.org/yiisoft/yii-console/downloads.png)](https://packagist.org/packages/yiisoft/yii-console)
-[![Build status](https://github.com/yiisoft/yii-console/workflows/build/badge.svg)](https://github.com/yiisoft/yii-console/actions)
-[![Code Coverage](https://scrutinizer-ci.com/g/yiisoft/yii-console/badges/coverage.png)](https://scrutinizer-ci.com/g/yiisoft/yii-console/)
-[![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/yiisoft/yii-console/badges/quality-score.png)](https://scrutinizer-ci.com/g/yiisoft/yii-console/)
+[![Latest Stable Version](https://poser.pugx.org/yiisoft/yii-console/v)](https://packagist.org/packages/yiisoft/yii-console)
+[![Total Downloads](https://poser.pugx.org/yiisoft/yii-console/downloads)](https://packagist.org/packages/yiisoft/yii-console)
+[![Build status](https://github.com/yiisoft/yii-console/actions/workflows/build.yml/badge.svg)](https://github.com/yiisoft/yii-console/actions/workflows/build.yml)
+[![Code Coverage](https://codecov.io/gh/yiisoft/yii-console/branch/master/graph/badge.svg)](https://codecov.io/gh/yiisoft/yii-console)
 [![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fyiisoft%2Fyii-console%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/yiisoft/yii-console/master)
 [![static analysis](https://github.com/yiisoft/yii-console/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/yii-console/actions?query=workflow%3A%22static+analysis%22)
 [![type-coverage](https://shepherd.dev/github/yiisoft/yii-console/coverage.svg)](https://shepherd.dev/github/yiisoft/yii-console)
 
-Yii Console package provides a console that could be added to an application. This console is based on 
+Yii Console package provides a console that could be added to an application. This console is based on
 [Symfony Console](https://github.com/symfony/console). The following extra features are added:
 
 - lazy command loader;
-- `SymfonyEventDispatcher` class that allows to use any [PSR-14](http://www.php-fig.org/psr/psr-14/) compatible event 
+- `SymfonyEventDispatcher` class that allows to use any [PSR-14](https://www.php-fig.org/psr/psr-14/) compatible event
   dispatcher with Symfony console;
 - `ErrorListener` for logging console errors to any [PSR-3](https://www.php-fig.org/psr/psr-3/) compatible logger;
 - console command `serve` that runs PHP built-in web server;
@@ -33,7 +32,7 @@ Yii Console package provides a console that could be added to an application. Th
 
 ## Installation
 
-The package could be installed with composer:
+The package could be installed with [Composer](https://getcomposer.org):
 
 ```shell
 composer require yiisoft/yii-console
@@ -74,14 +73,17 @@ Since `\Yiisoft\Yii\Console\CommandLoader` uses lazy loading of commands, it's n
 to specify the name and description in static properties when creating a command:
 
 ```php
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Yiisoft\Yii\Console\ExitCode;
 
+
+#[AsCommand(
+    name: 'my:custom',
+    description: 'Description of my custom command.'
+)]
 final class MyCustomCommand extends Command
-{
-    protected static $defaultName = 'my:custom';
-    protected static $defaultDescription = 'Description of my custom command.';
-    
+{    
     protected function configure(): void
     {
         // ...
@@ -103,7 +105,6 @@ your-console-entry-script my/custom
 
 > When naming commands use `:` as a separator. For example: `user:create`, `user:delete`, etc.
 
-
 Since the package is based on [Symfony Console component](https://symfony.com/doc/current/components/console.html),
 refer to its documentation for details on how to use the binary and create your own commands.
 
@@ -113,7 +114,6 @@ To configure commands, set the names and aliases in `\Yiisoft\Yii\Console\Comman
 Names and aliases from the command class itself are always ignored.
 
 The command can be marked as hidden by prefixing its name with `|`.
-
 
 ```php
 'yiisoft/yii-console' => [
@@ -128,10 +128,12 @@ The command can be marked as hidden by prefixing its name with `|`.
 ### Runs PHP built-in web server
 
 You can start local built-in web development server using the command:
-```
+
+```shell
 ./yii serve
 ```
-Your application will be accessible in your web browser at http://localhost:8080 by default.
+
+Your application will be accessible in your web browser at <http://localhost:8080> by default.
 To configure default settings, set the options in `\Yiisoft\Yii\Console\CommandLoader` configuration.
 
 ```php
@@ -148,16 +150,22 @@ To configure default settings, set the options in `\Yiisoft\Yii\Console\CommandL
 ],
 ```
 
-Alternatively, you can pass the settings through the console options. To see the available options, run
-`./yii serve --help`
+Alternatively, you can pass the settings through the console options.
+
+> Tip: To run a web server with XDebug enabled, pass `--xdebug 1` to the command.
+
+To see the available options, run `./yii serve --help`.
 
 ## Documentation
 
 - [Internals](docs/internals.md)
 
+If you need help or have a question, the [Yii Forum](https://forum.yiiframework.com/c/yii-3-0/63) is a good place for that.
+You may also check out other [Yii Community Resources](https://www.yiiframework.com/community).
+
 ## License
 
-The Yii Console is free software. It's released under the terms of the BSD License.
+The Yii Console is free software. It is released under the terms of the BSD License.
 Please see [`LICENSE`](./LICENSE.md) for more information.
 
 Maintained by [Yii Software](https://www.yiiframework.com/).

@@ -33,7 +33,6 @@
     "support": {
         "docs": "https://docs.roadrunner.dev",
         "issues": "https://github.com/roadrunner-server/roadrunner/issues",
-        "forum": "https://forum.roadrunner.dev/",
         "chat": "https://discord.gg/V6EK4he"
     },
     "require": {
@@ -42,17 +41,21 @@
         "ext-sockets": "*",
         "psr/log": "^2.0 || ^3.0",
         "spiral/goridge": "^4.1.0",
-        "spiral/roadrunner": "^2023.1 || ^2024.1",
+        "spiral/roadrunner": "^2023.1 || ^2024.1 || ^2025.1",
         "composer-runtime-api": "^2.0"
     },
     "require-dev": {
+        "buggregator/trap": "^1.13",
         "jetbrains/phpstorm-attributes": "^1.0",
-        "phpunit/phpunit": "^10.0",
-        "vimeo/psalm": "^5.9",
-        "symfony/var-dumper": "^6.3 || ^7.0"
+        "phpunit/phpunit": "^10.5.45",
+        "spiral/code-style": "^2.2",
+        "vimeo/psalm": "^6.0"
     },
     "scripts": {
-        "analyze": "psalm"
+        "cs:diff": "php-cs-fixer fix --dry-run -v --diff --show-progress dots",
+        "cs:fix": "php-cs-fixer fix -v",
+        "test": "phpunit",
+        "psalm": "psalm"
     },
     "autoload": {
         "psr-4": {

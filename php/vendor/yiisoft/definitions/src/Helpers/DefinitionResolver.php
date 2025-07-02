@@ -30,7 +30,7 @@ final class DefinitionResolver
     public static function resolveArray(
         ContainerInterface $container,
         ?ContainerInterface $referenceContainer,
-        array $definitions
+        array $definitions,
     ): array {
         $result = [];
         foreach ($definitions as $key => $definition) {
@@ -53,7 +53,7 @@ final class DefinitionResolver
     public static function resolve(
         ContainerInterface $container,
         ?ContainerInterface $referenceContainer,
-        mixed $definition
+        mixed $definition,
     ): mixed {
         if ($definition instanceof DefinitionInterface) {
             $container = $referenceContainer !== null && $definition instanceof ReferenceInterface
@@ -79,7 +79,7 @@ final class DefinitionResolver
         if ($value instanceof DefinitionInterface) {
             throw new InvalidConfigException(
                 'Only references are allowed in constructor arguments, a definition object was provided: ' .
-                var_export($value, true)
+                var_export($value, true),
             );
         }
 

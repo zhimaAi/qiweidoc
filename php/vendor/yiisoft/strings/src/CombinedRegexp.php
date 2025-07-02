@@ -28,7 +28,7 @@ final class CombinedRegexp extends AbstractCombinedRegexp
     /**
      * @psalm-var non-empty-string
      */
-    private string $compiledPattern;
+    private readonly string $compiledPattern;
 
     /**
      * @param string[] $patterns Regular expressions to combine.
@@ -36,7 +36,7 @@ final class CombinedRegexp extends AbstractCombinedRegexp
      */
     public function __construct(
         array $patterns,
-        private string $flags = ''
+        private readonly string $flags = ''
     ) {
         if (empty($patterns)) {
             throw new InvalidArgumentException('At least one pattern should be specified.');

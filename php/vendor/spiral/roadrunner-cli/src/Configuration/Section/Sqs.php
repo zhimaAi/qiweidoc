@@ -8,6 +8,11 @@ final class Sqs extends AbstractSection
 {
     private const NAME = 'sqs';
 
+    public static function getShortName(): string
+    {
+        return self::NAME;
+    }
+
     public function render(): array
     {
         return [
@@ -16,13 +21,8 @@ final class Sqs extends AbstractSection
                 'secret' => 'api-secret',
                 'region' => 'us-west-1',
                 'session_token' => 'test',
-                'endpoint' => 'http://127.0.0.1:9324'
-            ]
+                'endpoint' => 'http://127.0.0.1:9324',
+            ],
         ];
-    }
-
-    public static function getShortName(): string
-    {
-        return self::NAME;
     }
 }

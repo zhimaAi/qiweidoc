@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Yii\Debug\Collector;
 
+use function count;
+
 final class ServiceCollector implements SummaryCollectorInterface
 {
     use CollectorTrait;
@@ -58,9 +60,7 @@ final class ServiceCollector implements SummaryCollectorInterface
             return [];
         }
         return [
-            'service' => [
-                'total' => count($this->items),
-            ],
+            'total' => count($this->items),
         ];
     }
 

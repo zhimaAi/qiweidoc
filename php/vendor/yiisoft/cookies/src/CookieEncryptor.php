@@ -76,6 +76,10 @@ final class CookieEncryptor
         }
 
         try {
+            /**
+             * @psalm-suppress PossiblyFalseArgument Length of the cookie value is checked in the {@see isEncrypted()}
+             * method and it is greater than 32, so `substr()` never returns false. This is actual for PHP 7.4 only.
+             */
             $value = rawurldecode(substr($cookie->getValue(), 32));
             return $cookie->withValue($this->crypt->decryptByKey($value, $this->key, $cookie->getName()));
         } catch (AuthenticationException $e) {

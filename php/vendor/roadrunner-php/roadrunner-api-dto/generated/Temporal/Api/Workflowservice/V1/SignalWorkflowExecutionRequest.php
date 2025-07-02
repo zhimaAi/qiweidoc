@@ -60,11 +60,11 @@ class SignalWorkflowExecutionRequest extends \Google\Protobuf\Internal\Message
      */
     protected $header = null;
     /**
-     * Indicates that a new workflow task should not be generated when this signal is received.
+     * Links to be associated with the WorkflowExecutionSignaled event.
      *
-     * Generated from protobuf field <code>bool skip_generate_workflow_task = 9;</code>
+     * Generated from protobuf field <code>repeated .temporal.api.common.v1.Link links = 10;</code>
      */
-    protected $skip_generate_workflow_task = false;
+    private $links;
 
     /**
      * Constructor.
@@ -87,8 +87,8 @@ class SignalWorkflowExecutionRequest extends \Google\Protobuf\Internal\Message
      *     @type \Temporal\Api\Common\V1\Header $header
      *           Headers that are passed with the signal to the processing workflow.
      *           These can include things like auth or tracing tokens.
-     *     @type bool $skip_generate_workflow_task
-     *           Indicates that a new workflow task should not be generated when this signal is received.
+     *     @type array<\Temporal\Api\Common\V1\Link>|\Google\Protobuf\Internal\RepeatedField $links
+     *           Links to be associated with the WorkflowExecutionSignaled event.
      * }
      */
     public function __construct($data = NULL) {
@@ -329,27 +329,27 @@ class SignalWorkflowExecutionRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Indicates that a new workflow task should not be generated when this signal is received.
+     * Links to be associated with the WorkflowExecutionSignaled event.
      *
-     * Generated from protobuf field <code>bool skip_generate_workflow_task = 9;</code>
-     * @return bool
+     * Generated from protobuf field <code>repeated .temporal.api.common.v1.Link links = 10;</code>
+     * @return \Google\Protobuf\Internal\RepeatedField
      */
-    public function getSkipGenerateWorkflowTask()
+    public function getLinks()
     {
-        return $this->skip_generate_workflow_task;
+        return $this->links;
     }
 
     /**
-     * Indicates that a new workflow task should not be generated when this signal is received.
+     * Links to be associated with the WorkflowExecutionSignaled event.
      *
-     * Generated from protobuf field <code>bool skip_generate_workflow_task = 9;</code>
-     * @param bool $var
+     * Generated from protobuf field <code>repeated .temporal.api.common.v1.Link links = 10;</code>
+     * @param array<\Temporal\Api\Common\V1\Link>|\Google\Protobuf\Internal\RepeatedField $var
      * @return $this
      */
-    public function setSkipGenerateWorkflowTask($var)
+    public function setLinks($var)
     {
-        GPBUtil::checkBool($var);
-        $this->skip_generate_workflow_task = $var;
+        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Temporal\Api\Common\V1\Link::class);
+        $this->links = $arr;
 
         return $this;
     }

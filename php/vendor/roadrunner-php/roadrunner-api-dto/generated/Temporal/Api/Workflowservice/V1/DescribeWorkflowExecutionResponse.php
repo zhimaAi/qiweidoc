@@ -42,6 +42,10 @@ class DescribeWorkflowExecutionResponse extends \Google\Protobuf\Internal\Messag
      * Generated from protobuf field <code>repeated .temporal.api.workflow.v1.PendingNexusOperationInfo pending_nexus_operations = 7;</code>
      */
     private $pending_nexus_operations;
+    /**
+     * Generated from protobuf field <code>.temporal.api.workflow.v1.WorkflowExecutionExtendedInfo workflow_extended_info = 8;</code>
+     */
+    protected $workflow_extended_info = null;
 
     /**
      * Constructor.
@@ -56,6 +60,7 @@ class DescribeWorkflowExecutionResponse extends \Google\Protobuf\Internal\Messag
      *     @type \Temporal\Api\Workflow\V1\PendingWorkflowTaskInfo $pending_workflow_task
      *     @type array<\Temporal\Api\Workflow\V1\CallbackInfo>|\Google\Protobuf\Internal\RepeatedField $callbacks
      *     @type array<\Temporal\Api\Workflow\V1\PendingNexusOperationInfo>|\Google\Protobuf\Internal\RepeatedField $pending_nexus_operations
+     *     @type \Temporal\Api\Workflow\V1\WorkflowExecutionExtendedInfo $workflow_extended_info
      * }
      */
     public function __construct($data = NULL) {
@@ -243,6 +248,38 @@ class DescribeWorkflowExecutionResponse extends \Google\Protobuf\Internal\Messag
     {
         $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Temporal\Api\Workflow\V1\PendingNexusOperationInfo::class);
         $this->pending_nexus_operations = $arr;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>.temporal.api.workflow.v1.WorkflowExecutionExtendedInfo workflow_extended_info = 8;</code>
+     * @return \Temporal\Api\Workflow\V1\WorkflowExecutionExtendedInfo|null
+     */
+    public function getWorkflowExtendedInfo()
+    {
+        return $this->workflow_extended_info;
+    }
+
+    public function hasWorkflowExtendedInfo()
+    {
+        return isset($this->workflow_extended_info);
+    }
+
+    public function clearWorkflowExtendedInfo()
+    {
+        unset($this->workflow_extended_info);
+    }
+
+    /**
+     * Generated from protobuf field <code>.temporal.api.workflow.v1.WorkflowExecutionExtendedInfo workflow_extended_info = 8;</code>
+     * @param \Temporal\Api\Workflow\V1\WorkflowExecutionExtendedInfo $var
+     * @return $this
+     */
+    public function setWorkflowExtendedInfo($var)
+    {
+        GPBUtil::checkMessage($var, \Temporal\Api\Workflow\V1\WorkflowExecutionExtendedInfo::class);
+        $this->workflow_extended_info = $var;
 
         return $this;
     }

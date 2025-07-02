@@ -72,7 +72,7 @@ final class ReverseMerge
      * @param string[] $groups
      */
     private function __construct(
-        private array $groups,
+        private readonly array $groups,
     ) {
     }
 

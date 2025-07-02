@@ -418,7 +418,9 @@ class ScheduleInfo extends \Google\Protobuf\Internal\Message
      */
     public function getInvalidScheduleError()
     {
-        @trigger_error('invalid_schedule_error is deprecated.', E_USER_DEPRECATED);
+        if ($this->invalid_schedule_error !== '') {
+            @trigger_error('invalid_schedule_error is deprecated.', E_USER_DEPRECATED);
+        }
         return $this->invalid_schedule_error;
     }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Security;
 
+use SensitiveParameter;
 use Yiisoft\Strings\StringHelper;
 
 final class Crypt
@@ -25,14 +26,9 @@ final class Crypt
     ];
 
     /**
-     * @var string The cipher to use for encryption and decryption.
-     */
-    private string $cipher;
-
-    /**
      * @var string Hash algorithm for key derivation. Recommend sha256, sha384 or sha512.
      *
-     * @see http://php.net/manual/en/function.hash-algos.php
+     * @see https://php.net/manual/en/function.hash-algos.php
      */
     private string $kdfAlgorithm = 'sha256';
 
@@ -49,16 +45,15 @@ final class Crypt
     /**
      * @param string $cipher The cipher to use for encryption and decryption.
      */
-    public function __construct(string $cipher = 'AES-128-CBC')
-    {
+    public function __construct(
+        private readonly string $cipher = 'AES-128-CBC'
+    ) {
         if (!extension_loaded('openssl')) {
             throw new \RuntimeException('Encryption requires the OpenSSL PHP extension.');
         }
         if (!array_key_exists($cipher, self::ALLOWED_CIPHERS)) {
             throw new \RuntimeException($cipher . ' is not an allowed cipher.');
         }
-
-        $this->cipher = $cipher;
     }
 
     /**
@@ -123,8 +118,11 @@ final class Crypt
      * @see decryptByPassword()
      * @see encryptByKey()
      */
-    public function encryptByPassword(string $data, string $password): string
-    {
+    public function encryptByPassword(
+        string $data,
+        #[SensitiveParameter]
+        string $password
+    ): string {
         return $this->encrypt($data, true, $password, '');
     }
 
@@ -150,8 +148,12 @@ final class Crypt
      * @see decryptByKey()
      * @see encryptByPassword()
      */
-    public function encryptByKey(string $data, string $inputKey, string $info = ''): string
-    {
+    public function encryptByKey(
+        string $data,
+        #[SensitiveParameter]
+        string $inputKey,
+        string $info = ''
+    ): string {
         return $this->encrypt($data, false, $inputKey, $info);
     }
 
@@ -169,8 +171,11 @@ final class Crypt
      *
      * @see encryptByPassword()
      */
-    public function decryptByPassword(string $data, string $password): string
-    {
+    public function decryptByPassword(
+        string $data,
+        #[SensitiveParameter]
+        string $password
+    ): string {
         return $this->decrypt($data, true, $password, '');
     }
 
@@ -190,8 +195,12 @@ final class Crypt
      *
      * @see encryptByKey()
      */
-    public function decryptByKey(string $data, string $inputKey, string $info = ''): string
-    {
+    public function decryptByKey(
+        string $data,
+        #[SensitiveParameter]
+        string $inputKey,
+        string $info = ''
+    ): string {
         return $this->decrypt($data, false, $inputKey, $info);
     }
 
@@ -211,8 +220,13 @@ final class Crypt
      *
      * @see decrypt()
      */
-    private function encrypt(string $data, bool $passwordBased, string $secret, string $info = ''): string
-    {
+    private function encrypt(
+        string $data,
+        bool $passwordBased,
+        #[SensitiveParameter]
+        string $secret,
+        string $info = ''
+    ): string {
         [$blockSize, $keySize] = self::ALLOWED_CIPHERS[$this->cipher];
 
         $keySalt = random_bytes($keySize);
@@ -226,6 +240,10 @@ final class Crypt
 
         $encrypted = openssl_encrypt($data, $this->cipher, $key, OPENSSL_RAW_DATA, $iv);
         if ($encrypted === false) {
+            /**
+             * @psalm-suppress PossiblyFalseOperand `openssl_encrypt()` is returned `false`, so `openssl_error_string()`
+             * always returns string.
+             */
             throw new \RuntimeException('OpenSSL failure on encryption: ' . openssl_error_string());
         }
 
@@ -257,8 +275,13 @@ final class Crypt
      *
      * @see encrypt()
      */
-    private function decrypt(string $data, bool $passwordBased, string $secret, string $info): string
-    {
+    private function decrypt(
+        string $data,
+        bool $passwordBased,
+        #[SensitiveParameter]
+        string $secret,
+        string $info
+    ): string {
         [$blockSize, $keySize] = self::ALLOWED_CIPHERS[$this->cipher];
 
         $keySalt = StringHelper::byteSubstring($data, 0, $keySize);
@@ -272,7 +295,7 @@ final class Crypt
 
         try {
             $data = (new Mac())->getMessage(StringHelper::byteSubstring($data, $keySize), $authKey);
-        } catch (DataIsTamperedException $e) {
+        } catch (DataIsTamperedException) {
             throw new AuthenticationException();
         }
 
@@ -281,6 +304,10 @@ final class Crypt
 
         $decrypted = openssl_decrypt($encrypted, $this->cipher, $key, OPENSSL_RAW_DATA, $iv);
         if ($decrypted === false) {
+            /**
+             * @psalm-suppress PossiblyFalseOperand `openssl_decrypt()` is returned `false`, so `openssl_error_string()`
+             * always returns string.
+             */
             throw new \RuntimeException('OpenSSL failure on decryption: ' . openssl_error_string());
         }
 

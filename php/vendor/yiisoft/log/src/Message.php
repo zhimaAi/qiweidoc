@@ -110,7 +110,7 @@ final class Message
      *
      * @return mixed The context parameter value.
      */
-    public function context(string $name = null, mixed $default = null): mixed
+    public function context(?string $name = null, mixed $default = null): mixed
     {
         if ($name === null) {
             return $this->context;
@@ -206,6 +206,7 @@ final class Message
     {
         $message = (string) $message;
 
+        /** @var string */
         return preg_replace_callback(
             '/{(.*)}/',
             static function (array $matches) use ($context) {

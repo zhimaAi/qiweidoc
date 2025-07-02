@@ -24,14 +24,20 @@ class WorkflowDefinition extends \Google\Protobuf\Internal\Message
      */
     protected $type = '';
     /**
+     * Query definitions, sorted by name.
+     *
      * Generated from protobuf field <code>repeated .temporal.api.sdk.v1.WorkflowInteractionDefinition query_definitions = 2;</code>
      */
     private $query_definitions;
     /**
+     * Signal definitions, sorted by name.
+     *
      * Generated from protobuf field <code>repeated .temporal.api.sdk.v1.WorkflowInteractionDefinition signal_definitions = 3;</code>
      */
     private $signal_definitions;
     /**
+     * Update definitions, sorted by name.
+     *
      * Generated from protobuf field <code>repeated .temporal.api.sdk.v1.WorkflowInteractionDefinition update_definitions = 4;</code>
      */
     private $update_definitions;
@@ -46,8 +52,11 @@ class WorkflowDefinition extends \Google\Protobuf\Internal\Message
      *           A name scoped by the task queue that maps to this workflow definition.
      *           If missing, this workflow is a dynamic workflow.
      *     @type array<\Temporal\Api\Sdk\V1\WorkflowInteractionDefinition>|\Google\Protobuf\Internal\RepeatedField $query_definitions
+     *           Query definitions, sorted by name.
      *     @type array<\Temporal\Api\Sdk\V1\WorkflowInteractionDefinition>|\Google\Protobuf\Internal\RepeatedField $signal_definitions
+     *           Signal definitions, sorted by name.
      *     @type array<\Temporal\Api\Sdk\V1\WorkflowInteractionDefinition>|\Google\Protobuf\Internal\RepeatedField $update_definitions
+     *           Update definitions, sorted by name.
      * }
      */
     public function __construct($data = NULL) {
@@ -84,6 +93,8 @@ class WorkflowDefinition extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * Query definitions, sorted by name.
+     *
      * Generated from protobuf field <code>repeated .temporal.api.sdk.v1.WorkflowInteractionDefinition query_definitions = 2;</code>
      * @return \Google\Protobuf\Internal\RepeatedField
      */
@@ -93,6 +104,8 @@ class WorkflowDefinition extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * Query definitions, sorted by name.
+     *
      * Generated from protobuf field <code>repeated .temporal.api.sdk.v1.WorkflowInteractionDefinition query_definitions = 2;</code>
      * @param array<\Temporal\Api\Sdk\V1\WorkflowInteractionDefinition>|\Google\Protobuf\Internal\RepeatedField $var
      * @return $this
@@ -106,6 +119,8 @@ class WorkflowDefinition extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * Signal definitions, sorted by name.
+     *
      * Generated from protobuf field <code>repeated .temporal.api.sdk.v1.WorkflowInteractionDefinition signal_definitions = 3;</code>
      * @return \Google\Protobuf\Internal\RepeatedField
      */
@@ -115,6 +130,8 @@ class WorkflowDefinition extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * Signal definitions, sorted by name.
+     *
      * Generated from protobuf field <code>repeated .temporal.api.sdk.v1.WorkflowInteractionDefinition signal_definitions = 3;</code>
      * @param array<\Temporal\Api\Sdk\V1\WorkflowInteractionDefinition>|\Google\Protobuf\Internal\RepeatedField $var
      * @return $this
@@ -128,6 +145,8 @@ class WorkflowDefinition extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * Update definitions, sorted by name.
+     *
      * Generated from protobuf field <code>repeated .temporal.api.sdk.v1.WorkflowInteractionDefinition update_definitions = 4;</code>
      * @return \Google\Protobuf\Internal\RepeatedField
      */
@@ -137,6 +156,8 @@ class WorkflowDefinition extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * Update definitions, sorted by name.
+     *
      * Generated from protobuf field <code>repeated .temporal.api.sdk.v1.WorkflowInteractionDefinition update_definitions = 4;</code>
      * @param array<\Temporal\Api\Sdk\V1\WorkflowInteractionDefinition>|\Google\Protobuf\Internal\RepeatedField $var
      * @return $this

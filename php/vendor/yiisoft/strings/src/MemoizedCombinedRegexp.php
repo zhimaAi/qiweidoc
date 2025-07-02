@@ -18,7 +18,7 @@ final class MemoizedCombinedRegexp extends AbstractCombinedRegexp
     private array $results = [];
 
     public function __construct(
-        private AbstractCombinedRegexp $decorated,
+        private readonly AbstractCombinedRegexp $decorated,
     ) {
     }
 

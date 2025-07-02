@@ -15,20 +15,20 @@ use Google\Protobuf\Internal\GPBUtil;
 class Input extends \Google\Protobuf\Internal\Message
 {
     /**
-     * Headers that are passed with the update from the requesting entity.
+     * Headers that are passed with the Update from the requesting entity.
      * These can include things like auth or tracing tokens.
      *
      * Generated from protobuf field <code>.temporal.api.common.v1.Header header = 1;</code>
      */
     protected $header = null;
     /**
-     * The name of the input handler to invoke on the target workflow
+     * The name of the Update handler to invoke on the target Workflow.
      *
      * Generated from protobuf field <code>string name = 2;</code>
      */
     protected $name = '';
     /**
-     * The arguments to pass to the named handler.
+     * The arguments to pass to the named Update handler.
      *
      * Generated from protobuf field <code>.temporal.api.common.v1.Payloads args = 3;</code>
      */
@@ -41,12 +41,12 @@ class Input extends \Google\Protobuf\Internal\Message
      *     Optional. Data for populating the Message object.
      *
      *     @type \Temporal\Api\Common\V1\Header $header
-     *           Headers that are passed with the update from the requesting entity.
+     *           Headers that are passed with the Update from the requesting entity.
      *           These can include things like auth or tracing tokens.
      *     @type string $name
-     *           The name of the input handler to invoke on the target workflow
+     *           The name of the Update handler to invoke on the target Workflow.
      *     @type \Temporal\Api\Common\V1\Payloads $args
-     *           The arguments to pass to the named handler.
+     *           The arguments to pass to the named Update handler.
      * }
      */
     public function __construct($data = NULL) {
@@ -55,7 +55,7 @@ class Input extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Headers that are passed with the update from the requesting entity.
+     * Headers that are passed with the Update from the requesting entity.
      * These can include things like auth or tracing tokens.
      *
      * Generated from protobuf field <code>.temporal.api.common.v1.Header header = 1;</code>
@@ -77,7 +77,7 @@ class Input extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Headers that are passed with the update from the requesting entity.
+     * Headers that are passed with the Update from the requesting entity.
      * These can include things like auth or tracing tokens.
      *
      * Generated from protobuf field <code>.temporal.api.common.v1.Header header = 1;</code>
@@ -93,7 +93,7 @@ class Input extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The name of the input handler to invoke on the target workflow
+     * The name of the Update handler to invoke on the target Workflow.
      *
      * Generated from protobuf field <code>string name = 2;</code>
      * @return string
@@ -104,7 +104,7 @@ class Input extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The name of the input handler to invoke on the target workflow
+     * The name of the Update handler to invoke on the target Workflow.
      *
      * Generated from protobuf field <code>string name = 2;</code>
      * @param string $var
@@ -119,7 +119,7 @@ class Input extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The arguments to pass to the named handler.
+     * The arguments to pass to the named Update handler.
      *
      * Generated from protobuf field <code>.temporal.api.common.v1.Payloads args = 3;</code>
      * @return \Temporal\Api\Common\V1\Payloads|null
@@ -140,7 +140,7 @@ class Input extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The arguments to pass to the named handler.
+     * The arguments to pass to the named Update handler.
      *
      * Generated from protobuf field <code>.temporal.api.common.v1.Payloads args = 3;</code>
      * @param \Temporal\Api\Common\V1\Payloads $var

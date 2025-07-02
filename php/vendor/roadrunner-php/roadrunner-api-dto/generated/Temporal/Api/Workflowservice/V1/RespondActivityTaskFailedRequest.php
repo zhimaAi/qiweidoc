@@ -46,10 +46,27 @@ class RespondActivityTaskFailedRequest extends \Google\Protobuf\Internal\Message
      * Version info of the worker who processed this task. This message's `build_id` field should
      * always be set by SDKs. Workers opting into versioning will also set the `use_versioning`
      * field to true. See message docstrings for more.
+     * Deprecated. Use `deployment` instead.
      *
-     * Generated from protobuf field <code>.temporal.api.common.v1.WorkerVersionStamp worker_version = 6;</code>
+     * Generated from protobuf field <code>.temporal.api.common.v1.WorkerVersionStamp worker_version = 6 [deprecated = true];</code>
+     * @deprecated
      */
     protected $worker_version = null;
+    /**
+     * Deployment info of the worker that completed this task. Must be present if user has set
+     * `WorkerDeploymentOptions` regardless of versioning being enabled or not.
+     * Deprecated. Replaced with `deployment_options`.
+     *
+     * Generated from protobuf field <code>.temporal.api.deployment.v1.Deployment deployment = 7 [deprecated = true];</code>
+     * @deprecated
+     */
+    protected $deployment = null;
+    /**
+     * Worker deployment options that user has set in the worker.
+     *
+     * Generated from protobuf field <code>.temporal.api.deployment.v1.WorkerDeploymentOptions deployment_options = 8;</code>
+     */
+    protected $deployment_options = null;
 
     /**
      * Constructor.
@@ -70,6 +87,13 @@ class RespondActivityTaskFailedRequest extends \Google\Protobuf\Internal\Message
      *           Version info of the worker who processed this task. This message's `build_id` field should
      *           always be set by SDKs. Workers opting into versioning will also set the `use_versioning`
      *           field to true. See message docstrings for more.
+     *           Deprecated. Use `deployment` instead.
+     *     @type \Temporal\Api\Deployment\V1\Deployment $deployment
+     *           Deployment info of the worker that completed this task. Must be present if user has set
+     *           `WorkerDeploymentOptions` regardless of versioning being enabled or not.
+     *           Deprecated. Replaced with `deployment_options`.
+     *     @type \Temporal\Api\Deployment\V1\WorkerDeploymentOptions $deployment_options
+     *           Worker deployment options that user has set in the worker.
      * }
      */
     public function __construct($data = NULL) {
@@ -227,22 +251,31 @@ class RespondActivityTaskFailedRequest extends \Google\Protobuf\Internal\Message
      * Version info of the worker who processed this task. This message's `build_id` field should
      * always be set by SDKs. Workers opting into versioning will also set the `use_versioning`
      * field to true. See message docstrings for more.
+     * Deprecated. Use `deployment` instead.
      *
-     * Generated from protobuf field <code>.temporal.api.common.v1.WorkerVersionStamp worker_version = 6;</code>
+     * Generated from protobuf field <code>.temporal.api.common.v1.WorkerVersionStamp worker_version = 6 [deprecated = true];</code>
      * @return \Temporal\Api\Common\V1\WorkerVersionStamp|null
+     * @deprecated
      */
     public function getWorkerVersion()
     {
+        if (isset($this->worker_version)) {
+            @trigger_error('worker_version is deprecated.', E_USER_DEPRECATED);
+        }
         return $this->worker_version;
     }
 
     public function hasWorkerVersion()
     {
+        if (isset($this->worker_version)) {
+            @trigger_error('worker_version is deprecated.', E_USER_DEPRECATED);
+        }
         return isset($this->worker_version);
     }
 
     public function clearWorkerVersion()
     {
+        @trigger_error('worker_version is deprecated.', E_USER_DEPRECATED);
         unset($this->worker_version);
     }
 
@@ -250,15 +283,104 @@ class RespondActivityTaskFailedRequest extends \Google\Protobuf\Internal\Message
      * Version info of the worker who processed this task. This message's `build_id` field should
      * always be set by SDKs. Workers opting into versioning will also set the `use_versioning`
      * field to true. See message docstrings for more.
+     * Deprecated. Use `deployment` instead.
      *
-     * Generated from protobuf field <code>.temporal.api.common.v1.WorkerVersionStamp worker_version = 6;</code>
+     * Generated from protobuf field <code>.temporal.api.common.v1.WorkerVersionStamp worker_version = 6 [deprecated = true];</code>
      * @param \Temporal\Api\Common\V1\WorkerVersionStamp $var
      * @return $this
+     * @deprecated
      */
     public function setWorkerVersion($var)
     {
+        @trigger_error('worker_version is deprecated.', E_USER_DEPRECATED);
         GPBUtil::checkMessage($var, \Temporal\Api\Common\V1\WorkerVersionStamp::class);
         $this->worker_version = $var;
+
+        return $this;
+    }
+
+    /**
+     * Deployment info of the worker that completed this task. Must be present if user has set
+     * `WorkerDeploymentOptions` regardless of versioning being enabled or not.
+     * Deprecated. Replaced with `deployment_options`.
+     *
+     * Generated from protobuf field <code>.temporal.api.deployment.v1.Deployment deployment = 7 [deprecated = true];</code>
+     * @return \Temporal\Api\Deployment\V1\Deployment|null
+     * @deprecated
+     */
+    public function getDeployment()
+    {
+        if (isset($this->deployment)) {
+            @trigger_error('deployment is deprecated.', E_USER_DEPRECATED);
+        }
+        return $this->deployment;
+    }
+
+    public function hasDeployment()
+    {
+        if (isset($this->deployment)) {
+            @trigger_error('deployment is deprecated.', E_USER_DEPRECATED);
+        }
+        return isset($this->deployment);
+    }
+
+    public function clearDeployment()
+    {
+        @trigger_error('deployment is deprecated.', E_USER_DEPRECATED);
+        unset($this->deployment);
+    }
+
+    /**
+     * Deployment info of the worker that completed this task. Must be present if user has set
+     * `WorkerDeploymentOptions` regardless of versioning being enabled or not.
+     * Deprecated. Replaced with `deployment_options`.
+     *
+     * Generated from protobuf field <code>.temporal.api.deployment.v1.Deployment deployment = 7 [deprecated = true];</code>
+     * @param \Temporal\Api\Deployment\V1\Deployment $var
+     * @return $this
+     * @deprecated
+     */
+    public function setDeployment($var)
+    {
+        @trigger_error('deployment is deprecated.', E_USER_DEPRECATED);
+        GPBUtil::checkMessage($var, \Temporal\Api\Deployment\V1\Deployment::class);
+        $this->deployment = $var;
+
+        return $this;
+    }
+
+    /**
+     * Worker deployment options that user has set in the worker.
+     *
+     * Generated from protobuf field <code>.temporal.api.deployment.v1.WorkerDeploymentOptions deployment_options = 8;</code>
+     * @return \Temporal\Api\Deployment\V1\WorkerDeploymentOptions|null
+     */
+    public function getDeploymentOptions()
+    {
+        return $this->deployment_options;
+    }
+
+    public function hasDeploymentOptions()
+    {
+        return isset($this->deployment_options);
+    }
+
+    public function clearDeploymentOptions()
+    {
+        unset($this->deployment_options);
+    }
+
+    /**
+     * Worker deployment options that user has set in the worker.
+     *
+     * Generated from protobuf field <code>.temporal.api.deployment.v1.WorkerDeploymentOptions deployment_options = 8;</code>
+     * @param \Temporal\Api\Deployment\V1\WorkerDeploymentOptions $var
+     * @return $this
+     */
+    public function setDeploymentOptions($var)
+    {
+        GPBUtil::checkMessage($var, \Temporal\Api\Deployment\V1\WorkerDeploymentOptions::class);
+        $this->deployment_options = $var;
 
         return $this;
     }

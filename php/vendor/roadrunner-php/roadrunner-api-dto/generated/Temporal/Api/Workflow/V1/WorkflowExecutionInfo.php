@@ -10,6 +10,9 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
+ * Hold basic information about a workflow execution.
+ * This structure is a part of visibility, and thus contain a limited subset of information.
+ *
  * Generated from protobuf message <code>temporal.api.workflow.v1.WorkflowExecutionInfo</code>
  */
 class WorkflowExecutionInfo extends \Google\Protobuf\Internal\Message
@@ -76,6 +79,7 @@ class WorkflowExecutionInfo extends \Google\Protobuf\Internal\Message
     protected $history_size_bytes = 0;
     /**
      * If set, the most recent worker version stamp that appeared in a workflow task completion
+     * Deprecated. This field should be cleaned up when versioning-2 API is removed. [cleanup-experimental-wv]
      *
      * Generated from protobuf field <code>.temporal.api.common.v1.WorkerVersionStamp most_recent_worker_version_stamp = 16;</code>
      */
@@ -115,6 +119,7 @@ class WorkflowExecutionInfo extends \Google\Protobuf\Internal\Message
      * again, the assigned build ID may change according to the latest versioning rules.
      * Assigned build ID can also change in the middle of a execution if Compatible Redirect Rules are applied to
      * this execution.
+     * Deprecated. This field should be cleaned up when versioning-2 API is removed. [cleanup-experimental-wv]
      *
      * Generated from protobuf field <code>string assigned_build_id = 19;</code>
      */
@@ -122,10 +127,43 @@ class WorkflowExecutionInfo extends \Google\Protobuf\Internal\Message
     /**
      * Build ID inherited from a previous/parent execution. If present, assigned_build_id will be set to this, instead
      * of using the assignment rules.
+     * Deprecated. This field should be cleaned up when versioning-2 API is removed. [cleanup-experimental-wv]
      *
      * Generated from protobuf field <code>string inherited_build_id = 20;</code>
      */
     protected $inherited_build_id = '';
+    /**
+     * The first run ID in the execution chain.
+     * Executions created via the following operations are considered to be in the same chain
+     * - ContinueAsNew
+     * - Workflow Retry
+     * - Workflow Reset
+     * - Cron Schedule
+     *
+     * Generated from protobuf field <code>string first_run_id = 21;</code>
+     */
+    protected $first_run_id = '';
+    /**
+     * Absent value means the workflow execution is not versioned. When present, the execution might
+     * be versioned or unversioned, depending on `versioning_info.behavior` and `versioning_info.versioning_override`.
+     * Experimental. Versioning info is experimental and might change in the future.
+     *
+     * Generated from protobuf field <code>.temporal.api.workflow.v1.WorkflowExecutionVersioningInfo versioning_info = 22;</code>
+     */
+    protected $versioning_info = null;
+    /**
+     * The name of Worker Deployment that completed the most recent workflow task.
+     * Experimental. Worker Deployments are experimental and might change in the future.
+     *
+     * Generated from protobuf field <code>string worker_deployment_name = 23;</code>
+     */
+    protected $worker_deployment_name = '';
+    /**
+     * Priority metadata
+     *
+     * Generated from protobuf field <code>.temporal.api.common.v1.Priority priority = 24;</code>
+     */
+    protected $priority = null;
 
     /**
      * Constructor.
@@ -150,6 +188,7 @@ class WorkflowExecutionInfo extends \Google\Protobuf\Internal\Message
      *     @type int|string $history_size_bytes
      *     @type \Temporal\Api\Common\V1\WorkerVersionStamp $most_recent_worker_version_stamp
      *           If set, the most recent worker version stamp that appeared in a workflow task completion
+     *           Deprecated. This field should be cleaned up when versioning-2 API is removed. [cleanup-experimental-wv]
      *     @type \Google\Protobuf\Duration $execution_duration
      *           Workflow execution duration is defined as difference between close time and execution time.
      *           This field is only populated if the workflow is closed.
@@ -177,9 +216,27 @@ class WorkflowExecutionInfo extends \Google\Protobuf\Internal\Message
      *           again, the assigned build ID may change according to the latest versioning rules.
      *           Assigned build ID can also change in the middle of a execution if Compatible Redirect Rules are applied to
      *           this execution.
+     *           Deprecated. This field should be cleaned up when versioning-2 API is removed. [cleanup-experimental-wv]
      *     @type string $inherited_build_id
      *           Build ID inherited from a previous/parent execution. If present, assigned_build_id will be set to this, instead
      *           of using the assignment rules.
+     *           Deprecated. This field should be cleaned up when versioning-2 API is removed. [cleanup-experimental-wv]
+     *     @type string $first_run_id
+     *           The first run ID in the execution chain.
+     *           Executions created via the following operations are considered to be in the same chain
+     *           - ContinueAsNew
+     *           - Workflow Retry
+     *           - Workflow Reset
+     *           - Cron Schedule
+     *     @type \Temporal\Api\Workflow\V1\WorkflowExecutionVersioningInfo $versioning_info
+     *           Absent value means the workflow execution is not versioned. When present, the execution might
+     *           be versioned or unversioned, depending on `versioning_info.behavior` and `versioning_info.versioning_override`.
+     *           Experimental. Versioning info is experimental and might change in the future.
+     *     @type string $worker_deployment_name
+     *           The name of Worker Deployment that completed the most recent workflow task.
+     *           Experimental. Worker Deployments are experimental and might change in the future.
+     *     @type \Temporal\Api\Common\V1\Priority $priority
+     *           Priority metadata
      * }
      */
     public function __construct($data = NULL) {
@@ -609,6 +666,7 @@ class WorkflowExecutionInfo extends \Google\Protobuf\Internal\Message
 
     /**
      * If set, the most recent worker version stamp that appeared in a workflow task completion
+     * Deprecated. This field should be cleaned up when versioning-2 API is removed. [cleanup-experimental-wv]
      *
      * Generated from protobuf field <code>.temporal.api.common.v1.WorkerVersionStamp most_recent_worker_version_stamp = 16;</code>
      * @return \Temporal\Api\Common\V1\WorkerVersionStamp|null
@@ -630,6 +688,7 @@ class WorkflowExecutionInfo extends \Google\Protobuf\Internal\Message
 
     /**
      * If set, the most recent worker version stamp that appeared in a workflow task completion
+     * Deprecated. This field should be cleaned up when versioning-2 API is removed. [cleanup-experimental-wv]
      *
      * Generated from protobuf field <code>.temporal.api.common.v1.WorkerVersionStamp most_recent_worker_version_stamp = 16;</code>
      * @param \Temporal\Api\Common\V1\WorkerVersionStamp $var
@@ -754,6 +813,7 @@ class WorkflowExecutionInfo extends \Google\Protobuf\Internal\Message
      * again, the assigned build ID may change according to the latest versioning rules.
      * Assigned build ID can also change in the middle of a execution if Compatible Redirect Rules are applied to
      * this execution.
+     * Deprecated. This field should be cleaned up when versioning-2 API is removed. [cleanup-experimental-wv]
      *
      * Generated from protobuf field <code>string assigned_build_id = 19;</code>
      * @return string
@@ -770,6 +830,7 @@ class WorkflowExecutionInfo extends \Google\Protobuf\Internal\Message
      * again, the assigned build ID may change according to the latest versioning rules.
      * Assigned build ID can also change in the middle of a execution if Compatible Redirect Rules are applied to
      * this execution.
+     * Deprecated. This field should be cleaned up when versioning-2 API is removed. [cleanup-experimental-wv]
      *
      * Generated from protobuf field <code>string assigned_build_id = 19;</code>
      * @param string $var
@@ -786,6 +847,7 @@ class WorkflowExecutionInfo extends \Google\Protobuf\Internal\Message
     /**
      * Build ID inherited from a previous/parent execution. If present, assigned_build_id will be set to this, instead
      * of using the assignment rules.
+     * Deprecated. This field should be cleaned up when versioning-2 API is removed. [cleanup-experimental-wv]
      *
      * Generated from protobuf field <code>string inherited_build_id = 20;</code>
      * @return string
@@ -798,6 +860,7 @@ class WorkflowExecutionInfo extends \Google\Protobuf\Internal\Message
     /**
      * Build ID inherited from a previous/parent execution. If present, assigned_build_id will be set to this, instead
      * of using the assignment rules.
+     * Deprecated. This field should be cleaned up when versioning-2 API is removed. [cleanup-experimental-wv]
      *
      * Generated from protobuf field <code>string inherited_build_id = 20;</code>
      * @param string $var
@@ -807,6 +870,146 @@ class WorkflowExecutionInfo extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->inherited_build_id = $var;
+
+        return $this;
+    }
+
+    /**
+     * The first run ID in the execution chain.
+     * Executions created via the following operations are considered to be in the same chain
+     * - ContinueAsNew
+     * - Workflow Retry
+     * - Workflow Reset
+     * - Cron Schedule
+     *
+     * Generated from protobuf field <code>string first_run_id = 21;</code>
+     * @return string
+     */
+    public function getFirstRunId()
+    {
+        return $this->first_run_id;
+    }
+
+    /**
+     * The first run ID in the execution chain.
+     * Executions created via the following operations are considered to be in the same chain
+     * - ContinueAsNew
+     * - Workflow Retry
+     * - Workflow Reset
+     * - Cron Schedule
+     *
+     * Generated from protobuf field <code>string first_run_id = 21;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setFirstRunId($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->first_run_id = $var;
+
+        return $this;
+    }
+
+    /**
+     * Absent value means the workflow execution is not versioned. When present, the execution might
+     * be versioned or unversioned, depending on `versioning_info.behavior` and `versioning_info.versioning_override`.
+     * Experimental. Versioning info is experimental and might change in the future.
+     *
+     * Generated from protobuf field <code>.temporal.api.workflow.v1.WorkflowExecutionVersioningInfo versioning_info = 22;</code>
+     * @return \Temporal\Api\Workflow\V1\WorkflowExecutionVersioningInfo|null
+     */
+    public function getVersioningInfo()
+    {
+        return $this->versioning_info;
+    }
+
+    public function hasVersioningInfo()
+    {
+        return isset($this->versioning_info);
+    }
+
+    public function clearVersioningInfo()
+    {
+        unset($this->versioning_info);
+    }
+
+    /**
+     * Absent value means the workflow execution is not versioned. When present, the execution might
+     * be versioned or unversioned, depending on `versioning_info.behavior` and `versioning_info.versioning_override`.
+     * Experimental. Versioning info is experimental and might change in the future.
+     *
+     * Generated from protobuf field <code>.temporal.api.workflow.v1.WorkflowExecutionVersioningInfo versioning_info = 22;</code>
+     * @param \Temporal\Api\Workflow\V1\WorkflowExecutionVersioningInfo $var
+     * @return $this
+     */
+    public function setVersioningInfo($var)
+    {
+        GPBUtil::checkMessage($var, \Temporal\Api\Workflow\V1\WorkflowExecutionVersioningInfo::class);
+        $this->versioning_info = $var;
+
+        return $this;
+    }
+
+    /**
+     * The name of Worker Deployment that completed the most recent workflow task.
+     * Experimental. Worker Deployments are experimental and might change in the future.
+     *
+     * Generated from protobuf field <code>string worker_deployment_name = 23;</code>
+     * @return string
+     */
+    public function getWorkerDeploymentName()
+    {
+        return $this->worker_deployment_name;
+    }
+
+    /**
+     * The name of Worker Deployment that completed the most recent workflow task.
+     * Experimental. Worker Deployments are experimental and might change in the future.
+     *
+     * Generated from protobuf field <code>string worker_deployment_name = 23;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setWorkerDeploymentName($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->worker_deployment_name = $var;
+
+        return $this;
+    }
+
+    /**
+     * Priority metadata
+     *
+     * Generated from protobuf field <code>.temporal.api.common.v1.Priority priority = 24;</code>
+     * @return \Temporal\Api\Common\V1\Priority|null
+     */
+    public function getPriority()
+    {
+        return $this->priority;
+    }
+
+    public function hasPriority()
+    {
+        return isset($this->priority);
+    }
+
+    public function clearPriority()
+    {
+        unset($this->priority);
+    }
+
+    /**
+     * Priority metadata
+     *
+     * Generated from protobuf field <code>.temporal.api.common.v1.Priority priority = 24;</code>
+     * @param \Temporal\Api\Common\V1\Priority $var
+     * @return $this
+     */
+    public function setPriority($var)
+    {
+        GPBUtil::checkMessage($var, \Temporal\Api\Common\V1\Priority::class);
+        $this->priority = $var;
 
         return $this;
     }

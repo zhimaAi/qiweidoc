@@ -29,7 +29,7 @@ class WorkflowQuery extends \Google\Protobuf\Internal\Message
      */
     protected $query_args = null;
     /**
-     * Headers that were passed by the caller of the query and copied by temporal 
+     * Headers that were passed by the caller of the query and copied by temporal
      * server into the workflow task.
      *
      * Generated from protobuf field <code>.temporal.api.common.v1.Header header = 3;</code>
@@ -47,7 +47,7 @@ class WorkflowQuery extends \Google\Protobuf\Internal\Message
      *     @type \Temporal\Api\Common\V1\Payloads $query_args
      *           Serialized arguments that will be provided to the query handler.
      *     @type \Temporal\Api\Common\V1\Header $header
-     *           Headers that were passed by the caller of the query and copied by temporal 
+     *           Headers that were passed by the caller of the query and copied by temporal
      *           server into the workflow task.
      * }
      */
@@ -119,7 +119,7 @@ class WorkflowQuery extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Headers that were passed by the caller of the query and copied by temporal 
+     * Headers that were passed by the caller of the query and copied by temporal
      * server into the workflow task.
      *
      * Generated from protobuf field <code>.temporal.api.common.v1.Header header = 3;</code>
@@ -141,7 +141,7 @@ class WorkflowQuery extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Headers that were passed by the caller of the query and copied by temporal 
+     * Headers that were passed by the caller of the query and copied by temporal
      * server into the workflow task.
      *
      * Generated from protobuf field <code>.temporal.api.common.v1.Header header = 3;</code>

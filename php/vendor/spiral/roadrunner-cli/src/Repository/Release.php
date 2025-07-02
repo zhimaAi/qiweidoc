@@ -18,38 +18,15 @@ use Spiral\RoadRunner\Console\Environment\Stability;
 
 abstract class Release implements ReleaseInterface
 {
-    /**
-     * @var string
-     */
     private string $name;
 
-    /**
-     * @var string
-     */
     #[ExpectedValues(valuesFromClass: Stability::class)]
     private string $stability;
 
-    /**
-     * @var string
-     */
     private string $version;
-
-    /**
-     * @var AssetsCollection
-     */
     private AssetsCollection $assets;
-
-    /**
-     * @var string
-     */
     private string $repository;
 
-    /**
-     * @param string $name
-     * @param string $version
-     * @param string $repository
-     * @param iterable $assets
-     */
     public function __construct(string $name, string $version, string $repository, iterable $assets = [])
     {
         $this->version = $version;
@@ -61,19 +38,42 @@ abstract class Release implements ReleaseInterface
         $this->stability = $this->parseStability($version);
     }
 
-    /**
-     * @param string $version
-     * @return string
-     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getVersion(): string
+    {
+        return $this->version;
+    }
+
+    public function getRepositoryName(): string
+    {
+        return $this->repository;
+    }
+
+    #[ExpectedValues(valuesFromClass: Stability::class)]
+    public function getStability(): string
+    {
+        return $this->stability;
+    }
+
+    public function getAssets(): AssetsCollection
+    {
+        return $this->assets;
+    }
+
+    public function satisfies(string $constraint): bool
+    {
+        return Semver::satisfies($this->getName(), $constraint);
+    }
+
     private function parseStability(string $version): string
     {
         return VersionParser::parseStability($version);
     }
 
-    /**
-     * @param string $name
-     * @return string
-     */
     private function simplifyReleaseName(string $name): string
     {
         $version = (new VersionParser())->normalize($name);
@@ -85,54 +85,5 @@ abstract class Release implements ReleaseInterface
             ? $number . '-' . $parts[1]
             : $number
         ;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getVersion(): string
-    {
-        return $this->version;
-    }
-
-    /**
-     * @return string
-     */
-    public function getRepositoryName(): string
-    {
-        return $this->repository;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    #[ExpectedValues(valuesFromClass: Stability::class)]
-    public function getStability(): string
-    {
-        return $this->stability;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getAssets(): AssetsCollection
-    {
-        return $this->assets;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function satisfies(string $constraint): bool
-    {
-        return Semver::satisfies($this->getName(), $constraint);
     }
 }

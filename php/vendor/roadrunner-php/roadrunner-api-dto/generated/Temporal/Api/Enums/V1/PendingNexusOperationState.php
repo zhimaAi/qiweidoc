@@ -38,12 +38,19 @@ class PendingNexusOperationState
      * Generated from protobuf enum <code>PENDING_NEXUS_OPERATION_STATE_STARTED = 3;</code>
      */
     const PENDING_NEXUS_OPERATION_STATE_STARTED = 3;
+    /**
+     * Operation is blocked (eg: by circuit breaker).
+     *
+     * Generated from protobuf enum <code>PENDING_NEXUS_OPERATION_STATE_BLOCKED = 4;</code>
+     */
+    const PENDING_NEXUS_OPERATION_STATE_BLOCKED = 4;
 
     private static $valueToName = [
         self::PENDING_NEXUS_OPERATION_STATE_UNSPECIFIED => 'PENDING_NEXUS_OPERATION_STATE_UNSPECIFIED',
         self::PENDING_NEXUS_OPERATION_STATE_SCHEDULED => 'PENDING_NEXUS_OPERATION_STATE_SCHEDULED',
         self::PENDING_NEXUS_OPERATION_STATE_BACKING_OFF => 'PENDING_NEXUS_OPERATION_STATE_BACKING_OFF',
         self::PENDING_NEXUS_OPERATION_STATE_STARTED => 'PENDING_NEXUS_OPERATION_STATE_STARTED',
+        self::PENDING_NEXUS_OPERATION_STATE_BLOCKED => 'PENDING_NEXUS_OPERATION_STATE_BLOCKED',
     ];
 
     public static function name($value)

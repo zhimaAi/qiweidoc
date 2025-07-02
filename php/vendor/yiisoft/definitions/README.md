@@ -11,7 +11,7 @@
 [![Build status](https://github.com/yiisoft/definitions/actions/workflows/build.yml/badge.svg)](https://github.com/yiisoft/definitions/actions/workflows/build.yml)
 [![Code Coverage](https://codecov.io/gh/yiisoft/definitions/graph/badge.svg?token=9srXPaWGlj)](https://codecov.io/gh/yiisoft/definitions)
 [![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fyiisoft%2Fdefinitions%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/yiisoft/definitions/master)
-[![static analysis](https://github.com/yiisoft/definitions/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/definitions/actions?query=workflow%3A%22static+analysis%22)
+[![Static analysis](https://github.com/yiisoft/definitions/actions/workflows/static.yml/badge.svg?branch=master)](https://github.com/yiisoft/definitions/actions/workflows/static.yml?query=branch%3Amaster)
 [![type-coverage](https://shepherd.dev/github/yiisoft/definitions/coverage.svg)](https://shepherd.dev/github/yiisoft/definitions)
 
 The package provides syntax constructs describing a way to create and configure a service or an object.
@@ -26,7 +26,7 @@ The following are provided:
 
 ## Requirements
 
-- PHP 8.0 or higher.
+- PHP 8.1 or higher.
 
 ## Installation
 

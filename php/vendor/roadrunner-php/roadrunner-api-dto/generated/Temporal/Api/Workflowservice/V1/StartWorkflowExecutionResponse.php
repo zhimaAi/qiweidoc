@@ -27,6 +27,13 @@ class StartWorkflowExecutionResponse extends \Google\Protobuf\Internal\Message
      */
     protected $started = false;
     /**
+     * Current execution status of the workflow. Typically remains WORKFLOW_EXECUTION_STATUS_RUNNING
+     * unless a de-dupe occurs or in specific scenarios handled within the ExecuteMultiOperation (refer to its docs).
+     *
+     * Generated from protobuf field <code>.temporal.api.enums.v1.WorkflowExecutionStatus status = 5;</code>
+     */
+    protected $status = 0;
+    /**
      * When `request_eager_execution` is set on the `StartWorkflowExecutionRequest`, the server - if supported - will
      * return the first workflow task to be eagerly executed.
      * The caller is expected to have a worker available to process the task.
@@ -34,6 +41,12 @@ class StartWorkflowExecutionResponse extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>.temporal.api.workflowservice.v1.PollWorkflowTaskQueueResponse eager_workflow_task = 2;</code>
      */
     protected $eager_workflow_task = null;
+    /**
+     * Link to the workflow event.
+     *
+     * Generated from protobuf field <code>.temporal.api.common.v1.Link link = 4;</code>
+     */
+    protected $link = null;
 
     /**
      * Constructor.
@@ -45,10 +58,15 @@ class StartWorkflowExecutionResponse extends \Google\Protobuf\Internal\Message
      *           The run id of the workflow that was started - or used (via WorkflowIdConflictPolicy USE_EXISTING).
      *     @type bool $started
      *           If true, a new workflow was started.
+     *     @type int $status
+     *           Current execution status of the workflow. Typically remains WORKFLOW_EXECUTION_STATUS_RUNNING
+     *           unless a de-dupe occurs or in specific scenarios handled within the ExecuteMultiOperation (refer to its docs).
      *     @type \Temporal\Api\Workflowservice\V1\PollWorkflowTaskQueueResponse $eager_workflow_task
      *           When `request_eager_execution` is set on the `StartWorkflowExecutionRequest`, the server - if supported - will
      *           return the first workflow task to be eagerly executed.
      *           The caller is expected to have a worker available to process the task.
+     *     @type \Temporal\Api\Common\V1\Link $link
+     *           Link to the workflow event.
      * }
      */
     public function __construct($data = NULL) {
@@ -109,6 +127,34 @@ class StartWorkflowExecutionResponse extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * Current execution status of the workflow. Typically remains WORKFLOW_EXECUTION_STATUS_RUNNING
+     * unless a de-dupe occurs or in specific scenarios handled within the ExecuteMultiOperation (refer to its docs).
+     *
+     * Generated from protobuf field <code>.temporal.api.enums.v1.WorkflowExecutionStatus status = 5;</code>
+     * @return int
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * Current execution status of the workflow. Typically remains WORKFLOW_EXECUTION_STATUS_RUNNING
+     * unless a de-dupe occurs or in specific scenarios handled within the ExecuteMultiOperation (refer to its docs).
+     *
+     * Generated from protobuf field <code>.temporal.api.enums.v1.WorkflowExecutionStatus status = 5;</code>
+     * @param int $var
+     * @return $this
+     */
+    public function setStatus($var)
+    {
+        GPBUtil::checkEnum($var, \Temporal\Api\Enums\V1\WorkflowExecutionStatus::class);
+        $this->status = $var;
+
+        return $this;
+    }
+
+    /**
      * When `request_eager_execution` is set on the `StartWorkflowExecutionRequest`, the server - if supported - will
      * return the first workflow task to be eagerly executed.
      * The caller is expected to have a worker available to process the task.
@@ -144,6 +190,42 @@ class StartWorkflowExecutionResponse extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Temporal\Api\Workflowservice\V1\PollWorkflowTaskQueueResponse::class);
         $this->eager_workflow_task = $var;
+
+        return $this;
+    }
+
+    /**
+     * Link to the workflow event.
+     *
+     * Generated from protobuf field <code>.temporal.api.common.v1.Link link = 4;</code>
+     * @return \Temporal\Api\Common\V1\Link|null
+     */
+    public function getLink()
+    {
+        return $this->link;
+    }
+
+    public function hasLink()
+    {
+        return isset($this->link);
+    }
+
+    public function clearLink()
+    {
+        unset($this->link);
+    }
+
+    /**
+     * Link to the workflow event.
+     *
+     * Generated from protobuf field <code>.temporal.api.common.v1.Link link = 4;</code>
+     * @param \Temporal\Api\Common\V1\Link $var
+     * @return $this
+     */
+    public function setLink($var)
+    {
+        GPBUtil::checkMessage($var, \Temporal\Api\Common\V1\Link::class);
+        $this->link = $var;
 
         return $this;
     }

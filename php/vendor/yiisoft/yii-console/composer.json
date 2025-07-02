@@ -10,11 +10,11 @@
     "license": "BSD-3-Clause",
     "support": {
         "issues": "https://github.com/yiisoft/yii-console/issues?state=open",
+        "source": "https://github.com/yiisoft/yii-console",
         "forum": "https://www.yiiframework.com/forum/",
         "wiki": "https://www.yiiframework.com/wiki/",
-        "irc": "irc://irc.freenode.net/yii",
-        "chat": "https://t.me/yii3en",
-        "source": "https://github.com/yiisoft/yii-console"
+        "irc": "ircs://irc.libera.chat:6697/yii",
+        "chat": "https://t.me/yii3en"
     },
     "funding": [
         {
@@ -38,7 +38,7 @@
     "require-dev": {
         "maglnet/composer-require-checker": "^3.8|^4.4",
         "phpunit/phpunit": "^9.5",
-        "rector/rector": "^1.0.0",
+        "rector/rector": "^2.0.7",
         "roave/infection-static-analysis-plugin": "^1.16",
         "vimeo/psalm": "^4.30|^5.20",
         "yiisoft/config": "^1.3",

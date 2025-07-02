@@ -10,16 +10,18 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * Specifies to the gRPC server how long the client wants the an update-related
- * RPC call to wait before returning control to the caller.
+ * Specifies client's intent to wait for Update results.
  *
  * Generated from protobuf message <code>temporal.api.update.v1.WaitPolicy</code>
  */
 class WaitPolicy extends \Google\Protobuf\Internal\Message
 {
     /**
-     * Indicates the update lifecycle stage that the gRPC call should wait for
-     * before returning.
+     * Indicates the Update lifecycle stage that the Update must reach before
+     * API call is returned.
+     * NOTE: This field works together with API call timeout which is limited by
+     * server timeout (maximum wait time). If server timeout is expired before
+     * user specified timeout, API call returns even if specified stage is not reached.
      *
      * Generated from protobuf field <code>.temporal.api.enums.v1.UpdateWorkflowExecutionLifecycleStage lifecycle_stage = 1;</code>
      */
@@ -32,8 +34,11 @@ class WaitPolicy extends \Google\Protobuf\Internal\Message
      *     Optional. Data for populating the Message object.
      *
      *     @type int $lifecycle_stage
-     *           Indicates the update lifecycle stage that the gRPC call should wait for
-     *           before returning.
+     *           Indicates the Update lifecycle stage that the Update must reach before
+     *           API call is returned.
+     *           NOTE: This field works together with API call timeout which is limited by
+     *           server timeout (maximum wait time). If server timeout is expired before
+     *           user specified timeout, API call returns even if specified stage is not reached.
      * }
      */
     public function __construct($data = NULL) {
@@ -42,8 +47,11 @@ class WaitPolicy extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Indicates the update lifecycle stage that the gRPC call should wait for
-     * before returning.
+     * Indicates the Update lifecycle stage that the Update must reach before
+     * API call is returned.
+     * NOTE: This field works together with API call timeout which is limited by
+     * server timeout (maximum wait time). If server timeout is expired before
+     * user specified timeout, API call returns even if specified stage is not reached.
      *
      * Generated from protobuf field <code>.temporal.api.enums.v1.UpdateWorkflowExecutionLifecycleStage lifecycle_stage = 1;</code>
      * @return int
@@ -54,8 +62,11 @@ class WaitPolicy extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Indicates the update lifecycle stage that the gRPC call should wait for
-     * before returning.
+     * Indicates the Update lifecycle stage that the Update must reach before
+     * API call is returned.
+     * NOTE: This field works together with API call timeout which is limited by
+     * server timeout (maximum wait time). If server timeout is expired before
+     * user specified timeout, API call returns even if specified stage is not reached.
      *
      * Generated from protobuf field <code>.temporal.api.enums.v1.UpdateWorkflowExecutionLifecycleStage lifecycle_stage = 1;</code>
      * @param int $var

@@ -214,7 +214,9 @@ final class ArrayHelper
         }
 
         if (is_array($key)) {
-            /** @psalm-var array<mixed,string|int> $key */
+            if (empty($key)) {
+                return $default;
+            }
             $lastKey = array_pop($key);
             foreach ($key as $keyPart) {
                 $array = self::getRootValue($array, $keyPart, null);
@@ -940,9 +942,15 @@ final class ArrayHelper
     public static function keyExists(array $array, array|float|int|string $key, bool $caseSensitive = true): bool
     {
         if (is_array($key)) {
+            if (empty($key)) {
+                return false;
+            }
+
             if (count($key) === 1) {
                 return self::rootKeyExists($array, end($key), $caseSensitive);
             }
+
+            /** @psalm-var non-empty-array<array-key,float|int|string> $key */
 
             foreach (self::getExistsKeys($array, array_shift($key), $caseSensitive) as $existKey) {
                 $array = self::getRootValue($array, $existKey, null);
@@ -1033,7 +1041,7 @@ final class ArrayHelper
      *
      * @link https://www.php.net/manual/en/function.htmlspecialchars.php
      */
-    public static function htmlEncode(iterable $data, bool $valuesOnly = true, string $encoding = null): array
+    public static function htmlEncode(iterable $data, bool $valuesOnly = true, ?string $encoding = null): array
     {
         $d = [];
         foreach ($data as $key => $value) {
@@ -1340,6 +1348,8 @@ final class ArrayHelper
      * @return array The public member variables of the object.
      *
      * @link https://www.php.net/manual/en/function.get-object-vars.php
+     *
+     * @psalm-return array<string, mixed>
      */
     public static function getObjectVars(object $object): array
     {

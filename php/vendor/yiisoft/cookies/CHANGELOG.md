@@ -1,5 +1,11 @@
 # Yii Cookies Change Log
 
+## 1.2.3 April 16, 2025
+
+- Chg #69: Change PHP constraint in `composer.json` to `~7.4.0 || ~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0`
+  (@vjik)
+- Enh #72: Allow to use PSR-20 clock interface to get current time into `Cookie` (@vjik)
+
 ## 1.2.2 April 05, 2024
 
 - Enh #52: Add support for `^2.0` version of `psr/http-message` (@vjik)

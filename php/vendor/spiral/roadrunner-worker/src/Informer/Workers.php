@@ -11,8 +11,7 @@ final class Workers implements \Countable
      */
     public function __construct(
         private readonly array $workers = [],
-    ) {
-    }
+    ) {}
 
     /**
      * @return array<Worker>

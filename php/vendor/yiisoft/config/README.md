@@ -1,7 +1,7 @@
 <p align="center">
     <a href="https://github.com/yiisoft" target="_blank">
-        <img src="https://yiisoft.github.io/docs/images/yii_logo.svg" height="100px">
-        <img src="logo.png" height="100px">
+        <img src="https://yiisoft.github.io/docs/images/yii_logo.svg" height="100px" alt="Yii">
+        <img src="docs/logo.png" height="100px" alt="Config">
     </a>
     <h1 align="center">Yii Config</h1>
     <br>
@@ -10,25 +10,24 @@
 [![Latest Stable Version](https://poser.pugx.org/yiisoft/config/v/stable)](https://packagist.org/packages/yiisoft/config)
 [![Total Downloads](https://poser.pugx.org/yiisoft/config/downloads)](https://packagist.org/packages/yiisoft/config)
 [![Build status](https://github.com/yiisoft/config/workflows/build/badge.svg)](https://github.com/yiisoft/config/actions)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/yiisoft/config/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/yiisoft/config/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/yiisoft/config/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/yiisoft/config/?branch=master)
+[![Code Coverage](https://codecov.io/gh/yiisoft/config/graph/badge.svg?token=V8gfhkSUoP)](https://codecov.io/gh/yiisoft/config)
 [![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fyiisoft%2Fconfig%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/yiisoft/config/master)
 [![static analysis](https://github.com/yiisoft/config/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/config/actions?query=workflow%3A%22static+analysis%22)
 [![type-coverage](https://shepherd.dev/github/yiisoft/config/coverage.svg)](https://shepherd.dev/github/yiisoft/config)
 
-This [Composer](https://getcomposer.org/) plugin provides assembling of configurations distributed with composer
+This [Composer](https://getcomposer.org) plugin provides assembling of configurations distributed with composer
 packages. It is implementing a plugin system which allows to provide the configuration needed to use a package directly when installing it to make it run out-of-the-box.
 The package becomes a plugin holding both the code and its default configuration.
 
 ## Requirements
 
-- PHP 8.0 or higher.
-- Composer 2.0 or higher.
+- PHP 8.1 or higher.
+- Composer 2.3 or higher.
 
 ## Installation
 
 ```shell
-composer require yiisoft/config --prefer-dist
+composer require yiisoft/config
 ```
 
 ## How it works?
@@ -106,30 +105,34 @@ each package `composer.json`:
 In the above example the mapping keys are config group names and the values are configuration files and references to other config groups.
 The file paths are relative to the [source-directory](#source-directory), which by default is the path where `composer.json` is located.
 
-
-### Markers 
+### Markers
 
 - `?` - marks optional files. Absence of files not marked with this marker will cause exception.
-    ```
+
+    ```php
     "params": [
        "params.php",
        "?params-local.php"
     ]
     ```
+
   It's okay if `params-local.php` will not be found, but it's not okay if `params.php` will be absent.
   
 - `*` - marks wildcard path. It means zero or more matches by wildcard mask.
-  ```
+
+  ```php
   "web": [
      "../src/Modules/*/config/web.php"
   ]
   ```
+
   It will collect all `web.php` in any sub-folders of `src/Modules/` in `config` folder.
   However, if the configuration folder is packaged as part of the `PHAR` archive, the configuration
   files will not be uploaded. In this case, you must explicitly specify each configuration file.
 
 - `$` - reference to another config by its group name.
-  ```
+
+  ```php
   "params": [
      "params.php",
      "?params-local.php"
@@ -143,6 +146,7 @@ The file paths are relative to the [source-directory](#source-directory), which 
      "params-web.php"
   ]
   ```
+
   The config groups `params-console` and `params-web` will both contain the config values from `params.php` and `params-local.php` additional to their own configuration values.
 
 ***
@@ -150,8 +154,6 @@ The file paths are relative to the [source-directory](#source-directory), which 
 Define your configs like the following:
 
 ```php
-<?php
-
 return [
     'components' => [
         'db' => [
@@ -178,7 +180,7 @@ $config = new Config(
 );
 ```
 
-You can pass `null` as `$params` group name. In this case `$params` will empty array. 
+You can pass `null` as `$params` group name. In this case `$params` will empty array.
 
 ### Using sub-configs
 
@@ -401,7 +403,8 @@ and could be used as `$params` in all configurations.
 
 ## Configuration in a PHP file
 
-You can define configuration in a PHP file. To do it, specify a PHP file path in the `extra` section of the `composer.json`:
+You can define configuration in a PHP file. To do it, specify a PHP file path in the `extra` section of
+the `composer.json`:
 
 ```json
 "extra": {
@@ -438,8 +441,9 @@ return [
 ];
 ```
 
-If you specify the file path, the remaining sections (`config-plugin-*`) in `composer.json` will be ignored
-and configurations will be read from the PHP file specified. The path is relative to where the `composer.json` file is located.
+If you specify the file path, the remaining sections (`config-plugin-*`) in `composer.json` will be ignored and
+configurations will be read from the PHP file specified. The path is relative to where the `composer.json` file
+is located.
 
 ## Configuration modifiers
 
@@ -640,36 +644,25 @@ command:
 composer yii-config-rebuild
 ```
 
-## Testing
+### `yii-config-info`
 
-### Unit testing
-
-The package is tested with [PHPUnit](https://phpunit.de/). To run tests:
+The `yii-config-rebuild` command displays application or package configuration details.
 
 ```shell
-./vendor/bin/phpunit --testdox --no-interaction
+composer yii-config-info
+composer yii-config-info yiisoft/widget
 ```
 
-### Mutation testing
+## Documentation
 
-The package tests are checked with [Infection](https://infection.github.io/) mutation framework with
-[Infection Static Analysis Plugin](https://github.com/Roave/infection-static-analysis-plugin). To run it:
+- [Internals](docs/internals.md)
 
-```shell
-./vendor/bin/roave-infection-static-analysis-plugin
-```
-
-### Static analysis
-
-The code is statically analyzed with [Psalm](https://psalm.dev/). To run static analysis:
-
-```shell
-./vendor/bin/psalm
-```
+If you need help or have a question, the [Yii Forum](https://forum.yiiframework.com/c/yii-3-0/63) is a good place for
+that. You may also check out other [Yii Community Resources](https://www.yiiframework.com/community).
 
 ## License
 
-The config package is free software. It is released under the terms of the BSD License.
+The Yii Config package is free software. It is released under the terms of the BSD License.
 Please see [`LICENSE`](./LICENSE.md) for more information.
 
 Maintained by [Yii Software](https://www.yiiframework.com/).
@@ -677,7 +670,7 @@ Maintained by [Yii Software](https://www.yiiframework.com/).
 ## Credits
 
 The plugin is heavily inspired by [Composer config plugin](https://github.com/yiisoft/composer-config-plugin)
-originally created by HiQDev (https://hiqdev.com/) in 2016 and then adopted by Yii.
+originally created by HiQDev (<https://hiqdev.com/>) in 2016 and then adopted by Yii.
 
 ## Support the project
 

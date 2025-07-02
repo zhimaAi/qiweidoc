@@ -1,5 +1,14 @@
 # Yii Definitions Change Log
 
+## 3.4.0 March 02, 2025
+
+- Chg #105: Change PHP constraint in `composer.json` to `~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0` (@vjik)
+- Chg #106: Bump minimal required PHP version to 8.1 (@vjik)
+- Enh #105: Improve definition validation for readonly properties and properties with asymmetric visibility (@vjik)
+- Enh #106: Minor performance optimization: use FQN for PHP functions, remove unnecessary conditions (@vjik)
+- Enh #106: Mark readonly properties (@vjik)
+- Bug #105: Explicitly mark nullable parameters (@vjik)
+
 ## 3.3.1 December 16, 2024
 
 - Enh #101: Minor performance improvement by removing unnecessary code in `DefinitionStorage` (@vjik)

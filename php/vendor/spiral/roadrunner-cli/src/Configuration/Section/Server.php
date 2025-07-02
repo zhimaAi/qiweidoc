@@ -8,18 +8,18 @@ final class Server extends AbstractSection
 {
     private const NAME = 'server';
 
+    public static function getShortName(): string
+    {
+        return self::NAME;
+    }
+
     public function render(): array
     {
         return [
             self::NAME => [
                 'command' => 'php app.php',
-                'relay' => 'pipes'
-            ]
+                'relay' => 'pipes',
+            ],
         ];
-    }
-
-    public static function getShortName(): string
-    {
-        return self::NAME;
     }
 }

@@ -10,20 +10,20 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * Metadata about a workflow execution update.
+ * Metadata about a Workflow Update.
  *
  * Generated from protobuf message <code>temporal.api.update.v1.Meta</code>
  */
 class Meta extends \Google\Protobuf\Internal\Message
 {
     /**
-     * An ID with workflow-scoped uniqueness for this update
+     * An ID with workflow-scoped uniqueness for this Update.
      *
      * Generated from protobuf field <code>string update_id = 1;</code>
      */
     protected $update_id = '';
     /**
-     * A string identifying the agent that requested this update.
+     * A string identifying the agent that requested this Update.
      *
      * Generated from protobuf field <code>string identity = 2;</code>
      */
@@ -36,9 +36,9 @@ class Meta extends \Google\Protobuf\Internal\Message
      *     Optional. Data for populating the Message object.
      *
      *     @type string $update_id
-     *           An ID with workflow-scoped uniqueness for this update
+     *           An ID with workflow-scoped uniqueness for this Update.
      *     @type string $identity
-     *           A string identifying the agent that requested this update.
+     *           A string identifying the agent that requested this Update.
      * }
      */
     public function __construct($data = NULL) {
@@ -47,7 +47,7 @@ class Meta extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * An ID with workflow-scoped uniqueness for this update
+     * An ID with workflow-scoped uniqueness for this Update.
      *
      * Generated from protobuf field <code>string update_id = 1;</code>
      * @return string
@@ -58,7 +58,7 @@ class Meta extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * An ID with workflow-scoped uniqueness for this update
+     * An ID with workflow-scoped uniqueness for this Update.
      *
      * Generated from protobuf field <code>string update_id = 1;</code>
      * @param string $var
@@ -73,7 +73,7 @@ class Meta extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * A string identifying the agent that requested this update.
+     * A string identifying the agent that requested this Update.
      *
      * Generated from protobuf field <code>string identity = 2;</code>
      * @return string
@@ -84,7 +84,7 @@ class Meta extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * A string identifying the agent that requested this update.
+     * A string identifying the agent that requested this Update.
      *
      * Generated from protobuf field <code>string identity = 2;</code>
      * @param string $var

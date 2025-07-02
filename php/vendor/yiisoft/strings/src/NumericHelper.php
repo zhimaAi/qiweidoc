@@ -53,7 +53,7 @@ final class NumericHelper
     /**
      * Returns string representation of a number value without thousands separators and with dot as decimal separator.
      *
-     * @param bool|float|int|string|Stringable $value
+     * @param bool|float|int|string|Stringable $value String in `string` or `Stringable` must be valid UTF-8 string.
      *
      * @throws InvalidArgumentException if value is not scalar.
      */
@@ -69,8 +69,11 @@ final class NumericHelper
             return $value ? '1' : '0';
         }
 
-        $value = str_replace([' ', ','], ['', '.'], (string)$value);
+        $value = str_replace([' ', ','], ['', '.'], (string) $value);
 
+        /**
+         * @var string We assume that `$value` is valid UTF-8 string, so `preg_replace()` never returns `false`.
+         */
         return preg_replace('/\.(?=.*\.)/', '', $value);
     }
 

@@ -14,7 +14,7 @@ use Yiisoft\Cache\CacheInterface;
  */
 final class ValueDependency extends Dependency
 {
-    public function __construct(private mixed $value)
+    public function __construct(private readonly mixed $value)
     {
     }
 

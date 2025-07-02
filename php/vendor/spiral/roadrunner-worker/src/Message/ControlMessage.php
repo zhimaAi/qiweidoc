@@ -7,6 +7,4 @@ namespace Spiral\RoadRunner\Message;
 /**
  * @internal
  */
-interface ControlMessage
-{
-}
+interface ControlMessage {}

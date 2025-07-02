@@ -39,19 +39,20 @@ final class ResponseHeaders implements \IteratorAggregate, \Countable
 
     /**
      * @param THeaderKey $key
-     * @param string|null $default
      * @return THeaderValue|null
      */
-    public function get(string $key, string $default = null): ?string
+    public function get(string $key, ?string $default = null): ?string
     {
         return $this->headers[$key] ?? $default;
     }
 
+    #[\Override]
     public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->headers);
     }
 
+    #[\Override]
     public function count(): int
     {
         return \count($this->headers);

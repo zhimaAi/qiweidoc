@@ -26,7 +26,11 @@ class Operation extends \Google\Protobuf\Internal\Message
      *           Additional restrictions:
      *           - setting `cron_schedule` is invalid
      *           - setting `request_eager_execution` is invalid
+     *           - setting `workflow_start_delay` is invalid
      *     @type \Temporal\Api\Workflowservice\V1\UpdateWorkflowExecutionRequest $update_workflow
+     *           Additional restrictions:
+     *           - setting `first_execution_run_id` is invalid
+     *           - setting `workflow_execution.run_id` is invalid
      * }
      */
     public function __construct($data = NULL) {
@@ -38,6 +42,7 @@ class Operation extends \Google\Protobuf\Internal\Message
      * Additional restrictions:
      * - setting `cron_schedule` is invalid
      * - setting `request_eager_execution` is invalid
+     * - setting `workflow_start_delay` is invalid
      *
      * Generated from protobuf field <code>.temporal.api.workflowservice.v1.StartWorkflowExecutionRequest start_workflow = 1;</code>
      * @return \Temporal\Api\Workflowservice\V1\StartWorkflowExecutionRequest|null
@@ -56,6 +61,7 @@ class Operation extends \Google\Protobuf\Internal\Message
      * Additional restrictions:
      * - setting `cron_schedule` is invalid
      * - setting `request_eager_execution` is invalid
+     * - setting `workflow_start_delay` is invalid
      *
      * Generated from protobuf field <code>.temporal.api.workflowservice.v1.StartWorkflowExecutionRequest start_workflow = 1;</code>
      * @param \Temporal\Api\Workflowservice\V1\StartWorkflowExecutionRequest $var
@@ -70,6 +76,10 @@ class Operation extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * Additional restrictions:
+     * - setting `first_execution_run_id` is invalid
+     * - setting `workflow_execution.run_id` is invalid
+     *
      * Generated from protobuf field <code>.temporal.api.workflowservice.v1.UpdateWorkflowExecutionRequest update_workflow = 2;</code>
      * @return \Temporal\Api\Workflowservice\V1\UpdateWorkflowExecutionRequest|null
      */
@@ -84,6 +94,10 @@ class Operation extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * Additional restrictions:
+     * - setting `first_execution_run_id` is invalid
+     * - setting `workflow_execution.run_id` is invalid
+     *
      * Generated from protobuf field <code>.temporal.api.workflowservice.v1.UpdateWorkflowExecutionRequest update_workflow = 2;</code>
      * @param \Temporal\Api\Workflowservice\V1\UpdateWorkflowExecutionRequest $var
      * @return $this

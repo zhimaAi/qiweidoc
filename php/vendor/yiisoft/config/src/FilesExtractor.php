@@ -6,6 +6,8 @@ namespace Yiisoft\Config;
 
 use ErrorException;
 
+use Yiisoft\Config\Composer\Options;
+
 use function array_merge;
 use function glob;
 use function is_file;
@@ -18,10 +20,10 @@ use function substr;
 final class FilesExtractor
 {
     public function __construct(
-        private ConfigPaths $paths,
-        private MergePlan $mergePlan,
-        private DataModifiers $dataModifiers,
-        private string $environment,
+        private readonly ConfigPaths $paths,
+        private readonly MergePlan $mergePlan,
+        private readonly DataModifiers $dataModifiers,
+        private readonly string $environment,
     ) {
     }
 
@@ -100,6 +102,7 @@ final class FilesExtractor
                 }
 
                 $filePath = $this->paths->absolute($item, $package);
+                /** @psalm-var list<string> $files */
                 $files = Options::containsWildcard($item) ? glob($filePath) : [$filePath];
 
                 foreach ($files as $file) {

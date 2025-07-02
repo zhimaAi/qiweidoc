@@ -63,6 +63,12 @@ class CallbackInfo extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>.google.protobuf.Timestamp next_attempt_schedule_time = 8;</code>
      */
     protected $next_attempt_schedule_time = null;
+    /**
+     * If the state is BLOCKED, blocked reason provides additional information.
+     *
+     * Generated from protobuf field <code>string blocked_reason = 9;</code>
+     */
+    protected $blocked_reason = '';
 
     /**
      * Constructor.
@@ -86,6 +92,8 @@ class CallbackInfo extends \Google\Protobuf\Internal\Message
      *           The last attempt's failure, if any.
      *     @type \Google\Protobuf\Timestamp $next_attempt_schedule_time
      *           The time when the next attempt is scheduled.
+     *     @type string $blocked_reason
+     *           If the state is BLOCKED, blocked reason provides additional information.
      * }
      */
     public function __construct($data = NULL) {
@@ -355,6 +363,32 @@ class CallbackInfo extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Google\Protobuf\Timestamp::class);
         $this->next_attempt_schedule_time = $var;
+
+        return $this;
+    }
+
+    /**
+     * If the state is BLOCKED, blocked reason provides additional information.
+     *
+     * Generated from protobuf field <code>string blocked_reason = 9;</code>
+     * @return string
+     */
+    public function getBlockedReason()
+    {
+        return $this->blocked_reason;
+    }
+
+    /**
+     * If the state is BLOCKED, blocked reason provides additional information.
+     *
+     * Generated from protobuf field <code>string blocked_reason = 9;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setBlockedReason($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->blocked_reason = $var;
 
         return $this;
     }

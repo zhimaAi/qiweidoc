@@ -10,37 +10,64 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * For workflow task queues, we only report the normal queue stats, not sticky queues. This means the stats
- * reported here do not count all workflow tasks. However, because the tasks queued in sticky queues only remain
- * valid for a few seconds, the inaccuracy becomes less significant as the backlog age grows.
+ * TaskQueueStats contains statistics about task queue backlog and activity.
+ * For workflow task queue type, this result is partial because tasks sent to sticky queues are not included. Read
+ * comments above each metric to understand the impact of sticky queue exclusion on that metric accuracy.
  *
  * Generated from protobuf message <code>temporal.api.taskqueue.v1.TaskQueueStats</code>
  */
 class TaskQueueStats extends \Google\Protobuf\Internal\Message
 {
     /**
-     * The approximate number of tasks backlogged in this task queue. May count expired tasks but eventually converges
-     * to the right value.
+     * The approximate number of tasks backlogged in this task queue. May count expired tasks but eventually
+     * converges to the right value. Can be relied upon for scaling decisions.
+     * Special note for workflow task queue type: this metric does not count sticky queue tasks. However, because
+     * those tasks only remain valid for a few seconds, the inaccuracy becomes less significant as the backlog size
+     * grows.
      *
      * Generated from protobuf field <code>int64 approximate_backlog_count = 1;</code>
      */
     protected $approximate_backlog_count = 0;
     /**
-     * Approximate age of the oldest task in the backlog based on the create timestamp of the task at the head of the queue.
+     * Approximate age of the oldest task in the backlog based on the creation time of the task at the head of
+     * the queue. Can be relied upon for scaling decisions.
+     * Special note for workflow task queue type: this metric does not count sticky queue tasks. However, because
+     * those tasks only remain valid for a few seconds, they should not affect the result when backlog is older than
+     * few seconds.
      *
      * Generated from protobuf field <code>.google.protobuf.Duration approximate_backlog_age = 2;</code>
      */
     protected $approximate_backlog_age = null;
     /**
-     * Approximate tasks per second added to the task queue based on activity within a fixed window. This includes both backlogged and
-     * sync-matched tasks.
+     * The approximate tasks per second added to the task queue, averaging the last 30 seconds. These includes tasks
+     * whether or not they were added to/dispatched from the backlog or they were dispatched immediately without going
+     * to the backlog (sync-matched).
+     * The difference between `tasks_add_rate` and `tasks_dispatch_rate` is a reliable metric for the rate at which
+     * backlog grows/shrinks.
+     * Note: the actual tasks delivered to the workers may significantly be higher than the numbers reported by
+     * tasks_add_rate, because:
+     * - Tasks can be sent to workers without going to the task queue. This is called Eager dispatch. Eager dispatch is
+     *   enable for activities by default in the latest SDKs.
+     * - Tasks going to Sticky queue are not accounted for. Note that, typically, only the first workflow task of each
+     *   workflow goes to a normal queue, and the rest workflow tasks go to the Sticky queue associated with a specific
+     *   worker instance.
      *
      * Generated from protobuf field <code>float tasks_add_rate = 3;</code>
      */
     protected $tasks_add_rate = 0.0;
     /**
-     * Approximate tasks per second dispatched to workers based on activity within a fixed window. This includes both backlogged and
-     * sync-matched tasks.
+     * The approximate tasks per second dispatched from the task queue, averaging the last 30 seconds. These includes
+     * tasks whether or not they were added to/dispatched from the backlog or they were dispatched immediately without
+     * going to the backlog (sync-matched).
+     * The difference between `tasks_add_rate` and `tasks_dispatch_rate` is a reliable metric for the rate at which
+     * backlog grows/shrinks.
+     * Note: the actual tasks delivered to the workers may significantly be higher than the numbers reported by
+     * tasks_dispatch_rate, because:
+     * - Tasks can be sent to workers without going to the task queue. This is called Eager dispatch. Eager dispatch is
+     *   enable for activities by default in the latest SDKs.
+     * - Tasks going to Sticky queue are not accounted for. Note that, typically, only the first workflow task of each
+     *   workflow goes to a normal queue, and the rest workflow tasks go to the Sticky queue associated with a specific
+     *   worker instance.
      *
      * Generated from protobuf field <code>float tasks_dispatch_rate = 4;</code>
      */
@@ -53,16 +80,43 @@ class TaskQueueStats extends \Google\Protobuf\Internal\Message
      *     Optional. Data for populating the Message object.
      *
      *     @type int|string $approximate_backlog_count
-     *           The approximate number of tasks backlogged in this task queue. May count expired tasks but eventually converges
-     *           to the right value.
+     *           The approximate number of tasks backlogged in this task queue. May count expired tasks but eventually
+     *           converges to the right value. Can be relied upon for scaling decisions.
+     *           Special note for workflow task queue type: this metric does not count sticky queue tasks. However, because
+     *           those tasks only remain valid for a few seconds, the inaccuracy becomes less significant as the backlog size
+     *           grows.
      *     @type \Google\Protobuf\Duration $approximate_backlog_age
-     *           Approximate age of the oldest task in the backlog based on the create timestamp of the task at the head of the queue.
+     *           Approximate age of the oldest task in the backlog based on the creation time of the task at the head of
+     *           the queue. Can be relied upon for scaling decisions.
+     *           Special note for workflow task queue type: this metric does not count sticky queue tasks. However, because
+     *           those tasks only remain valid for a few seconds, they should not affect the result when backlog is older than
+     *           few seconds.
      *     @type float $tasks_add_rate
-     *           Approximate tasks per second added to the task queue based on activity within a fixed window. This includes both backlogged and
-     *           sync-matched tasks.
+     *           The approximate tasks per second added to the task queue, averaging the last 30 seconds. These includes tasks
+     *           whether or not they were added to/dispatched from the backlog or they were dispatched immediately without going
+     *           to the backlog (sync-matched).
+     *           The difference between `tasks_add_rate` and `tasks_dispatch_rate` is a reliable metric for the rate at which
+     *           backlog grows/shrinks.
+     *           Note: the actual tasks delivered to the workers may significantly be higher than the numbers reported by
+     *           tasks_add_rate, because:
+     *           - Tasks can be sent to workers without going to the task queue. This is called Eager dispatch. Eager dispatch is
+     *             enable for activities by default in the latest SDKs.
+     *           - Tasks going to Sticky queue are not accounted for. Note that, typically, only the first workflow task of each
+     *             workflow goes to a normal queue, and the rest workflow tasks go to the Sticky queue associated with a specific
+     *             worker instance.
      *     @type float $tasks_dispatch_rate
-     *           Approximate tasks per second dispatched to workers based on activity within a fixed window. This includes both backlogged and
-     *           sync-matched tasks.
+     *           The approximate tasks per second dispatched from the task queue, averaging the last 30 seconds. These includes
+     *           tasks whether or not they were added to/dispatched from the backlog or they were dispatched immediately without
+     *           going to the backlog (sync-matched).
+     *           The difference between `tasks_add_rate` and `tasks_dispatch_rate` is a reliable metric for the rate at which
+     *           backlog grows/shrinks.
+     *           Note: the actual tasks delivered to the workers may significantly be higher than the numbers reported by
+     *           tasks_dispatch_rate, because:
+     *           - Tasks can be sent to workers without going to the task queue. This is called Eager dispatch. Eager dispatch is
+     *             enable for activities by default in the latest SDKs.
+     *           - Tasks going to Sticky queue are not accounted for. Note that, typically, only the first workflow task of each
+     *             workflow goes to a normal queue, and the rest workflow tasks go to the Sticky queue associated with a specific
+     *             worker instance.
      * }
      */
     public function __construct($data = NULL) {
@@ -71,8 +125,11 @@ class TaskQueueStats extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The approximate number of tasks backlogged in this task queue. May count expired tasks but eventually converges
-     * to the right value.
+     * The approximate number of tasks backlogged in this task queue. May count expired tasks but eventually
+     * converges to the right value. Can be relied upon for scaling decisions.
+     * Special note for workflow task queue type: this metric does not count sticky queue tasks. However, because
+     * those tasks only remain valid for a few seconds, the inaccuracy becomes less significant as the backlog size
+     * grows.
      *
      * Generated from protobuf field <code>int64 approximate_backlog_count = 1;</code>
      * @return int|string
@@ -83,8 +140,11 @@ class TaskQueueStats extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The approximate number of tasks backlogged in this task queue. May count expired tasks but eventually converges
-     * to the right value.
+     * The approximate number of tasks backlogged in this task queue. May count expired tasks but eventually
+     * converges to the right value. Can be relied upon for scaling decisions.
+     * Special note for workflow task queue type: this metric does not count sticky queue tasks. However, because
+     * those tasks only remain valid for a few seconds, the inaccuracy becomes less significant as the backlog size
+     * grows.
      *
      * Generated from protobuf field <code>int64 approximate_backlog_count = 1;</code>
      * @param int|string $var
@@ -99,7 +159,11 @@ class TaskQueueStats extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Approximate age of the oldest task in the backlog based on the create timestamp of the task at the head of the queue.
+     * Approximate age of the oldest task in the backlog based on the creation time of the task at the head of
+     * the queue. Can be relied upon for scaling decisions.
+     * Special note for workflow task queue type: this metric does not count sticky queue tasks. However, because
+     * those tasks only remain valid for a few seconds, they should not affect the result when backlog is older than
+     * few seconds.
      *
      * Generated from protobuf field <code>.google.protobuf.Duration approximate_backlog_age = 2;</code>
      * @return \Google\Protobuf\Duration|null
@@ -120,7 +184,11 @@ class TaskQueueStats extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Approximate age of the oldest task in the backlog based on the create timestamp of the task at the head of the queue.
+     * Approximate age of the oldest task in the backlog based on the creation time of the task at the head of
+     * the queue. Can be relied upon for scaling decisions.
+     * Special note for workflow task queue type: this metric does not count sticky queue tasks. However, because
+     * those tasks only remain valid for a few seconds, they should not affect the result when backlog is older than
+     * few seconds.
      *
      * Generated from protobuf field <code>.google.protobuf.Duration approximate_backlog_age = 2;</code>
      * @param \Google\Protobuf\Duration $var
@@ -135,8 +203,18 @@ class TaskQueueStats extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Approximate tasks per second added to the task queue based on activity within a fixed window. This includes both backlogged and
-     * sync-matched tasks.
+     * The approximate tasks per second added to the task queue, averaging the last 30 seconds. These includes tasks
+     * whether or not they were added to/dispatched from the backlog or they were dispatched immediately without going
+     * to the backlog (sync-matched).
+     * The difference between `tasks_add_rate` and `tasks_dispatch_rate` is a reliable metric for the rate at which
+     * backlog grows/shrinks.
+     * Note: the actual tasks delivered to the workers may significantly be higher than the numbers reported by
+     * tasks_add_rate, because:
+     * - Tasks can be sent to workers without going to the task queue. This is called Eager dispatch. Eager dispatch is
+     *   enable for activities by default in the latest SDKs.
+     * - Tasks going to Sticky queue are not accounted for. Note that, typically, only the first workflow task of each
+     *   workflow goes to a normal queue, and the rest workflow tasks go to the Sticky queue associated with a specific
+     *   worker instance.
      *
      * Generated from protobuf field <code>float tasks_add_rate = 3;</code>
      * @return float
@@ -147,8 +225,18 @@ class TaskQueueStats extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Approximate tasks per second added to the task queue based on activity within a fixed window. This includes both backlogged and
-     * sync-matched tasks.
+     * The approximate tasks per second added to the task queue, averaging the last 30 seconds. These includes tasks
+     * whether or not they were added to/dispatched from the backlog or they were dispatched immediately without going
+     * to the backlog (sync-matched).
+     * The difference between `tasks_add_rate` and `tasks_dispatch_rate` is a reliable metric for the rate at which
+     * backlog grows/shrinks.
+     * Note: the actual tasks delivered to the workers may significantly be higher than the numbers reported by
+     * tasks_add_rate, because:
+     * - Tasks can be sent to workers without going to the task queue. This is called Eager dispatch. Eager dispatch is
+     *   enable for activities by default in the latest SDKs.
+     * - Tasks going to Sticky queue are not accounted for. Note that, typically, only the first workflow task of each
+     *   workflow goes to a normal queue, and the rest workflow tasks go to the Sticky queue associated with a specific
+     *   worker instance.
      *
      * Generated from protobuf field <code>float tasks_add_rate = 3;</code>
      * @param float $var
@@ -163,8 +251,18 @@ class TaskQueueStats extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Approximate tasks per second dispatched to workers based on activity within a fixed window. This includes both backlogged and
-     * sync-matched tasks.
+     * The approximate tasks per second dispatched from the task queue, averaging the last 30 seconds. These includes
+     * tasks whether or not they were added to/dispatched from the backlog or they were dispatched immediately without
+     * going to the backlog (sync-matched).
+     * The difference between `tasks_add_rate` and `tasks_dispatch_rate` is a reliable metric for the rate at which
+     * backlog grows/shrinks.
+     * Note: the actual tasks delivered to the workers may significantly be higher than the numbers reported by
+     * tasks_dispatch_rate, because:
+     * - Tasks can be sent to workers without going to the task queue. This is called Eager dispatch. Eager dispatch is
+     *   enable for activities by default in the latest SDKs.
+     * - Tasks going to Sticky queue are not accounted for. Note that, typically, only the first workflow task of each
+     *   workflow goes to a normal queue, and the rest workflow tasks go to the Sticky queue associated with a specific
+     *   worker instance.
      *
      * Generated from protobuf field <code>float tasks_dispatch_rate = 4;</code>
      * @return float
@@ -175,8 +273,18 @@ class TaskQueueStats extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Approximate tasks per second dispatched to workers based on activity within a fixed window. This includes both backlogged and
-     * sync-matched tasks.
+     * The approximate tasks per second dispatched from the task queue, averaging the last 30 seconds. These includes
+     * tasks whether or not they were added to/dispatched from the backlog or they were dispatched immediately without
+     * going to the backlog (sync-matched).
+     * The difference between `tasks_add_rate` and `tasks_dispatch_rate` is a reliable metric for the rate at which
+     * backlog grows/shrinks.
+     * Note: the actual tasks delivered to the workers may significantly be higher than the numbers reported by
+     * tasks_dispatch_rate, because:
+     * - Tasks can be sent to workers without going to the task queue. This is called Eager dispatch. Eager dispatch is
+     *   enable for activities by default in the latest SDKs.
+     * - Tasks going to Sticky queue are not accounted for. Note that, typically, only the first workflow task of each
+     *   workflow goes to a normal queue, and the rest workflow tasks go to the Sticky queue associated with a specific
+     *   worker instance.
      *
      * Generated from protobuf field <code>float tasks_dispatch_rate = 4;</code>
      * @param float $var

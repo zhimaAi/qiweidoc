@@ -1,5 +1,16 @@
 # Yii Config Change Log
 
+## 1.6.0 February 05, 2025
+
+- New #173: Allow to use option "config-plugin-file" in packages (@vjik)
+- New #175: Add `yii-config-info` composer command (@vjik)
+- Chg #175: Raise minimum Composer version to 2.3 (@vjik)
+- Chg #187: Change PHP constraint in `composer.json` to `~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0` (@vjik)
+- Enh #172, #173: Refactoring: extract config settings reader to separate class (@vjik)
+- Enh #175: Minor refactoring of internal classes `Options` and `ProcessHelper` (@vjik)
+- Enh #186: Raise the minimum PHP version to 8.1 and minor refactoring (@vjik)
+- Bug #186: Explicitly mark nullable parameters (@vjik)
+
 ## 1.5.0 December 25, 2023
 
 - New #155: Add ability to specify recursion depth for recursive modifier (@vjik)

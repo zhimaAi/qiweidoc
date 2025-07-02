@@ -10,39 +10,38 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
+ * Not used anywhere. Use case is replaced by WorkflowExecutionOptionsUpdatedEventAttributes
+ *
  * Generated from protobuf message <code>temporal.api.history.v1.WorkflowPropertiesModifiedExternallyEventAttributes</code>
  */
 class WorkflowPropertiesModifiedExternallyEventAttributes extends \Google\Protobuf\Internal\Message
 {
     /**
-     * If set to a nonempty string, future workflow tasks for this workflow shall be dispatched on
-     * the provided queue.
+     * Not used.
      *
      * Generated from protobuf field <code>string new_task_queue = 1;</code>
      */
     protected $new_task_queue = '';
     /**
-     * If set, update the workflow task timeout to this value.
+     * Not used.
      *
      * Generated from protobuf field <code>.google.protobuf.Duration new_workflow_task_timeout = 2;</code>
      */
     protected $new_workflow_task_timeout = null;
     /**
-     * If set, update the workflow run timeout to this value. May be set to 0 for no timeout.
+     * Not used.
      *
      * Generated from protobuf field <code>.google.protobuf.Duration new_workflow_run_timeout = 3;</code>
      */
     protected $new_workflow_run_timeout = null;
     /**
-     * If set, update the workflow execution timeout to this value. May be set to 0 for no timeout.
+     * Not used.
      *
      * Generated from protobuf field <code>.google.protobuf.Duration new_workflow_execution_timeout = 4;</code>
      */
     protected $new_workflow_execution_timeout = null;
     /**
-     * If set, update the workflow memo with the provided values. The values will be merged with
-     * the existing memo. If the user wants to delete values, a default/empty Payload should be
-     * used as the value for the key being deleted.
+     * Not used.
      *
      * Generated from protobuf field <code>.temporal.api.common.v1.Memo upserted_memo = 5;</code>
      */
@@ -55,18 +54,15 @@ class WorkflowPropertiesModifiedExternallyEventAttributes extends \Google\Protob
      *     Optional. Data for populating the Message object.
      *
      *     @type string $new_task_queue
-     *           If set to a nonempty string, future workflow tasks for this workflow shall be dispatched on
-     *           the provided queue.
+     *           Not used.
      *     @type \Google\Protobuf\Duration $new_workflow_task_timeout
-     *           If set, update the workflow task timeout to this value.
+     *           Not used.
      *     @type \Google\Protobuf\Duration $new_workflow_run_timeout
-     *           If set, update the workflow run timeout to this value. May be set to 0 for no timeout.
+     *           Not used.
      *     @type \Google\Protobuf\Duration $new_workflow_execution_timeout
-     *           If set, update the workflow execution timeout to this value. May be set to 0 for no timeout.
+     *           Not used.
      *     @type \Temporal\Api\Common\V1\Memo $upserted_memo
-     *           If set, update the workflow memo with the provided values. The values will be merged with
-     *           the existing memo. If the user wants to delete values, a default/empty Payload should be
-     *           used as the value for the key being deleted.
+     *           Not used.
      * }
      */
     public function __construct($data = NULL) {
@@ -75,8 +71,7 @@ class WorkflowPropertiesModifiedExternallyEventAttributes extends \Google\Protob
     }
 
     /**
-     * If set to a nonempty string, future workflow tasks for this workflow shall be dispatched on
-     * the provided queue.
+     * Not used.
      *
      * Generated from protobuf field <code>string new_task_queue = 1;</code>
      * @return string
@@ -87,8 +82,7 @@ class WorkflowPropertiesModifiedExternallyEventAttributes extends \Google\Protob
     }
 
     /**
-     * If set to a nonempty string, future workflow tasks for this workflow shall be dispatched on
-     * the provided queue.
+     * Not used.
      *
      * Generated from protobuf field <code>string new_task_queue = 1;</code>
      * @param string $var
@@ -103,7 +97,7 @@ class WorkflowPropertiesModifiedExternallyEventAttributes extends \Google\Protob
     }
 
     /**
-     * If set, update the workflow task timeout to this value.
+     * Not used.
      *
      * Generated from protobuf field <code>.google.protobuf.Duration new_workflow_task_timeout = 2;</code>
      * @return \Google\Protobuf\Duration|null
@@ -124,7 +118,7 @@ class WorkflowPropertiesModifiedExternallyEventAttributes extends \Google\Protob
     }
 
     /**
-     * If set, update the workflow task timeout to this value.
+     * Not used.
      *
      * Generated from protobuf field <code>.google.protobuf.Duration new_workflow_task_timeout = 2;</code>
      * @param \Google\Protobuf\Duration $var
@@ -139,7 +133,7 @@ class WorkflowPropertiesModifiedExternallyEventAttributes extends \Google\Protob
     }
 
     /**
-     * If set, update the workflow run timeout to this value. May be set to 0 for no timeout.
+     * Not used.
      *
      * Generated from protobuf field <code>.google.protobuf.Duration new_workflow_run_timeout = 3;</code>
      * @return \Google\Protobuf\Duration|null
@@ -160,7 +154,7 @@ class WorkflowPropertiesModifiedExternallyEventAttributes extends \Google\Protob
     }
 
     /**
-     * If set, update the workflow run timeout to this value. May be set to 0 for no timeout.
+     * Not used.
      *
      * Generated from protobuf field <code>.google.protobuf.Duration new_workflow_run_timeout = 3;</code>
      * @param \Google\Protobuf\Duration $var
@@ -175,7 +169,7 @@ class WorkflowPropertiesModifiedExternallyEventAttributes extends \Google\Protob
     }
 
     /**
-     * If set, update the workflow execution timeout to this value. May be set to 0 for no timeout.
+     * Not used.
      *
      * Generated from protobuf field <code>.google.protobuf.Duration new_workflow_execution_timeout = 4;</code>
      * @return \Google\Protobuf\Duration|null
@@ -196,7 +190,7 @@ class WorkflowPropertiesModifiedExternallyEventAttributes extends \Google\Protob
     }
 
     /**
-     * If set, update the workflow execution timeout to this value. May be set to 0 for no timeout.
+     * Not used.
      *
      * Generated from protobuf field <code>.google.protobuf.Duration new_workflow_execution_timeout = 4;</code>
      * @param \Google\Protobuf\Duration $var
@@ -211,9 +205,7 @@ class WorkflowPropertiesModifiedExternallyEventAttributes extends \Google\Protob
     }
 
     /**
-     * If set, update the workflow memo with the provided values. The values will be merged with
-     * the existing memo. If the user wants to delete values, a default/empty Payload should be
-     * used as the value for the key being deleted.
+     * Not used.
      *
      * Generated from protobuf field <code>.temporal.api.common.v1.Memo upserted_memo = 5;</code>
      * @return \Temporal\Api\Common\V1\Memo|null
@@ -234,9 +226,7 @@ class WorkflowPropertiesModifiedExternallyEventAttributes extends \Google\Protob
     }
 
     /**
-     * If set, update the workflow memo with the provided values. The values will be merged with
-     * the existing memo. If the user wants to delete values, a default/empty Payload should be
-     * used as the value for the key being deleted.
+     * Not used.
      *
      * Generated from protobuf field <code>.temporal.api.common.v1.Memo upserted_memo = 5;</code>
      * @param \Temporal\Api\Common\V1\Memo $var

@@ -65,7 +65,7 @@ final class Plugins
                 $plugins = Presets::WEB_PLUGINS;
         }
 
-        return new self(\array_map(function (string $plugin) {
+        return new self(\array_map(static function (string $plugin) {
             return $plugin::getShortName();
         }, $plugins));
     }

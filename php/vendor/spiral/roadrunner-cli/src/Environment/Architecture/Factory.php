@@ -33,6 +33,7 @@ class Factory
     private const UNAME_MAPPINGS = [
         Architecture::ARCH_X86_64 => [
             'AMD64',
+            'amd64',
             'x86',
             'x64',
             'x86_64',

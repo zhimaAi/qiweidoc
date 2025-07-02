@@ -5,6 +5,7 @@
         "Composer\\EventDispatcher\\EventSubscriberInterface",
         "Composer\\Factory",
         "Composer\\IO\\IOInterface",
+        "Composer\\Package\\BasePackage",
         "Composer\\Package\\CompletePackage",
         "Composer\\Package\\PackageInterface",
         "Composer\\Plugin\\Capability\\CommandProvider",

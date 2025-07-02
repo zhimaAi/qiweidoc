@@ -34,6 +34,20 @@ class DescribeTaskQueueResponse extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>map<string, .temporal.api.taskqueue.v1.TaskQueueVersionInfo> versions_info = 3;</code>
      */
     private $versions_info;
+    /**
+     * Specifies which Worker Deployment Version(s) Server routes this Task Queue's tasks to.
+     * When not present, it means the tasks are routed to Unversioned workers (workers with
+     * UNVERSIONED or unspecified WorkerVersioningMode.)
+     * Task Queue Versioning info is updated indirectly by calling SetWorkerDeploymentCurrentVersion
+     * and SetWorkerDeploymentRampingVersion on Worker Deployments.
+     * Note: This information is not relevant to Pinned workflow executions and their activities as
+     * they are always routed to their Pinned Deployment Version. However, new workflow executions
+     * are typically not Pinned until they complete their first task (unless they are started with
+     * a Pinned VersioningOverride or are Child Workflows of a Pinned parent).
+     *
+     * Generated from protobuf field <code>.temporal.api.taskqueue.v1.TaskQueueVersioningInfo versioning_info = 4;</code>
+     */
+    protected $versioning_info = null;
 
     /**
      * Constructor.
@@ -49,6 +63,16 @@ class DescribeTaskQueueResponse extends \Google\Protobuf\Internal\Message
      *     @type array|\Google\Protobuf\Internal\MapField $versions_info
      *           This map contains Task Queue information for each Build ID. Empty string as key value means unversioned.
      *           Only set in `ENHANCED` mode.
+     *     @type \Temporal\Api\Taskqueue\V1\TaskQueueVersioningInfo $versioning_info
+     *           Specifies which Worker Deployment Version(s) Server routes this Task Queue's tasks to.
+     *           When not present, it means the tasks are routed to Unversioned workers (workers with
+     *           UNVERSIONED or unspecified WorkerVersioningMode.)
+     *           Task Queue Versioning info is updated indirectly by calling SetWorkerDeploymentCurrentVersion
+     *           and SetWorkerDeploymentRampingVersion on Worker Deployments.
+     *           Note: This information is not relevant to Pinned workflow executions and their activities as
+     *           they are always routed to their Pinned Deployment Version. However, new workflow executions
+     *           are typically not Pinned until they complete their first task (unless they are started with
+     *           a Pinned VersioningOverride or are Child Workflows of a Pinned parent).
      * }
      */
     public function __construct($data = NULL) {
@@ -144,6 +168,58 @@ class DescribeTaskQueueResponse extends \Google\Protobuf\Internal\Message
     {
         $arr = GPBUtil::checkMapField($var, \Google\Protobuf\Internal\GPBType::STRING, \Google\Protobuf\Internal\GPBType::MESSAGE, \Temporal\Api\Taskqueue\V1\TaskQueueVersionInfo::class);
         $this->versions_info = $arr;
+
+        return $this;
+    }
+
+    /**
+     * Specifies which Worker Deployment Version(s) Server routes this Task Queue's tasks to.
+     * When not present, it means the tasks are routed to Unversioned workers (workers with
+     * UNVERSIONED or unspecified WorkerVersioningMode.)
+     * Task Queue Versioning info is updated indirectly by calling SetWorkerDeploymentCurrentVersion
+     * and SetWorkerDeploymentRampingVersion on Worker Deployments.
+     * Note: This information is not relevant to Pinned workflow executions and their activities as
+     * they are always routed to their Pinned Deployment Version. However, new workflow executions
+     * are typically not Pinned until they complete their first task (unless they are started with
+     * a Pinned VersioningOverride or are Child Workflows of a Pinned parent).
+     *
+     * Generated from protobuf field <code>.temporal.api.taskqueue.v1.TaskQueueVersioningInfo versioning_info = 4;</code>
+     * @return \Temporal\Api\Taskqueue\V1\TaskQueueVersioningInfo|null
+     */
+    public function getVersioningInfo()
+    {
+        return $this->versioning_info;
+    }
+
+    public function hasVersioningInfo()
+    {
+        return isset($this->versioning_info);
+    }
+
+    public function clearVersioningInfo()
+    {
+        unset($this->versioning_info);
+    }
+
+    /**
+     * Specifies which Worker Deployment Version(s) Server routes this Task Queue's tasks to.
+     * When not present, it means the tasks are routed to Unversioned workers (workers with
+     * UNVERSIONED or unspecified WorkerVersioningMode.)
+     * Task Queue Versioning info is updated indirectly by calling SetWorkerDeploymentCurrentVersion
+     * and SetWorkerDeploymentRampingVersion on Worker Deployments.
+     * Note: This information is not relevant to Pinned workflow executions and their activities as
+     * they are always routed to their Pinned Deployment Version. However, new workflow executions
+     * are typically not Pinned until they complete their first task (unless they are started with
+     * a Pinned VersioningOverride or are Child Workflows of a Pinned parent).
+     *
+     * Generated from protobuf field <code>.temporal.api.taskqueue.v1.TaskQueueVersioningInfo versioning_info = 4;</code>
+     * @param \Temporal\Api\Taskqueue\V1\TaskQueueVersioningInfo $var
+     * @return $this
+     */
+    public function setVersioningInfo($var)
+    {
+        GPBUtil::checkMessage($var, \Temporal\Api\Taskqueue\V1\TaskQueueVersioningInfo::class);
+        $this->versioning_info = $var;
 
         return $this;
     }

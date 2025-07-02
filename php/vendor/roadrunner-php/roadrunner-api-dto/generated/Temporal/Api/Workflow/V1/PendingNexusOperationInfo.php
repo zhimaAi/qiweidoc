@@ -37,6 +37,7 @@ class PendingNexusOperationInfo extends \Google\Protobuf\Internal\Message
     protected $operation = '';
     /**
      * Operation ID. Only set for asynchronous operations after a successful StartOperation call.
+     * Deprecated: Renamed to operation_token.
      *
      * Generated from protobuf field <code>string operation_id = 4;</code>
      */
@@ -96,6 +97,18 @@ class PendingNexusOperationInfo extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>int64 scheduled_event_id = 13;</code>
      */
     protected $scheduled_event_id = 0;
+    /**
+     * If the state is BLOCKED, blocked reason provides additional information.
+     *
+     * Generated from protobuf field <code>string blocked_reason = 14;</code>
+     */
+    protected $blocked_reason = '';
+    /**
+     * Operation token. Only set for asynchronous operations after a successful StartOperation call.
+     *
+     * Generated from protobuf field <code>string operation_token = 15;</code>
+     */
+    protected $operation_token = '';
 
     /**
      * Constructor.
@@ -112,6 +125,7 @@ class PendingNexusOperationInfo extends \Google\Protobuf\Internal\Message
      *           Operation name.
      *     @type string $operation_id
      *           Operation ID. Only set for asynchronous operations after a successful StartOperation call.
+     *           Deprecated: Renamed to operation_token.
      *     @type \Google\Protobuf\Duration $schedule_to_close_timeout
      *           Schedule-to-close timeout for this operation.
      *           This is the only timeout settable by a workflow.
@@ -133,6 +147,10 @@ class PendingNexusOperationInfo extends \Google\Protobuf\Internal\Message
      *     @type int|string $scheduled_event_id
      *           The event ID of the NexusOperationScheduled event. Can be used to correlate an operation in the
      *           DescribeWorkflowExecution response with workflow history.
+     *     @type string $blocked_reason
+     *           If the state is BLOCKED, blocked reason provides additional information.
+     *     @type string $operation_token
+     *           Operation token. Only set for asynchronous operations after a successful StartOperation call.
      * }
      */
     public function __construct($data = NULL) {
@@ -222,6 +240,7 @@ class PendingNexusOperationInfo extends \Google\Protobuf\Internal\Message
 
     /**
      * Operation ID. Only set for asynchronous operations after a successful StartOperation call.
+     * Deprecated: Renamed to operation_token.
      *
      * Generated from protobuf field <code>string operation_id = 4;</code>
      * @return string
@@ -233,6 +252,7 @@ class PendingNexusOperationInfo extends \Google\Protobuf\Internal\Message
 
     /**
      * Operation ID. Only set for asynchronous operations after a successful StartOperation call.
+     * Deprecated: Renamed to operation_token.
      *
      * Generated from protobuf field <code>string operation_id = 4;</code>
      * @param string $var
@@ -538,6 +558,58 @@ class PendingNexusOperationInfo extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkInt64($var);
         $this->scheduled_event_id = $var;
+
+        return $this;
+    }
+
+    /**
+     * If the state is BLOCKED, blocked reason provides additional information.
+     *
+     * Generated from protobuf field <code>string blocked_reason = 14;</code>
+     * @return string
+     */
+    public function getBlockedReason()
+    {
+        return $this->blocked_reason;
+    }
+
+    /**
+     * If the state is BLOCKED, blocked reason provides additional information.
+     *
+     * Generated from protobuf field <code>string blocked_reason = 14;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setBlockedReason($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->blocked_reason = $var;
+
+        return $this;
+    }
+
+    /**
+     * Operation token. Only set for asynchronous operations after a successful StartOperation call.
+     *
+     * Generated from protobuf field <code>string operation_token = 15;</code>
+     * @return string
+     */
+    public function getOperationToken()
+    {
+        return $this->operation_token;
+    }
+
+    /**
+     * Operation token. Only set for asynchronous operations after a successful StartOperation call.
+     *
+     * Generated from protobuf field <code>string operation_token = 15;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setOperationToken($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->operation_token = $var;
 
         return $this;
     }

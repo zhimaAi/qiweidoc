@@ -31,39 +31,6 @@ class Factory implements FactoryInterface
         $this->bootDefaultMatchers();
     }
 
-    /**
-     * @return void
-     */
-    private function bootDefaultMatchers(): void
-    {
-        $this->extend($this->matcher('zip',
-            static fn (\SplFileInfo $info): ArchiveInterface => new ZipPharArchive($info)
-        ));
-
-        $this->extend($this->matcher('tar.gz',
-            static fn (\SplFileInfo $info): ArchiveInterface => new TarPharArchive($info)
-        ));
-
-        $this->extend($this->matcher('phar',
-            static fn (\SplFileInfo $info): ArchiveInterface => new PharArchive($info)
-        ));
-    }
-
-    /**
-     * @param string $extension
-     * @param ArchiveMatcher $then
-     * @return ArchiveMatcher
-     */
-    private function matcher(string $extension, \Closure $then): \Closure
-    {
-        return static fn (\SplFileInfo $info): ?ArchiveInterface =>
-            \str_ends_with(\strtolower($info->getFilename()), '.' . $extension) ? $then($info) : null
-        ;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function extend(\Closure $matcher): self
     {
         \array_unshift($this->matchers, $matcher);
@@ -71,10 +38,6 @@ class Factory implements FactoryInterface
         return $this;
     }
 
-    /**
-     * @param \SplFileInfo $file
-     * @return ArchiveInterface
-     */
     public function create(\SplFileInfo $file): ArchiveInterface
     {
         $errors = [];
@@ -97,10 +60,7 @@ class Factory implements FactoryInterface
         throw new \InvalidArgumentException($error);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function fromAsset(AssetInterface $asset, \Closure $progress = null, string $temp = null): ArchiveInterface
+    public function fromAsset(AssetInterface $asset, ?\Closure $progress = null, ?string $temp = null): ArchiveInterface
     {
         $temp = $this->getTempDirectory($temp) . '/' . $asset->getName();
 
@@ -119,10 +79,35 @@ class Factory implements FactoryInterface
         return $this->create($file);
     }
 
+    private function bootDefaultMatchers(): void
+    {
+        $this->extend($this->matcher(
+            'zip',
+            static fn(\SplFileInfo $info): ArchiveInterface => new ZipPharArchive($info),
+        ));
+
+        $this->extend($this->matcher(
+            'tar.gz',
+            static fn(\SplFileInfo $info): ArchiveInterface => new TarPharArchive($info),
+        ));
+
+        $this->extend($this->matcher(
+            'phar',
+            static fn(\SplFileInfo $info): ArchiveInterface => new PharArchive($info),
+        ));
+    }
+
     /**
-     * @param string|null $temp
-     * @return string
+     * @param ArchiveMatcher $then
+     * @return ArchiveMatcher
      */
+    private function matcher(string $extension, \Closure $then): \Closure
+    {
+        return static fn(\SplFileInfo $info): ?ArchiveInterface =>
+            \str_ends_with(\strtolower($info->getFilename()), '.' . $extension) ? $then($info) : null
+        ;
+    }
+
     private function getTempDirectory(?string $temp): string
     {
         if ($temp) {

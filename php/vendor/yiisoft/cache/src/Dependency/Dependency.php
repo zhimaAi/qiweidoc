@@ -66,7 +66,6 @@ abstract class Dependency
         $hash = $this->generateReusableHash();
 
         if (!array_key_exists($hash, self::$reusableData)) {
-            /** @var mixed */
             self::$reusableData[$hash] = $this->generateDependencyData($cache);
         }
 
@@ -89,7 +88,6 @@ abstract class Dependency
         $hash = $this->generateReusableHash();
 
         if (!array_key_exists($hash, self::$reusableData)) {
-            /** @var mixed */
             self::$reusableData[$hash] = $this->generateDependencyData($cache);
         }
 
@@ -113,7 +111,6 @@ abstract class Dependency
      */
     protected function generateReusableHash(): string
     {
-        /** @var mixed */
         $data = $this->data;
         $this->data = null; // https://github.com/yiisoft/yii2/issues/3052
         $key = sha1(serialize($this));

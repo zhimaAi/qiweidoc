@@ -6,7 +6,6 @@ namespace Yiisoft\Hydrator;
 
 use Yiisoft\Strings\StringHelper;
 
-use function array_key_exists;
 use function is_array;
 use function is_string;
 use function strlen;
@@ -14,32 +13,58 @@ use function strlen;
 /**
  * Holds data to hydrate an object from and a map to use when populating an object.
  *
- * @psalm-type MapType=array<string,string|list<string>>
+ * @psalm-type MapType=array<string,string|list<string>|ObjectMap>
  */
 final class ArrayData implements DataInterface
 {
+    private readonly ObjectMap $objectMap;
+
     /**
      * @param array $data Data to hydrate object from.
-     * @param array $map Object property names mapped to keys in the data array that hydrator will use when hydrating
-     * an object.
+     * @param array|ObjectMap $map Object property names mapped to keys in the data array that hydrator will use when
+     * hydrating an object.
      * @param bool $strict Whether to hydrate properties from the map only.
      *
-     * @psalm-param MapType $map
+     * @psalm-param ObjectMap|MapType $map
      */
     public function __construct(
-        private array $data = [],
-        private array $map = [],
-        private bool $strict = false,
+        private readonly array $data = [],
+        array|ObjectMap $map = [],
+        private readonly bool $strict = false,
     ) {
+        $this->objectMap = is_array($map) ? new ObjectMap($map) : $map;
     }
 
     public function getValue(string $name): Result
     {
-        if ($this->strict && !array_key_exists($name, $this->map)) {
+        if ($this->strict && !$this->objectMap->exists($name)) {
             return Result::fail();
         }
 
-        return $this->getValueByPath($this->data, $this->map[$name] ?? $name);
+        $path = $this->objectMap->getPath($name) ?? $name;
+        if ($path instanceof ObjectMap) {
+            return $this->getValueByObjectMap($this->data, $path);
+        }
+
+        return $this->getValueByPath($this->data, $path);
+    }
+
+    /**
+     * Get an array given a map as resolved result.
+     */
+    private function getValueByObjectMap(array $data, ObjectMap $objectMap): Result
+    {
+        $arrayData = new self($data, $objectMap);
+
+        $result = [];
+        foreach ($objectMap->getNames() as $name) {
+            $value = $arrayData->getValue($name);
+            if ($value->isResolved()) {
+                $result[$name] = $value->getValue();
+            }
+        }
+
+        return Result::success($result);
     }
 
     /**

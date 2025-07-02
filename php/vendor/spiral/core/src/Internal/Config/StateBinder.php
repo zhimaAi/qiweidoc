@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Spiral\Core\Internal\Config;
 
-use Exception;
-use InvalidArgumentException;
 use Spiral\Core\BinderInterface;
 use Spiral\Core\Config\Alias;
 use Spiral\Core\Config\Binding;
@@ -21,8 +19,6 @@ use Spiral\Core\Exception\Binder\SingletonOverloadException;
 use Spiral\Core\Exception\ConfiguratorException;
 use Spiral\Core\Exception\Container\ContainerException;
 use Spiral\Core\Internal\State;
-use Throwable;
-use WeakReference;
 
 /**
  * @psalm-import-type TResolver from BinderInterface
@@ -32,8 +28,7 @@ class StateBinder implements BinderInterface
 {
     public function __construct(
         protected readonly State $state,
-    ) {
-    }
+    ) {}
 
     /**
      * @param TResolver|object $resolver
@@ -76,7 +71,7 @@ class StateBinder implements BinderInterface
         while ($binding = $bindings[$alias] ?? null and $binding::class === Alias::class) {
             //Checking alias tree
             if ($flags[$binding->alias] ?? false) {
-                return $binding->alias === $alias ?: throw new Exception('Circular alias detected');
+                return $binding->alias === $alias ?: throw new \Exception('Circular alias detected');
             }
 
             if (\array_key_exists($alias, $this->state->singletons)) {
@@ -97,8 +92,7 @@ class StateBinder implements BinderInterface
 
     public function bindInjector(string $class, string $injector): void
     {
-        $this->state->bindings[$class] = new Injectable($injector);
-        $this->state->injectors[$class] = $injector;
+        $this->setBinding($class, new Injectable($injector));
     }
 
     public function removeInjector(string $class): void
@@ -154,12 +148,12 @@ class StateBinder implements BinderInterface
             $resolver instanceof Binding => $resolver,
             $resolver instanceof \Closure => new Factory($resolver, $singleton),
             $resolver instanceof Autowire => new \Spiral\Core\Config\Autowire($resolver, $singleton),
-            $resolver instanceof WeakReference => new \Spiral\Core\Config\WeakReference($resolver),
+            $resolver instanceof \WeakReference => new \Spiral\Core\Config\WeakReference($resolver),
             \is_string($resolver) => new Alias($resolver, $singleton),
             \is_scalar($resolver) => new Scalar($resolver),
-            \is_object($resolver) => new Shared($resolver),
+            \is_object($resolver) => new Shared($resolver, $singleton),
             \is_array($resolver) => $this->makeConfigFromArray($resolver, $singleton),
-            default => throw new InvalidArgumentException('Unknown resolver type.'),
+            default => throw new \InvalidArgumentException('Unknown resolver type.'),
         };
     }
 
@@ -171,22 +165,25 @@ class StateBinder implements BinderInterface
 
         // Validate lazy invokable array
         if (!isset($resolver[0]) || !isset($resolver[1]) || !\is_string($resolver[1]) || $resolver[1] === '') {
-            throw new InvalidArgumentException('Incompatible array declaration for resolver.');
+            throw new \InvalidArgumentException('Incompatible array declaration for resolver.');
         }
         if ((!\is_string($resolver[0]) && !\is_object($resolver[0])) || $resolver[0] === '') {
-            throw new InvalidArgumentException('Incompatible array declaration for resolver.');
+            throw new \InvalidArgumentException('Incompatible array declaration for resolver.');
         }
 
         return new DeferredFactory($resolver, $singleton);
     }
 
-    private function invalidBindingException(string $alias, Throwable $previous): Throwable
+    private function invalidBindingException(string $alias, \Throwable $previous): \Throwable
     {
-        return new ConfiguratorException(\sprintf(
-            'Invalid binding for `%s`. %s',
-            $alias,
-            $previous->getMessage(),
-        ), previous: $previous);
+        return new ConfiguratorException(
+            \sprintf(
+                'Invalid binding for `%s`. %s',
+                $alias,
+                $previous->getMessage(),
+            ),
+            previous: $previous,
+        );
     }
 
     private function setBinding(string $alias, Binding $config): void
@@ -196,5 +193,9 @@ class StateBinder implements BinderInterface
         }
 
         $this->state->bindings[$alias] = $config;
+
+        if ($config instanceof Injectable) {
+            $this->state->injectors[$alias] = $config->injector;
+        }
     }
 }

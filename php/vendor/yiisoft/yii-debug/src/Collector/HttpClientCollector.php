@@ -89,17 +89,15 @@ final class HttpClientCollector implements SummaryCollectorInterface
             return [];
         }
         return [
-            'http' => [
-                'count' => array_sum(array_map(static fn (array $requests) => count($requests), $this->requests)),
-                'totalTime' => array_sum(
-                    array_merge(
-                        ...array_map(
-                            static fn (array $entry) => array_column($entry, 'totalTime'),
-                            array_values($this->requests)
-                        )
+            'count' => array_sum(array_map(static fn (array $requests) => count($requests), $this->requests)),
+            'totalTime' => array_sum(
+                array_merge(
+                    ...array_map(
+                        static fn (array $entry) => array_column($entry, 'totalTime'),
+                        array_values($this->requests)
                     )
-                ),
-            ],
+                )
+            ),
         ];
     }
 }

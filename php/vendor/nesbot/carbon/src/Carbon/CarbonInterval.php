@@ -49,28 +49,28 @@ use Throwable;
  * The implementation provides helpers to handle weeks but only days are saved.
  * Weeks are calculated based on the total days of the current instance.
  *
- * @property int $years Total years of the current interval.
- * @property int $months Total months of the current interval.
- * @property int $weeks Total weeks of the current interval calculated from the days.
- * @property int $dayz Total days of the current interval (weeks * 7 + days).
- * @property int $hours Total hours of the current interval.
- * @property int $minutes Total minutes of the current interval.
- * @property int $seconds Total seconds of the current interval.
- * @property int $microseconds Total microseconds of the current interval.
- * @property int $milliseconds Total milliseconds of the current interval.
+ * @property int $years Year component of the current interval. (For P2Y6M, the value will be 2)
+ * @property int $months Month component of the current interval. (For P1Y6M10D, the value will be 6)
+ * @property int $weeks Week component of the current interval calculated from the days. (For P1Y6M17D, the value will be 2)
+ * @property int $dayz Day component of the current interval (weeks * 7 + days). (For P6M17DT20H, the value will be 17)
+ * @property int $hours Hour component of the current interval. (For P7DT20H5M, the value will be 20)
+ * @property int $minutes Minute component of the current interval. (For PT20H5M30S, the value will be 5)
+ * @property int $seconds Second component of the current interval. (CarbonInterval::minutes(2)->seconds(34)->microseconds(567_890)->seconds = 34)
+ * @property int $milliseconds Milliseconds component of the current interval. (CarbonInterval::seconds(34)->microseconds(567_890)->milliseconds = 567)
+ * @property int $microseconds Microseconds component of the current interval. (CarbonInterval::seconds(34)->microseconds(567_890)->microseconds = 567_890)
  * @property int $microExcludeMilli Remaining microseconds without the milliseconds.
  * @property int $dayzExcludeWeeks Total days remaining in the final week of the current instance (days % 7).
  * @property int $daysExcludeWeeks alias of dayzExcludeWeeks
- * @property-read float $totalYears Number of years equivalent to the interval.
- * @property-read float $totalMonths Number of months equivalent to the interval.
- * @property-read float $totalWeeks Number of weeks equivalent to the interval.
- * @property-read float $totalDays Number of days equivalent to the interval.
+ * @property-read float $totalYears Number of years equivalent to the interval. (For P1Y6M, the value will be 1.5)
+ * @property-read float $totalMonths Number of months equivalent to the interval. (For P1Y6M10D, the value will be ~12.357)
+ * @property-read float $totalWeeks Number of weeks equivalent to the interval. (For P6M17DT20H, the value will be ~26.548)
+ * @property-read float $totalDays Number of days equivalent to the interval. (For P17DT20H, the value will be ~17.833)
  * @property-read float $totalDayz Alias for totalDays.
- * @property-read float $totalHours Number of hours equivalent to the interval.
- * @property-read float $totalMinutes Number of minutes equivalent to the interval.
- * @property-read float $totalSeconds Number of seconds equivalent to the interval.
- * @property-read float $totalMilliseconds Number of milliseconds equivalent to the interval.
- * @property-read float $totalMicroseconds Number of microseconds equivalent to the interval.
+ * @property-read float $totalHours Number of hours equivalent to the interval. (For P1DT20H5M, the value will be ~44.083)
+ * @property-read float $totalMinutes Number of minutes equivalent to the interval. (For PT20H5M30S, the value will be 1205.5)
+ * @property-read float $totalSeconds Number of seconds equivalent to the interval. (CarbonInterval::minutes(2)->seconds(34)->microseconds(567_890)->totalSeconds = 154.567_890)
+ * @property-read float $totalMilliseconds Number of milliseconds equivalent to the interval. (CarbonInterval::seconds(34)->microseconds(567_890)->totalMilliseconds = 34567.890)
+ * @property-read float $totalMicroseconds Number of microseconds equivalent to the interval. (CarbonInterval::seconds(34)->microseconds(567_890)->totalMicroseconds = 34567890)
  * @property-read string $locale locale of the current instance
  *
  * @method static CarbonInterval years($years = 1) Create instance specifying a number of years or modify the number of years if called on an instance.
@@ -533,7 +533,7 @@ class CarbonInterval extends DateInterval implements CarbonConverterInterface
                         ($totalDays - $this->d).' days '.
                         ($hours - $this->h).' hours '.
                         ($minutes - $this->i).' minutes '.
-                        ($intervalSeconds - $this->s).' seconds '.
+                        number_format($intervalSeconds - $this->s, 6, '.', '').' seconds '.
                         ($microseconds - $intervalMicroseconds).' microseconds ',
                     ));
                 }
@@ -735,7 +735,7 @@ class CarbonInterval extends DateInterval implements CarbonConverterInterface
                 }
 
                 $interval = mb_substr($interval, mb_strlen($match[0]));
-                $instance->$unit += (int) ($match[0]);
+                self::incrementUnit($instance, $unit, (int) ($match[0]));
 
                 continue;
             }
@@ -1516,6 +1516,8 @@ class CarbonInterval extends DateInterval implements CarbonConverterInterface
      * });
      * echo CarbonInterval::hours(2)->twice();
      * ```
+     *
+     * @param-closure-this static $macro
      */
     public static function macro(string $name, ?callable $macro): void
     {
@@ -3086,16 +3088,50 @@ class CarbonInterval extends DateInterval implements CarbonConverterInterface
 
         // PHP <= 8.1
         // @codeCoverageIgnoreStart
-        foreach ($properties as $property => $value) {
-            $name = preg_replace('/^\0.+\0/', '', $property);
-            $localStrictMode = $this->localStrictModeEnabled;
-            $this->localStrictModeEnabled = false;
-            $this->$name = $value;
+        $properties = array_combine(
+            array_map(
+                static fn (string $property) => preg_replace('/^\0.+\0/', '', $property),
+                array_keys($data),
+            ),
+            $data,
+        );
+        $localStrictMode = $this->localStrictModeEnabled;
+        $this->localStrictModeEnabled = false;
+        $days = $properties['days'] ?? false;
+        $this->days = $days === false ? false : (int) $days;
+        $this->y = (int) ($properties['y'] ?? 0);
+        $this->m = (int) ($properties['m'] ?? 0);
+        $this->d = (int) ($properties['d'] ?? 0);
+        $this->h = (int) ($properties['h'] ?? 0);
+        $this->i = (int) ($properties['i'] ?? 0);
+        $this->s = (int) ($properties['s'] ?? 0);
+        $this->f = (float) ($properties['f'] ?? 0.0);
+        // @phpstan-ignore-next-line
+        $this->weekday = (int) ($properties['weekday'] ?? 0);
+        // @phpstan-ignore-next-line
+        $this->weekday_behavior = (int) ($properties['weekday_behavior'] ?? 0);
+        // @phpstan-ignore-next-line
+        $this->first_last_day_of = (int) ($properties['first_last_day_of'] ?? 0);
+        $this->invert = (int) ($properties['invert'] ?? 0);
+        // @phpstan-ignore-next-line
+        $this->special_type = (int) ($properties['special_type'] ?? 0);
+        // @phpstan-ignore-next-line
+        $this->special_amount = (int) ($properties['special_amount'] ?? 0);
+        // @phpstan-ignore-next-line
+        $this->have_weekday_relative = (int) ($properties['have_weekday_relative'] ?? 0);
+        // @phpstan-ignore-next-line
+        $this->have_special_relative = (int) ($properties['have_special_relative'] ?? 0);
+        parent::__construct(self::getDateIntervalSpec($this));
 
-            if ($name !== 'localStrictModeEnabled') {
-                $this->localStrictModeEnabled = $localStrictMode;
+        foreach ($properties as $property => $value) {
+            if ($property === 'localStrictModeEnabled') {
+                continue;
             }
+
+            $this->$property = $value;
         }
+
+        $this->localStrictModeEnabled = $properties['localStrictModeEnabled'] ?? $localStrictMode;
         // @codeCoverageIgnoreEnd
     }
 
@@ -3154,7 +3190,7 @@ class CarbonInterval extends DateInterval implements CarbonConverterInterface
         }
 
         $microseconds = $interval->f;
-        $instance = new $className(static::getDateIntervalSpec($interval, false, $skip));
+        $instance = self::buildInstance($interval, $className, $skip);
 
         if ($instance instanceof self) {
             $instance->originalInput = $interval;
@@ -3173,6 +3209,83 @@ class CarbonInterval extends DateInterval implements CarbonConverterInterface
         return self::withOriginal($instance, $interval);
     }
 
+    /**
+     * @template T of DateInterval
+     *
+     * @param DateInterval $interval
+     *
+     * @psalm-param class-string<T> $className
+     *
+     * @return T
+     */
+    private static function buildInstance(
+        DateInterval $interval,
+        string $className,
+        array $skip = [],
+    ): object {
+        $serialization = self::buildSerializationString($interval, $className, $skip);
+
+        return match ($serialization) {
+            null => new $className(static::getDateIntervalSpec($interval, false, $skip)),
+            default => unserialize($serialization),
+        };
+    }
+
+    /**
+     * As demonstrated by rlanvin (https://github.com/rlanvin) in
+     * https://github.com/briannesbitt/Carbon/issues/3018#issuecomment-2888538438
+     *
+     * Modifying the output of serialize() to change the class name and unserializing
+     * the tweaked string allows creating new interval instances where the ->days
+     * property can be set. It's not possible neither with `new` nto with `__set_state`.
+     *
+     * It has a non-negligible performance cost, so we'll use this method only if
+     * $interval->days !== false.
+     */
+    private static function buildSerializationString(
+        DateInterval $interval,
+        string $className,
+        array $skip = [],
+    ): ?string {
+        if ($interval->days === false || PHP_VERSION_ID < 8_02_00 || $skip !== []) {
+            return null;
+        }
+
+        // De-enhance CarbonInterval objects to be serializable back to DateInterval
+        if ($interval instanceof self && !is_a($className, self::class, true)) {
+            $interval = clone $interval;
+            unset($interval->timezoneSetting);
+            unset($interval->originalInput);
+            unset($interval->startDate);
+            unset($interval->endDate);
+            unset($interval->rawInterval);
+            unset($interval->absolute);
+            unset($interval->initialValues);
+            unset($interval->clock);
+            unset($interval->step);
+            unset($interval->localMonthsOverflow);
+            unset($interval->localYearsOverflow);
+            unset($interval->localStrictModeEnabled);
+            unset($interval->localHumanDiffOptions);
+            unset($interval->localToStringFormat);
+            unset($interval->localSerializer);
+            unset($interval->localMacros);
+            unset($interval->localGenericMacros);
+            unset($interval->localFormatFunction);
+            unset($interval->localTranslator);
+        }
+
+        $serialization = serialize($interval);
+        $inputClass = $interval::class;
+        $expectedStart = 'O:'.\strlen($inputClass).':"'.$inputClass.'":';
+
+        if (!str_starts_with($serialization, $expectedStart)) {
+            return null; // @codeCoverageIgnore
+        }
+
+        return 'O:'.\strlen($className).':"'.$className.'":'.substr($serialization, \strlen($expectedStart));
+    }
+
     private static function copyStep(self $from, self $to): void
     {
         $to->setStep($from->getStep());
@@ -3184,7 +3297,7 @@ class CarbonInterval extends DateInterval implements CarbonConverterInterface
 
         foreach (['y', 'm', 'd', 'h', 'i', 's'] as $unit) {
             if ($from->$unit < 0) {
-                $to->$unit *= self::NEGATIVE;
+                self::setIntervalUnit($to, $unit, $to->$unit * self::NEGATIVE);
             }
         }
     }
@@ -3397,6 +3510,63 @@ class CarbonInterval extends DateInterval implements CarbonConverterInterface
             default:
                 // Drop unknown settings
                 return $this;
+        }
+    }
+
+    private static function incrementUnit(DateInterval $instance, string $unit, int $value): void
+    {
+        if ($value === 0) {
+            return;
+        }
+
+        // @codeCoverageIgnoreStart
+        if (PHP_VERSION_ID !== 8_03_20) {
+            $instance->$unit += $value;
+
+            return;
+        }
+
+        // Cannot use +=, nor set to a negative value directly as it segfaults in PHP 8.3.20
+        self::setIntervalUnit($instance, $unit, ($instance->$unit ?? 0) + $value);
+        // @codeCoverageIgnoreEnd
+    }
+
+    /** @codeCoverageIgnore */
+    private static function setIntervalUnit(DateInterval $instance, string $unit, mixed $value): void
+    {
+        switch ($unit) {
+            case 'y':
+                $instance->y = $value;
+
+                break;
+
+            case 'm':
+                $instance->m = $value;
+
+                break;
+
+            case 'd':
+                $instance->d = $value;
+
+                break;
+
+            case 'h':
+                $instance->h = $value;
+
+                break;
+
+            case 'i':
+                $instance->i = $value;
+
+                break;
+
+            case 's':
+                $instance->s = $value;
+
+                break;
+
+            default:
+                $instance->$unit = $value;
         }
     }
 }

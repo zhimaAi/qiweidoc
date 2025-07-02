@@ -35,19 +35,19 @@ final class TagDependency extends Dependency
     /**
      * @var array List of tag names for this dependency.
      */
-    private array $tags;
+    private readonly array $tags;
 
     /**
      * @var int|null The TTL value of this item. null means infinity.
      */
-    private ?int $ttl;
+    private readonly ?int $ttl;
 
     /**
      * @param array|string $tags List of tag names for this dependency.
      * For a single tag, you may specify it as a string.
      * @param int|null $ttl The TTL value of this item. null means infinity.
      */
-    public function __construct(array|string $tags, int $ttl = null)
+    public function __construct(array|string $tags, int|null $ttl = null)
     {
         $this->tags = (array) $tags;
 
@@ -130,7 +130,6 @@ final class TagDependency extends Dependency
     {
         $keys = [];
 
-        /** @var mixed $tag */
         foreach ($tags as $tag) {
             $keys[] = self::buildCacheKey((string) $tag);
         }

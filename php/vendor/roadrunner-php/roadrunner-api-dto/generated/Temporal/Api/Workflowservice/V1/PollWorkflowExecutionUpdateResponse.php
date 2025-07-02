@@ -40,7 +40,7 @@ class PollWorkflowExecutionUpdateResponse extends \Google\Protobuf\Internal\Mess
      */
     protected $stage = 0;
     /**
-     * Sufficient information to address this update.
+     * Sufficient information to address this Update.
      *
      * Generated from protobuf field <code>.temporal.api.update.v1.UpdateRef update_ref = 3;</code>
      */
@@ -70,7 +70,7 @@ class PollWorkflowExecutionUpdateResponse extends \Google\Protobuf\Internal\Mess
      *           request WaitPolicy, and before the context deadline expired; clients may
      *           may then retry the call as needed.
      *     @type \Temporal\Api\Update\V1\UpdateRef $update_ref
-     *           Sufficient information to address this update.
+     *           Sufficient information to address this Update.
      * }
      */
     public function __construct($data = NULL) {
@@ -167,7 +167,7 @@ class PollWorkflowExecutionUpdateResponse extends \Google\Protobuf\Internal\Mess
     }
 
     /**
-     * Sufficient information to address this update.
+     * Sufficient information to address this Update.
      *
      * Generated from protobuf field <code>.temporal.api.update.v1.UpdateRef update_ref = 3;</code>
      * @return \Temporal\Api\Update\V1\UpdateRef|null
@@ -188,7 +188,7 @@ class PollWorkflowExecutionUpdateResponse extends \Google\Protobuf\Internal\Mess
     }
 
     /**
-     * Sufficient information to address this update.
+     * Sufficient information to address this Update.
      *
      * Generated from protobuf field <code>.temporal.api.update.v1.UpdateRef update_ref = 3;</code>
      * @param \Temporal\Api\Update\V1\UpdateRef $var

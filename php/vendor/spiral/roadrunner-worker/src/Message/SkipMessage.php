@@ -10,6 +10,4 @@ namespace Spiral\RoadRunner\Message;
  * after stream end because async and should be skipped in main worker loop.
  * @internal
  */
-interface SkipMessage
-{
-}
+interface SkipMessage {}

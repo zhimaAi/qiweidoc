@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Yii\Debug\Collector\Stream;
 
 use Yiisoft\Strings\CombinedRegexp;
-use Yiisoft\Yii\Debug\Helper\BacktraceIgnoreMatcher;
+use Yiisoft\Strings\StringHelper;
+use Yiisoft\Yii\Debug\Helper\BacktraceMatcher;
 use Yiisoft\Yii\Debug\Helper\StreamWrapper\StreamWrapper;
 use Yiisoft\Yii\Debug\Helper\StreamWrapper\StreamWrapperInterface;
 
@@ -85,9 +86,10 @@ final class FilesystemStreamProxy implements StreamWrapperInterface
         /**
          * It's important to trigger autoloader before unregistering the file stream handler
          */
-        class_exists(BacktraceIgnoreMatcher::class);
+        class_exists(BacktraceMatcher::class);
         class_exists(StreamWrapper::class);
         class_exists(CombinedRegexp::class);
+        class_exists(StringHelper::class);
         stream_wrapper_unregister('file');
         stream_wrapper_register('file', self::class, STREAM_IS_URL);
         self::$registered = true;
@@ -105,8 +107,8 @@ final class FilesystemStreamProxy implements StreamWrapperInterface
     private function isIgnored(): bool
     {
         $backtrace = debug_backtrace();
-        return BacktraceIgnoreMatcher::isIgnoredByClass($backtrace, self::$ignoredClasses)
-            || BacktraceIgnoreMatcher::isIgnoredByFile($backtrace, self::$ignoredPathPatterns);
+        return BacktraceMatcher::matchesClass($backtrace[3], self::$ignoredClasses)
+            || BacktraceMatcher::matchesFile($backtrace[3], self::$ignoredPathPatterns);
     }
 
     public function stream_open(string $path, string $mode, int $options, ?string &$opened_path): bool

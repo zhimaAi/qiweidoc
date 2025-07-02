@@ -47,6 +47,7 @@ class ActivityTaskStartedEventAttributes extends \Google\Protobuf\Internal\Messa
     protected $last_failure = null;
     /**
      * Version info of the worker to whom this task was dispatched.
+     * Deprecated. This field should be cleaned up when versioning-2 API is removed. [cleanup-experimental-wv]
      *
      * Generated from protobuf field <code>.temporal.api.common.v1.WorkerVersionStamp worker_version = 6;</code>
      */
@@ -54,6 +55,7 @@ class ActivityTaskStartedEventAttributes extends \Google\Protobuf\Internal\Messa
     /**
      * Used by server internally to properly reapply build ID redirects to an execution
      * when rebuilding it from events.
+     * Deprecated. This field should be cleaned up when versioning-2 API is removed. [cleanup-experimental-wv]
      *
      * Generated from protobuf field <code>int64 build_id_redirect_counter = 7;</code>
      */
@@ -78,9 +80,11 @@ class ActivityTaskStartedEventAttributes extends \Google\Protobuf\Internal\Messa
      *           been retried.
      *     @type \Temporal\Api\Common\V1\WorkerVersionStamp $worker_version
      *           Version info of the worker to whom this task was dispatched.
+     *           Deprecated. This field should be cleaned up when versioning-2 API is removed. [cleanup-experimental-wv]
      *     @type int|string $build_id_redirect_counter
      *           Used by server internally to properly reapply build ID redirects to an execution
      *           when rebuilding it from events.
+     *           Deprecated. This field should be cleaned up when versioning-2 API is removed. [cleanup-experimental-wv]
      * }
      */
     public function __construct($data = NULL) {
@@ -232,6 +236,7 @@ class ActivityTaskStartedEventAttributes extends \Google\Protobuf\Internal\Messa
 
     /**
      * Version info of the worker to whom this task was dispatched.
+     * Deprecated. This field should be cleaned up when versioning-2 API is removed. [cleanup-experimental-wv]
      *
      * Generated from protobuf field <code>.temporal.api.common.v1.WorkerVersionStamp worker_version = 6;</code>
      * @return \Temporal\Api\Common\V1\WorkerVersionStamp|null
@@ -253,6 +258,7 @@ class ActivityTaskStartedEventAttributes extends \Google\Protobuf\Internal\Messa
 
     /**
      * Version info of the worker to whom this task was dispatched.
+     * Deprecated. This field should be cleaned up when versioning-2 API is removed. [cleanup-experimental-wv]
      *
      * Generated from protobuf field <code>.temporal.api.common.v1.WorkerVersionStamp worker_version = 6;</code>
      * @param \Temporal\Api\Common\V1\WorkerVersionStamp $var
@@ -269,6 +275,7 @@ class ActivityTaskStartedEventAttributes extends \Google\Protobuf\Internal\Messa
     /**
      * Used by server internally to properly reapply build ID redirects to an execution
      * when rebuilding it from events.
+     * Deprecated. This field should be cleaned up when versioning-2 API is removed. [cleanup-experimental-wv]
      *
      * Generated from protobuf field <code>int64 build_id_redirect_counter = 7;</code>
      * @return int|string
@@ -281,6 +288,7 @@ class ActivityTaskStartedEventAttributes extends \Google\Protobuf\Internal\Messa
     /**
      * Used by server internally to properly reapply build ID redirects to an execution
      * when rebuilding it from events.
+     * Deprecated. This field should be cleaned up when versioning-2 API is removed. [cleanup-experimental-wv]
      *
      * Generated from protobuf field <code>int64 build_id_redirect_counter = 7;</code>
      * @param int|string $var
