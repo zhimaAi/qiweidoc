@@ -1,0 +1,66 @@
+{
+    "name": "yiisoft/data",
+    "type": "library",
+    "description": "Data providers, pagination and related abstractions",
+    "keywords": [
+        "data provider",
+        "data reader",
+        "data writer",
+        "data processor",
+        "filter",
+        "pagination"
+    ],
+    "homepage": "https://www.yiiframework.com/",
+    "license": "BSD-3-Clause",
+    "support": {
+        "issues": "https://github.com/yiisoft/data/issues?state=open",
+        "forum": "https://www.yiiframework.com/forum/",
+        "wiki": "https://www.yiiframework.com/wiki/",
+        "irc": "irc://irc.freenode.net/yii",
+        "chat": "https://t.me/yii3en",
+        "source": "https://github.com/yiisoft/data"
+    },
+    "funding": [
+        {
+            "type": "opencollective",
+            "url": "https://opencollective.com/yiisoft"
+        },
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/yiisoft"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "yiisoft/arrays": "^3.0"
+    },
+    "require-dev": {
+        "maglnet/composer-require-checker": "^4.2",
+        "phpunit/phpunit": "^9.5",
+        "rector/rector": "^0.15.0",
+        "roave/infection-static-analysis-plugin": "^1.25",
+        "spatie/phpunit-watcher": "^1.23",
+        "vimeo/psalm": "^4.26|^5.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Yiisoft\\Data\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Yiisoft\\Data\\Tests\\": "tests"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "infection/extension-installer": true,
+            "composer/package-versions-deprecated": true
+        }
+    },
+    "scripts": {
+        "test": "phpunit --testdox --no-interaction",
+        "test-watch": "phpunit-watcher watch"
+    }
+}

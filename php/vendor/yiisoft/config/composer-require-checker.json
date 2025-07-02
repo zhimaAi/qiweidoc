@@ -1,0 +1,33 @@
+{
+    "symbol-whitelist": [
+        "Composer\\Command\\BaseCommand",
+        "Composer\\Composer",
+        "Composer\\EventDispatcher\\EventSubscriberInterface",
+        "Composer\\Factory",
+        "Composer\\IO\\IOInterface",
+        "Composer\\Package\\CompletePackage",
+        "Composer\\Package\\PackageInterface",
+        "Composer\\Plugin\\Capability\\CommandProvider",
+        "Composer\\Plugin\\Capable",
+        "Composer\\Plugin\\CommandEvent",
+        "Composer\\Plugin\\PluginEvents",
+        "Composer\\Plugin\\PluginInterface",
+        "Composer\\Script\\Event",
+        "Composer\\Script\\ScriptEvents",
+        "Composer\\Util\\Filesystem",
+        "Symfony\\Component\\Console\\Input\\InputArgument",
+        "Symfony\\Component\\Console\\Input\\InputInterface",
+        "Symfony\\Component\\Console\\Output\\OutputInterface"
+    ],
+    "php-core-extensions": [
+        "Core",
+        "date",
+        "json",
+        "pcre",
+        "Phar",
+        "Reflection",
+        "SPL",
+        "standard"
+    ],
+    "scan-files": []
+}

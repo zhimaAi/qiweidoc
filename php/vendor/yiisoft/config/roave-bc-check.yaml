@@ -1,0 +1,4 @@
+parameters:
+  ignoreErrors:
+    - '#\[BC\] SKIPPED: Roave\\BetterReflection\\Reflection\\ReflectionClass \"Composer\\Command\\BaseCommand\" could not be found in the located source#'
+    - '#\[BC\] SKIPPED: Roave\\BetterReflection\\Reflection\\ReflectionClass \"Composer\\Plugin\\PluginInterface\" could not be found in the located source#'

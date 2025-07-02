@@ -1,0 +1,70 @@
+{
+    "name": "yiisoft/log-target-file",
+    "type": "library",
+    "description": "Yii Logging Library - File Target",
+    "keywords": [
+        "yii",
+        "framework",
+        "log",
+        "logger"
+    ],
+    "homepage": "https://www.yiiframework.com/",
+    "license": "BSD-3-Clause",
+    "support": {
+        "source": "https://github.com/yiisoft/log-target-file",
+        "issues": "https://github.com/yiisoft/log-target-file/issues",
+        "forum": "https://www.yiiframework.com/forum/",
+        "wiki": "https://www.yiiframework.com/wiki/",
+        "irc": "irc://irc.freenode.net/yii",
+        "chat": "https://t.me/yii3en"
+    },
+    "require": {
+        "php": "^8.0",
+        "ext-zlib": "*",
+        "yiisoft/files": "^1.0|^2.0",
+        "yiisoft/log": "^2.0"
+    },
+    "require-dev": {
+        "maglnet/composer-require-checker": "^4.2",
+        "phpunit/phpunit": "^9.5",
+        "rector/rector": "^0.15.1",
+        "roave/infection-static-analysis-plugin": "^1.25",
+        "spatie/phpunit-watcher": "^1.23",
+        "vimeo/psalm": "^4.30|^5.2",
+        "yiisoft/aliases": "^3.0",
+        "yiisoft/di": "^1.0"
+    },
+    "suggest": {
+        "ext-zlib": "Enabling gzip compression of rotated files."
+    },
+    "autoload": {
+        "psr-4": {
+            "Yiisoft\\Log\\Target\\File\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Yiisoft\\Log\\Target\\File\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "config-plugin-options": {
+            "source-directory": "config"
+        },
+        "config-plugin": {
+            "di": "di.php",
+            "params": "params.php"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "infection/extension-installer": true,
+            "composer/package-versions-deprecated": true
+        }
+    },
+    "scripts": {
+        "test": "phpunit --testdox --no-interaction",
+        "test-watch": "phpunit-watcher watch"
+    }
+}

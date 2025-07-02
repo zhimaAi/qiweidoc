@@ -1,0 +1,85 @@
+{
+    "name": "yiisoft/cache",
+    "type": "library",
+    "description": "Yii Caching Library",
+    "keywords": [
+        "yii",
+        "cache",
+        "psr-16"
+    ],
+    "homepage": "https://www.yiiframework.com/",
+    "license": "BSD-3-Clause",
+    "support": {
+        "issues": "https://github.com/yiisoft/cache/issues?state=open",
+        "forum": "https://www.yiiframework.com/forum/",
+        "wiki": "https://www.yiiframework.com/wiki/",
+        "irc": "irc://irc.freenode.net/yii",
+        "chat": "https://t.me/yii3en",
+        "source": "https://github.com/yiisoft/cache"
+    },
+    "funding": [
+        {
+            "type": "opencollective",
+            "url": "https://opencollective.com/yiisoft"
+        },
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/yiisoft"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "psr/simple-cache": "^2.0|^3.0"
+    },
+    "require-dev": {
+        "maglnet/composer-require-checker": "^4.2",
+        "phpunit/phpunit": "^9.5",
+        "rector/rector": "^0.15.2",
+        "roave/infection-static-analysis-plugin": "^1.16",
+        "spatie/phpunit-watcher": "^1.23",
+        "vimeo/psalm": "^4.30|^5.6",
+        "yiisoft/di": "^1.2"
+    },
+    "provide": {
+        "psr/simple-cache-implementation": "2.0|3.0"
+    },
+    "suggest": {
+        "yiisoft/cache-apcu": "Allows to store cache using APCu PECL extension",
+        "yiisoft/cache-db": "Allows storing cache to the database",
+        "yiisoft/cache-file": "Allows storing cache to the files",
+        "yiisoft/cache-memcached": "Allows to store cache using Memcached PECL extension",
+        "yiisoft/cache-redis": "Allows storing cache to the Redis",
+        "yiisoft/cache-wincache": "Allows to store cache using WinCache PECL extension"
+    },
+    "autoload": {
+        "psr-4": {
+            "Yiisoft\\Cache\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Yiisoft\\Cache\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "config-plugin-options": {
+            "source-directory": "config"
+        },
+        "config-plugin": {
+            "di": "di.php"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "infection/extension-installer": true,
+            "composer/package-versions-deprecated": true
+        }
+    },
+    "scripts": {
+        "test": "phpunit --testdox --no-interaction",
+        "test-watch": "phpunit-watcher watch"
+    }
+}

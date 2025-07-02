@@ -1,0 +1,69 @@
+{
+    "name": "yiisoft/cache-redis",
+    "type": "library",
+    "description": "Yii Caching Library - Redis Handler",
+    "keywords": [
+        "yii",
+        "framework",
+        "cache",
+        "redis",
+        "psr-16"
+    ],
+    "homepage": "https://www.yiiframework.com/",
+    "license": "BSD-3-Clause",
+    "support": {
+        "issues": "https://github.com/yiisoft/cache-redis/issues?state=open",
+        "forum": "https://www.yiiframework.com/forum/",
+        "wiki": "https://www.yiiframework.com/wiki/",
+        "irc": "irc://irc.freenode.net/yii",
+        "chat": "https://t.me/yii3en",
+        "source": "https://github.com/yiisoft/cache-redis"
+    },
+    "funding": [
+        {
+            "type": "opencollective",
+            "url": "https://opencollective.com/yiisoft"
+        },
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/yiisoft"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "predis/predis": "^2.1",
+        "psr/simple-cache": "^2.0|^3.0"
+    },
+    "require-dev": {
+        "maglnet/composer-require-checker": "^4.4",
+        "phpunit/phpunit": "^9.5",
+        "rector/rector": "^0.17.2",
+        "roave/infection-static-analysis-plugin": "^1.16",
+        "spatie/phpunit-watcher": "^1.23",
+        "vimeo/psalm": "^4.30 || ^5.13"
+    },
+    "autoload": {
+        "psr-4": {
+            "Yiisoft\\Cache\\Redis\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Yiisoft\\Cache\\Redis\\Tests\\": "tests"
+        }
+    },
+    "provide": {
+        "psr/simple-cache-implementation": "1.0.0"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "infection/extension-installer": true,
+            "composer/package-versions-deprecated": true
+        }
+    },
+    "scripts": {
+        "test": "phpunit --testdox --no-interaction",
+        "test-watch": "phpunit-watcher watch"
+    }
+}

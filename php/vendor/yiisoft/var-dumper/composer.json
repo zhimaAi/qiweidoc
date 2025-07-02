@@ -1,0 +1,63 @@
+{
+    "name": "yiisoft/var-dumper",
+    "type": "library",
+    "description": "Enhances functionality of var_dump() and var_export(). It is dealing with recursive references, may highlight syntax and export closures.",
+    "keywords": [
+        "yii",
+        "framework",
+        "var-dumper",
+        "helper"
+    ],
+    "homepage": "https://www.yiiframework.com/",
+    "license": "BSD-3-Clause",
+    "support": {
+        "source": "https://github.com/yiisoft/var-dumper",
+        "issues": "https://github.com/yiisoft/var-dumper/issues",
+        "forum": "https://www.yiiframework.com/forum/",
+        "wiki": "https://www.yiiframework.com/wiki/",
+        "irc": "irc://irc.freenode.net/yii",
+        "chat": "https://t.me/yii3en"
+    },
+    "require": {
+        "php": "^8.0",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-tokenizer": "*",
+        "yiisoft/arrays": "^1.0|^2.0|^3.0"
+    },
+    "require-dev": {
+        "maglnet/composer-require-checker": "^4.2",
+        "phpunit/phpunit": "^9.5",
+        "rector/rector": "^0.18",
+        "roave/infection-static-analysis-plugin": "^1.16",
+        "spatie/phpunit-watcher": "^1.23",
+        "vimeo/psalm": "^4.30|^5.3"
+    },
+    "suggest": {
+        "ext-sockets": "Send dumps to a server through UDP/TCP protocols"
+    },
+    "autoload": {
+        "psr-4": {
+            "Yiisoft\\VarDumper\\": "src"
+        },
+        "files": [
+            "src/functions.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Yiisoft\\VarDumper\\Tests\\": "tests"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "infection/extension-installer": true,
+            "composer/package-versions-deprecated": true
+        }
+    },
+    "scripts": {
+        "test": "phpunit --testdox --no-interaction",
+        "test-watch": "phpunit-watcher watch"
+    }
+}

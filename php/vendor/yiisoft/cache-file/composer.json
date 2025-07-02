@@ -1,0 +1,70 @@
+{
+    "name": "yiisoft/cache-file",
+    "type": "library",
+    "description": "Yii Caching Library - File Handler",
+    "keywords": [
+        "yii",
+        "framework",
+        "cache",
+        "file",
+        "psr-16"
+    ],
+    "homepage": "https://www.yiiframework.com/",
+    "license": "BSD-3-Clause",
+    "support": {
+        "issues": "https://github.com/yiisoft/cache-file/issues?state=open",
+        "forum": "https://www.yiiframework.com/forum/",
+        "wiki": "https://www.yiiframework.com/wiki/",
+        "irc": "irc://irc.freenode.net/yii",
+        "chat": "https://t.me/yii3en",
+        "source": "https://github.com/yiisoft/cache-file"
+    },
+    "require": {
+        "php": "^8.0",
+        "psr/simple-cache": "^2.0|^3.0"
+    },
+    "require-dev": {
+        "maglnet/composer-require-checker": "^4.4",
+        "php-mock/php-mock-phpunit": "^2.6",
+        "phpunit/phpunit": "^9.5",
+        "rector/rector": "^0.18.3",
+        "roave/infection-static-analysis-plugin": "^1.16",
+        "spatie/phpunit-watcher": "^1.23",
+        "vimeo/psalm": "^4.30|^5.6",
+        "yiisoft/aliases": "^3.0",
+        "yiisoft/di": "^1.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Yiisoft\\Cache\\File\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Yiisoft\\Cache\\File\\Tests\\": "tests"
+        }
+    },
+    "provide": {
+        "psr/simple-cache-implementation": "1.0.0"
+    },
+    "extra": {
+        "config-plugin-options": {
+            "source-directory": "config"
+        },
+        "config-plugin": {
+            "di": "di.php",
+            "params": "params.php"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "infection/extension-installer": true,
+            "composer/package-versions-deprecated": true
+        }
+    },
+    "scripts": {
+        "test": "phpunit --testdox --no-interaction",
+        "test-watch": "phpunit-watcher watch"
+    }
+}

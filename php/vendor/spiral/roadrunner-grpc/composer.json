@@ -1,0 +1,77 @@
+{
+    "name": "spiral/roadrunner-grpc",
+    "type": "library",
+    "description": "High-Performance GRPC server for PHP applications",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Anton Titov (wolfy-j)",
+            "email": "wolfy-j@spiralscout.com"
+        },
+        {
+            "name": "Pavel Buchnev (butschster)",
+            "email": "pavel.buchnev@spiralscout.com"
+        },
+        {
+            "name": "Aleksei Gagarin (roxblnfk)",
+            "email": "alexey.gagarin@spiralscout.com"
+        },
+        {
+            "name": "Maksim Smakouz (msmakouz)",
+            "email": "maksim.smakouz@spiralscout.com"
+        },
+        {
+            "name": "RoadRunner Community",
+            "homepage": "https://github.com/spiral/roadrunner/graphs/contributors"
+        }
+    ],
+    "homepage": "https://roadrunner.dev/",
+    "support": {
+        "docs": "https://docs.roadrunner.dev",
+        "issues": "https://github.com/roadrunner-server/roadrunner/issues",
+        "forum": "https://forum.roadrunner.dev/",
+        "chat": "https://discord.gg/V6EK4he"
+    },
+    "funding": [
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/roadrunner-server"
+        }
+    ],
+    "require": {
+        "php": ">=8.1",
+        "ext-json": "*",
+        "google/common-protos": "^3.1|^4.0",
+        "google/protobuf": "^3.7 || ^4.0",
+        "spiral/roadrunner-worker": "^3.0",
+        "spiral/goridge": "^4.0",
+        "spiral/roadrunner": "^2023.1 || ^2024.1"
+    },
+    "require-dev": {
+        "jetbrains/phpstorm-attributes": "^1.0",
+        "mockery/mockery": "^1.4",
+        "phpunit/phpunit": "^10.0",
+        "vimeo/psalm": ">=5.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "Spiral\\RoadRunner\\GRPC\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "GPBMetadata\\": "tests/generated/GPBMetadata",
+            "Service\\": "tests/generated/Service",
+            "Spiral\\RoadRunner\\GRPC\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "tests": "phpunit",
+        "psalm": "psalm --no-cache"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<psalm
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+    errorLevel="1"
+    hoistConstants="true"
+    resolveFromConfigFile="true"
+    findUnusedPsalmSuppress="true"
+    findUnusedBaselineEntry="true"
+    findUnusedCode="false"
+    findUnusedVariablesAndParams="true"
+    ensureArrayStringOffsetsExist="true"
+    addParamDefaultToDocblockType="true"
+>
+    <issueHandlers>
+        <RedundantConditionGivenDocblockType errorLevel="suppress" />
+        <MixedReturnStatement errorLevel="suppress" />
+        <UnusedPsalmSuppress errorLevel="suppress" />
+        <InvalidAttribute errorLevel="suppress" />
+        <UndefinedAttributeClass errorLevel="suppress" />
+        <DocblockTypeContradiction errorLevel="suppress" />
+        <MissingClassConstType errorLevel="suppress" />
+    </issueHandlers>
+    <projectFiles>
+        <directory name="src" />
+        <ignoreFiles>
+            <directory name="vendor" />
+        </ignoreFiles>
+    </projectFiles>
+</psalm>

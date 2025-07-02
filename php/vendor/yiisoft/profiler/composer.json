@@ -1,0 +1,66 @@
+{
+    "name": "yiisoft/profiler",
+    "type": "library",
+    "description": "Profiler",
+    "keywords": [
+        "profiler",
+        "performance"
+    ],
+    "homepage": "https://www.yiiframework.com/",
+    "license": "BSD-3-Clause",
+    "support": {
+        "issues": "https://github.com/yiisoft/profiler/issues?state=open",
+        "forum": "https://www.yiiframework.com/forum/",
+        "wiki": "https://www.yiiframework.com/wiki/",
+        "irc": "irc://irc.freenode.net/yii",
+        "chat": "https://t.me/yii3en",
+        "source": "https://github.com/yiisoft/profiler"
+    },
+    "require": {
+        "php": "^8.0",
+        "psr/log": "^2.0|^3.0",
+        "yiisoft/files": "^2.0",
+        "yiisoft/strings": "^2.0"
+    },
+    "require-dev": {
+        "maglnet/composer-require-checker": "^4.2",
+        "phpunit/phpunit": "^9.5",
+        "rector/rector": "^0.15.0",
+        "roave/infection-static-analysis-plugin": "^1.25",
+        "spatie/phpunit-watcher": "^1.23",
+        "vimeo/psalm": "^4.30|^5.1",
+        "yiisoft/aliases": "^3.0",
+        "yiisoft/di": "^1.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Yiisoft\\Profiler\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Yiisoft\\Profiler\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "config-plugin-options": {
+            "source-directory": "config"
+        },
+        "config-plugin": {
+            "di": "di.php",
+            "events-web": "events-web.php",
+            "params": "params.php"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "infection/extension-installer": true,
+            "composer/package-versions-deprecated": true
+        }
+    },
+    "scripts": {
+        "test": "phpunit --testdox --no-interaction",
+        "test-watch": "phpunit-watcher watch"
+    }
+}

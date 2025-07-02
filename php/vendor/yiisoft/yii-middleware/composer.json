@@ -1,0 +1,87 @@
+{
+    "name": "yiisoft/yii-middleware",
+    "type": "library",
+    "description": "Yii Middleware",
+    "keywords": [
+        "yii",
+        "framework",
+        "middleware"
+    ],
+    "homepage": "https://www.yiiframework.com/",
+    "license": "BSD-3-Clause",
+    "support": {
+        "issues": "https://github.com/yiisoft/yii-middleware/issues?state=open",
+        "source": "https://github.com/yiisoft/yii-middleware",
+        "forum": "https://www.yiiframework.com/forum/",
+        "wiki": "https://www.yiiframework.com/wiki/",
+        "irc": "ircs://irc.libera.chat:6697/yii",
+        "chat": "https://t.me/yii3en"
+    },
+    "funding": [
+        {
+            "type": "opencollective",
+            "url": "https://opencollective.com/yiisoft"
+        },
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/yiisoft"
+        }
+    ],
+    "prefer-stable": true,
+    "require": {
+        "php": "^8.0",
+        "psr/event-dispatcher": "^1.0",
+        "psr/http-factory": "^1.0",
+        "psr/log": "^3.0",
+        "psr/http-message": "^1.0|^2.0",
+        "psr/http-server-handler": "^1.0",
+        "psr/http-server-middleware": "^1.0",
+        "yiisoft/aliases": "^3.0",
+        "yiisoft/cookies": "^1.2",
+        "yiisoft/friendly-exception": "^1.0",
+        "yiisoft/http": "^1.2",
+        "yiisoft/network-utilities": "^1.2",
+        "yiisoft/router": "^3.0",
+        "yiisoft/session": "^2.0",
+        "yiisoft/strings": "^2.1",
+        "yiisoft/validator": "^1.0|^2.0"
+    },
+    "require-dev": {
+        "ext-uopz": "*",
+        "httpsoft/http-message": "^1.0",
+        "maglnet/composer-require-checker": "^4.2",
+        "phpunit/phpunit": "^9.5",
+        "rector/rector": "^1.2",
+        "roave/infection-static-analysis-plugin": "^1.16",
+        "slope-it/clock-mock": "^0.3.6",
+        "spatie/phpunit-watcher": "^1.23",
+        "vimeo/psalm": "^4.30|^5.25",
+        "yiisoft/router-fastroute": "^3.0",
+        "yiisoft/test-support": "^3.0"
+    },
+    "suggest": {
+        "yiisoft/event-dispatcher": "For using events",
+        "yiisoft/translator": "For updating translator's locale"
+    },
+    "autoload": {
+        "psr-4": {
+            "Yiisoft\\Yii\\Middleware\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Yiisoft\\Yii\\Middleware\\Tests\\": "tests"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "infection/extension-installer": true,
+            "composer/package-versions-deprecated": true
+        }
+    },
+    "scripts": {
+        "test": "phpunit --testdox --no-interaction",
+        "test-watch": "phpunit-watcher watch"
+    }
+}

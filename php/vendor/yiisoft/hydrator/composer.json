@@ -1,0 +1,77 @@
+{
+    "name": "yiisoft/hydrator",
+    "type": "library",
+    "description": "Create and populate objects with type casting, mapping and dependencies resolving support.",
+    "keywords": [
+        "hydrator"
+    ],
+    "homepage": "https://www.yiiframework.com/",
+    "license": "BSD-3-Clause",
+    "support": {
+        "issues": "https://github.com/yiisoft/hydrator/issues?state=open",
+        "source": "https://github.com/yiisoft/hydrator",
+        "forum": "https://www.yiiframework.com/forum/",
+        "wiki": "https://www.yiiframework.com/wiki/",
+        "irc": "ircs://irc.libera.chat:6697/yii",
+        "chat": "https://t.me/yii3en"
+    },
+    "funding": [
+        {
+            "type": "opencollective",
+            "url": "https://opencollective.com/yiisoft"
+        },
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/yiisoft"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "psr/container": "^2.0",
+        "yiisoft/injector": "^1.1",
+        "yiisoft/strings": "^2.3"
+    },
+    "require-dev": {
+        "maglnet/composer-require-checker": "^4.7",
+        "phpunit/phpunit": "^10.5",
+        "rector/rector": "^1.2",
+        "roave/infection-static-analysis-plugin": "^1.16",
+        "spatie/phpunit-watcher": "^1.23",
+        "vimeo/psalm": "^5.23",
+        "yiisoft/di": "^1.2",
+        "yiisoft/dummy-provider": "^1.0",
+        "yiisoft/test-support": "^3.0"
+    },
+    "suggest": {
+        "ext-intl": "Allows using `ToDateTime` parameter attribute"
+    },
+    "autoload": {
+        "psr-4": {
+            "Yiisoft\\Hydrator\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Yiisoft\\Hydrator\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "config-plugin-options": {
+            "source-directory": "config"
+        },
+        "config-plugin": {
+            "di": "di.php"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "infection/extension-installer": true,
+            "composer/package-versions-deprecated": true
+        }
+    },
+    "scripts": {
+        "test": "phpunit --testdox --no-interaction",
+        "test-watch": "phpunit-watcher watch"
+    }
+}

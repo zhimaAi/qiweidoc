@@ -1,0 +1,53 @@
+{
+  "name": "roadrunner-php/roadrunner-api-dto",
+  "type": "library",
+  "description": "RoadRunner PHP API",
+  "license": "MIT",
+  "homepage": "https://roadrunner.dev",
+  "support": {
+    "docs": "https://docs.roadrunner.dev",
+    "issues": "https://github.com/roadrunner-server/roadrunner/issues",
+    "forum": "https://forum.roadrunner.dev",
+    "chat": "https://discord.gg/V6EK4he"
+  },
+  "authors": [
+    {
+      "name": "Pavel Butchnev (butschster)",
+      "email": "pavel.buchnev@spiralscout.com"
+    },
+    {
+      "name": "Aleksei Gagarin (roxblnfk)",
+      "email": "alexey.gagarin@spiralscout.com"
+    },
+    {
+      "name": "RoadRunner Community",
+      "homepage": "https://github.com/roadrunner-server/roadrunner/graphs/contributors"
+    }
+  ],
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/roadrunner-server"
+    }
+  ],
+  "require": {
+    "php": "^8.1",
+    "google/protobuf": "^3.22 || ^4.0"
+  },
+  "suggest": {
+    "google/common-protos": "Required for Temporal API"
+  },
+  "conflict": {
+    "temporal/sdk": "<2.9.0"
+  },
+  "scripts": {
+    "build": "./generate.sh"
+  },
+  "autoload": {
+    "psr-4": {
+      "RoadRunner\\": "generated/RoadRunner",
+      "GPBMetadata\\": "generated/GPBMetadata",
+      "Temporal\\": "generated/Temporal"
+    }
+  }
+}

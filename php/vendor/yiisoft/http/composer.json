@@ -1,0 +1,50 @@
+{
+    "name": "yiisoft/http",
+    "type": "library",
+    "description": "Constants and PSR-7 PhpStorm meta for HTTP protocol headers, methods and statuses",
+    "keywords": [
+        "http",
+        "header",
+        "method",
+        "status",
+        "PSR-7",
+        "PSR-17"
+    ],
+    "homepage": "https://www.yiiframework.com/",
+    "license": "BSD-3-Clause",
+    "support": {
+        "issues": "https://github.com/yiisoft/http/issues?state=open",
+        "forum": "https://www.yiiframework.com/forum/",
+        "wiki": "https://www.yiiframework.com/wiki/",
+        "irc": "irc://irc.freenode.net/yii",
+        "source": "https://github.com/yiisoft/http"
+    },
+    "require": {
+        "php": "^7.4|^8.0",
+        "yiisoft/strings": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Yiisoft\\Http\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Yiisoft\\Http\\Tests\\": "tests"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "prefer-stable": true,
+    "scripts": {
+        "test": "phpunit --testdox --no-interaction",
+        "test-watch": "phpunit-watcher watch"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "roave/infection-static-analysis-plugin": "^1.10",
+        "spatie/phpunit-watcher": "^1.23",
+        "vimeo/psalm": "^4.12"
+    }
+}

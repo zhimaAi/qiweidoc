@@ -1,0 +1,64 @@
+{
+    "name": "yiisoft/db-pgsql",
+    "type": "library",
+    "description": "PostgreSQL driver for Yii Database",
+    "keywords": [
+        "yii",
+        "pgsql",
+        "database",
+        "sql",
+        "dbal",
+        "query-builder"
+    ],
+    "homepage": "https://www.yiiframework.com/",
+    "license": "BSD-3-Clause",
+    "support": {
+        "source": "https://github.com/yiisoft/db-pgsql",
+        "issues": "https://github.com/yiisoft/db-pgsql/issues",
+        "forum": "https://www.yiiframework.com/forum/",
+        "wiki": "https://www.yiiframework.com/wiki/",
+        "chat": "https://t.me/yii3en",
+        "irc": "irc://irc.freenode.net/yii"
+    },
+    "require": {
+        "php": "^8.0",
+        "ext-json": "*",
+        "ext-pdo": "*",
+        "ext-pdo_pgsql": "*",
+        "yiisoft/db": "^1.2",
+        "yiisoft/json": "^1.0"
+    },
+    "require-dev": {
+        "maglnet/composer-require-checker": "^4.2",
+        "phpunit/phpunit": "^9.5|^10.0",
+        "rector/rector": "^1.0",
+        "roave/infection-static-analysis-plugin": "^1.16",
+        "spatie/phpunit-watcher": "^1.23",
+        "vimeo/psalm": "^4.30|^5.20",
+        "yiisoft/aliases": "^2.0",
+        "yiisoft/cache-file": "^3.1",
+        "yiisoft/var-dumper": "^1.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Yiisoft\\Db\\Pgsql\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Yiisoft\\Db\\Pgsql\\Tests\\": "tests",
+            "Yiisoft\\Db\\Tests\\": "vendor/yiisoft/db/tests"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "infection/extension-installer": true,
+            "composer/package-versions-deprecated": true
+        }
+    },
+    "scripts": {
+        "test": "phpunit --testdox --no-interaction",
+        "test-watch": "phpunit-watcher watch"
+    }
+}

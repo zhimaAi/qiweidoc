@@ -1,0 +1,100 @@
+{
+    "name": "yiisoft/yii-debug",
+    "type": "library",
+    "description": "Yii Framework Debug Panel Extension",
+    "keywords": [
+        "yii",
+        "debug",
+        "debugger"
+    ],
+    "license": "BSD-3-Clause",
+    "support": {
+        "issues": "https://github.com/yiisoft/yii-debug/issues?state=open",
+        "source": "https://github.com/yiisoft/yii-debug",
+        "forum": "https://www.yiiframework.com/forum/",
+        "wiki": "https://www.yiiframework.com/wiki/",
+        "irc": "ircs://irc.libera.chat:6697/yii",
+        "chat": "https://t.me/yii3en"
+    },
+    "funding": [
+        {
+            "type": "opencollective",
+            "url": "https://opencollective.com/yiisoft"
+        },
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/yiisoft"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "ext-mbstring": "*",
+        "guzzlehttp/psr7": "^2.4",
+        "psr/container": "^2.0",
+        "psr/event-dispatcher": "^1.0",
+        "psr/http-client": "^1.0",
+        "psr/http-message": "^1.0|^2.0",
+        "psr/log": "^1.0|^2.0|^3.0",
+        "symfony/console": "^5.4|^6.0",
+        "yiisoft/di": "^1.0",
+        "yiisoft/files": "^2.0",
+        "yiisoft/profiler": "^3.0",
+        "yiisoft/proxy": "^1.0.1",
+        "yiisoft/strings": "^2.2",
+        "yiisoft/var-dumper": "^1.7"
+    },
+    "require-dev": {
+        "ext-curl": "*",
+        "ext-sockets": "*",
+        "jetbrains/phpstorm-attributes": "^1.2",
+        "maglnet/composer-require-checker": "^4.2",
+        "nyholm/psr7": "^1.3",
+        "phpunit/phpunit": "^10.5",
+        "rector/rector": "^1.2",
+        "roave/infection-static-analysis-plugin": "^1.16",
+        "spatie/phpunit-watcher": "^1.23",
+        "vimeo/psalm": "^5.26",
+        "yiisoft/error-handler": "^3.0",
+        "yiisoft/event-dispatcher": "^1.0",
+        "yiisoft/log": "^2.0",
+        "yiisoft/yii-console": "^2.0",
+        "yiisoft/yii-http": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Yiisoft\\Yii\\Debug\\": "src",
+            "Yiisoft\\Yii\\Debug\\Tests\\Shared\\": "tests/Shared"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Yiisoft\\Yii\\Debug\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "config-plugin-options": {
+            "source-directory": "config"
+        },
+        "config-plugin": {
+            "params": "params.php",
+            "bootstrap": "bootstrap.php",
+            "di": "di.php",
+            "di-console": "di-console.php",
+            "di-web": "di-web.php",
+            "di-providers": "di-providers.php",
+            "events-web": "events-web.php",
+            "events-console": "events-console.php"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "infection/extension-installer": true,
+            "composer/package-versions-deprecated": true
+        }
+    },
+    "scripts": {
+        "test": "phpunit --testdox --no-interaction",
+        "test-watch": "phpunit-watcher watch"
+    }
+}

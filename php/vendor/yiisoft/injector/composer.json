@@ -1,0 +1,61 @@
+{
+    "name": "yiisoft/injector",
+    "type": "library",
+    "description": "PSR-11 compatible injector. Executes a callable and makes an instances by injecting dependencies from a given DI container.",
+    "keywords": [
+        "PSR-11",
+        "DI",
+        "dependency injection",
+        "reflection",
+        "injector"
+    ],
+    "homepage": "https://www.yiiframework.com/",
+    "license": "BSD-3-Clause",
+    "support": {
+        "issues": "https://github.com/yiisoft/injector/issues?state=open",
+        "forum": "https://www.yiiframework.com/forum/",
+        "wiki": "https://www.yiiframework.com/wiki/",
+        "irc": "irc://irc.freenode.net/yii",
+        "chat": "https://t.me/yii3en",
+        "source": "https://github.com/yiisoft/injector"
+    },
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^7.4|^8.0"
+    },
+    "require-dev": {
+        "maglnet/composer-require-checker": "^3.8|^4.2",
+        "phpbench/phpbench": "^1.1",
+        "phpunit/phpunit": "^9.5",
+        "psr/container": "^1.0|^2.0",
+        "rector/rector": "^0.18.12",
+        "roave/infection-static-analysis-plugin": "^1.16",
+        "spatie/phpunit-watcher": "^1.23",
+        "vimeo/psalm": "^4.30|^5.7",
+        "yiisoft/test-support": "^1.2"
+    },
+    "suggest": {
+        "psr/container": "For automatic resolving of dependencies"
+    },
+    "autoload": {
+        "psr-4": {
+            "Yiisoft\\Injector\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Yiisoft\\Injector\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "phpunit --testdox --no-interaction",
+        "test-watch": "phpunit-watcher watch"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "infection/extension-installer": true,
+            "composer/package-versions-deprecated": true
+        }
+    }
+}

@@ -6,7 +6,7 @@ nbproject
 .project
 .settings
 Thumbs.db
-vendor
+#vendor
 composer.phar
 .DS_Store
 phpunit.phar
@@ -26,7 +26,7 @@ lerna-debug.log*
 node_modules
 #dist
 dist-ssr
-build
+#build
 *.local
 *.suo
 *.ntvs*

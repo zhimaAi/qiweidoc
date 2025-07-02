@@ -1,0 +1,50 @@
+{
+    "name": "yiisoft/files",
+    "type": "library",
+    "description": "Helper to manage files and directories",
+    "keywords": [
+        "files"
+    ],
+    "homepage": "https://www.yiiframework.com/",
+    "license": "BSD-3-Clause",
+    "support": {
+        "issues": "https://github.com/yiisoft/files/issues?state=open",
+        "forum": "https://www.yiiframework.com/forum/",
+        "wiki": "https://www.yiiframework.com/wiki/",
+        "irc": "irc://irc.freenode.net/yii",
+        "chat": "https://t.me/yii3en",
+        "source": "https://github.com/yiisoft/files"
+    },
+    "require": {
+        "php": "^8.0",
+        "yiisoft/strings": "^2.0"
+    },
+    "require-dev": {
+        "ext-zlib": "*",
+        "phpunit/phpunit": "^9.5",
+        "roave/infection-static-analysis-plugin": "^1.18",
+        "spatie/phpunit-watcher": "^1.23",
+        "vimeo/psalm": "^4.22"
+    },
+    "autoload": {
+        "psr-4": {
+            "Yiisoft\\Files\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Yiisoft\\Files\\Tests\\": "tests"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "infection/extension-installer": true,
+            "composer/package-versions-deprecated": true
+        }
+    },
+    "scripts": {
+        "test": "phpunit --testdox --no-interaction",
+        "test-watch": "phpunit-watcher watch"
+    }
+}

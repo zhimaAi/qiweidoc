@@ -1,0 +1,74 @@
+{
+    "name": "yiisoft/config",
+    "type": "composer-plugin",
+    "description": "Composer plugin and a library for config assembling",
+    "keywords": [
+        "composer",
+        "config",
+        "plugin"
+    ],
+    "homepage": "https://github.com/yiisoft/config",
+    "license": "BSD-3-Clause",
+    "support": {
+        "issues": "https://github.com/yiisoft/config/issues?state=open",
+        "forum": "https://www.yiiframework.com/forum/",
+        "wiki": "https://www.yiiframework.com/wiki/",
+        "irc": "irc://irc.freenode.net/yii",
+        "chat": "https://t.me/yii3en",
+        "source": "https://github.com/yiisoft/config"
+    },
+    "funding": [
+        {
+            "type": "opencollective",
+            "url": "https://opencollective.com/yiisoft"
+        },
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/yiisoft"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "composer-plugin-api": "^2.0",
+        "yiisoft/arrays": "^3.0",
+        "yiisoft/strings": "^2.0",
+        "yiisoft/var-dumper": "^1.1"
+    },
+    "require-dev": {
+        "ext-json": "*",
+        "composer/composer": "^2.0",
+        "maglnet/composer-require-checker": "^4.4",
+        "phpunit/phpunit": "^9.5",
+        "rector/rector": "^0.18.0",
+        "roave/infection-static-analysis-plugin": "^1.16",
+        "spatie/phpunit-watcher": "^1.23",
+        "vimeo/psalm": "^4.30|^5.6"
+    },
+    "suggest": {
+        "symfony/console": "To use composer commands `yii-config-copy` and `yii-config-rebuild`."
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "infection/extension-installer": true,
+            "composer/package-versions-deprecated": true
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Yiisoft\\Config\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Yiisoft\\Config\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "class": "Yiisoft\\Config\\Composer\\EventHandler"
+    },
+    "scripts": {
+        "test": "phpunit --testdox --no-interaction",
+        "test-watch": "phpunit-watcher watch"
+    }
+}

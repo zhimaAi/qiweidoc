@@ -1,0 +1,9 @@
+{
+    "symbol-whitelist" : [
+        "Yiisoft\\Hydrator\\Attribute\\Parameter\\ParameterAttributeInterface",
+        "Yiisoft\\Hydrator\\Attribute\\Parameter\\ParameterAttributeResolverInterface",
+        "Yiisoft\\Hydrator\\AttributeHandling\\ParameterAttributeResolveContext",
+        "Yiisoft\\Hydrator\\AttributeHandling\\Exception\\UnexpectedAttributeException",
+        "Yiisoft\\Hydrator\\Result"
+    ]
+}

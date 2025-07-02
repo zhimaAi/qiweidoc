@@ -1,0 +1,68 @@
+{
+    "name": "spiral/roadrunner-services",
+    "type": "library",
+    "description": "RoadRunner services manager",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Pavel Buchnev (butschster)",
+            "email": "pavel.buchnev@spiralscout.com"
+        },
+        {
+            "name": "Aleksei Gagarin (roxblnfk)",
+            "email": "alexey.gagarin@spiralscout.com"
+        },
+        {
+            "name": "Maksim Smakouz (msmakouz)",
+            "email": "maksim.smakouz@spiralscout.com"
+        },
+        {
+            "name": "RoadRunner Community",
+            "homepage": "https://github.com/spiral/roadrunner/graphs/contributors"
+        }
+    ],
+    "homepage": "https://roadrunner.dev/",
+    "support": {
+        "docs": "https://docs.roadrunner.dev",
+        "issues": "https://github.com/roadrunner-server/roadrunner/issues",
+        "forum": "https://forum.roadrunner.dev/",
+        "chat": "https://discord.gg/V6EK4he"
+    },
+    "funding": [
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/roadrunner-server"
+        }
+    ],
+    "require": {
+        "php": ">=8.1",
+        "roadrunner-php/roadrunner-api-dto": "^1.4",
+        "spiral/roadrunner": "^2023.2 || ^2024.1",
+        "spiral/goridge": "^4.0",
+        "google/protobuf": "^3.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "Spiral\\RoadRunner\\Services\\": "src"
+        }
+    },
+    "require-dev": {
+        "mockery/mockery": "^1.5",
+        "phpunit/phpunit": "^10.0",
+        "vimeo/psalm": ">=5.8"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Spiral\\RoadRunner\\Services\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "tests": "phpunit",
+        "psalm": "psalm --no-cache"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

@@ -1,0 +1,20 @@
+{
+    "symbol-whitelist": [
+        "Yiisoft\\Definitions\\ArrayDefinition",
+        "Yiisoft\\Definitions\\CallableDefinition",
+        "Yiisoft\\Definitions\\ValueDefinition",
+        "Yiisoft\\Middleware\\Dispatcher\\Event\\BeforeMiddleware",
+        "Yiisoft\\Yii\\Console\\Event\\ApplicationShutdown",
+        "Yiisoft\\Yii\\Console\\Event\\ApplicationStartup",
+        "Yiisoft\\Yii\\Console\\ExitCode",
+        "Yiisoft\\Yii\\Console\\Output\\ConsoleBufferedOutput",
+        "Yiisoft\\Yii\\Http\\Event\\AfterEmit",
+        "Yiisoft\\Yii\\Http\\Event\\AfterRequest",
+        "Yiisoft\\Yii\\Http\\Event\\ApplicationStartup",
+        "Yiisoft\\Yii\\Http\\Event\\BeforeRequest",
+        "Yiisoft\\Cache\\Dependency\\Dependency",
+        "Yiisoft\\ErrorHandler\\Event\\ApplicationError",
+        "PHPUnit\\Framework\\TestCase",
+        "opcache_invalidate"
+    ]
+}

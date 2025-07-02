@@ -1,0 +1,62 @@
+{
+    "name": "yiisoft/mutex",
+    "type": "library",
+    "description": "Yii Mutex Library",
+    "keywords": [
+        "yii",
+        "mutex"
+    ],
+    "homepage": "https://www.yiiframework.com/",
+    "license": "BSD-3-Clause",
+    "support": {
+        "issues": "https://github.com/yiisoft/mutex/issues?state=open",
+        "forum": "https://www.yiiframework.com/forum/",
+        "wiki": "https://www.yiiframework.com/wiki/",
+        "irc": "irc://irc.freenode.net/yii",
+        "chat": "https://t.me/yii3en",
+        "source": "https://github.com/yiisoft/mutex"
+    },
+    "funding": [
+        {
+            "type": "opencollective",
+            "url": "https://opencollective.com/yiisoft"
+        },
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/yiisoft"
+        }
+    ],
+    "require": {
+        "php": "^7.4|^8.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "roave/infection-static-analysis-plugin": "^1.14",
+        "spatie/phpunit-watcher": "^1.23",
+        "vimeo/psalm": "^4.9"
+    },
+    "suggest": {
+        "yiisoft/mutex-file": "Use the File driver for mutex",
+        "yiisoft/mutex-pdo-mysql": "Use the MySQL PDO driver for mutex",
+        "yiisoft/mutex-pdo-oracle": "Use the Oracle PDO driver for mutex",
+        "yiisoft/mutex-pdo-pgsql": "Use the Postgres PDO driver for mutex",
+        "yiisoft/mutex-redis": "Use the Redis driver for mutex"
+    },
+    "autoload": {
+        "psr-4": {
+            "Yiisoft\\Mutex\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Yiisoft\\Mutex\\Tests\\": "tests"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "scripts": {
+        "test": "phpunit --testdox --no-interaction",
+        "test-watch": "phpunit-watcher watch"
+    }
+}

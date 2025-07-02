@@ -1,0 +1,71 @@
+{
+    "name": "yiisoft/yii-runner-console",
+    "type": "library",
+    "description": "Console application runner",
+    "keywords": [
+        "yii",
+        "runner",
+        "console"
+    ],
+    "homepage": "https://www.yiiframework.com/",
+    "license": "BSD-3-Clause",
+    "support": {
+        "issues": "https://github.com/yiisoft/yii-runner-console/issues?state=open",
+        "forum": "https://www.yiiframework.com/forum/",
+        "wiki": "https://www.yiiframework.com/wiki/",
+        "irc": "irc://irc.freenode.net/yii",
+        "chat": "https://t.me/yii3en",
+        "source": "https://github.com/yiisoft/yii-runner-console"
+    },
+    "funding": [
+        {
+            "type": "opencollective",
+            "url": "https://opencollective.com/yiisoft"
+        },
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/yiisoft"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "symfony/console": "^5.4|^6.0|^7.0",
+        "yiisoft/config": "^1.1",
+        "yiisoft/definitions": "^1.0|^2.0|^3.0",
+        "yiisoft/di": "^1.0",
+        "yiisoft/yii-console": "^2.0",
+        "yiisoft/yii-runner": "^2.2"
+    },
+    "require-dev": {
+        "codeception/codeception": "^5.0",
+        "codeception/module-cli": "^2.0",
+        "maglnet/composer-require-checker": "^4.2",
+        "rector/rector": "^1.0.0",
+        "vimeo/psalm": "^4.30|^5.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Yiisoft\\Yii\\Runner\\Console\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Yiisoft\\Yii\\Runner\\Console\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "config-plugin-options": {
+            "build-merge-plan": false
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "yiisoft/config": true
+        }
+    },
+    "scripts": {
+        "test": "codecept run"
+    }
+}

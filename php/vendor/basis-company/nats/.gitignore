@@ -1,0 +1,10 @@
+# Dependencies
+composer.lock
+composer.phar
+vendor
+
+# Editor files
+*.bak
+.idea
+.php-cs-fixer.cache
+phpunit.xml

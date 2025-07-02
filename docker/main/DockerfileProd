@@ -58,4 +58,5 @@ RUN docker-php-ext-enable edl
 
 # 运行
 #RUN chmod +x /var/www/golang/build/master
-#CMD ["/var/www/golang/build/master"]
+CMD ["/var/www/golang/build/master"]
+

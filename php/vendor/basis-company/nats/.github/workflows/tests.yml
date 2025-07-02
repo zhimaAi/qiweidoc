@@ -1,0 +1,30 @@
+name: tests
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      NATS_CLIENT_LOG: 1
+      NATS_TEST_LOG: 1
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ["8.1", "8.2", "8.3", "8.4"]
+        verbose: ['0', '1']
+    steps:
+      - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          NATS_CLIENT_VERBOSE: ${{ matrix.verbose }}
+      - uses: php-actions/composer@v6
+      - run: docker compose up -d
+        working-directory: docker
+      - run: vendor/bin/phpunit --testsuite Tests
+      - name: Coverage text report
+        run: cat coverage/report.txt
+      - name: Coveralls
+        if: matrix.php == '8.4' && matrix.verbose == '1'
+        uses: coverallsapp/github-action@v2
+        with:
+          files: coverage/report.clover

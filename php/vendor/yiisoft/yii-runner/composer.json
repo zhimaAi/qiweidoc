@@ -1,0 +1,78 @@
+{
+    "name": "yiisoft/yii-runner",
+    "type": "library",
+    "description": "Yii application runner",
+    "keywords": [
+        "yii3",
+        "runner"
+    ],
+    "homepage": "https://www.yiiframework.com/",
+    "license": "BSD-3-Clause",
+    "support": {
+        "issues": "https://github.com/yiisoft/yii-runner/issues?state=open",
+        "forum": "https://www.yiiframework.com/forum/",
+        "wiki": "https://www.yiiframework.com/wiki/",
+        "irc": "irc://irc.freenode.net/yii",
+        "chat": "https://t.me/yii3en",
+        "source": "https://github.com/yiisoft/yii-runner"
+    },
+    "funding": [
+        {
+            "type": "opencollective",
+            "url": "https://opencollective.com/yiisoft"
+        },
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/yiisoft"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "psr/container": "^1.0|^2.0",
+        "yiisoft/config": "^1.1",
+        "yiisoft/definitions": "^1.0|^2.0|^3.0",
+        "yiisoft/di": "^1.0",
+        "yiisoft/yii-event": "^2.0"
+    },
+    "require-dev": {
+        "maglnet/composer-require-checker": "^4.2",
+        "phpunit/phpunit": "^9.5",
+        "rector/rector": "^1.0.0",
+        "roave/infection-static-analysis-plugin": "^1.20",
+        "spatie/phpunit-watcher": "^1.23",
+        "vimeo/psalm": "^4.30|^5.21",
+        "yiisoft/test-support": "^3.0"
+    },
+    "suggest": {
+        "yiisoft/yii-runner-console": "Allows to run console application",
+        "yiisoft/yii-runner-http": "Allows to run HTTP application",
+        "yiisoft/yii-runner-roadrunner": "Allows to run HTTP application for RoadRunner"
+    },
+    "autoload": {
+        "psr-4": {
+            "Yiisoft\\Yii\\Runner\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Yiisoft\\Yii\\Runner\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "config-plugin-options": {
+            "build-merge-plan": false
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "infection/extension-installer": true,
+            "composer/package-versions-deprecated": true,
+            "yiisoft/config": true
+        }
+    },
+    "scripts": {
+        "test": "phpunit --testdox --no-interaction",
+        "test-watch": "phpunit-watcher watch"
+    }
+}

@@ -1,0 +1,46 @@
+{
+    "name": "roadrunner-php/app-logger",
+    "type": "library",
+    "description": "Send log messages to RoadRunner",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kirill Astakhov (kastahov)",
+            "email": "kirill.astakhov@spiralscout.com"
+        },
+        {
+            "name": "RoadRunner Community",
+            "homepage": "https://github.com/spiral/roadrunner/graphs/contributors"
+        }
+    ],
+    "require": {
+        "php": ">=8.1",
+        "ext-json": "*",
+        "spiral/goridge": "^3.1 || ^4.0",
+        "roadrunner-php/roadrunner-api-dto": "^1.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "RoadRunner\\Logger\\": "src"
+        }
+    },
+    "require-dev": {
+        "mockery/mockery": "^1.5",
+        "phpunit/phpunit": "^10.0",
+        "vimeo/psalm": ">=5.8"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "RoadRunner\\Logger\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "tests": "phpunit",
+        "psalm": "psalm --no-cache"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

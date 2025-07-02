@@ -1,0 +1,17 @@
+{
+    "source": {
+        "directories": [
+            "src"
+        ]
+    },
+    "timeout": 45,
+    "logs": {
+        "text": "php:\/\/stderr",
+        "stryker": {
+            "report": "master"
+        }
+    },
+    "mutators": {
+        "@default": true
+    }
+}

@@ -1,0 +1,61 @@
+{
+    "name": "yiisoft/security",
+    "type": "library",
+    "description": "Security utilities",
+    "keywords": [
+        "security",
+        "random",
+        "password",
+        "hash",
+        "encryption",
+        "decryption",
+        "signature",
+        "token masking",
+        "mac"
+    ],
+    "homepage": "https://www.yiiframework.com/",
+    "license": "BSD-3-Clause",
+    "support": {
+        "issues": "https://github.com/yiisoft/security/issues?state=open",
+        "forum": "https://www.yiiframework.com/forum/",
+        "wiki": "https://www.yiiframework.com/wiki/",
+        "irc": "ircs://irc.libera.chat:6697/yii",
+        "chat": "https://t.me/yii3en",
+        "source": "https://github.com/yiisoft/security"
+    },
+    "require": {
+        "php": "^7.4|^8.0",
+        "ext-hash": "*",
+        "ext-openssl": "*",
+        "yiisoft/strings": "^2.0"
+    },
+    "require-dev": {
+        "maglnet/composer-require-checker": "^3.8|^4.2",
+        "phpunit/phpunit": "^9.5",
+        "rector/rector": "^1.0.0",
+        "roave/infection-static-analysis-plugin": "^1.16",
+        "spatie/phpunit-watcher": "^1.23",
+        "vimeo/psalm": "^4.30|^5.23"
+    },
+    "autoload": {
+        "psr-4": {
+            "Yiisoft\\Security\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Yiisoft\\Security\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "phpunit --testdox --no-interaction",
+        "test-watch": "phpunit-watcher watch"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "infection/extension-installer": true,
+            "composer/package-versions-deprecated": true
+        }
+    }
+}

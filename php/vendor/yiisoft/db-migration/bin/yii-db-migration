@@ -1,0 +1,76 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use Psr\Container\ContainerInterface;
+use Symfony\Component\Console\Application;
+use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Migration\Command\CreateCommand;
+use Yiisoft\Db\Migration\Command\DownCommand;
+use Yiisoft\Db\Migration\Command\HistoryCommand;
+use Yiisoft\Db\Migration\Command\NewCommand;
+use Yiisoft\Db\Migration\Command\RedoCommand;
+use Yiisoft\Db\Migration\Command\UpdateCommand;
+use Yiisoft\Db\Migration\Informer\ConsoleMigrationInformer;
+use Yiisoft\Db\Migration\Migrator;
+use Yiisoft\Db\Migration\Runner\DownRunner;
+use Yiisoft\Db\Migration\Runner\UpdateRunner;
+use Yiisoft\Db\Migration\Service\Generate\CreateService;
+use Yiisoft\Db\Migration\Service\MigrationService;
+use Yiisoft\Injector\Injector;
+
+$rootPath = dirname(__DIR__, 4);
+
+/** @psalm-suppress UnresolvableInclude, MissingFile */
+require $_composer_autoload_path ?? $rootPath . '/vendor/autoload.php';
+
+/**
+ * @psalm-suppress MissingFile
+ * @psalm-var array{
+ *     container: ContainerInterface|null,
+ *     db: ConnectionInterface|null,
+ *     useTablePrefix: bool,
+ *     historyTable: string,
+ *     migrationNameLimit: int|null,
+ *     maxSqlOutputLength: int|null,
+ *     newMigrationNamespace: string,
+ *     newMigrationPath: string,
+ *     sourceNamespaces: list<string>,
+ *     sourcePaths: list<string>,
+ * } $params
+ */
+$params = require $rootPath . '/yii-db-migration.php';
+
+$db = $params['db'] ?? throw new LogicException('DB connection is not configured.');
+
+$injector = new Injector($params['container']);
+$migrationInformer = new ConsoleMigrationInformer();
+$migrator = new Migrator(
+    $db,
+    $migrationInformer,
+    $params['historyTable'],
+    $params['migrationNameLimit'],
+    $params['maxSqlOutputLength']
+);
+$createService = new CreateService($db, $params['useTablePrefix']);
+$downRunner = new DownRunner($migrator);
+$updateRunner = new UpdateRunner($migrator);
+
+$migrationService = new MigrationService($db, $injector, $migrator);
+$migrationService->setNewMigrationNamespace($params['newMigrationNamespace']);
+$migrationService->setNewMigrationPath($params['newMigrationPath']);
+$migrationService->setSourceNamespaces($params['sourceNamespaces']);
+$migrationService->setSourcePaths($params['sourcePaths']);
+
+$application = new Application('Yii Database Migration Tool', '1.0.0');
+$application->addCommands([
+    new CreateCommand($createService, $migrationService, $migrator),
+    new DownCommand($downRunner, $migrationService, $migrator),
+    new HistoryCommand($migrationService, $migrator),
+    new NewCommand($migrationService, $migrator),
+    new RedoCommand($migrationService, $migrator, $downRunner, $updateRunner),
+    new UpdateCommand($updateRunner, $migrationService, $migrator),
+]);
+
+$application->run();

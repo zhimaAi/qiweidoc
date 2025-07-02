@@ -1,0 +1,7 @@
+{
+    "symbol-whitelist": [
+        "transliterator_transliterate",
+        "filter_var",
+        "FILTER_VALIDATE_INT"
+    ]
+}

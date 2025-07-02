@@ -1,0 +1,41 @@
+{
+    "name": "yiisoft/friendly-exception",
+    "type": "library",
+    "description": "An interface for friendlier exception",
+    "keywords": [
+        "exception",
+        "exceptions",
+        "error handling",
+        "friendly"
+    ],
+    "homepage": "http://www.yiiframework.com/",
+    "license": "BSD-3-Clause",
+    "support": {
+        "issues": "https://github.com/yiisoft/friendly-exception/issues?state=open",
+        "forum": "http://www.yiiframework.com/forum/",
+        "wiki": "http://www.yiiframework.com/wiki/",
+        "irc": "irc://irc.freenode.net/yii",
+        "source": "https://github.com/yiisoft/friendly-exception"
+    },
+    "require": {
+        "php": "^7.1|^8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Yiisoft\\FriendlyException\\": "src"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.4",
+        "roave/infection-static-analysis-plugin": "^1.5",
+        "spatie/phpunit-watcher": "^1.23",
+        "vimeo/psalm": "^4.3"
+    },
+    "scripts": {
+        "test": "phpunit --testdox --no-interaction",
+        "test-watch": "phpunit-watcher watch"
+    }
+}
