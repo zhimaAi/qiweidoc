@@ -15,17 +15,18 @@ sudo curl -sSL https://get.docker.com/ | CHANNEL=stable sh
 
 如果是境内服务器，可能会安装不了，请参考华为云提供的[安装方法](https://mirrors.huaweicloud.com/mirrorDetail/5ea14d84b58d16ef329c5c13?mirrorName=docker-ce&catalog=docker)。
 
-#### 2，下载部署文件
-
-下载最新 docker-compose 配置文件：
+#### 2，下载最新代码
 
 ```shell
-curl https://zhimahuihua.com/docker-compose-prod.yml -o docker-compose.yml
+git clone https://gitee.com/zmxkf/qiweidoc.git
 ```
+
+#### 3，运行容器
 
 运行：
 
 ```shell
+cd docker
 docker-compose up -d
 ```
 
@@ -42,7 +43,7 @@ echo ACME_EMAIL=youremail >> .env
 docker-compose up -d
 ```
 
-#### 3，配置 nginx（可选）
+#### 4，配置 nginx（可选）
 
 容器默认会监听服务器的 80 端口 和 443 端口，如果你的服务器上有 nginx 而且也监听了 80 端口和 443 端口，可能会出现端口冲突，应该通过环境变量来修改默认端口号，如：
 

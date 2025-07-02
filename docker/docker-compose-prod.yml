@@ -99,7 +99,7 @@ services:
       - nats
       - redis
     volumes:
-      - ./:/var/www/
+      - ../:/var/www/
       - main_certs_data:/etc/letsencrypt
       - main_runtime_data:/var/www/php/runtime
     ports:
