@@ -23,7 +23,7 @@ cd qiweidoc
 cp .env.prod .env
 ```
 
-#### 3，运行容器
+#### 3，运行
 
 切换到 docker 目录：
 
@@ -31,11 +31,17 @@ cp .env.prod .env
 cd docker
 ```
 
-#### 4，编辑 .env 文件
+创建 compose 项目文件：
+
+```
+touch .env
+```
+
+编辑 .env 文件
 
 ```shell
-# 自己取一个名字
-COMPOSE_PROJECT_NAME=zm_session_archive
+# 如果是新部署的就随便取一个名字,如果之前部署过并且需要保留之前的数据,那么参考下面的说明
+COMPOSE_PROJECT_NAME=qiweidoc
 
 COMPOSE_FILE=docker-compose-prod.yml
 
@@ -44,13 +50,27 @@ COMPOSE_FILE=docker-compose-prod.yml
 # ACME_EMAIL=shellphy@2bai.com.cn
 ```
 
-运行：
+> 说明：如果之前是通过docker镜像直接启动的,运行命令：
+> ```
+> docker ps | grep main-1 | awk '{print $NF}' | awk -F'-' '{print $1}' 
+> ```
+> 可以得到原compose项目名，然后把该名称填充到 COMPOSE_PROJECT_NAME 中。
+> 
+> 比如之前部署过项目，运行命令：
+> ```
+> $ docker ps | grep main-1 | awk '{print $NF}' | awk -F'-' '{print $1}'
+> zm_session_archive
+> ```
+> 那么 .env 中的 COMPOSE_PROJECT_NAME 应该填写 `zm_session_archive`
+
+
+再运行：
 
 ```shell
 docker-compose up -d
 ```
 
-#### 5，配置 nginx（可选）
+#### 4，配置 nginx（可选）
 
 容器默认会监听服务器的 80 端口 和 443 端口，如果你的服务器上有 nginx 而且也监听了 80 端口和 443 端口，可能会出现端口冲突，应该通过环境变量来修改默认端口号，如：
 
@@ -84,3 +104,13 @@ server {
     }
 }
 ```
+
+#### 5,更新
+
+```shell
+git pull
+docker compose pull
+cd docker
+docker compose restart
+```
+
