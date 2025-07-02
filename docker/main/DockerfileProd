@@ -54,7 +54,7 @@ RUN docker-php-ext-enable edl
 #COPY .env.prod .env
 
 # 权限
-RUN chmod -R 777 php/runtime
+# RUN chmod -R 777 php/runtime
 
 # 运行
 #RUN chmod +x /var/www/golang/build/master
