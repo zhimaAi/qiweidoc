@@ -455,7 +455,6 @@ export default {
   methods: {
     //刷新员工数据
     modalATitle() {
-      console.log('刷新')
       this.$refs.tabRef_1.addPeopleSearch();
     },
     // getSeatInfo() {
@@ -589,7 +588,6 @@ export default {
         this.selectData.splice(index, 1);
         this.selectDataAll.splice(index, 1);
       }
-      console.log('ss', item, type)
       this.$refs["tabRef_1"] &&
         this.$refs["tabRef_1"].setCheck(item, index, type);
       // this.$refs["tabRef_2"] &&
@@ -600,7 +598,6 @@ export default {
       //   this.$refs["tabRef_4"].setCheck(item, index, type);
     },
     deleteAll() {
-      console.log('ss1', this.selectDataAll)
       this.selectDataAll.forEach((item, index) => {
         this.$refs["tabRef_1"] &&
           this.$refs["tabRef_1"].setCheck(item, index, item.data_type);

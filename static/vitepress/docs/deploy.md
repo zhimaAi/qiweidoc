@@ -19,32 +19,38 @@ sudo curl -sSL https://get.docker.com/ | CHANNEL=stable sh
 
 ```shell
 git clone https://gitee.com/zmxkf/qiweidoc.git
+cd qiweidoc
 cp .env.prod .env
 ```
 
 #### 3，运行容器
 
-运行：
+切换到 docker 目录：
 
 ```shell
 cd docker
-docker-compose up -d
 ```
 
-如果想要自动配置 https 证书
+#### 4，编辑 .env 文件
 
-```
-echo ACME_DOMAINS=example.com > .env
-echo ACME_EMAIL=youremail >> .env
+```shell
+# 自己取一个名字
+COMPOSE_PROJECT_NAME=zm_session_archive
+
+COMPOSE_FILE=docker-compose-prod.yml
+
+# 如果需要自动配置 https 证书，请配置如下
+# ACME_DOMAINS=zhimahuihua.com,demo.zhimahuihua.com
+# ACME_EMAIL=shellphy@2bai.com.cn
 ```
 
-再运行：
+运行：
 
 ```shell
 docker-compose up -d
 ```
 
-#### 4，配置 nginx（可选）
+#### 5，配置 nginx（可选）
 
 容器默认会监听服务器的 80 端口 和 443 端口，如果你的服务器上有 nginx 而且也监听了 80 端口和 443 端口，可能会出现端口冲突，应该通过环境变量来修改默认端口号，如：
 

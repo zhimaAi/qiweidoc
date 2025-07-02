@@ -29,7 +29,7 @@ class DownloadMessageMediasCron
             ->andWhere(['in', 'msg_type', ChatSessionService::ValidMediaType])
             ->andWhere(['msg_content' => ''])
             ->andWhere(['<', 'msg_time', Carbon::now()->subHour()->toDateTimeString('millisecond')])
-            ->andWhere(['>', 'msg_time', Carbon::now()->subDays(3)->toDateTimeString('millisecond')])
+            ->andWhere(['>', 'msg_time', Carbon::now()->subDays(5)->toDateTimeString('millisecond')])
             ->orderBy(['msg_time' => SORT_ASC])
             ->limit(100)
             ->getAll();
