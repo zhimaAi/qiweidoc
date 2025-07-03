@@ -47,7 +47,7 @@ RUN chmod +x /usr/local/bin/mc
 COPY docker/main/edl.so /usr/local/lib/php/extensions/no-debug-non-zts-20220829/
 RUN docker-php-ext-enable edl
 
-#WORKDIR /var/www/
+WORKDIR /var/www/
 #COPY . .
 
 # 复制环境变量文件

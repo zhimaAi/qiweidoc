@@ -1,0 +1,11 @@
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 62 62" class="design-iconfont">
+  <g clip-path="url(#gypazx93r__clip0_6631_44304)">
+    <path transform="scale(1 -1) rotate(-45 -132.29203147 -7.30292715)" fill="#2475FC" d="M0 0H167.917V167.917H0z"/>
+    <path d="M33.5835 42.6263L40.4724 49.0846L54.2502 36.168" stroke="#fff" stroke-width="3.35833" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <defs>
+    <clipPath id="gypazx93r__clip0_6631_44304">
+      <path d="M0 62H56.8333C59.6868 62 62 59.6868 62 56.8333V0H5.16667C2.3132 0 0 2.31319 0 5.16667V62Z" fill="#fff"/>
+    </clipPath>
+  </defs>
+</svg>

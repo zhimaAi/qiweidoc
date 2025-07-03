@@ -15,13 +15,17 @@
             </a-tooltip>
         </template>
         <!-- 链接 -->
-        <div v-else-if="messageInfo.msg_type === 'link'" class="message-box">
-            <span v-if="messageInfo.hasOwnProperty('link_url')">
-                [链接]<a target="_blank" :href="messageInfo.link_url">{{ messageInfo.link_title }}</a>
-            </span>
-            <span v-else>
-                [链接]<a target="_blank" :href="messageInfo.link">{{ messageInfo.link }}</a>
-            </span>
+        <div v-else-if="messageInfo.msg_type === 'link'" class="message-box msg-link-box">
+            <div class="msg-link-content">
+                <div class="msg-link-avatar">
+                    <img :src="messageInfo?.raw_content?.image_url" alt="">
+                </div>
+                <div class="msg-link-title">{{ messageInfo.raw_content.title }}</div>
+            </div>
+            <a class="bottom msg-link-bottom" target="_blank" :href="messageInfo.raw_content.link_url">
+               <span class="msg-link-info">详情</span>
+               <RightOutlined class="msg-link-icon icon-14"/>
+            </a>
         </div>
         <!-- 视频 -->
         <div v-else-if="messageInfo.msg_type == 'video'" class="message-box video-box">
@@ -143,23 +147,33 @@
                 {{messageInfo?.raw_content?.totalcnt}}个
             </div>
         </div>
-<!--        &lt;!&ndash; 转发消息&ndash;&gt;-->
-<!--        <div v-else-if="messageInfo.msg_type == 'chatrecord'" class="message-box msg-forwarding-box">-->
-<!--            <div class="title">{{ messageInfo?.raw_content?.title }}</div>-->
-<!--            <div class="list">-->
-<!--                <div>咸鱼：你好 我知道你什么意思了嘻嘻</div>-->
-<!--                <div>咸鱼：[图片]</div>-->
-<!--                <div>咸鱼：[表情]</div>-->
-<!--                <div>咸鱼：[语音]</div>-->
-<!--            </div>-->
-<!--            <div class="bottom zm-flex-between zm-tip-info">-->
-<!--                <span>详情</span>-->
-<!--                <RightOutlined class="icon-14"/>-->
-<!--            </div>-->
-<!--        </div>-->
+       <!-- 转发消息 -->
+       <div v-else-if="messageInfo.msg_type == 'chatrecord'" class="message-box msg-forwarding-box">
+           <div class="title">{{ messageInfo?.raw_content?.title }}</div>
+           <div class="list">
+               共 {{ messageInfo?.raw_content?.item.length }} 条消息
+           </div>
+           <div class="bottom zm-flex-between zm-tip-info" @click="onShowMessage(messageInfo?.raw_content?.item, messageInfo?.raw_content?.title)">
+               <span>详情</span>
+               <RightOutlined class="icon-14"/>
+           </div>
+       </div>
+       <!-- 小程序 -->
+       <div v-else-if="messageInfo.msg_type == 'weapp'" class="message-box msg-weapp-box">
+          <div class="msg-weapp-avatar">
+            <img src="@/assets/image/session/weapp-icon.png" alt="">
+          </div>
+          <div class="msg-weapp-content">
+            <div class="title">{{ messageInfo?.raw_content?.description }}</div>
+            <div class="description">{{ messageInfo?.raw_content?.title }}</div>
+          </div>
+       </div>
         <!-- 混合消息 -->
         <div v-else class="message-box">[{{ MessageTypeTextMap[messageInfo.msg_type] }}]</div>
         <span v-if="messageInfo.is_revoke" class="message-box" style="color: rgba(0,0,0,.25);">已撤回</span>
+
+        <!-- 聊天记录弹窗 -->
+        <MessageList ref="messageListRef" />
     </div>
 </template>
 
@@ -177,11 +191,14 @@ import {
     formatSeconds,
     getFileIcon,
     MessageTypeTextMap,
-    RedpacketTypeMap
+    RedpacketTypeMap,
+    copyObj
 } from "@/utils/tools";
 import BenzAMRRecorder from 'benz-amr-recorder';
 import {formatPrice} from "@/utils/tools";
+import MessageList from './messageList.vue'
 
+const messageListRef = ref(null)
 const props = defineProps({
     messageInfo: {
         type: Object,
@@ -234,6 +251,13 @@ const getVoiceCallDuration = computed(() => {
     }
     return '00:00'
 })
+
+const onShowMessage = (list) => {
+    if (messageListRef.value) {
+        const newList = copyObj(list)
+        messageListRef.value.show(newList)
+    }
+}
 
 const payenmtModalShow = () => {
     Modal.confirm({
@@ -484,21 +508,145 @@ const showBuyFileStorage = () => {
             border-top: 1px solid #D9D9D9;
         }
     }
+    &.msg-link-box {
+        padding: 0;
+        border-radius: 6px;
+        border: 1px solid #F0F0F0;
+        background: #FFF;
+        display: flex;
+        flex-direction: column;
+
+        .msg-link-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+
+            .msg-link-avatar {
+                width: 48px;
+                height: 48px;
+                border-radius: 4px;
+
+                img {
+                    width: 48px;
+                    height: 48px;
+                    object-fit: cover;
+                }
+            }
+
+            .msg-link-title {
+                display: -webkit-box;
+                width: 100%;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 1;
+                overflow: hidden;
+                color: #262626;
+                text-overflow: ellipsis;
+                font-size: 14px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 22px;
+            }
+        }
+
+        .bottom {
+            font-size: 12px;
+            padding: 8px 12px;
+            border-top: 1px solid #D9D9D9;
+            cursor: pointer;
+        }
+
+        .msg-link-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+        }
+
+        .msg-link-info {
+            color: #8c8c8c;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 22px;
+        }
+
+        .msg-link-icon {
+            color: #8c8c8c;
+        }
+    }
+    &.msg-weapp-box {
+        border-radius: 6px;
+        border: 1px solid #F0F0F0;
+        background: #FFF;
+        display: flex;
+        gap: 12px;
+
+        .msg-weapp-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 4px;
+
+            img {
+                width: 48px;
+                height: 48px;
+                object-fit: cover;
+            }
+        }
+
+        .msg-weapp-content {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+
+            .title {
+                display: -webkit-box;
+                max-width: 100%;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 1;
+                overflow: hidden;
+                color: #262626;
+                text-overflow: ellipsis;
+                font-family: "PingFang SC";
+                font-size: 14px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 22px;
+            }
+
+            .description {
+                display: -webkit-box;
+                max-width: 100%;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 1;
+                overflow: hidden;
+                color: #8c8c8c;
+                text-overflow: ellipsis;
+                font-family: "PingFang SC";
+                font-size: 12px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 20px;
+            }
+        }
+    }
     &.msg-forwarding-box {
         padding: 0;
         .title {
             color: #262626;
-            padding: 8px 0 0 12px;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 22px;
+            padding: 12px 12px 0;
         }
         .list {
-            padding: 0 12px;
-            margin-bottom: 8px;
-            > div {
-                margin-top: 4px;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
+            padding: 4px 12px 12px;
+            color: #595959;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 22px;
         }
         .bottom {
             font-size: 12px;
