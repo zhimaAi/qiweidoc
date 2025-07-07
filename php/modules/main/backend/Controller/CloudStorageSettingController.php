@@ -2,17 +2,17 @@
 
 namespace Modules\Main\Controller;
 
+use Aws\Middleware;
 use Common\Controller\BaseController;
-use Common\Controller\PublicController;
 use Common\Yii;
 use Exception;
+use GuzzleHttp\Psr7\Utils;
 use LogicException;
 use Modules\Main\DTO\CloudStorageSettingDTO;
 use Modules\Main\Enum\EnumUserRoleType;
 use Modules\Main\Model\CloudStorageSettingModel;
 use Modules\Main\Model\SettingModel;
 use Modules\Main\Model\UserModel;
-use Modules\Main\Model\UserRoleModel;
 use Modules\Main\Service\AuthService;
 use Modules\Main\Service\StorageService;
 use Psr\Http\Message\ServerRequestInterface;
@@ -67,6 +67,13 @@ class CloudStorageSettingController extends BaseController
 
                 // MinIO 不需要设置cors
                 if ($setting->get('provider') != 'MinIO') {
+                    $s3Client->getHandlerList()->appendBuild(
+                        Middleware::mapRequest(static function ($request) {
+                            $body = $request->getBody();
+                            $contentMd5 = base64_encode(Utils::hash($body, 'md5', true));
+                            return $request->withHeader('Content-MD5', $contentMd5);
+                        })
+                    );
                     $s3Client->putBucketCors([
                         'Bucket' => $dto->get('bucket'),
                         'CORSConfiguration' => [
