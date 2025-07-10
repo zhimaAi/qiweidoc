@@ -114,6 +114,12 @@
 
 
 
+## 前置条件-开通/购买会话存档
+
+1.开启会话存档前需开通和购买企微会话存档接口，请联系客服协助开通和购买
+
+![dc37e9d6783b9b93822e3b96a81121f5.png](integration+20920e16-9a22-4e91-898e-9249682231a0/dc37e9d6783b9b93822e3b96a81121f5.png)
+
 ## 会话存档的配置流程
 
 
@@ -166,7 +172,7 @@
 
 
 
-![image22.png](integration+20920e16-9a22-4e91-898e-9249682231a0/image22_1.png)
+![image22.png](integration+20920e16-9a22-4e91-898e-9249682231a0/image22__1.png)
 
 
 
@@ -178,7 +184,7 @@
 
 
 
-![image22.png](integration+20920e16-9a22-4e91-898e-9249682231a0/image22_2.png)
+![image22.png](integration+20920e16-9a22-4e91-898e-9249682231a0/image22__2.png)
 
 
 
@@ -186,7 +192,7 @@
 
 5.复制页面的URL，token，encodingAESSKey，填写到企微后台-应用管理-接收消息服务器配置中
 
-![image.png](integration+20920e16-9a22-4e91-898e-9249682231a0/image_1.png)
+![image.png](integration+20920e16-9a22-4e91-898e-9249682231a0/image__1.png)
 
 ![2dd7ba5d8b6f090466d6b3d9a5097bc5.png](integration+20920e16-9a22-4e91-898e-9249682231a0/2dd7ba5d8b6f090466d6b3d9a5097bc5.png)
 
