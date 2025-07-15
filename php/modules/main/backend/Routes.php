@@ -128,8 +128,8 @@ class Routes extends RouterProvider
 
             Consumer::name("qw_open_push")->count(5)->action(QwOpenPushConsumer::class),
 
-            Consumer::name("download_session_medias")->count(5)->action(DownloadChatSessionBitMediasConsumer::class)->reserveOnStop(),
-            Consumer::name("download_session_big_medias")->count(2)->action(DownloadChatSessionMediasConsumer::class)->reserveOnStop(),
+            Consumer::name("download_session_big_medias")->count(5)->action(DownloadChatSessionBitMediasConsumer::class)->reserveOnStop(),
+            Consumer::name("download_session_medias")->count(2)->action(DownloadChatSessionMediasConsumer::class)->reserveOnStop(),
         ];
     }
 
