@@ -2,7 +2,7 @@ version: "3"
 
 logs:
   mode: production
-  level: info
+  level: warning
   encoding: console
   use_local_time: true
   output: stderr

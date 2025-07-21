@@ -14,7 +14,7 @@ return [
                 host: $params['nats-server']['endpoint'],
                 timeout: $timeout,
             );
-            return new Client($configuration, Yii::logger());
+            return new Client($configuration);
         };
     },
 ];
