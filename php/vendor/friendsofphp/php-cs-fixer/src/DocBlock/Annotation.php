@@ -37,9 +37,13 @@ final class Annotation
         'method',
         'param',
         'param-out',
+        'phpstan-type',
+        'phpstan-import-type',
         'property',
         'property-read',
         'property-write',
+        'psalm-type',
+        'psalm-import-type',
         'return',
         'throws',
         'type',
@@ -301,7 +305,7 @@ final class Annotation
             }
 
             $matchingResult = Preg::match(
-                '{^(?:\h*\*|/\*\*)[\h*]*@'.$name.'\h+'.TypeExpression::REGEX_TYPES.'(?:(?:[*\h\v]|\&?[\.\$]).*)?\r?$}is',
+                '{^(?:\h*\*|/\*\*)[\h*]*@'.$name.'\h+'.TypeExpression::REGEX_TYPES.'(?:(?:[*\h\v]|\&?[\.\$\s]).*)?\r?$}is',
                 $this->lines[0]->getContent(),
                 $matches
             );

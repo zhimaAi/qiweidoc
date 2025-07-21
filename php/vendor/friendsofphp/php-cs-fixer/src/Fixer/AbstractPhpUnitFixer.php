@@ -17,11 +17,11 @@ namespace PhpCsFixer\Fixer;
 use PhpCsFixer\AbstractFixer;
 use PhpCsFixer\DocBlock\DocBlock;
 use PhpCsFixer\DocBlock\Line;
-use PhpCsFixer\Indicator\PhpUnitTestCaseIndicator;
 use PhpCsFixer\Tokenizer\Analyzer\Analysis\NamespaceUseAnalysis;
 use PhpCsFixer\Tokenizer\Analyzer\AttributeAnalyzer;
 use PhpCsFixer\Tokenizer\Analyzer\FullyQualifiedNameAnalyzer;
 use PhpCsFixer\Tokenizer\Analyzer\FunctionsAnalyzer;
+use PhpCsFixer\Tokenizer\Analyzer\PhpUnitTestCaseAnalyzer;
 use PhpCsFixer\Tokenizer\Analyzer\WhitespacesAnalyzer;
 use PhpCsFixer\Tokenizer\CT;
 use PhpCsFixer\Tokenizer\FCT;
@@ -33,19 +33,17 @@ use PhpCsFixer\Tokenizer\Tokens;
  */
 abstract class AbstractPhpUnitFixer extends AbstractFixer
 {
-    private const DOC_BLOCK_MODIFIERS = [T_PUBLIC, T_PROTECTED, T_PRIVATE, T_FINAL, T_ABSTRACT, T_COMMENT, FCT::T_ATTRIBUTE, FCT::T_READONLY];
-    private const ATTRIBUTE_MODIFIERS = [T_FINAL, FCT::T_READONLY];
+    private const DOC_BLOCK_MODIFIERS = [\T_PUBLIC, \T_PROTECTED, \T_PRIVATE, \T_FINAL, \T_ABSTRACT, \T_COMMENT, FCT::T_ATTRIBUTE, FCT::T_READONLY];
+    private const ATTRIBUTE_MODIFIERS = [\T_FINAL, FCT::T_READONLY];
 
     public function isCandidate(Tokens $tokens): bool
     {
-        return $tokens->isAllTokenKindsFound([T_CLASS, T_STRING]);
+        return $tokens->isAllTokenKindsFound([\T_CLASS, \T_STRING]);
     }
 
     final protected function applyFix(\SplFileInfo $file, Tokens $tokens): void
     {
-        $phpUnitTestCaseIndicator = new PhpUnitTestCaseIndicator();
-
-        foreach ($phpUnitTestCaseIndicator->findPhpUnitClasses($tokens) as $indices) {
+        foreach ((new PhpUnitTestCaseAnalyzer())->findPhpUnitClasses($tokens) as $indices) {
             $this->applyPhpUnitClassFix($tokens, $indices[0], $indices[1]);
         }
     }
@@ -58,7 +56,7 @@ abstract class AbstractPhpUnitFixer extends AbstractFixer
             $index = $tokens->getPrevNonWhitespace($index);
 
             if ($tokens[$index]->isGivenKind(CT::T_ATTRIBUTE_CLOSE)) {
-                $index = $tokens->getPrevTokenOfKind($index, [[T_ATTRIBUTE]]);
+                $index = $tokens->getPrevTokenOfKind($index, [[\T_ATTRIBUTE]]);
             }
         } while ($tokens[$index]->isGivenKind(self::DOC_BLOCK_MODIFIERS));
 
@@ -91,7 +89,7 @@ abstract class AbstractPhpUnitFixer extends AbstractFixer
 
     final protected function isPHPDoc(Tokens $tokens, int $index): bool
     {
-        return $tokens[$index]->isGivenKind(T_DOC_COMMENT);
+        return $tokens[$index]->isGivenKind(\T_DOC_COMMENT);
     }
 
     /**
@@ -107,7 +105,7 @@ abstract class AbstractPhpUnitFixer extends AbstractFixer
         $functionsAnalyzer = new FunctionsAnalyzer();
 
         for ($index = $endIndex; $index > $startIndex; --$index) {
-            $index = $tokens->getPrevTokenOfKind($index, [[T_STRING]]);
+            $index = $tokens->getPrevTokenOfKind($index, [[\T_STRING]]);
 
             if (null === $index) {
                 return;
@@ -166,21 +164,21 @@ abstract class AbstractPhpUnitFixer extends AbstractFixer
         $lineEnd = $this->whitespacesConfig->getLineEnding();
         $originalIndent = WhitespacesAnalyzer::detectIndent($tokens, $tokens->getNextNonWhitespace($docBlockIndex));
         $toInsert = [
-            new Token([T_DOC_COMMENT, "/**{$lineEnd}{$originalIndent} * @{$annotation}{$lineEnd}{$originalIndent} */"]),
-            new Token([T_WHITESPACE, $lineEnd.$originalIndent]),
+            new Token([\T_DOC_COMMENT, "/**{$lineEnd}{$originalIndent} * @{$annotation}{$lineEnd}{$originalIndent} */"]),
+            new Token([\T_WHITESPACE, $lineEnd.$originalIndent]),
         ];
         $index = $tokens->getNextMeaningfulToken($docBlockIndex);
         $tokens->insertAt($index, $toInsert);
 
-        if (!$tokens[$index - 1]->isGivenKind(T_WHITESPACE)) {
+        if (!$tokens[$index - 1]->isGivenKind(\T_WHITESPACE)) {
             $extraNewLines = $this->whitespacesConfig->getLineEnding();
 
-            if (!$tokens[$index - 1]->isGivenKind(T_OPEN_TAG)) {
+            if (!$tokens[$index - 1]->isGivenKind(\T_OPEN_TAG)) {
                 $extraNewLines .= $this->whitespacesConfig->getLineEnding();
             }
 
             $tokens->insertAt($index, [
-                new Token([T_WHITESPACE, $extraNewLines.WhitespacesAnalyzer::detectIndent($tokens, $index)]),
+                new Token([\T_WHITESPACE, $extraNewLines.WhitespacesAnalyzer::detectIndent($tokens, $index)]),
             ]);
         }
     }
@@ -206,7 +204,7 @@ abstract class AbstractPhpUnitFixer extends AbstractFixer
         $lines = implode('', $lines);
 
         $tokens->getNamespaceDeclarations();
-        $tokens[$docBlockIndex] = new Token([T_DOC_COMMENT, $lines]);
+        $tokens[$docBlockIndex] = new Token([\T_DOC_COMMENT, $lines]);
     }
 
     /**

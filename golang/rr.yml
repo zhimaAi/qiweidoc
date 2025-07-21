@@ -2,7 +2,7 @@ version: "3"
 
 logs:
   mode: production
-  level: warning
+  level: info
   encoding: console
   use_local_time: true
   output: stderr
@@ -13,7 +13,7 @@ server:
   command: php php/yii
 
 http:
-  access_logs: true
+  access_logs: false
   pool:
     num_workers: 2
     allocate_timeout: 2s

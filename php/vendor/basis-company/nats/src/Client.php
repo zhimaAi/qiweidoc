@@ -46,8 +46,8 @@ class Client
             $this->connection = new Connection(client: $this, logger: $logger);
         }
 
-        $this->requestsSubject = '_REQS' . bin2hex(random_bytes(16));
-        $this->requestsSid = '_REQS' . $this->getnextRid();
+        $this->requestsSubject = '_REQS.' . bin2hex(random_bytes(16));
+        $this->requestsSid = '_REQS.' . $this->getnextRid();
     }
 
     public function api($command, array $args = [], ?callable $callback = null): ?object
@@ -293,9 +293,9 @@ class Client
         return $this->requestsSubject . '.' . $this->getNextRid();
     }
 
-    private function subscribeRequests(): void
+    public function subscribeRequests(bool $force = false): void
     {
-        if (!$this->requestsSubscribed) {
+        if (!$this->requestsSubscribed || $force) {
             $this->connection->sendMessage(new Subscribe([
                 'sid' => $this->requestsSid,
                 'subject' => $this->requestsSubject . '.' . '*',
@@ -311,6 +311,11 @@ class Client
             $this->connection->sendMessage(new Unsubscribe(['sid' => (string)$this->requestsSid]));
             $this->requestsSubscribed = true;
         }
+    }
+
+    public function requestsSubscribed(): bool
+    {
+        return $this->requestsSubscribed;
     }
 
     private function processMsg($handler, Msg $message, bool $reply): mixed
