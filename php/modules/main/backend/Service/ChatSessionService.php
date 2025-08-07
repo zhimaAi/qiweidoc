@@ -95,7 +95,7 @@ class ChatSessionService
             }
         }
 
-        $fields = " v.id, v.last_msg_time, v.updated_at,v.type,v.is_collect,v.collect_reason,v.collect_time, c.external_userid, c.external_name, c.avatar, c.staff_remark, c.corp_name ";
+        $fields = " v.id, v.last_msg_time, v.updated_at,v.type,v.is_collect,v.collect_reason,v.collect_time, c.external_name, c.avatar, c.staff_remark, c.corp_name ";
 
         //查询客户标签列表
         if (!empty($arrayCorpInfo["show_customer_tag"])) {
@@ -106,17 +106,17 @@ class ChatSessionService
         $offset = ($page - 1) * $size;
         $type = EnumChatConversationType::Single->value;
         $baseSql = /** @lang sql */ <<<SQL
-select {$fields}
+select {$fields}, v."from" as external_userid
 from main.chat_conversations as v
-inner join main.customers as c on v."from" = c.external_userid and c.corp_id = '{$corp->get('id')}' and c.staff_userid = '{$staffUserId}' {$customerWhere}
+left join main.customers as c on v."from" = c.external_userid and c.corp_id = '{$corp->get('id')}' and c.staff_userid = '{$staffUserId}' {$customerWhere}
 where v.corp_id = '{$corp->get('id')}'
   and v.type = {$type} {$whereSql} {$toWhere}
 
 union all
 
-select {$fields}
+select {$fields}, v."to" as external_userid
 from main.chat_conversations as v
-inner join main.customers as c on v."to" = c.external_userid and c.corp_id = '{$corp->get('id')}' and c.staff_userid = '{$staffUserId}' {$customerWhere}
+left join main.customers as c on v."to" = c.external_userid and c.corp_id = '{$corp->get('id')}' and c.staff_userid = '{$staffUserId}' {$customerWhere}
 where v.corp_id = '{$corp->get('id')}'
   and v.type = {$type} {$whereSql} {$fromWhere}
 SQL;
@@ -160,7 +160,7 @@ SQL;
                 $lastTag = [];
 
 
-                $staff_tag_id_list = json_decode($item["staff_tag_id_list"],true);
+                $staff_tag_id_list = json_decode($item["staff_tag_id_list"] ?: '[]',true);
                 foreach ($staff_tag_id_list as $tag_id) {
                     $tagInfo = $allTagIndex[$tag_id]??[];
                     if (empty($tagInfo)) {
@@ -218,10 +218,24 @@ SQL;
         $offset = ($page - 1) * $size;
         $type = EnumChatConversationType::Single->value;
         $baseSql = /** @lang sql */ <<<SQL
-select v.id, v.last_msg_time, v.updated_at,v.type,v.is_collect,v.collect_reason,v.collect_time, c.external_userid, c.external_name, c.avatar, c.staff_remark, c.corp_name,s.name as staff_name,c.staff_userid
+select
+    v.id,
+    v.last_msg_time,
+    v.updated_at,
+    v.type,
+    v.is_collect,
+    v.collect_reason,
+    v.collect_time,
+    case when v.from_role = 2 then v.to else v."from" end as external_userid,
+    c.external_name,
+    c.avatar,
+    c.staff_remark,
+    c.corp_name,
+    s.name as staff_name,
+    c.staff_userid
 from main.chat_conversations as v
 inner join main.staff as s on (v."from" = s.userid or v."to" = s.userid) and s.corp_id = '{$corp->get('id')}'
-inner join main.customers as c on (v."from" = c.external_userid or v."to" = c.external_userid) and c.corp_id = '{$corp->get('id')}' and c.staff_userid=s.userid
+left join main.customers as c on (v."from" = c.external_userid or v."to" = c.external_userid) and c.corp_id = '{$corp->get('id')}' and c.staff_userid=s.userid
 where v.corp_id = '{$corp->get('id')}'
   and v.type = {$type} {$whereSql} {$customerWhere}
 SQL;
@@ -817,9 +831,11 @@ SQL;
             }
         }
 
+        Yii::db()->createCommand("SET pg_bigm.similarity_limit TO 0.1")->execute();
         $query = ChatMessageModel::query()
             ->where($where)
-            ->andWhere(['ilike', 'msg_content', $data["keyword"] ?? ""])
+            ->addSelect(new Expression("*,bigm_similarity(msg_content, '{$data['keyword']}') as similarity"))
+            ->andWhere(['=%', 'msg_content', $data["keyword"] ?? ""])
             ->andWhere(['>', 'msg_time', $start_time])
             ->andWhere(['<', 'msg_time', $stop_time]);
 
@@ -828,7 +844,7 @@ SQL;
             $query->andWhere(['in', 'from', array_values(array_unique($fromUserIds))]);
         }
 
-        $res = $query->orderBy(['msg_time' => SORT_DESC])
+        $res = $query->orderBy(['similarity' => SORT_DESC])
             ->paginate($data['page'] ?? 1, $data['size'] ?? 10);
 
         if ($res["items"]->isEmpty()) {

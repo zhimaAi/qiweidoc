@@ -33,7 +33,7 @@
 </template>
 
 <script setup>
-import {reactive, ref} from 'vue';
+import {reactive, ref, onMounted, watch} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
 import {useStore} from 'vuex';
 import ZmScroll from "@/components/zmScroll.vue";
@@ -108,15 +108,24 @@ const loadData = () => {
         let data = res.data || {}
         let {items, total} = data
         total = Number(total)
-        if (!items || !items?.length || list.value.length === total) {
-            finished.value = true
-        }
-        for (let item of items) {
-            if (!useridMap.value[item.userid]) {
-                list.value.push(item)
-                useridMap.value[item.userid] = true
+
+        // 添加新数据到列表
+        let addedCount = 0
+        if (items && items.length) {
+            for (let item of items) {
+                if (!useridMap.value[item.userid]) {
+                    list.value.push(item)
+                    useridMap.value[item.userid] = true
+                    addedCount++
+                }
             }
         }
+
+        // 判断是否已加载完所有数据
+        if (!items || !items.length || addedCount === 0 || list.value.length >= total) {
+            finished.value = true
+        }
+
         if (pagination.current == 1) {
             emit('totalReport', total)
             selectedHandle()
@@ -129,6 +138,13 @@ const loadData = () => {
         finished.value = true
     })
 }
+
+// 监听 props.default 的变化
+watch(() => props.default, (newDefault) => {
+    if (newDefault && list.value.length > 0) {
+        selectedHandle()
+    }
+}, { deep: true })
 
 const selectedHandle = () => {
     if (props.default && props.default?.chat_status === props.type && props.default.userid) {
@@ -155,6 +171,10 @@ const change = (item) => {
     selected.value = item
     emit("change", item)
 }
+
+onMounted(() => {
+    // ZmScroll组件会自动触发初始加载，无需手动调用loadData
+})
 
 const search = () => {
     init()

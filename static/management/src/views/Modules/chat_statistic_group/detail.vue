@@ -121,9 +121,19 @@ const columnsMap = {
         dataIndex: "owner_name",
         width: 120,
     },
+    msg_no_day: {
+        title: "总消息数",
+        dataIndex: "msg_no_day",
+        width: 120,
+    },
     staff_msg_no_day: {
-        title: "员工消息数",
+        title: "员工总消息数",
         dataIndex: "staff_msg_no_day",
+        width: 120,
+    },
+    staff_self_msg_num: {
+        title: "当前员工发送",
+        dataIndex: "staff_self_msg_num",
         width: 120,
     },
     cst_msg_no_day: {
@@ -168,8 +178,8 @@ const columnsMap = {
     },
 }
 
-const normalColumns = ['chat_name', 'owner_name', 'staff_msg_no_day', 'cst_msg_no_day', 'rate_avg', 'reply_status', 'promoter_type_text', 'operate']
-const noReplyColumns = ['chat_name', 'owner_name', 'staff_msg_no_day', 'cst_msg_no_day', 'reply_status', 'promoter_type_text', 'operate']
+const normalColumns = ['chat_name', 'owner_name', 'msg_no_day', 'staff_msg_no_day', 'staff_self_msg_num', 'cst_msg_no_day', 'rate_avg', 'reply_status', 'promoter_type_text', 'operate']
+const noReplyColumns = ['chat_name', 'owner_name', 'msg_no_day', 'staff_msg_no_day', 'staff_self_msg_num', 'cst_msg_no_day', 'reply_status', 'promoter_type_text', 'operate']
 const replyRateColumns = ['chat_name', 'owner_name', 'at_rate_avg', 'at_round_no', 'rate_avg', 'promoter_type_text', 'operate']
 const tabs = ref([
     {key: 'all', title: '全部群聊', value: '', columns: normalColumns},

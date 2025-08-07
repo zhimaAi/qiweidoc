@@ -132,6 +132,7 @@ readonly class StatisticsGroupChatConsumer
 
         $conversation_id = "";
         $staff_msg_no_day = 0;//员工消息数
+        $staff_self_msg_num = 0;//员工自己发送的消息数，不区分工作时间
         $cst_msg_no_day = 0;//客户消息数
         $staff_msg_no_work = 0;//员工消息数(工作时间内)
         $cst_msg_no_work = 0;//客户消息数(工作时间内)
@@ -192,6 +193,11 @@ readonly class StatisticsGroupChatConsumer
 
                     if ($at_work_time) {//工作时间内消息
                         $staff_msg_no_work++;
+                    }
+
+                    ddump([$msgInfo["from"],$staff_userid]);
+                    if ($msgInfo["from"] == $staff_userid) {//员工自己发送的消息
+                        $staff_self_msg_num++;
                     }
                 }
                 if ($msgInfo["from_role"] == EnumChatMessageRole::Customer) {//客户
@@ -306,6 +312,7 @@ readonly class StatisticsGroupChatConsumer
             "last_msg_id" => $last_msg_id,
             "is_new_room" => $is_new_room,
             "conversation_id" => $conversation_id,
+            "staff_self_msg_num" => $staff_self_msg_num,
         ];
 
         DetailModel::updateOrCreate($where, array_merge($updateData, $where));

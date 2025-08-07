@@ -50,6 +50,7 @@ class DetailModel extends BaseModel
             "last_msg_id" => 'string',
             "is_new_room" => 'int',
             "conversation_id" => 'string',
+            "staff_self_msg_num" => 'int',
         ];
     }
 }

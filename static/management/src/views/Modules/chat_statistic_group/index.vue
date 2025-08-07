@@ -96,10 +96,19 @@
                         <template v-else-if="'msg_no_day' === column.dataIndex">
                             <a-tooltip>
                                 <template #title>
-                                    <span>总消息：员工所在的群聊的全部员工发送的消息</span><br>
-                                    <span>员工发送：员工所在的群聊中该员工发送的消息数</span>
+                                    <span>总消息数：群内员工和客户所有消息的总数</span><br>
                                 </template>
-                                总消息/员工发送
+                                总消息数
+                                <QuestionCircleOutlined/>
+                            </a-tooltip>
+                        </template>
+                        <template v-else-if="'staff_self_msg_num' === column.dataIndex">
+                            <a-tooltip>
+                                <template #title>
+                                    <span>员工总消息数：员工所在的群聊的全部员工发送的消息</span><br>
+                                    <span>当前员工发送：员工所在的群聊中该员工发送的消息数</span>
+                                </template>
+                                员工总消息数/当前员工发送
                                 <QuestionCircleOutlined/>
                             </a-tooltip>
                         </template>
@@ -143,7 +152,10 @@
                             <a @click="linkPath('replay',record)">{{ record.reply_no }}</a>
                         </template>
                         <template v-else-if="'msg_no_day' === column.dataIndex">
-                            {{ text }} / {{ record.staff_msg_no_day }}
+                            {{ text }}
+                        </template>
+                        <template v-else-if="'staff_self_msg_num' === column.dataIndex">
+                            {{ record.staff_msg_no_day }} / {{ text }}
                         </template>
                         <template v-else-if="'no_reply_chat_no' === column.dataIndex">
                             <a @click="linkPath('no_replay',record)">{{ text }}</a> / {{ record.noreply_rate }}
@@ -183,7 +195,7 @@ const columns = ref([
     {
         //title: "所在总群数/今日新增",
         dataIndex: "chat_total",
-        width: 80,
+        width: 100,
     },
     {
         //title: "活跃群聊数",
@@ -193,7 +205,12 @@ const columns = ref([
     {
         //title: "发送消息数",
         dataIndex: "msg_no_day",
-        width: 80,
+        width: 60,
+    },
+    {
+        //title: "当前员工发送",
+        dataIndex: "staff_self_msg_num",
+        width: 120,
     },
     {
         //title: "未回复群聊",
@@ -428,9 +445,9 @@ function exportData() {
                 item.noreply_rate = (item.noreply_rate * 100).toFixed(2) + '%'
             }
         })
-        const head =  `员工,所在总群,今日新增,活跃群,回复群,总消息,员工消息,未回复,未回复率,@后${ config.at_msg_reply_sec }分钟回复率,${config.msg_reply_sec}分钟回复率\n`
+        const head =  `员工,所在总群,今日新增,活跃群,回复群,总消息数,员工总消息数,当前员工发送,未回复,未回复率,@后${ config.at_msg_reply_sec }分钟回复率,${config.msg_reply_sec}分钟回复率\n`
         const fields = [
-            "staff_name", "chat_total", "new_chat_total", "eft_chat_no", "reply_no","msg_no_day", "staff_msg_no_day", "no_reply_chat_no", "noreply_rate", "at_rate_avg", "rate_avg"
+            "staff_name", "chat_total", "new_chat_total", "eft_chat_no", "reply_no","msg_no_day", "staff_msg_no_day", "staff_self_msg_num", "no_reply_chat_no", "noreply_rate", "at_rate_avg", "rate_avg"
         ]
         tableToExcel(head, _list, fields, "员工群聊详情.csv");
     }).finally(() => {

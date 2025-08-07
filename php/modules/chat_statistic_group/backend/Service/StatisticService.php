@@ -112,6 +112,7 @@ class StatisticService
      sum(staff_msg_no_day) + sum(cst_msg_no_day) msg_no_day,
      sum(case when cst_msg_no_work > 0 then 1 else 0 end) as eft_chat_no,
      sum(recover_in_time) as recover_in_time,
+     sum(staff_self_msg_num) as staff_self_msg_num,
      sum(round_no) as round_no,
      sum(at_recover_in_time) as at_recover_in_time,
      sum(at_round_no) as at_round_no,
@@ -196,6 +197,7 @@ class StatisticService
 
         $sql = /** @lang sql */
             " select
+     staff_msg_no_day + cst_msg_no_day msg_no_day,
      staff_msg_no_day,
      cst_msg_no_day,
      staff_msg_no_work,
@@ -209,7 +211,8 @@ class StatisticService
      staff_user_id,
      conversation_id,
      last_msg_id,
-     room_id
+     room_id,
+     staff_self_msg_num
  from chat_statistic_group.detail where ";
 
         $where = " corp_id = '" . $corp->get("id") . "'  and date_no = " . date("Ymd", $data["stat_time"]) . " and staff_user_id = '" . $data["staff_userid"] . "' ";
