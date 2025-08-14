@@ -135,7 +135,7 @@ const menus = ref([
             // {key: 'systemctlFirm', title: '企业设置', route: '/systemctl/firm'},
             {key: 'systemctlFileStorage', title: '文件存储配置', route: '/systemctl/fileStorage'},
             {key: 'systemctlAccount', title: '账号管理', route: '/systemctl/account'},
-            // {key: 'systemctlFileExport', title: '文件导出记录', route: '/systemctl/fileExport'},
+            {key: 'systemctlFileExport', title: '文件下载记录', route: '/systemctl/fileExport'},
         ]
     },
 ])

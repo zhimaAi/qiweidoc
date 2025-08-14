@@ -27,10 +27,13 @@
                         <template v-else>...</template>
                     </div>
                     <div class="operate-box">
-                        <!--一期暂无此功能-->
-                        <a-tooltip v-if="false" placement="topLeft" title="支持导出当前客户/群聊所选会话时间的会话">
-                            <DownloadOutlined class="icon"/>
+                        <a-tooltip placement="topLeft" title="支持导出当前客户/群聊所选会话时间的会话">
+                            <DownloadOutlined
+                                class="icon"
+                                :class="{ 'icon-disabled': exportLoading }"
+                                @click="handleExport"/>
                         </a-tooltip>
+
                     </div>
                 </div>
                 <div class="filter-box mt4">
@@ -51,7 +54,7 @@
                         <a-radio-button value="file">文件</a-radio-button>
                         <a-radio-button value="image">图片</a-radio-button>
                         <a-radio-button value="voice">
-                           <StaffPaymentTag :type="2">语音</StaffPaymentTag>
+                        <StaffPaymentTag :type="2">语音</StaffPaymentTag>
                         </a-radio-button>
                         <a-radio-button value="video">视频</a-radio-button>
                         <a-radio-button v-if="sessionType === 'session'" value="voiptext">音视频通话</a-radio-button>
@@ -126,11 +129,35 @@
         </ZmScroll>
 
         <lookVideo ref="lookVideoRef"></lookVideo>
+
+        <!-- 导出成功弹窗 -->
+        <a-modal
+            v-model:open="showExportSuccessModal"
+            :footer="null"
+            :closable="false"
+            width="400px"
+            centered>
+            <div class="export-success-modal">
+                <div class="success-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="10" fill="#52c41a"/>
+                        <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="success-title">导出任务已提交</div>
+                <div class="success-desc">导出任务已提交，请前往下载中心查看进度</div>
+                <div class="modal-actions">
+                    <a-button @click="showExportSuccessModal = false">取消</a-button>
+                    <a-button type="primary" @click="handleGoToDownload">去查看</a-button>
+                </div>
+            </div>
+        </a-modal>
     </div>
 </template>
 <script setup>
 import {onMounted, ref, reactive, nextTick, computed} from 'vue';
 import {useStore} from 'vuex';
+import {useRouter} from 'vue-router';
 import dayjs from 'dayjs';
 import {DownloadOutlined} from '@ant-design/icons-vue';
 import ZmScroll from "@/components/zmScroll.vue";
@@ -138,9 +165,10 @@ import ChatUser from "@/views/sessionArchive/components/modules/childs/chatUser.
 import ChatCollection from './childs/chatCollection.vue';
 import MessageRender from "@/components/session-message/messageRender.vue";
 import lookVideo from "@/components/common/look-video.vue";
-import {groupMessage, sessionMessage} from "@/api/session";
+import {groupMessage, sessionMessage, exportChatMessage} from "@/api/session";
 import {VoicePlayHandle} from "@/utils/voicePlay";
 import StaffPaymentTag from "@/views/sessionArchive/components/modules/staffPaymentTag.vue";
+import {message} from 'ant-design-vue';
 
 const emit = defineEmits('changeCollect')
 const defaultAvatar = require('@/assets/default-avatar.png')
@@ -175,11 +203,16 @@ const props = defineProps({
     },
     currentMsgCancelCollect: {
         type: Number
+    },
+    defaultParams: {
+        type: Object,
+        default: () => ({})
     }
 })
 const {play, getPlayerKey} = VoicePlayHandle()
 
 const store = useStore()
+const router = useRouter()
 const list = ref([])
 const oldHeight = ref(0)
 const lookVideoRef = ref(null)
@@ -199,6 +232,10 @@ const filterData = reactive({
     msg_type: 'all',
     dates: []
 })
+
+// 导出相关数据
+const exportLoading = ref(false)
+const showExportSuccessModal = ref(false)
 
 const archiveStfModule = computed(() => {
     return store.getters.getArchiveStfInfo || []
@@ -355,6 +392,59 @@ const disabledDate = current => {
     return current && current > dayjs().endOf('day')
 }
 
+// 处理导出
+const handleExport = async () => {
+    if (exportLoading.value) return
+
+    if (!props.chatInfo || !props.chatInfo.params) {
+        message.warning('请先选择要导出的会话')
+        return
+    }
+
+    exportLoading.value = true
+
+    try {
+        let params = {
+            conversation_id: props.chatInfo.params.conversation_id
+        }
+
+        // 群聊时添加group_chat_id
+        if (props.chatInfo.receiver.zm_user_type === 'GROUP' || props.chatInfo.receiver.zm_user_type === 'GROUP_CHAT') {
+            params.group_chat_id = props.chatInfo.params.group_chat_id || props.chatInfo.receiver.chat_id
+        }
+
+        // 添加时间范围参数
+        if (filterData.dates && filterData.dates.length > 0) {
+            // 优先使用筛选器中的时间范围
+            params.msg_start_time = dayjs(filterData.dates[0]).format('YYYY-MM-DD 00:00:00')
+            params.msg_end_time = dayjs(filterData.dates[1]).format('YYYY-MM-DD 23:59:59')
+        } else if (props.defaultParams?.start_date && props.defaultParams?.end_date) {
+            // 如果筛选器中没有时间，则使用默认参数中的时间
+            params.msg_start_time = dayjs(props.defaultParams.start_date).format('YYYY-MM-DD 00:00:00')
+            params.msg_end_time = dayjs(props.defaultParams.end_date).format('YYYY-MM-DD 23:59:59')
+        }
+
+        await exportChatMessage(params)
+
+        // 显示成功弹窗
+        showExportSuccessModal.value = true
+
+    } catch (error) {
+        console.error('导出失败:', error)
+        message.error('导出失败，请重试')
+    } finally {
+        exportLoading.value = false
+    }
+}
+
+// 去查看导出记录
+const handleGoToDownload = () => {
+    showExportSuccessModal.value = false
+    // 使用vue-router在新窗口打开文件导出记录页面
+    const routeData = router.resolve({ path: '/systemctl/fileExport' })
+    window.open(routeData.href, '_blank')
+}
+
 </script>
 <style scoped lang="less">
 .chat-box {
@@ -380,6 +470,21 @@ const disabledDate = current => {
 
         .icon {
             font-size: 16px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+
+            &:hover {
+                color: #1890ff;
+            }
+
+            &.icon-disabled {
+                color: #d9d9d9;
+                cursor: not-allowed;
+
+                &:hover {
+                    color: #d9d9d9;
+                }
+            }
         }
 
         .filter-box {
@@ -526,5 +631,41 @@ const disabledDate = current => {
 
 .chat-box-tooltip-min .ant-tooltip-inner {
     width: 100%;
+}
+
+// 导出成功弹窗样式
+.export-success-modal {
+    text-align: center;
+    padding: 20px 0;
+
+    .success-icon {
+        margin-bottom: 16px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .success-title {
+        font-size: 16px;
+        font-weight: 500;
+        color: #262626;
+        margin-bottom: 8px;
+    }
+
+    .success-desc {
+        font-size: 14px;
+        color: #8c8c8c;
+        margin-bottom: 24px;
+        line-height: 1.5;
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+
+        .ant-btn {
+            min-width: 80px;
+        }
+    }
 }
 </style>

@@ -10,6 +10,7 @@ use Common\Micro;
 use Common\RouterProvider;
 use Common\Yii;
 use Exception;
+use Modules\Main\Consumer\ChatMsgExportConsumer;
 use Modules\Main\Consumer\DownloadChatSessionBitMediasConsumer;
 use Modules\Main\Consumer\DownloadChatSessionMediasConsumer;
 use Modules\Main\Consumer\MarkTagListener;
@@ -130,6 +131,7 @@ class Routes extends RouterProvider
 
             Consumer::name("download_session_big_medias")->count(5)->action(DownloadChatSessionBitMediasConsumer::class)->reserveOnStop(),
             Consumer::name("download_session_medias")->count(2)->action(DownloadChatSessionMediasConsumer::class)->reserveOnStop(),
+            Consumer::name("chat_msg_list_export")->count(2)->action(ChatMsgExportConsumer::class),
         ];
     }
 
@@ -259,6 +261,9 @@ class Routes extends RouterProvider
                     //会话存档 消息相关接口
                     Route::get('/chats/by/conversation/message/list')->action([ChatController::class, 'getMessageListByConversation'])->defaults(["permission_key" => 'main.session_archive.list']),
                     Route::get('/chats/by/group/message/list')->action([ChatController::class, 'getMessageListByGroup'])->defaults(["permission_key" => 'main.session_archive.list']),
+                    Route::get('/chats/export')->action([ChatController::class, 'getMessageExport'])->defaults(["permission_key" => 'main.session_archive.list']),
+                    Route::post('/chats/task/state/change')->action([ChatController::class, 'changeExportTaskState'])->defaults(["permission_key" => 'main.session_archive.list']),
+                    Route::get('/chats/export/list')->action([ChatController::class, 'getExportTaskList'])->defaults(["permission_key" => 'main.session_archive.list']),
 
                     //会话存档搜索相关接口
                     Route::get('/chats/search')->action([ChatController::class, 'getSearch'])->defaults(["permission_key" => 'main.session_archive.search']),

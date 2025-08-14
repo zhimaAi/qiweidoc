@@ -24,7 +24,8 @@
                      class="session-right-block"
                      :chatInfo="chatInfo"
                      @changeCollect="onChangeCollect"
-                     sessionType="group"/>
+                     sessionType="group"
+                     :defaultParams="defaultParams"/>
         </div>
     </div>
 </template>

@@ -236,6 +236,43 @@ class StorageService
     }
 
     /**
+     * 根据哈希值下载对象内容
+     * 优先从本地 MinIO 读取，若本地文件已删除且存在云端副本，则从云端读取
+     *
+     * @throws Throwable
+     */
+    public static function downloadObjectContent(string $hash): string
+    {
+        $storage = StorageModel::query()->where(['hash' => $hash])->orderBy(['id' => SORT_DESC])->getOne();
+        if (empty($storage)) {
+            throw new Exception('文件不存在');
+        }
+
+        // 读取本地 MinIO
+        if (!$storage->get('is_deleted_local')) {
+            $s3Client = self::getLocalS3Client();
+            $result = $s3Client->getObject([
+                'Bucket' => $storage->get('local_storage_bucket'),
+                'Key'    => $storage->get('local_storage_object_key'),
+            ]);
+            return (string) $result['Body'];
+        }
+
+        // 读取云端（如已迁移）
+        if (!empty($storage->get('cloud_storage_object_key')) && $setting = CloudStorageSettingModel::query()->where(['id' => $storage->get('cloud_storage_setting_id')])->getOne()) {
+            /* @var CloudStorageSettingModel $setting */
+            $s3Client = self::getCloudS3Client($setting);
+            $result = $s3Client->getObject([
+                'Bucket' => $setting->get('bucket'),
+                'Key'    => $storage->get('cloud_storage_object_key'),
+            ]);
+            return (string) $result['Body'];
+        }
+
+        throw new Exception('文件内容不存在或已被清理');
+    }
+
+    /**
      * 本地文件特殊处理
      */
     private static function convertMinioUrlToLocalPath($minioUrl): string

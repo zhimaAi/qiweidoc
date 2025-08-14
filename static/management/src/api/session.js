@@ -123,3 +123,18 @@ export const setChatConfig = (data) => {
 export const setSessionStaffs = (data) => {
     return request.post("/api/staff/archive/enable", data)
 }
+
+// 导出聊天记录
+export const exportChatMessage = (data) => {
+    return request.get("/api/chats/export", {params: data})
+}
+
+// 获取导出任务列表
+export const getExportList = (data) => {
+    return request.get("/api/chats/export/list", {params: data})
+}
+
+// 变更导出记录状态
+export const stateChange = (data) => {
+    return request.post("/api/chats/task/state/change", data)
+}

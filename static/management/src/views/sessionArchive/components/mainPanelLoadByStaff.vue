@@ -102,7 +102,8 @@
                              :chatInfo="chatInfo"
                              :currentMsgCancelCollect="currentMsgCancelCollect"
                              @changeCollect="onChangeCollect"
-                             :sessionType="main.contactType === 'GROUP' ? 'group' : 'session'"/>
+                             :sessionType="main.contactType === 'GROUP' ? 'group' : 'session'"
+                             :defaultParams="defaultParams"/>
                 </div>
             </div>
         </div>

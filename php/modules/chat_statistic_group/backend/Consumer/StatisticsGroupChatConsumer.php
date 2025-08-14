@@ -195,7 +195,6 @@ readonly class StatisticsGroupChatConsumer
                         $staff_msg_no_work++;
                     }
 
-                    ddump([$msgInfo["from"],$staff_userid]);
                     if ($msgInfo["from"] == $staff_userid) {//员工自己发送的消息
                         $staff_self_msg_num++;
                     }

@@ -43,6 +43,7 @@
                                  mainTab="LOAD_BY_CUSTOMER"
                                  :chatInfo="chatInfo"
                                  @changeCollect="onChangeCollect"
+                                 :defaultParams="defaultParams"
                                  style="height: 100%;"/>
                     </div>
                 </div>

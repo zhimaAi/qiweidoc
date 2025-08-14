@@ -4,9 +4,12 @@
 namespace Modules\Main\Controller;
 
 use Common\Controller\BaseController;
+use Common\Job\Producer;
 use Exception;
+use Modules\Main\Consumer\ChatMsgExportConsumer;
 use Modules\Main\DTO\ChatSession\CollectDTO;
 use Modules\Main\Enum\EnumUserRoleType;
+use Modules\Main\Model\ChatMsgExportTaskModel;
 use Modules\Main\Model\CorpModel;
 use Modules\Main\Service\ChatSessionService;
 use Psr\Http\Message\ResponseInterface;
@@ -246,6 +249,89 @@ class ChatController extends BaseController
         $currentCorp = $request->getAttribute(CorpModel::class);
 
         ChatSessionService::saveChatConfig($currentCorp, $request->getParsedBody());
+
+        return $this->jsonResponse();
+    }
+
+    /**
+     * @param ServerRequestInterface $request
+     * Notes: 获取会话导出列表
+     * User: rand
+     * Date: 2025/8/11 18:05
+     * @return ResponseInterface
+     * @throws Throwable
+     */
+    public function getExportTaskList(ServerRequestInterface $request): ResponseInterface
+    {
+        $currentCorp = $request->getAttribute(CorpModel::class);
+        $params = $request->getQueryParams();
+
+
+        $page = max($params['page'] ?? 1, 1);
+        $size = max($params['size'] ?? 10, 1);
+
+        $result = ChatSessionService::getExportTaskList($currentCorp, $page, $size);
+
+        return $this->jsonResponse($result);
+
+    }
+
+    /**
+     * @param ServerRequestInterface $request
+     * Notes: 变更导出任务状态
+     * User: rand
+     * Date: 2025/8/11 18:27
+     * @return \Yiisoft\DataResponse\DataResponse
+     */
+    public function changeExportTaskState(ServerRequestInterface $request)
+    {
+        $currentCorp = $request->getAttribute(CorpModel::class);
+        $params = $request->getParsedBody();
+
+        $task_id = $params['task_id'] ?? 0;
+        $state = $params['state'] ?? 0;
+
+        ChatSessionService::changeExportTaskState($currentCorp, $task_id, $state);
+
+        return $this->jsonResponse();
+
+    }
+
+    /**
+     * @param ServerRequestInterface $request
+     * Notes: 会话消息导出
+     * User: rand
+     * Date: 2025/8/8 15:47
+     * @return ResponseInterface
+     * @throws Throwable
+     */
+    public function getMessageExport(ServerRequestInterface $request): ResponseInterface
+    {
+
+        $currentCorp = $request->getAttribute(CorpModel::class);
+        $currentUserInfo = $request->getAttribute(Authentication::class);
+
+
+        $params = $request->getQueryParams();
+        $conversationId = $params['conversation_id'] ?? '';
+        $group_chat_id = $params['group_chat_id'] ?? '';
+
+        $conversation_info = ChatSessionService::getConversationInfo($conversationId, $group_chat_id);
+
+        $res = ChatMsgExportTaskModel::create([
+            "corp_id" => $currentCorp->get('id'),
+            "req_data" => [
+                "conversation_id" => $conversationId,
+                "group_chat_id" => $group_chat_id,
+                "msg_start_time" => $params["msg_start_time"] ?? "",
+                "msg_end_time" => $params["msg_end_time"] ?? "",
+            ],
+            "create_userid" => $currentUserInfo->get("userid"),
+            "task_title" => ($conversation_info["task_title"] ?? "") . "_" . date("Ymd", time()),
+        ]);
+        $task_info = $res->toArray();
+
+        Producer::dispatch(ChatMsgExportConsumer::class, ['corp' => $currentCorp, 'taskId' => $task_info["id"]]);
 
         return $this->jsonResponse();
     }

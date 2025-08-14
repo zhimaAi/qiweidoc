@@ -39,7 +39,8 @@
                          class="right-block"
                          :chatInfo="chatInfo"
                          @changeCollect="onChangeCollect"
-                         :sessionType="main.staffType === 'GROUP_CHAT' ? 'group' : 'session'"/>
+                         :sessionType="main.staffType === 'GROUP_CHAT' ? 'group' : 'session'"
+                         :defaultParams="defaultParams"/>
             </div>
         </div>
 

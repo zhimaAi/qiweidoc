@@ -14,6 +14,7 @@ use Modules\Main\Enum\EnumChatMessageRole;
 use Modules\Main\Enum\EnumMessageType;
 use Modules\Main\Model\ChatConversationsModel;
 use Modules\Main\Model\ChatMessageModel;
+use Modules\Main\Model\ChatMsgExportTaskModel;
 use Modules\Main\Model\CorpModel;
 use Modules\Main\Model\CustomersModel;
 use Modules\Main\Model\CustomerTagModel;
@@ -519,6 +520,7 @@ SQL;
             $query->andWhere(["between","msg_time",$params["msg_start_time"],$params["msg_end_time"]]);
         }
 
+        ddump($query->createCommand()->getRawSql());
         // 分页获取聊天消息
         $result = $query->orderBy(['msg_time' => SORT_DESC])->paginate($page, $size);
         if ($result['items']->isEmpty()) {
@@ -1050,5 +1052,106 @@ SQL;
             "show_customer_tag_config" => $data["show_customer_tag_config"] ?? [],
             "show_is_read" => $data["show_is_read"] ?? 1,
         ]);
+    }
+
+
+    /**
+     * @param $conversationId
+     * @param $group_chat_id
+     * Notes: 获取会话双方信息
+     * User: rand
+     * Date: 2025/8/8 18:02
+     * @return array
+     * @throws Throwable
+     */
+    public static function getConversationInfo($conversationId, $group_chat_id = "")
+    {
+
+        $conversations_info = ChatConversationsModel::query()->where(["id" => $conversationId])->getOne()->toArray();
+
+        if ($conversations_info["type"] == EnumChatConversationType::Single) {
+            $session_type = "单聊";
+
+            if ($conversations_info["from_role"] == EnumChatMessageRole::Customer) {
+                $staff_userid = $conversations_info["to"];
+                $external_userid = $conversations_info["from"];
+            } else {
+                $staff_userid = $conversations_info["from"];
+                $external_userid = $conversations_info["to"];
+            }
+            $staff_info = StaffModel::query()->where(["userid" => $staff_userid])->getOne()->toArray();
+            $customer_info = CustomersModel::query()->where(["external_userid" => $external_userid])->getOne()->toArray();
+
+            $user_info = [
+                $staff_userid=>$staff_info,
+                $external_userid=>$customer_info,
+            ];
+
+            $task_title = "员工" . $staff_info["name"] . "与客户" . $customer_info["external_name"] . "的聊天记录";
+
+            return compact("conversations_info", "session_type", "task_title", "user_info");
+
+        } else if ($conversations_info["type"] == EnumChatConversationType::Group) {
+            $session_type = "群聊";
+            $group_info = GroupModel::query()->where(["chat_id" => $group_chat_id])->getOne()->toArray();
+            $task_title = "群聊" . $group_info["name"] . "的聊天记录";
+
+            return compact("conversations_info", "session_type", "task_title", "group_info");
+        } else {
+            $session_type = "同事会话";
+
+            $staff_info_arr = StaffModel::query()->where(["userid" => [$conversations_info["from"], $conversations_info["to"]]])->getAll()->toArray();
+
+            $user_info = ArrayHelper::index($staff_info_arr,"userid");
+
+            $task_title = "员工" . ($staff_info_arr[0]["name"] ?? "") . "与员工" . ($staff_info_arr[1]["name"] ?? "") . "的聊天记录";
+
+            return compact("conversations_info", "session_type", "task_title", "user_info");
+        }
+
+    }
+
+    /**
+     * @param $currentCorp
+     * @param $page
+     * @param $size
+     * Notes: 获取导出记录
+     * User: rand
+     * Date: 2025/8/11 18:03
+     * @return array
+     * @throws Throwable
+     */
+    public static function getExportTaskList (CorpModel $corp,$page, $size)
+    {
+
+        $result = ChatMsgExportTaskModel::query()->where(["corp_id" => $corp->get("id")])->andWhere(['>', 'state', 0])->orderBy(['created_at' => SORT_DESC])->paginate($page, $size);
+
+        if (!empty($result["items"])) {
+            foreach ($result["items"] as $key => $item) {
+                $item->append("download_url", StorageService::getDownloadUrl($item->get("file_path")));
+                $create_staff_info = StaffModel::query()->where(["userid" => $item->get("create_userid")])->getOne()->toArray();
+                $item->append("create_user_info", $create_staff_info["name"] ?? "");
+            }
+        }
+
+        return $result;
+
+    }
+
+    /**
+     * @param CorpModel $corp
+     * @param $task_id
+     * @param $state
+     * Notes: 变更导出任务状态
+     * User: rand
+     * Date: 2025/8/11 18:28
+     * @return void
+     * @throws Throwable
+     */
+    public static function changeExportTaskState(CorpModel $corp,$task_id,$state)
+    {
+
+        ChatMsgExportTaskModel::query()->where(["id"=>$task_id,"corp_id"=>$corp->get("id")])->update(["state"=>$state]);
+
     }
 }
