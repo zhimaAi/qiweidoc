@@ -63,7 +63,7 @@ services:
     environment:
       TZ: Asia/Shanghai
     volumes:
-      - nats_data:/data/jetstream
+      - nats_data:/data
     deploy:
       resources:
         limits:

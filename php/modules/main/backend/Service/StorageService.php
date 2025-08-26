@@ -149,6 +149,7 @@ class StorageService
      */
     public static function saveCloud(StorageModel $model): void
     {
+        Yii::logger()->info("开始上传文件到云存储", ['id' => $model->get('id'), 'original_filename' => $model->get('original_filename')]);
         /* @var CloudStorageSettingModel $cloudStorageSetting */
         $cloudStorageSetting = CloudStorageSettingModel::query()->orderBy(['id' => SORT_DESC])->getOne();
         if (empty($cloudStorageSetting)) {

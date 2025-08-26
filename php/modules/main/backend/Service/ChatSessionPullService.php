@@ -15,6 +15,7 @@ use Common\Yii;
 use LogicException;
 use Modules\Main\Consumer\DownloadChatSessionBitMediasConsumer;
 use Modules\Main\Consumer\DownloadChatSessionMediasConsumer;
+use Modules\Main\Consumer\UploadStorageToCloudConsumer;
 use Modules\Main\Enum\EnumChatConversationType;
 use Modules\Main\Enum\EnumChatMessageRole;
 use Modules\Main\Enum\EnumMessageType;
@@ -57,16 +58,18 @@ class ChatSessionPullService
                 continue;
             }
 
-            //处理消息内容
+            //处理并保存消息内容
             $messageData = self::processMessage($msg);
             if (!$messageData) {
                 continue;
             }
 
+            Yii::logger()->info("保存消息成功", ['msg_content' => $messageData->get('msg_content'), 'msg_type' => $messageData->get('msg_type')]);
+
             // 创建会话
             $conversation = self::saveConversation($messageData);
 
-            // 保存消息
+            // 更新消息的会话信息
             $messageData->update([
                 'conversation_id' => $conversation->get('id'),
                 'conversation_type' => $conversation->get('type'),
@@ -179,8 +182,8 @@ class ChatSessionPullService
         ]);
         $message->update(['msg_content' => $fileInfo['hash']]);
 
-        // 保存到云存储
-        StorageService::saveCloud($storage);
+        // 异步保存到云存储
+        Producer::dispatch(UploadStorageToCloudConsumer::class, ['storage' => $storage]);
     }
 
     /**

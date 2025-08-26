@@ -8,6 +8,10 @@ logs:
   output: stderr
   err_output: stderr
   show_caller: false
+  channels:
+    http:
+      mode: production
+      output: [ http.log ]
 
 server:
   command: php php/yii

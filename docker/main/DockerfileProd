@@ -47,6 +47,9 @@ RUN chmod +x /usr/local/bin/mc
 COPY docker/main/edl.so /usr/local/lib/php/extensions/no-debug-non-zts-20220829/
 RUN docker-php-ext-enable edl
 
+# composer
+COPY --from=composer/composer:2.8-bin /composer /usr/bin/composer
+
 WORKDIR /var/www/
 #COPY . .
 

@@ -2,7 +2,7 @@
 
 ## 一，准备工作
 
-- 联网的 x86-64 架构的 Linux 服务器一台（示例：ubuntu 24.04 LTS 64 bit），配置不低于 2 核 4 GB（如果会话聊天内容包含大量文件，还需要有较大的磁盘空间）
+- 联网的 x86-64 架构的 Linux 服务器一台（示例：ubuntu 24.04 LTS 64 bit），配置不低于 2 核 4 GB（如果会话聊天内容包含大量文件，还需要有较大的磁盘空间, 或者配置云存储）
 - 已经备案的域名，且备案主体与当前企业主体相同或有关联关系的域名，详情参考[企微官方配置指引](https://open.work.weixin.qq.com/wwopen/common/readDocument/40754)
 - 已开通企业微信
 ## 二，服务部署
@@ -10,10 +10,9 @@
 #### 1，安装 docker
 
 ```shell
-sudo curl -sSL https://get.docker.com/ | CHANNEL=stable sh
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo DOWNLOAD_URL=https://mirrors.ustc.edu.cn/docker-ce sh get-docker.sh
 ```
-
-如果是境内服务器，可能会安装不了，请参考华为云提供的[安装方法](https://mirrors.huaweicloud.com/mirrorDetail/5ea14d84b58d16ef329c5c13?mirrorName=docker-ce&catalog=docker)。
 
 #### 2，下载最新代码
 
@@ -31,7 +30,7 @@ cp .env.prod .env
 cd docker
 ```
 
-创建 compose 项目文件：
+创建 compose 项目配置文件：
 
 ```
 touch .env
@@ -40,9 +39,7 @@ touch .env
 编辑 .env 文件
 
 ```shell
-# 如果是新部署的就随便取一个名字,如果之前部署过并且需要保留之前的数据,那么参考下面的说明
 COMPOSE_PROJECT_NAME=qiweidoc
-
 COMPOSE_FILE=docker-compose-prod.yml
 
 # 如果需要自动配置 https 证书，请配置如下
@@ -50,25 +47,7 @@ COMPOSE_FILE=docker-compose-prod.yml
 # ACME_EMAIL=shellphy@2bai.com.cn
 ```
 
-> 说明：如果之前是通过docker镜像直接启动的,运行命令：
-> ```
-> docker ps | grep main-1 | awk '{print $NF}' | awk -F'-' '{print $1}' 
-> ```
-> 可以得到原compose项目名，然后把该名称填充到 COMPOSE_PROJECT_NAME 中。
-> 
-> 比如之前部署过项目，运行命令：
-> ```
-> $ docker ps | grep main-1 | awk '{print $NF}' | awk -F'-' '{print $1}'
-> zm_session_archive
-> ```
-> 那么 .env 中的 COMPOSE_PROJECT_NAME 应该填写 `zm_session_archive`
-> 最后把旧的容器停止并删除: 
-> ```shell
-> docker compose down
-> ```
-
-
-再运行：
+启动项目：
 
 ```shell
 docker-compose up -d
@@ -76,11 +55,11 @@ docker-compose up -d
 
 #### 4，配置 nginx（可选）
 
-容器默认会监听服务器的 80 端口 和 443 端口，如果你的服务器上有 nginx 而且也监听了 80 端口和 443 端口，可能会出现端口冲突，应该通过环境变量来修改默认端口号，如：
+容器默认会监听服务器的 80 端口 和 443 端口，如果你的服务器上有 nginx 而且也监听了 80 端口和 443 端口，可能会出现端口冲突，应该通过环境变量来修改默认端口号，在 .env 文件里添加如下配置：
 
 ```shell
-echo EXTERNAL_HTTP_PORT=8080 > .env
-echo EXTERNAL_HTTPS_PORT=4443 >> .env
+EXTERNAL_HTTP_PORT=8080
+EXTERNAL_HTTPS_PORT=4443
 ```
 
 再运行：
@@ -117,4 +96,3 @@ cd docker
 docker compose pull
 docker compose restart
 ```
-

@@ -19,6 +19,7 @@ use Modules\Main\Consumer\SendEmailConsumer;
 use Modules\Main\Consumer\SyncCustomersConsumer;
 use Modules\Main\Consumer\SyncDepartmentConsumer;
 use Modules\Main\Consumer\SyncGroupConsumer;
+use Modules\Main\Consumer\UploadStorageToCloudConsumer;
 use Modules\Main\Cron\CheckStaffEnableArchiveCron;
 use Modules\Main\Cron\DownloadMessageMediasCron;
 use Modules\Main\Cron\RemoveExpiredLocalFilesCron;
@@ -132,6 +133,7 @@ class Routes extends RouterProvider
             Consumer::name("download_session_big_medias")->count(5)->action(DownloadChatSessionBitMediasConsumer::class)->reserveOnStop(),
             Consumer::name("download_session_medias")->count(2)->action(DownloadChatSessionMediasConsumer::class)->reserveOnStop(),
             Consumer::name("chat_msg_list_export")->count(2)->action(ChatMsgExportConsumer::class),
+            Consumer::name("upload_storage_to_cloud")->count(1)->action(UploadStorageToCloudConsumer::class)->reserveOnStop(),
         ];
     }
 

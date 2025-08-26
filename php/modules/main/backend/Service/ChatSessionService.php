@@ -520,7 +520,6 @@ SQL;
             $query->andWhere(["between","msg_time",$params["msg_start_time"],$params["msg_end_time"]]);
         }
 
-        ddump($query->createCommand()->getRawSql());
         // 分页获取聊天消息
         $result = $query->orderBy(['msg_time' => SORT_DESC])->paginate($page, $size);
         if ($result['items']->isEmpty()) {
