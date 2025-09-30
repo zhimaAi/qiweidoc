@@ -93,7 +93,7 @@ SQL;
 
             // 群主名称
             foreach ($res['items'] as &$group) {
-                $staff = $staffListIndex[$group['owner']];
+                $staff = $staffListIndex[$group['owner']] ?? [];
                 $group['owner_name'] = $staff['name'] ?? '';
             }
             unset($group);
