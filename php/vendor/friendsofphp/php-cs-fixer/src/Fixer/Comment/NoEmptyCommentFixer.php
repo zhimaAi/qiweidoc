@@ -50,13 +50,13 @@ final class NoEmptyCommentFixer extends AbstractFixer
 
     public function isCandidate(Tokens $tokens): bool
     {
-        return $tokens->isTokenKindFound(\T_COMMENT);
+        return $tokens->isTokenKindFound(T_COMMENT);
     }
 
     protected function applyFix(\SplFileInfo $file, Tokens $tokens): void
     {
         for ($index = 1, $count = \count($tokens); $index < $count; ++$index) {
-            if (!$tokens[$index]->isGivenKind(\T_COMMENT)) {
+            if (!$tokens[$index]->isGivenKind(T_COMMENT)) {
                 continue;
             }
 
@@ -149,12 +149,14 @@ final class NoEmptyCommentFixer extends AbstractFixer
 
     private function isEmptyComment(string $content): bool
     {
-        $type = $this->getCommentType($content);
-
-        return Preg::match([
+        static $mapper = [
             self::TYPE_HASH => '|^#\s*$|', // single line comment starting with '#'
             self::TYPE_SLASH_ASTERISK => '|^/\*[\s\*]*\*+/$|', // comment starting with '/*' and ending with '*/' (but not a PHPDoc)
             self::TYPE_DOUBLE_SLASH => '|^//\s*$|', // single line comment starting with '//'
-        ][$type], $content);
+        ];
+
+        $type = $this->getCommentType($content);
+
+        return Preg::match($mapper[$type], $content);
     }
 }

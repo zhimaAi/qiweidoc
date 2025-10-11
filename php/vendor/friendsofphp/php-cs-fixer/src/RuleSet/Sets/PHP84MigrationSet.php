@@ -25,7 +25,6 @@ final class PHP84MigrationSet extends AbstractMigrationSetDescription
     {
         return [
             '@PHP83Migration' => true,
-            'new_expression_parentheses' => true,
             'nullable_type_declaration_for_default_null_value' => true,
         ];
     }

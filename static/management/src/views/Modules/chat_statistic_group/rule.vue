@@ -43,7 +43,7 @@
                 </template>
                 <a-form-item label="消息回复率" style="margin-bottom: 0;">
                     <div class="zm-flex-center">
-                        <a-input-number v-model:value="config.msg_reply_sec" :min="1" :max="20" @change="configChange"/>
+                        <a-input-number v-model:value="config.msg_reply_sec" :min="1" :max="180" @change="configChange"/>
                         <span class="ml4">分钟</span>
                     </div>
                     <div class="notice">

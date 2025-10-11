@@ -109,17 +109,17 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.351.2",
-            "version_normalized": "3.351.2.0",
+            "version": "3.349.0",
+            "version_normalized": "3.349.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "b418b41ceee47103f364e709c5f3a58a4bcf0894"
+                "reference": "6bc013005c2c8df186abc823754deb1bb6c0f1ca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/b418b41ceee47103f364e709c5f3a58a4bcf0894",
-                "reference": "b418b41ceee47103f364e709c5f3a58a4bcf0894",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/6bc013005c2c8df186abc823754deb1bb6c0f1ca",
+                "reference": "6bc013005c2c8df186abc823754deb1bb6c0f1ca",
                 "shasum": ""
             },
             "require": {
@@ -159,7 +159,7 @@
                 "ext-openssl": "Allows working with CloudFront private distributions and verifying received SNS messages",
                 "ext-sockets": "To use client-side monitoring"
             },
-            "time": "2025-07-18T18:06:44+00:00",
+            "time": "2025-07-01T18:04:21+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -203,23 +203,23 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.351.2"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.349.0"
             },
             "install-path": "../aws/aws-sdk-php"
         },
         {
             "name": "basis-company/nats",
-            "version": "1.1.1",
-            "version_normalized": "1.1.1.0",
+            "version": "1.1.0",
+            "version_normalized": "1.1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/basis-company/nats.php.git",
-                "reference": "0c3cc97940a2f941087caed8bb5f59f80cc4d8cf"
+                "reference": "25600755395944bcd6a4a0bcf1c349db85d4dd71"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/basis-company/nats.php/zipball/0c3cc97940a2f941087caed8bb5f59f80cc4d8cf",
-                "reference": "0c3cc97940a2f941087caed8bb5f59f80cc4d8cf",
+                "url": "https://api.github.com/repos/basis-company/nats.php/zipball/25600755395944bcd6a4a0bcf1c349db85d4dd71",
+                "reference": "25600755395944bcd6a4a0bcf1c349db85d4dd71",
                 "shasum": ""
             },
             "require": {
@@ -236,7 +236,7 @@
                 "ext-sodium": "Provides Ed25519 for nkey authentication",
                 "paragonie/sodium_compat": "Provides Ed25519 for nkey authentication if sodium is not available"
             },
-            "time": "2025-07-10T14:41:02+00:00",
+            "time": "2025-06-19T14:24:26+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -272,7 +272,7 @@
             ],
             "support": {
                 "issues": "https://github.com/basis-company/nats.php/issues",
-                "source": "https://github.com/basis-company/nats.php/tree/1.1.1"
+                "source": "https://github.com/basis-company/nats.php/tree/1.1.0"
             },
             "install-path": "../basis-company/nats"
         },
@@ -1176,17 +1176,17 @@
         },
         {
             "name": "friendsofphp/php-cs-fixer",
-            "version": "v3.84.0",
-            "version_normalized": "3.84.0.0",
+            "version": "v3.76.0",
+            "version_normalized": "3.76.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer.git",
-                "reference": "38dad0767bf2a9b516b976852200ae722fe984ca"
+                "reference": "0e3c484cef0ae9314b0f85986a36296087432c40"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/38dad0767bf2a9b516b976852200ae722fe984ca",
-                "reference": "38dad0767bf2a9b516b976852200ae722fe984ca",
+                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/0e3c484cef0ae9314b0f85986a36296087432c40",
+                "reference": "0e3c484cef0ae9314b0f85986a36296087432c40",
                 "shasum": ""
             },
             "require": {
@@ -1235,7 +1235,7 @@
                 "ext-dom": "For handling output formats in XML",
                 "ext-mbstring": "For handling non-UTF8 characters."
             },
-            "time": "2025-07-15T18:21:57+00:00",
+            "time": "2025-06-30T14:15:06+00:00",
             "bin": [
                 "php-cs-fixer"
             ],
@@ -1272,7 +1272,7 @@
             ],
             "support": {
                 "issues": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/issues",
-                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.84.0"
+                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.76.0"
             },
             "funding": [
                 {
@@ -1284,27 +1284,27 @@
         },
         {
             "name": "google/common-protos",
-            "version": "4.12.2",
-            "version_normalized": "4.12.2.0",
+            "version": "4.12.1",
+            "version_normalized": "4.12.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/common-protos-php.git",
-                "reference": "0a399e6f39576e39ae9b66d3c704ae294afab1dc"
+                "reference": "70c4eb1abab5484a23c17a43b0d455259f5d8c1b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/common-protos-php/zipball/0a399e6f39576e39ae9b66d3c704ae294afab1dc",
-                "reference": "0a399e6f39576e39ae9b66d3c704ae294afab1dc",
+                "url": "https://api.github.com/repos/googleapis/common-protos-php/zipball/70c4eb1abab5484a23c17a43b0d455259f5d8c1b",
+                "reference": "70c4eb1abab5484a23c17a43b0d455259f5d8c1b",
                 "shasum": ""
             },
             "require": {
                 "google/protobuf": "^v3.25.3||^4.26.1",
-                "php": "^8.1"
+                "php": "^8.0"
             },
             "require-dev": {
                 "phpunit/phpunit": "^9.6"
             },
-            "time": "2025-07-18T20:06:03+00:00",
+            "time": "2025-05-20T19:49:54+00:00",
             "type": "library",
             "extra": {
                 "component": {
@@ -1340,7 +1340,7 @@
                 "google"
             ],
             "support": {
-                "source": "https://github.com/googleapis/common-protos-php/tree/v4.12.2"
+                "source": "https://github.com/googleapis/common-protos-php/tree/v4.12.1"
             },
             "install-path": "../google/common-protos"
         },
@@ -1905,17 +1905,17 @@
         },
         {
             "name": "khanamiryan/qrcode-detector-decoder",
-            "version": "2.0.3",
-            "version_normalized": "2.0.3.0",
+            "version": "2.0.2",
+            "version_normalized": "2.0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/khanamiryan/php-qrcode-detector-decoder.git",
-                "reference": "17c570bb39f641cc1c4c41a46177ac491393a01d"
+                "reference": "8d53cbecaa32f1e56a3be58bb3055ac31774ecd0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/khanamiryan/php-qrcode-detector-decoder/zipball/17c570bb39f641cc1c4c41a46177ac491393a01d",
-                "reference": "17c570bb39f641cc1c4c41a46177ac491393a01d",
+                "url": "https://api.github.com/repos/khanamiryan/php-qrcode-detector-decoder/zipball/8d53cbecaa32f1e56a3be58bb3055ac31774ecd0",
+                "reference": "8d53cbecaa32f1e56a3be58bb3055ac31774ecd0",
                 "shasum": ""
             },
             "require": {
@@ -1923,11 +1923,11 @@
             },
             "require-dev": {
                 "phpunit/phpunit": "^7.5 | ^8.0 | ^9.0",
-                "rector/rector": "^1.0.4",
+                "rector/rector": "^0.13.6",
                 "symplify/easy-coding-standard": "^11.0",
                 "vimeo/psalm": "^4.24"
             },
-            "time": "2025-06-10T08:44:02+00:00",
+            "time": "2022-11-17T10:54:53+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -1960,7 +1960,7 @@
             ],
             "support": {
                 "issues": "https://github.com/khanamiryan/php-qrcode-detector-decoder/issues",
-                "source": "https://github.com/khanamiryan/php-qrcode-detector-decoder/tree/2.0.3"
+                "source": "https://github.com/khanamiryan/php-qrcode-detector-decoder/tree/2.0.2"
             },
             "install-path": "../khanamiryan/qrcode-detector-decoder"
         },

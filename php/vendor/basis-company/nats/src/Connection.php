@@ -298,10 +298,6 @@ class Connection
                 'subject' => $subscription['name'],
             ]));
         }
-
-        if ($this->client->requestsSubscribed()) {
-            $this->client->subscribeRequests(true);
-        }
     }
 
     public function setPacketSize(int $size): void

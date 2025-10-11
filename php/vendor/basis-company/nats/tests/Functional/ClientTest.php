@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Tests\Functional;
 
 use Basis\Nats\Connection;
-use Monolog\Handler\StreamHandler;
-use Monolog\Logger;
 use ReflectionProperty;
 use Tests\FunctionalTestCase;
 
@@ -35,46 +33,17 @@ class ClientTest extends FunctionalTestCase
     public function testReconnect()
     {
         $client = $this->getClient();
-        $client->connection;
-
-        if (!$client->connection->logger) {
-            $client->connection->logger = new Logger("client");
-        }
-
-        assert($client->connection->logger instanceof Logger);
-        $client->connection->logger->pushHandler($spy = new class ('') extends StreamHandler {
-            public array $records = [];
-            protected function write(array $record): void
-            {
-                $this->records[] = $record['message'];
-            }
-        });
-
-        $client->subscribe('hello.request', fn ($name) => "Hello, " . $name);
-        $client->dispatch('hello.request', 'Nekufa1', 1);
-
-        // check requests were subscribed
-        $requestSubscriptionLog = null;
-        foreach ($spy->records as $row) {
-            if (str_contains($row, 'send SUB _REQS.')) {
-                $requestSubscriptionLog = $row;
-            }
-        }
-
-        $this->assertNotNull($requestSubscriptionLog);
-
+        $client->subscribe("tester");
         $this->assertTrue($client->ping());
         $this->assertCount(1, $client->getSubscriptions());
 
         $property = new ReflectionProperty(Connection::class, 'socket');
         $property->setAccessible(true);
-        $spy->records = [];
+
         fclose($property->getValue($client->connection));
 
-        // test reconnect
         $this->assertTrue($client->ping());
-        // test request subscription present
-        $this->assertContains($requestSubscriptionLog, $spy->records);
+        $this->assertCount(1, $client->getSubscriptions());
     }
 
     public function testPacketSizeSetter()

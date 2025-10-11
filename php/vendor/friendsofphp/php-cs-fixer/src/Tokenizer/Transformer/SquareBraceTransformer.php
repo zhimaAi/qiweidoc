@@ -107,21 +107,23 @@ final class SquareBraceTransformer extends AbstractTransformer
             return false;
         }
 
-        $prevToken = $tokens[$tokens->getPrevMeaningfulToken($index)];
-        if ($prevToken->equalsAny([
+        static $disallowedPrevTokens = [
             ')',
             ']',
             '}',
             '"',
-            [\T_CONSTANT_ENCAPSED_STRING],
-            [\T_STRING],
-            [\T_STRING_VARNAME],
-            [\T_VARIABLE],
+            [T_CONSTANT_ENCAPSED_STRING],
+            [T_STRING],
+            [T_STRING_VARNAME],
+            [T_VARIABLE],
             [CT::T_ARRAY_SQUARE_BRACE_CLOSE],
             [CT::T_DYNAMIC_PROP_BRACE_CLOSE],
             [CT::T_DYNAMIC_VAR_BRACE_CLOSE],
             [CT::T_ARRAY_INDEX_CURLY_BRACE_CLOSE],
-        ])) {
+        ];
+
+        $prevToken = $tokens[$tokens->getPrevMeaningfulToken($index)];
+        if ($prevToken->equalsAny($disallowedPrevTokens)) {
             return false;
         }
 
@@ -139,36 +141,38 @@ final class SquareBraceTransformer extends AbstractTransformer
             return false;
         }
 
-        $prevIndex = $tokens->getPrevMeaningfulToken($index);
-        $prevToken = $tokens[$prevIndex];
-        if ($prevToken->equalsAny([
+        static $disallowedPrevTokens = [
             ')',
             ']',
             '"',
-            [\T_CONSTANT_ENCAPSED_STRING],
-            [\T_STRING],
-            [\T_STRING_VARNAME],
-            [\T_VARIABLE],
+            [T_CONSTANT_ENCAPSED_STRING],
+            [T_STRING],
+            [T_STRING_VARNAME],
+            [T_VARIABLE],
             [CT::T_ARRAY_SQUARE_BRACE_CLOSE],
             [CT::T_DYNAMIC_PROP_BRACE_CLOSE],
             [CT::T_DYNAMIC_VAR_BRACE_CLOSE],
             [CT::T_ARRAY_INDEX_CURLY_BRACE_CLOSE],
-        ])) {
+        ];
+
+        $prevIndex = $tokens->getPrevMeaningfulToken($index);
+        $prevToken = $tokens[$prevIndex];
+        if ($prevToken->equalsAny($disallowedPrevTokens)) {
             return false;
         }
 
-        if ($prevToken->isGivenKind(\T_AS)) {
+        if ($prevToken->isGivenKind(T_AS)) {
             return true;
         }
 
-        if ($prevToken->isGivenKind(\T_DOUBLE_ARROW)) {
+        if ($prevToken->isGivenKind(T_DOUBLE_ARROW)) {
             $variableIndex = $tokens->getPrevMeaningfulToken($prevIndex);
-            if (!$tokens[$variableIndex]->isGivenKind(\T_VARIABLE)) {
+            if (!$tokens[$variableIndex]->isGivenKind(T_VARIABLE)) {
                 return false;
             }
 
             $prevVariableIndex = $tokens->getPrevMeaningfulToken($variableIndex);
-            if ($tokens[$prevVariableIndex]->isGivenKind(\T_AS)) {
+            if ($tokens[$prevVariableIndex]->isGivenKind(T_AS)) {
                 return true;
             }
         }
