@@ -1128,7 +1128,7 @@ SQL;
         if (!empty($result["items"])) {
             foreach ($result["items"] as $key => $item) {
                 $item->append("download_url", StorageService::getDownloadUrl($item->get("file_path")));
-                $create_staff_info = StaffModel::query()->where(["userid" => $item->get("create_userid")])->getOne()->toArray();
+                $create_staff_info = StaffModel::query()->where(["userid" => $item->get("create_userid")])->getOne()?->toArray();
                 $item->append("create_user_info", $create_staff_info["name"] ?? "");
             }
         }
