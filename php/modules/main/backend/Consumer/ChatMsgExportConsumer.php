@@ -168,7 +168,7 @@ class ChatMsgExportConsumer
                     case EnumMessageType::Emotion->value://表情包
                     case EnumMessageType::MeetingVoiceCall->value://会议
                         $storage_info = StorageModel::query()->where(["hash" => $itemArr["msg_content"] ?? ""])->getOne();
-                        $msg_content = AuthService::getLoginDomain() . "/storage/session/" . (($storage_info?->local_storage_object_key) ?: "");
+                        $msg_content = AuthService::getLoginDomain() . "/storage/session/" . ($storage_info ? $storage_info->local_storage_object_key : "");
                         break;
                     default:
                         $msg_content = $itemArr["msg_content"] ?? "";
