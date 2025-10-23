@@ -208,7 +208,18 @@ class RuleService
     public static function sendQiWeiMessage(CorpModel $corp, string $toUserid, ChatMessageModel $message, int $timeoutMinutes)
     {
         $cst = CustomersModel::query()->where(['external_userid' => $message->get('from')])->getOne();
-        $staff = StaffModel::query()->where(['userid' => $message->get('to_list')[0]])->getOne();
+        if (empty($cst)) {
+            $cstName = $message->get('from');
+        } else {
+            $cstName = $cst->get('external_name');
+        }
+        $userid = $message->get('to_list')[0];
+        $staff = StaffModel::query()->where(['userid' => $userid])->getOne();
+        if (empty($staff)) {
+            $staffName = $userid;
+        } else {
+            $staffName = $staff->get('name');
+        }
         $msgTime = Carbon::parse($message->get('msg_time'))->format('Y-m-d H:i:s');
 
         $token = self::generateAuthToken($corp, $message->get('conversation_id'), $toUserid, $message->get('from'));
@@ -232,8 +243,8 @@ class RuleService
 
         $content = <<<MD
 ### 单聊超时提醒
-客户：{$cst->get('external_name')}
-员工: {$staff->get('name')}
+客户：{$cstName}
+员工: {$staffName}
 消息发送时间: {$msgTime}
 消息内容: {$content}
 超时时间: {$timeoutMinutes}分钟

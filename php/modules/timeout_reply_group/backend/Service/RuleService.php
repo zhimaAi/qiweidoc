@@ -278,6 +278,11 @@ class RuleService
     public static function sendQiWeiMessage(CorpModel $corp, string $toUserid, ChatMessageModel $message, int $timeoutMinutes, bool $inGroup, string $groupName)
     {
         $cst = CustomersModel::query()->where(['external_userid' => $message->get('from')])->getOne();
+        if (empty($cst)) {
+            $cstName = $message->get('from');
+        } else {
+            $cstName = $cst->get('external_name');
+        }
         $msgTime = Carbon::parse($message->get('msg_time'))->format('Y-m-d H:i:s');
 
         $token = self::generateAuthToken($corp, $message->get('roomid'), $toUserid, $message->get('from'));
@@ -300,7 +305,7 @@ class RuleService
 
         $content = <<<MD
 ### 群聊超时提醒
-客户：{$cst->get('external_name')}
+客户：{$cstName}
 群聊名称: $groupName
 消息发送时间: {$msgTime}
 消息内容: {$content}
