@@ -5,6 +5,7 @@ namespace Modules\Main\Controller;
 
 use Basis\Nats\Message\Payload;
 use Common\Controller\BaseController;
+use Common\Micro;
 use Common\Module;
 use Common\Yii;
 use Modules\Main\DTO\CreateUserBaseDTO;
@@ -36,9 +37,7 @@ class UserController extends BaseController
             $roleListParam = [
                 "corp_id" => $currentUserInfo->get("corp_id")
             ];
-            Yii::getNatsClient()->request('user_permission.get_role_list', json_encode($roleListParam), function (Payload $response) use (&$otherRoleList) {
-                $otherRoleList = json_decode($response, true);
-            });
+            $otherRoleList = Micro::call('user_permission', 'get_role_list',  json_encode($roleListParam));
         }
 
         $allRoleList = array_merge($allRoleList, $otherRoleList["res"] ?? []);

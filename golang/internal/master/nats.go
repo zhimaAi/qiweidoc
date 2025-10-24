@@ -73,20 +73,3 @@ func deleteModuleOpen(name string) error {
 
 	return kv.Delete(ctx, name)
 }
-
-func reconnectHandler() func(*nats.Conn) {
-	return func(conn *nats.Conn) {
-		log.Warn("connection lost, reconnecting", zap.String("url", conn.ConnectedUrl()))
-	}
-}
-
-func disconnectHandler() func(*nats.Conn, error) {
-	return func(_ *nats.Conn, err error) {
-		if err != nil {
-			log.Error("nats disconnected", zap.Error(err))
-			return
-		}
-
-		log.Info("nats disconnected")
-	}
-}

@@ -11,6 +11,7 @@ use Basis\Nats\Message\Payload;
 use Carbon\Carbon;
 use Common\Broadcast;
 use Common\Job\Producer;
+use Common\Micro;
 use Common\Yii;
 use LogicException;
 use Modules\Main\Consumer\DownloadChatSessionBitMediasConsumer;
@@ -161,10 +162,7 @@ class ChatSessionPullService
             'storage_bucket_name' => StorageModel::SESSION_BUCKET,
             'storage_object_key' => $objectKey,
         ];
-        $fileInfo = [];
-        Yii::getNatsClient(300)->request('wxfinance.FetchAndStreamMediaData', json_encode($request), function (Payload $payload) use (&$fileInfo) {
-            $fileInfo = json_decode($payload->body, true);
-        });
+        $fileInfo = Micro::call('wxfinance', 'FetchAndStreamMediaData', json_encode($request), 500);
         if (empty($fileInfo) || empty($fileInfo['hash'])) {
             throw new LogicException("下载资源失败");
         }

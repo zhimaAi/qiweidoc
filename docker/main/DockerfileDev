@@ -39,6 +39,18 @@ ENV LANG=zh_CN.UTF-8 \
     LANGUAGE=zh_CN:zh \
     LC_ALL=zh_CN.UTF-8
 
+# 安装 Golang
+ENV GO_VERSION=1.25.3
+RUN curl -fsSL https://golang.org/dl/go${GO_VERSION}.linux-amd64.tar.gz -o /tmp/go.tgz \
+    && tar -C /usr/local -xzf /tmp/go.tgz \
+    && rm /tmp/go.tgz
+
+# 添加 Go 环境变量
+ENV PATH="/usr/local/go/bin:${PATH}" \
+    GOPATH="/go" \
+    GOBIN="/go/bin"
+RUN mkdir -p /go/src /go/bin && chmod -R 777 /go
+
 # minio客户端
 COPY docker/main/mc /usr/local/bin/mc
 RUN chmod +x /usr/local/bin/mc

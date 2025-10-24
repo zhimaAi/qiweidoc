@@ -1,3 +1,11 @@
+.PHONY: build-wxfinance
+build-wxfinance:
+	CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -o main golang/cmd/wxfinance/*.go
+
+.PHONY: run-wxfinance
+run-wxfinance:
+	LD_LIBRARY_PATH=/var/www/golang/cmd/wxfinance/linux /var/www/main
+
 .PHONY: master
 master:
 	go version

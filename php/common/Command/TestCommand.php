@@ -3,8 +3,9 @@
 
 namespace Common\Command;
 
-use Common\Micro;
-use Common\Yii;
+use Common\Job\Producer;
+use Modules\Main\Consumer\DownloadChatSessionBitMediasConsumer;
+use Modules\Main\Model\CorpModel;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,8 +17,11 @@ final class TestCommand extends Command
 {
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $result = Micro::call('archive_staff', 'query', '');
-        ddump($result);
+        $corp = CorpModel::query()->getOne();
+
+        for ($i = 0; $i < 100; $i++) {
+            Producer::dispatch(DownloadChatSessionBitMediasConsumer::class, ['corp' => $corp]);
+        }
 
         return ExitCode::OK;
     }
