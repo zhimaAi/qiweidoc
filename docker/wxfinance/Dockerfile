@@ -1,6 +1,7 @@
 FROM golang:1.25.3-trixie AS builder
 WORKDIR /app
 
+RUN go env -w GOPROXY=https://goproxy.cn,direct
 COPY go.mod go.sum ./
 RUN go mod download
 
