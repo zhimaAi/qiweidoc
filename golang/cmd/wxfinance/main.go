@@ -65,8 +65,15 @@ func fetchData(request micro.Request) {
 
 	res, err := FetchData(&input)
 	if err != nil {
-		log.Println(err)
+		log.Println("fetchData error", err)
+		if err = request.RespondJSON([]any{}); err != nil {
+			log.Println(err)
+		}
 		return
+	}
+
+	if err = request.RespondJSON(res); err != nil {
+		log.Println(err)
 	}
 
 	if err = request.RespondJSON(res); err != nil {
@@ -83,7 +90,7 @@ func fetchAndStreamMediaData(request micro.Request) {
 
 		res, err := FetchAndStreamMediaData(&input)
 		if err != nil {
-			log.Println(err)
+			log.Println("fetchAndStreamMediaData error", err)
 			if err = request.RespondJSON([]any{}); err != nil {
 				log.Println(err)
 			}
