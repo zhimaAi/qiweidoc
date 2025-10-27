@@ -19,8 +19,8 @@ server:
 http:
   access_logs: false
   pool:
-    num_workers: 2
-    allocate_timeout: 2s
+    num_workers: 1
+    allocate_timeout: 5s
     dynamic_allocator:
       max_workers: 10
       spawn_rate: 1
@@ -65,10 +65,10 @@ micro:
 broadcast:
   pool:
     command: php php/yii
-    num_workers: 2
+    num_workers: 1
     allocate_timeout: 5s
     dynamic_allocator:
-      max_workers: 10
+      max_workers: 5
       spawn_rate: 1
       idle_timeout: 5s
 
