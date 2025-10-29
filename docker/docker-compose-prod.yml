@@ -87,6 +87,7 @@ services:
 
   main:
     image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/qiweidoc_main_prod:latest
+    command: [ "/var/www/golang/build/master" ]
     restart: always
     logging:
       options:
