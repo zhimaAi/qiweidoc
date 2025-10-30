@@ -22,7 +22,7 @@ use Yiisoft\Yii\Runner\ApplicationRunner;
  */
 final class JobsRunner extends ApplicationRunner
 {
-    const LOCK_TIME = 3600 * 24;
+    const LOCK_TIME = 3600;
 
     public function __construct(
         string  $rootPath,
@@ -134,7 +134,12 @@ final class JobsRunner extends ApplicationRunner
                     'throwable' => $e,
                 ]);
             } catch (Throwable $e) {
-                $task->ack();
+                try {
+                    $task->ack();
+                } catch (Throwable $e) {
+
+                }
+
                 $logger->error($e, [
                     'id' => $task->getId(),
                     'headers' => $task->getHeaders(),
@@ -143,6 +148,7 @@ final class JobsRunner extends ApplicationRunner
                     'throwable' => $e,
                 ]);
             } finally {
+                Yii::mutex(self::LOCK_TIME)->release($lockKey);
                 $stateResetter->reset();
                 gc_collect_cycles();
                 gc_mem_caches();
