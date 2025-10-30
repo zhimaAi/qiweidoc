@@ -4,6 +4,7 @@
 declare(strict_types=1);
 
 use Common\Command\DownloadMessageMediasCommand;
+use Common\Command\UploadMessageMediasCommand;
 use Common\Command\PackModuleCommand;
 use Common\Command\HelloCommand;
 use Common\Command\InitModuleCommand;
@@ -22,6 +23,7 @@ return [
             'pack-module' => PackModuleCommand::class,
 
             'download-message-media' => DownloadMessageMediasCommand::class,
+            'upload-message-media' => UploadMessageMediasCommand::class,
         ],
     ],
 ];

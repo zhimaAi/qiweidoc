@@ -102,6 +102,9 @@ class Routes extends RouterProvider
 
             Cron::name("download_message_medias")->spec("@every 6h")
                 ->action(DownloadMessageMediasCron::class, []),
+
+            Cron::name("upload_message_medias")->spec("@every 6h")
+                ->action(UploadMessageMediasCron::class, []),
         ];
     }
 
