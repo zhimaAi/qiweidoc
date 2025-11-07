@@ -137,7 +137,13 @@ final class JobsRunner extends ApplicationRunner
                 try {
                     $task->ack();
                 } catch (Throwable $e) {
-
+                    $logger->error($e, [
+                        'id' => $task->getId(),
+                        'headers' => $task->getHeaders(),
+                        'name' => $task->getName(),
+                        'payload' => $task->getPayload(),
+                        'throwable' => $e,
+                    ]);
                 }
 
                 $logger->error($e, [
