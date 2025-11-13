@@ -39,6 +39,7 @@ use Modules\Main\Controller\StorageController;
 use Modules\Main\Controller\TagsController;
 use Modules\Main\Controller\UserController;
 use Modules\Main\Cron\SyncStaffChatCron;
+use Modules\Main\Cron\UploadMessageMediasCron;
 use Modules\Main\Library\Middlewares\CurrentCorpInfoMiddleware;
 use Modules\Main\Library\Middlewares\UserRoleMiddleware;
 use Modules\Main\Library\Middlewares\WxAuthMiddleware;

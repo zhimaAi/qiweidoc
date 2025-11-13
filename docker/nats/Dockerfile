@@ -1,4 +1,4 @@
-FROM nats:2.10.22
+FROM nats:2.12.1
 
 ADD docker/nats/config.conf /etc/nats/nats-server.conf
 

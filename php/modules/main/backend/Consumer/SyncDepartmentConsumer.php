@@ -94,7 +94,7 @@ class SyncDepartmentConsumer
         $userInfo = UserModel::query()->where(["corp_id"=>$this->corp->get("id"),"role_id"=>EnumUserRoleType::SUPPER_ADMIN->value])->getOne();
         if (!empty($userInfo)) {
             StaffModel::query()->where(["corp_id"=>$this->corp->get("id"),"userid"=>$userInfo->get("userid")])->update([
-                "role_id"=>$userInfo->get("role_id")->value??EnumUserRoleType::NORMAL_STAFF->value,
+                "role_id"=>$userInfo->get("role_id")->value ?? EnumUserRoleType::NORMAL_STAFF->value,
                 "can_login"=>$userInfo->get("can_login")
             ]);
         }

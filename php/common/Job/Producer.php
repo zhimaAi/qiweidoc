@@ -7,6 +7,8 @@ use Common\Module;
 use Common\Yii;
 use Exception;
 use Spiral\RoadRunner\Jobs\Jobs;
+use Spiral\RoadRunner\Jobs\Options;
+use Spiral\RoadRunner\Jobs\OptionsInterface;
 use Spiral\RoadRunner\Jobs\Task\QueuedTaskInterface;
 use Throwable;
 
@@ -48,7 +50,7 @@ class Producer
         $queueName = Module::getCurrentModuleName() . "_" . $router->getQueueName();
         $queue = $job->connect($queueName);
 
-        $task = $queue->create($className, serialize($data));
+        $task = $queue->create($className, serialize($data))->withAutoAck(true);
         if ($delay > 0) {
             $task = $task->withHeader('deferred_exec_time', time() + $delay);
         }

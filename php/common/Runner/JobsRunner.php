@@ -22,8 +22,6 @@ use Yiisoft\Yii\Runner\ApplicationRunner;
  */
 final class JobsRunner extends ApplicationRunner
 {
-    const LOCK_TIME = 3600;
-
     public function __construct(
         string  $rootPath,
         bool    $debug = false,
@@ -106,26 +104,10 @@ final class JobsRunner extends ApplicationRunner
                 continue;
             }
 
-            // 相当于是一个心跳功能，会重复推送任务
-            // 加锁防止任务重复执行
-            // 如果任务执行过程中进程挂了，锁会自动释放，然后重复推送可以保证任务再次执行
-            $lockKey = "task_lock:{$id}";
-            if (!Yii::mutex(self::LOCK_TIME)->acquire($lockKey)) {
-                dump("有任务执行时间过长", compact('id', 'name'));
-                if ($this->debug) {
-                    $worker->stop();
-                    break;
-                } else {
-                    $task->withDelay(30)->nack("任务正在执行中", true);
-                    continue;
-                }
-            }
-
             try {
                 Producer::dispatchSync($name, $data);
-                $task->ack();
             } catch (RetryableJobException $e) {
-                $task->withDelay($e->getDelay())->nack($e, true);
+                Producer::dispatch($name, $data, $e->getDelay());
                 $logger->error($e, [
                     'id' => $task->getId(),
                     'headers' => $task->getHeaders(),
@@ -134,18 +116,6 @@ final class JobsRunner extends ApplicationRunner
                     'throwable' => $e,
                 ]);
             } catch (Throwable $e) {
-                try {
-                    $task->ack();
-                } catch (Throwable $e) {
-                    $logger->error($e, [
-                        'id' => $task->getId(),
-                        'headers' => $task->getHeaders(),
-                        'name' => $task->getName(),
-                        'payload' => $task->getPayload(),
-                        'throwable' => $e,
-                    ]);
-                }
-
                 $logger->error($e, [
                     'id' => $task->getId(),
                     'headers' => $task->getHeaders(),
@@ -154,7 +124,6 @@ final class JobsRunner extends ApplicationRunner
                     'throwable' => $e,
                 ]);
             } finally {
-                Yii::mutex(self::LOCK_TIME)->release($lockKey);
                 $stateResetter->reset();
                 gc_collect_cycles();
                 gc_mem_caches();
