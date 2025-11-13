@@ -50,7 +50,7 @@ class Producer
         $queueName = Module::getCurrentModuleName() . "_" . $router->getQueueName();
         $queue = $job->connect($queueName);
 
-        $task = $queue->create($className, serialize($data))->withAutoAck(true);
+        $task = $queue->create($className, serialize($data))->withAutoAck(false);
         if ($delay > 0) {
             $task = $task->withHeader('deferred_exec_time', time() + $delay);
         }

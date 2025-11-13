@@ -22,6 +22,7 @@ use Yiisoft\Yii\Runner\ApplicationRunner;
  */
 final class JobsRunner extends ApplicationRunner
 {
+    const LOCK_TIME = 100;
     public function __construct(
         string  $rootPath,
         bool    $debug = false,
@@ -100,7 +101,13 @@ final class JobsRunner extends ApplicationRunner
             if ($deferredExecTime > 0 && $deferredExecTime >= time()) {
                 $time = date("Y-m-d H:i:s", $deferredExecTime);
                 $task->withDelay(max($deferredExecTime - time() + 1, 0))->nack("任务延迟到{$time}执行", true);
+                continue;
+            }
 
+            $lockKey = "task_lock:{$id}";
+            if (!Yii::mutex(self::LOCK_TIME)->acquire($lockKey)) {
+                dump("有任务执行时间过长", compact('id', 'name'));
+                $task->ack();
                 continue;
             }
 
@@ -124,6 +131,7 @@ final class JobsRunner extends ApplicationRunner
                     'throwable' => $e,
                 ]);
             } finally {
+                $task->ack();
                 $stateResetter->reset();
                 gc_collect_cycles();
                 gc_mem_caches();

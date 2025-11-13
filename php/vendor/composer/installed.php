@@ -3,7 +3,7 @@
         'name' => 'yiisoft/app-api',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => 'd6ceedc1908e15147241165fa7d258a7b60ac752',
+        'reference' => 'aa2df7f73bfdfc4ff1f687c3a21e9548a544f21b',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(
@@ -1148,7 +1148,7 @@
         'yiisoft/app-api' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => 'd6ceedc1908e15147241165fa7d258a7b60ac752',
+            'reference' => 'aa2df7f73bfdfc4ff1f687c3a21e9548a544f21b',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(
