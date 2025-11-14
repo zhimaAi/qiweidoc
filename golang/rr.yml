@@ -21,10 +21,6 @@ http:
   pool:
     num_workers: 1
     allocate_timeout: 5s
-    dynamic_allocator:
-      max_workers: 10
-      spawn_rate: 1
-      idle_timeout: 5s
     supervisor:
       max_worker_memory: 128 # 当进程使用内存超过128MB后自动重启(不会终止正在处理的请求)
       ttl: 300s # 每隔5分钟自动重启进程（不会终止正在处理的请求）
@@ -45,7 +41,7 @@ http:
 jobs:
   pool:
     command: php php/yii
-    num_workers: 2
+    num_workers: 1
     allocate_timeout: 5s
     dynamic_allocator:
       max_workers: 10
@@ -55,7 +51,7 @@ jobs:
 micro:
   pool:
     command: php php/yii
-    num_workers: 2
+    num_workers: 1
     allocate_timeout: 5s
     dynamic_allocator:
       max_workers: 10
@@ -75,12 +71,7 @@ broadcast:
 cron:
   pool:
     command: php php/yii
-    num_workers: 2
-    allocate_timeout: 2s
-    dynamic_allocator:
-      max_workers: 10
-      spawn_rate: 1
-      idle_timeout: 5s
+    num_workers: 1
 
 # 管理进程的插件
 service:
