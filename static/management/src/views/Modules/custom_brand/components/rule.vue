@@ -38,10 +38,10 @@
             <a-input v-else v-model:value="formState.login_page_description" placeholder="请输入登录页描述" class="gray-text"></a-input>
           </div>
         </a-form-item>
-        <a-form-item name="copyright" label="版权信息">
+        <a-form-item name="copyright" label="备案信息">
           <div class="content-name">
             <span v-if="isEdit" class="content-text mt6">{{ editData.copyright }}</span>
-            <a-input v-else v-model:value="formState.copyright" placeholder="请输入版权信息" class="gray-text"></a-input>
+            <a-input v-else v-model:value="formState.copyright" placeholder="请输入备案信息" class="gray-text"></a-input>
           </div>
         </a-form-item>
         <a-form-item class="empty-item">

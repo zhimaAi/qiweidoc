@@ -1,6 +1,6 @@
 <template>
     <div id="_footer" class="_main-footer normal hide">
-        <div class="copyright">{{ copyright || 'Copyright © 2021, 芝麻小事网络科技（武汉）有限公司 鄂ICP备19019997号-3' }}</div>
+        <a class="copyright" target="_blank" href="https://beian.miit.gov.cn/" >{{ copyright || 'Copyright © 2021, 芝麻小事网络科技（武汉）有限公司 鄂ICP备19019997号-3' }}</a>
     </div>
 </template>
 
@@ -62,6 +62,7 @@ function adjustFooterPosition() {
         color: #8c8c8c;
         font-size: 12px;
         font-weight: 400;
+        text-decoration: none;
     }
 }
 </style>
