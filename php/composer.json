@@ -36,7 +36,9 @@
         "ext-curl": "*",
         "ext-fileinfo": "*",
         "ext-openssl": "*",
+        "ext-pcntl": "*",
         "ext-pdo": "*",
+        "ext-zip": "*",
         "aws/aws-sdk-php": "^3.336",
         "basis-company/nats": "^1.0",
         "cebe/markdown": "^1.2@dev",
@@ -59,7 +61,7 @@
         "roadrunner-php/app-logger": "^1.2",
         "spiral/goridge": "^4.2",
         "spiral/roadrunner-grpc": "^3.4",
-        "spiral/roadrunner-jobs": "^4.6",
+        "spiral/roadrunner-jobs": "^4.7",
         "spiral/roadrunner-services": "v2.2.0",
         "symfony/console": "^6.0",
         "symfony/event-dispatcher": "^7.1",
@@ -105,9 +107,7 @@
         "yiisoft/yii-middleware": "^1.0",
         "yiisoft/yii-runner-console": "^2.0",
         "yiisoft/yii-runner-http": "^2.0",
-        "ext-zip": "*",
-        "yiisoft/yii-runner-roadrunner": "^3.0",
-        "ext-pcntl": "*"
+        "yiisoft/yii-runner-roadrunner": "^3.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.64"

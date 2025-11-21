@@ -14,13 +14,13 @@ require (
 	github.com/nats-io/nats.go v1.47.0
 	github.com/roadrunner-server/app-logger/v5 v5.1.1
 	github.com/roadrunner-server/config/v5 v5.1.1
-	github.com/roadrunner-server/endure/v2 v2.6.1
+	github.com/roadrunner-server/endure/v2 v2.6.2
 	github.com/roadrunner-server/errors v1.4.1
 	github.com/roadrunner-server/headers/v5 v5.1.1
-	github.com/roadrunner-server/http/v5 v5.1.1
+	github.com/roadrunner-server/http/v5 v5.2.8
 	github.com/roadrunner-server/jobs/v5 v5.1.1
-	github.com/roadrunner-server/nats/v5 v5.1.1
-	github.com/roadrunner-server/pool v1.1.2
+	github.com/roadrunner-server/nats/v5 v5.1.10-0.20251104085128-f5282373b976
+	github.com/roadrunner-server/pool v1.1.3
 	github.com/roadrunner-server/rpc/v5 v5.1.1
 	github.com/roadrunner-server/server/v5 v5.2.2
 	github.com/roadrunner-server/service/v5 v5.1.1
@@ -47,12 +47,13 @@ require (
 	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/mholt/acmez/v3 v3.1.4 // indirect
-	github.com/roadrunner-server/api/v4 v4.17.0 // indirect
+	github.com/roadrunner-server/api/v4 v4.22.1 // indirect
 	github.com/spf13/cast v1.10.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.uber.org/zap/exp v0.3.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.3 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
+	google.golang.org/genproto v0.0.0-20251029180050-ab9386a59fda // indirect
 )
 
 require (

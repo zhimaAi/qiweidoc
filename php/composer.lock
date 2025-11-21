@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3a1d27520ae03fdd248f688e5ca5f809",
+    "content-hash": "06e2834f1b021cd9d2f1c2c85a39bf53",
     "packages": [
         {
             "name": "alexkart/curl-builder",
@@ -3610,16 +3610,16 @@
         },
         {
             "name": "spiral/roadrunner-jobs",
-            "version": "v4.6.3",
+            "version": "v4.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/roadrunner-php/jobs.git",
-                "reference": "20cfcd551f106de11c9cc7d0b167dc6b8832dc4e"
+                "reference": "cfa65cacc49d6686da8045b0f3ee6b0d26aab5f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/roadrunner-php/jobs/zipball/20cfcd551f106de11c9cc7d0b167dc6b8832dc4e",
-                "reference": "20cfcd551f106de11c9cc7d0b167dc6b8832dc4e",
+                "url": "https://api.github.com/repos/roadrunner-php/jobs/zipball/cfa65cacc49d6686da8045b0f3ee6b0d26aab5f8",
+                "reference": "cfa65cacc49d6686da8045b0f3ee6b0d26aab5f8",
                 "shasum": ""
             },
             "require": {
@@ -3680,7 +3680,7 @@
                 "docs": "https://docs.roadrunner.dev",
                 "forum": "https://forum.roadrunner.dev/",
                 "issues": "https://github.com/roadrunner-server/roadrunner/issues",
-                "source": "https://github.com/roadrunner-php/jobs/tree/v4.6.3"
+                "source": "https://github.com/roadrunner-php/jobs/tree/v4.7.0"
             },
             "funding": [
                 {
@@ -3688,7 +3688,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-05-27T08:35:56+00:00"
+            "time": "2025-11-05T06:37:16+00:00"
         },
         {
             "name": "spiral/roadrunner-services",
@@ -12199,9 +12199,9 @@
         "ext-curl": "*",
         "ext-fileinfo": "*",
         "ext-openssl": "*",
+        "ext-pcntl": "*",
         "ext-pdo": "*",
-        "ext-zip": "*",
-        "ext-pcntl": "*"
+        "ext-zip": "*"
     },
     "platform-dev": {},
     "platform-overrides": {

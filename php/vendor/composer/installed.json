@@ -4822,17 +4822,17 @@
         },
         {
             "name": "spiral/roadrunner-jobs",
-            "version": "v4.6.3",
-            "version_normalized": "4.6.3.0",
+            "version": "v4.7.0",
+            "version_normalized": "4.7.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/roadrunner-php/jobs.git",
-                "reference": "20cfcd551f106de11c9cc7d0b167dc6b8832dc4e"
+                "reference": "cfa65cacc49d6686da8045b0f3ee6b0d26aab5f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/roadrunner-php/jobs/zipball/20cfcd551f106de11c9cc7d0b167dc6b8832dc4e",
-                "reference": "20cfcd551f106de11c9cc7d0b167dc6b8832dc4e",
+                "url": "https://api.github.com/repos/roadrunner-php/jobs/zipball/cfa65cacc49d6686da8045b0f3ee6b0d26aab5f8",
+                "reference": "cfa65cacc49d6686da8045b0f3ee6b0d26aab5f8",
                 "shasum": ""
             },
             "require": {
@@ -4850,7 +4850,7 @@
                 "roave/security-advisories": "dev-master",
                 "vimeo/psalm": ">=5.8"
             },
-            "time": "2025-05-27T08:35:56+00:00",
+            "time": "2025-11-05T06:37:16+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -4895,7 +4895,7 @@
                 "docs": "https://docs.roadrunner.dev",
                 "forum": "https://forum.roadrunner.dev/",
                 "issues": "https://github.com/roadrunner-server/roadrunner/issues",
-                "source": "https://github.com/roadrunner-php/jobs/tree/v4.6.3"
+                "source": "https://github.com/roadrunner-php/jobs/tree/v4.7.0"
             },
             "funding": [
                 {

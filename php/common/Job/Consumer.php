@@ -70,6 +70,7 @@ class Consumer
             prefetch: $this->count,
             deleteStreamOnStop: $this->deleteOnStop,
             deleteAfterAck: true,
+            ackWait: 18000,
         ))->resume();
     }
 }

@@ -3,7 +3,7 @@
         'name' => 'yiisoft/app-api',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => 'aa2df7f73bfdfc4ff1f687c3a21e9548a544f21b',
+        'reference' => '784e3fce2f82012c5d251a71d4ccd276a955c867',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(
@@ -708,9 +708,9 @@
             'dev_requirement' => false,
         ),
         'spiral/roadrunner-jobs' => array(
-            'pretty_version' => 'v4.6.3',
-            'version' => '4.6.3.0',
-            'reference' => '20cfcd551f106de11c9cc7d0b167dc6b8832dc4e',
+            'pretty_version' => 'v4.7.0',
+            'version' => '4.7.0.0',
+            'reference' => 'cfa65cacc49d6686da8045b0f3ee6b0d26aab5f8',
             'type' => 'library',
             'install_path' => __DIR__ . '/../spiral/roadrunner-jobs',
             'aliases' => array(),
@@ -1148,7 +1148,7 @@
         'yiisoft/app-api' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => 'aa2df7f73bfdfc4ff1f687c3a21e9548a544f21b',
+            'reference' => '784e3fce2f82012c5d251a71d4ccd276a955c867',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(

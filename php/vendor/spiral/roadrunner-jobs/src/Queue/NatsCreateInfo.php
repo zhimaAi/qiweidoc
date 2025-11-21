@@ -15,6 +15,7 @@ final class NatsCreateInfo extends CreateInfo
     public const DELETE_STREAM_ON_STOP_DEFAULT_VALUE = false;
     public const DELETE_AFTER_ACK_DEFAULT_VALUE = false;
     public const PRIORITY_DEFAULT_VALUE = 2;
+    public const ACK_WAIT_DEFAULT_VALUE = 0;
 
     /**
      * @param non-empty-string $name
@@ -23,6 +24,7 @@ final class NatsCreateInfo extends CreateInfo
      * @param positive-int $priority
      * @param positive-int $prefetch
      * @param positive-int $rateLimit
+     * @param int<0, max> $ackWait
      */
     public function __construct(
         string $name,
@@ -34,6 +36,7 @@ final class NatsCreateInfo extends CreateInfo
         public readonly int $rateLimit = self::RATE_LIMIT_DEFAULT_VALUE,
         public readonly bool $deleteStreamOnStop = self::DELETE_STREAM_ON_STOP_DEFAULT_VALUE,
         public readonly bool $deleteAfterAck = self::DELETE_AFTER_ACK_DEFAULT_VALUE,
+        public readonly int $ackWait = self::ACK_WAIT_DEFAULT_VALUE,
     ) {
         parent::__construct(Driver::NATS, $name, $priority);
 
@@ -41,6 +44,7 @@ final class NatsCreateInfo extends CreateInfo
         \assert($rateLimit >= 1, 'Precondition [rateLimit >= 1] failed');
         \assert($subject !== '', 'Precondition [subject !== ""] failed');
         \assert($stream !== '', 'Precondition [stream !== ""] failed');
+        \assert($ackWait >= 0, 'Precondition [ackWait >= 0] failed');
     }
 
     public function toArray(): array
@@ -53,6 +57,7 @@ final class NatsCreateInfo extends CreateInfo
             'stream' => $this->stream,
             'delete_stream_on_stop' => $this->deleteStreamOnStop,
             'delete_after_ack' => $this->deleteAfterAck,
+            'ack_wait' => $this->ackWait,
         ]);
     }
 }
