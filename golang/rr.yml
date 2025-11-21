@@ -43,30 +43,18 @@ jobs:
     command: php php/yii
     num_workers: 1
     allocate_timeout: 5s
-    dynamic_allocator:
-      max_workers: 10
-      spawn_rate: 1
-      idle_timeout: 5s
 
 micro:
   pool:
     command: php php/yii
     num_workers: 1
     allocate_timeout: 5s
-    dynamic_allocator:
-      max_workers: 10
-      spawn_rate: 1
-      idle_timeout: 5s
 
 broadcast:
   pool:
     command: php php/yii
     num_workers: 1
     allocate_timeout: 5s
-    dynamic_allocator:
-      max_workers: 5
-      spawn_rate: 1
-      idle_timeout: 5s
 
 cron:
   pool:

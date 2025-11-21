@@ -90,7 +90,7 @@ func startRR(name string, rpcPort, httpPort int, needPlugins []string) (*endure.
     // 覆盖jobs配置(第三个参数仅作为进程运行时标识符,方便查看进程,roadrunner会忽略掉第三个参数所以php那边不会报错)
     overrides = append(overrides, fmt.Sprintf(`jobs.pool.command=php php/modules/%s/yii jobs`, name))
     if name == "main" {
-        overrides = append(overrides, fmt.Sprintf(`jobs.pool.num_workers=4`))
+        overrides = append(overrides, fmt.Sprintf(`jobs.pool.num_workers=5`))
     }
 
     // nats配置
