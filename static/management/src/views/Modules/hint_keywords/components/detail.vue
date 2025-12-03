@@ -208,6 +208,7 @@ import statistic from './statistic.vue'
 import selectStaffNew from '@/components/select-staff-new/index';
 import { ruleDetail, keywordsRuleList } from "@/api/sensitive";
 import { staffList } from "@/api/company";
+import {objectToQueryString} from "@/utils/tools";
 
 const router = useRouter()
 const route = useRoute()
@@ -490,11 +491,7 @@ const edit = (record) => {
       params.receiver_type = record.to_role
       params.conversation_type = record.conversation_type
   }
-  let href = router.resolve({
-      path: '/sessionArchive/index',
-      query: params
-  }).href
-  window.open(href)
+  window.open(`/#/sessionArchive/index?${objectToQueryString(params)}`)
 }
 
 const resetData = () => {

@@ -20,6 +20,8 @@ use Modules\Main\Model\CorpModel;
 use Modules\Main\Model\CustomersModel;
 use Modules\Main\Model\GroupModel;
 use Modules\Main\Model\StaffModel;
+use Modules\Main\Service\AuthService;
+use Modules\Main\Service\StorageService;
 use Yiisoft\Arrays\ArrayHelper;
 use Zxing\QrReader;
 
@@ -351,7 +353,8 @@ SQL;
         } else if ($msg["msg_type"] === "image" && in_array("qr_code", $rule["target_msg_type"])) {//图片类型，验证一下是否存在二维码
 
             //验证是否为二维码
-            $isQrcode = checkImgIsQrcode($_ENV['MINIO_ENDPOINT'] . $msg["msg_content"]);
+            ini_set('memory_limit', '512M');
+            $isQrcode = checkImgIsQrcode(AuthService::getLoginDomain() . StorageService::getDownloadUrl($msg["msg_content"]));
 
             if ($isQrcode["is_qrcode"]) {
                 $is_checked = 1;

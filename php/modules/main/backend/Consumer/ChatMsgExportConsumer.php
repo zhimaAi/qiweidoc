@@ -174,7 +174,10 @@ class ChatMsgExportConsumer
                         $msg_content = $itemArr["msg_content"] ?? "";
                         break;
                 }
-                $msgInfo[] = $msg_content;
+
+                $content = str_replace(",", "，", $msg_content);
+                $content = str_replace("\n", "", $content);
+                $msgInfo[] = stripslashes($content) . "\t";
 
                 //消息类型
                 $msgInfo[] = EnumMessageType::from($itemArr["msg_type"] ?? "text")->getLabel();

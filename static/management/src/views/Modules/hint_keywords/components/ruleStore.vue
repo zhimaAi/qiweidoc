@@ -252,7 +252,7 @@ const verify = () => {
     // formState.staff_list = []
     selectedStaffs.value = []
   }
-  if (!(formState.hint_keywords.length || formState.hint_group_ids.length || formState.target_msg_type.length)) throw "敏感词或敏感行为至少完善一项"
+  if (!(formState.hint_keywords?.length || formState.hint_group_ids?.length || formState.target_msg_type?.length)) throw "敏感词或敏感行为至少完善一项"
 }
 
 const save = () => {
@@ -276,6 +276,7 @@ const save = () => {
       }
     })
   } catch (e) {
+    console.log('Err:', e)
     message.error(e)
     saving.value = false
   }
