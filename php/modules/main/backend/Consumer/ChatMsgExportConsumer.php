@@ -176,7 +176,7 @@ class ChatMsgExportConsumer
                 }
 
                 $content = str_replace(",", "，", $msg_content);
-                $content = str_replace("\n", "", $content);
+                $content = str_replace(["\r\n", "\r", "\n"], '', $content);
                 $msgInfo[] = stripslashes($content) . "\t";
 
                 //消息类型
