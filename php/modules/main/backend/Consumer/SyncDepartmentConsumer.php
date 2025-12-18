@@ -147,7 +147,7 @@ class SyncDepartmentConsumer
             if (empty($hisData)) {
                 //同步新增的账户，没有登陆权限，普通员工角色
                 $updateData["can_login"] = 0;
-                $updateData["role_id"] = EnumUserRoleType::NORMAL_STAFF;
+                $updateData["role_id"] = EnumUserRoleType::NORMAL_STAFF->value;
                 StaffModel::create($updateData);
             } else {
                 StaffModel::query()->where($whereData)->update($updateData);
