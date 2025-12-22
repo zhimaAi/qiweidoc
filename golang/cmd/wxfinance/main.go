@@ -75,6 +75,10 @@ func fetchData(request micro.Request) {
 	if err = request.RespondJSON(res); err != nil {
 		log.Println(err)
 	}
+
+	if err = request.RespondJSON(res); err != nil {
+		log.Println(err)
+	}
 }
 
 func fetchAndStreamMediaData(request micro.Request) {
