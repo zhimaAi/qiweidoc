@@ -277,6 +277,69 @@
             "install-path": "../basis-company/nats"
         },
         {
+            "name": "brick/math",
+            "version": "0.14.1",
+            "version_normalized": "0.14.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/brick/math.git",
+                "reference": "f05858549e5f9d7bb45875a75583240a38a281d0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/brick/math/zipball/f05858549e5f9d7bb45875a75583240a38a281d0",
+                "reference": "f05858549e5f9d7bb45875a75583240a38a281d0",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "php-coveralls/php-coveralls": "^2.2",
+                "phpstan/phpstan": "2.1.22",
+                "phpunit/phpunit": "^11.5"
+            },
+            "time": "2025-11-24T14:40:29+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "Brick\\Math\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Arbitrary-precision arithmetic library",
+            "keywords": [
+                "Arbitrary-precision",
+                "BigInteger",
+                "BigRational",
+                "arithmetic",
+                "bigdecimal",
+                "bignum",
+                "bignumber",
+                "brick",
+                "decimal",
+                "integer",
+                "math",
+                "mathematics",
+                "rational"
+            ],
+            "support": {
+                "issues": "https://github.com/brick/math/issues",
+                "source": "https://github.com/brick/math/tree/0.14.1"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/BenMorel",
+                    "type": "github"
+                }
+            ],
+            "install-path": "../brick/math"
+        },
+        {
             "name": "carbonphp/carbon-doctrine-types",
             "version": "3.2.0",
             "version_normalized": "3.2.0.0",
@@ -3183,6 +3246,87 @@
                 "source": "https://github.com/ramsey/collection/tree/2.1.1"
             },
             "install-path": "../ramsey/collection"
+        },
+        {
+            "name": "ramsey/uuid",
+            "version": "4.9.2",
+            "version_normalized": "4.9.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ramsey/uuid.git",
+                "reference": "8429c78ca35a09f27565311b98101e2826affde0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ramsey/uuid/zipball/8429c78ca35a09f27565311b98101e2826affde0",
+                "reference": "8429c78ca35a09f27565311b98101e2826affde0",
+                "shasum": ""
+            },
+            "require": {
+                "brick/math": "^0.8.16 || ^0.9 || ^0.10 || ^0.11 || ^0.12 || ^0.13 || ^0.14",
+                "php": "^8.0",
+                "ramsey/collection": "^1.2 || ^2.0"
+            },
+            "replace": {
+                "rhumsaa/uuid": "self.version"
+            },
+            "require-dev": {
+                "captainhook/captainhook": "^5.25",
+                "captainhook/plugin-composer": "^5.3",
+                "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+                "ergebnis/composer-normalize": "^2.47",
+                "mockery/mockery": "^1.6",
+                "paragonie/random-lib": "^2",
+                "php-mock/php-mock": "^2.6",
+                "php-mock/php-mock-mockery": "^1.5",
+                "php-parallel-lint/php-parallel-lint": "^1.4.0",
+                "phpbench/phpbench": "^1.2.14",
+                "phpstan/extension-installer": "^1.4",
+                "phpstan/phpstan": "^2.1",
+                "phpstan/phpstan-mockery": "^2.0",
+                "phpstan/phpstan-phpunit": "^2.0",
+                "phpunit/phpunit": "^9.6",
+                "slevomat/coding-standard": "^8.18",
+                "squizlabs/php_codesniffer": "^3.13"
+            },
+            "suggest": {
+                "ext-bcmath": "Enables faster math with arbitrary-precision integers using BCMath.",
+                "ext-gmp": "Enables faster math with arbitrary-precision integers using GMP.",
+                "ext-uuid": "Enables the use of PeclUuidTimeGenerator and PeclUuidRandomGenerator.",
+                "paragonie/random-lib": "Provides RandomLib for use with the RandomLibAdapter",
+                "ramsey/uuid-doctrine": "Allows the use of Ramsey\\Uuid\\Uuid as Doctrine field type."
+            },
+            "time": "2025-12-14T04:43:48+00:00",
+            "type": "library",
+            "extra": {
+                "captainhook": {
+                    "force-install": true
+                }
+            },
+            "installation-source": "dist",
+            "autoload": {
+                "files": [
+                    "src/functions.php"
+                ],
+                "psr-4": {
+                    "Ramsey\\Uuid\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A PHP library for generating and working with universally unique identifiers (UUIDs).",
+            "keywords": [
+                "guid",
+                "identifier",
+                "uuid"
+            ],
+            "support": {
+                "issues": "https://github.com/ramsey/uuid/issues",
+                "source": "https://github.com/ramsey/uuid/tree/4.9.2"
+            },
+            "install-path": "../ramsey/uuid"
         },
         {
             "name": "react/cache",

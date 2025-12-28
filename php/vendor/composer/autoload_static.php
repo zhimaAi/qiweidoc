@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit504c3ed4e6c6f257cff9128f107829ae
+class ComposerStaticInit3a1d27520ae03fdd248f688e5ca5f809
 {
     public static $files = array (
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
@@ -31,6 +31,7 @@ class ComposerStaticInit504c3ed4e6c6f257cff9128f107829ae
         'a1105708a18b76903365ca1c4aa61b02' => __DIR__ . '/..' . '/symfony/translation/Resources/functions.php',
         '8a9dc1de0ca7e01f3e08231539562f61' => __DIR__ . '/..' . '/aws/aws-sdk-php/src/functions.php',
         'a9ed0d27b5a698798a89181429f162c5' => __DIR__ . '/..' . '/khanamiryan/qrcode-detector-decoder/lib/Common/customFunctions.php',
+        'e39a8b23c42d4e1452234d762b03835a' => __DIR__ . '/..' . '/ramsey/uuid/src/functions.php',
         'ce9792f03fc8110f791684b60298386d' => __DIR__ . '/../..' . '/common/functions.php',
     );
 
@@ -171,6 +172,7 @@ class ComposerStaticInit504c3ed4e6c6f257cff9128f107829ae
             'React\\Dns\\' => 10,
             'React\\ChildProcess\\' => 19,
             'React\\Cache\\' => 12,
+            'Ramsey\\Uuid\\' => 12,
             'Ramsey\\Collection\\' => 18,
         ),
         'P' =>
@@ -255,6 +257,7 @@ class ComposerStaticInit504c3ed4e6c6f257cff9128f107829ae
         ),
         'B' =>
         array (
+            'Brick\\Math\\' => 11,
             'Basis\\Nats\\' => 11,
         ),
         'A' =>
@@ -730,6 +733,10 @@ class ComposerStaticInit504c3ed4e6c6f257cff9128f107829ae
         array (
             0 => __DIR__ . '/..' . '/react/cache/src',
         ),
+        'Ramsey\\Uuid\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/ramsey/uuid/src',
+        ),
         'Ramsey\\Collection\\' =>
         array (
             0 => __DIR__ . '/..' . '/ramsey/collection/src',
@@ -936,6 +943,10 @@ class ComposerStaticInit504c3ed4e6c6f257cff9128f107829ae
         array (
             0 => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon',
         ),
+        'Brick\\Math\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/brick/math/src',
+        ),
         'Basis\\Nats\\' =>
         array (
             0 => __DIR__ . '/..' . '/basis-company/nats/src',
@@ -1017,9 +1028,9 @@ class ComposerStaticInit504c3ed4e6c6f257cff9128f107829ae
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit504c3ed4e6c6f257cff9128f107829ae::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit504c3ed4e6c6f257cff9128f107829ae::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit504c3ed4e6c6f257cff9128f107829ae::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit3a1d27520ae03fdd248f688e5ca5f809::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit3a1d27520ae03fdd248f688e5ca5f809::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit3a1d27520ae03fdd248f688e5ca5f809::$classMap;
 
         }, null, ClassLoader::class);
     }

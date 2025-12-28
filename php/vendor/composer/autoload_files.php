@@ -30,5 +30,6 @@ return array(
     'a1105708a18b76903365ca1c4aa61b02' => $vendorDir . '/symfony/translation/Resources/functions.php',
     '8a9dc1de0ca7e01f3e08231539562f61' => $vendorDir . '/aws/aws-sdk-php/src/functions.php',
     'a9ed0d27b5a698798a89181429f162c5' => $vendorDir . '/khanamiryan/qrcode-detector-decoder/lib/Common/customFunctions.php',
+    'e39a8b23c42d4e1452234d762b03835a' => $vendorDir . '/ramsey/uuid/src/functions.php',
     'ce9792f03fc8110f791684b60298386d' => $baseDir . '/common/functions.php',
 );

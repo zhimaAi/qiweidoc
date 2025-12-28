@@ -1,12 +1,14 @@
 <?php return array(
     'root' => array(
         'name' => 'yiisoft/app-api',
-        'pretty_version' => 'dev-main',
-        'version' => 'dev-main',
-        'reference' => '894df9bff5ad48995d1605d2ce50f094d174c5d5',
+        'pretty_version' => 'dev-master',
+        'version' => 'dev-master',
+        'reference' => '1c9ed74b51842bf40d867f775ee7f9c4cb33b2ba',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
-        'aliases' => array(),
+        'aliases' => array(
+            0 => '1.0.x-dev',
+        ),
         'dev' => true,
     ),
     'versions' => array(
@@ -43,6 +45,15 @@
             'reference' => '25600755395944bcd6a4a0bcf1c349db85d4dd71',
             'type' => 'library',
             'install_path' => __DIR__ . '/../basis-company/nats',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'brick/math' => array(
+            'pretty_version' => '0.14.1',
+            'version' => '0.14.1.0',
+            'reference' => 'f05858549e5f9d7bb45875a75583240a38a281d0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../brick/math',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
@@ -501,6 +512,15 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
+        'ramsey/uuid' => array(
+            'pretty_version' => '4.9.2',
+            'version' => '4.9.2.0',
+            'reference' => '8429c78ca35a09f27565311b98101e2826affde0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../ramsey/uuid',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
         'react/cache' => array(
             'pretty_version' => 'v1.2.0',
             'version' => '1.2.0.0',
@@ -563,6 +583,12 @@
             'install_path' => __DIR__ . '/../react/stream',
             'aliases' => array(),
             'dev_requirement' => true,
+        ),
+        'rhumsaa/uuid' => array(
+            'dev_requirement' => false,
+            'replaced' => array(
+                0 => '4.9.2',
+            ),
         ),
         'roadrunner-php/app-logger' => array(
             'pretty_version' => '1.2.0',
@@ -1102,12 +1128,14 @@
             'dev_requirement' => false,
         ),
         'yiisoft/app-api' => array(
-            'pretty_version' => 'dev-main',
-            'version' => 'dev-main',
-            'reference' => '894df9bff5ad48995d1605d2ce50f094d174c5d5',
+            'pretty_version' => 'dev-master',
+            'version' => 'dev-master',
+            'reference' => '1c9ed74b51842bf40d867f775ee7f9c4cb33b2ba',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
-            'aliases' => array(),
+            'aliases' => array(
+                0 => '1.0.x-dev',
+            ),
             'dev_requirement' => false,
         ),
         'yiisoft/arrays' => array(
