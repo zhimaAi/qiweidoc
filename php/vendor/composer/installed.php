@@ -1,14 +1,12 @@
 <?php return array(
     'root' => array(
         'name' => 'yiisoft/app-api',
-        'pretty_version' => 'dev-master',
-        'version' => 'dev-master',
-        'reference' => 'ff2f52dbc678ae04eb389ec1c2d9ef5d93a5cf6a',
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
+        'reference' => '894df9bff5ad48995d1605d2ce50f094d174c5d5',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
-        'aliases' => array(
-            0 => '1.0.x-dev',
-        ),
+        'aliases' => array(),
         'dev' => true,
     ),
     'versions' => array(
@@ -1104,14 +1102,12 @@
             'dev_requirement' => false,
         ),
         'yiisoft/app-api' => array(
-            'pretty_version' => 'dev-master',
-            'version' => 'dev-master',
-            'reference' => 'ff2f52dbc678ae04eb389ec1c2d9ef5d93a5cf6a',
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => '894df9bff5ad48995d1605d2ce50f094d174c5d5',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
-            'aliases' => array(
-                0 => '1.0.x-dev',
-            ),
+            'aliases' => array(),
             'dev_requirement' => false,
         ),
         'yiisoft/arrays' => array(
