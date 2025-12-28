@@ -14,6 +14,7 @@ class SendEmailConsumer
 
     public function handle(): void
     {
+        sleep(2);
         echo "sending email to {$this->email}...\n";
     }
 }

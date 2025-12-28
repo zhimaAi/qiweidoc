@@ -2,25 +2,26 @@ package master
 
 import (
     "fmt"
+    "log/slog"
+    "os"
+    "session_archive/golang/internal/master/rr_plugins/broadcast"
+    "session_archive/golang/internal/master/rr_plugins/common"
+    "session_archive/golang/internal/master/rr_plugins/cron"
+    "session_archive/golang/internal/master/rr_plugins/jobs"
+    "session_archive/golang/internal/master/rr_plugins/logger"
+    "session_archive/golang/internal/master/rr_plugins/micro"
+
     "github.com/roadrunner-server/app-logger/v5"
     "github.com/roadrunner-server/config/v5"
     "github.com/roadrunner-server/endure/v2"
     "github.com/roadrunner-server/gzip/v5"
     "github.com/roadrunner-server/headers/v5"
     httpPlugin "github.com/roadrunner-server/http/v5"
-    "github.com/roadrunner-server/jobs/v5"
     "github.com/roadrunner-server/nats/v5"
     rpcPlugin "github.com/roadrunner-server/rpc/v5"
     "github.com/roadrunner-server/server/v5"
     "github.com/roadrunner-server/service/v5"
     "github.com/roadrunner-server/static/v5"
-    "log/slog"
-    "os"
-    "session_archive/golang/internal/master/rr_plugins/broadcast"
-    "session_archive/golang/internal/master/rr_plugins/common"
-    "session_archive/golang/internal/master/rr_plugins/cron"
-    "session_archive/golang/internal/master/rr_plugins/logger"
-    "session_archive/golang/internal/master/rr_plugins/micro"
 )
 
 func startRR(name string, rpcPort, httpPort int, needPlugins []string) (*endure.Endure, error) {
@@ -38,7 +39,7 @@ func startRR(name string, rpcPort, httpPort int, needPlugins []string) (*endure.
         &server.Plugin{},
         &service.Plugin{},
         &app.Plugin{},
-
+        &nats.Plugin{},
         &common.Plugin{},
     }
     for _, p := range needPlugins {
@@ -51,10 +52,7 @@ func startRR(name string, rpcPort, httpPort int, needPlugins []string) (*endure.
             )
         }
         if p == "jobs" {
-            plugins = append(plugins,
-                &jobs.Plugin{},
-                &nats.Plugin{},
-            )
+            plugins = append(plugins, &jobs.Plugin{})
         }
         if p == "cron" {
             plugins = append(plugins, &cron.Plugin{})

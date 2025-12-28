@@ -1,4 +1,7 @@
 <?php
+// Copyright © 2016- 2025 Sesame Network Technology all right reserved
+
+declare(strict_types=1);
 
 namespace Common\Job;
 
@@ -6,12 +9,12 @@ use Common\Exceptions\RetryableJobException;
 use Common\Module;
 use Common\Yii;
 use Exception;
-use Spiral\RoadRunner\Jobs\Jobs;
-use Spiral\RoadRunner\Jobs\Options;
-use Spiral\RoadRunner\Jobs\OptionsInterface;
-use Spiral\RoadRunner\Jobs\Task\QueuedTaskInterface;
+use Spiral\Goridge\RPC\RPC;
 use Throwable;
 
+/**
+ * Jobs Producer - 使用自定义 jobs 插件的生产者
+ */
 class Producer
 {
     /**
@@ -38,24 +41,37 @@ class Producer
     }
 
     /**
-     * 异步执行
+     * 异步执行 - 通过 RPC 调用 jobs 插件的 Push 方法
      *
      * @throws Throwable
      */
-    public static function dispatch(string $className, array $data, int $delay = 0): QueuedTaskInterface
+    public static function dispatch(string $className, array $data): void
     {
+        // 解析路由以获取队列名称和验证 handler 存在
         $router = self::resolveRoute($className);
+        $queueName = $router->getQueueName();
 
-        $job = new Jobs(Yii::getRpcClient());
-        $queueName = Module::getCurrentModuleName() . "_" . $router->getQueueName();
-        $queue = $job->connect($queueName);
+        $rpc = Yii::getRpcClient();
 
-        $task = $queue->create($className, serialize($data))->withAutoAck(false);
-        if ($delay > 0) {
-            $task = $task->withHeader('deferred_exec_time', time() + $delay);
-        }
+        // 准备任务数据
+        $jobData = [
+            'queue' => $queueName,
+            'handler' => $className,
+            'data' => json_encode([
+                'className' => $className,
+                'args' => serialize($data),
+            ], JSON_UNESCAPED_UNICODE),
+        ];
 
-        return $queue->dispatch($task);
+        // 调用 RPC 方法 jobs.Push
+        $result = $rpc->call('jobs.Push',  $jobData);
+
+        Yii::logger()->debug('Job dispatched', [
+            'queue' => $queueName,
+            'className' => $className,
+            'data' => $data,
+            'result' => $result,
+        ]);
     }
 
     /**

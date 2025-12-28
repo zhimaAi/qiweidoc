@@ -4,6 +4,7 @@
 declare(strict_types=1);
 
 use Common\Command\DownloadMessageMediasCommand;
+use Common\Command\JobsQueueStatusCommand;
 use Common\Command\UploadMessageMediasCommand;
 use Common\Command\PackModuleCommand;
 use Common\Command\HelloCommand;
@@ -17,6 +18,7 @@ return [
             'hello' => HelloCommand::class,
             'test' => TestCommand::class,
 
+            'jobs-status' => JobsQueueStatusCommand::class,
             'reset-table-owner' => ResetTableOwnerCommand::class,
 
             'init-module' => InitModuleCommand::class,

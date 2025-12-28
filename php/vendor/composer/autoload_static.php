@@ -27,7 +27,6 @@ class ComposerStaticInit3a1d27520ae03fdd248f688e5ca5f809
         'c5521cebe610a9bf42c44b3a5163adfd' => __DIR__ . '/..' . '/overtrue/socialite/src/Contracts/FactoryInterface.php',
         'ccd11c8e7dd9b33638b248681bdfba27' => __DIR__ . '/..' . '/overtrue/socialite/src/Contracts/UserInterface.php',
         '5649552725dea6ec47381627600e3ac1' => __DIR__ . '/..' . '/overtrue/socialite/src/Contracts/ProviderInterface.php',
-        'e39a8b23c42d4e1452234d762b03835a' => __DIR__ . '/..' . '/ramsey/uuid/src/functions.php',
         '9d2b9fc6db0f153a0a149fefb182415e' => __DIR__ . '/..' . '/symfony/polyfill-php84/bootstrap.php',
         'a1105708a18b76903365ca1c4aa61b02' => __DIR__ . '/..' . '/symfony/translation/Resources/functions.php',
         '8a9dc1de0ca7e01f3e08231539562f61' => __DIR__ . '/..' . '/aws/aws-sdk-php/src/functions.php',
@@ -36,15 +35,15 @@ class ComposerStaticInit3a1d27520ae03fdd248f688e5ca5f809
     );
 
     public static $prefixLengthsPsr4 = array (
-        'c' => 
+        'c' =>
         array (
             'cebe\\markdown\\' => 14,
         ),
-        'Z' => 
+        'Z' =>
         array (
             'Zxing\\' => 6,
         ),
-        'Y' => 
+        'Y' =>
         array (
             'Yiisoft\\Yii\\Runner\\RoadRunner\\' => 30,
             'Yiisoft\\Yii\\Runner\\Http\\' => 24,
@@ -102,16 +101,16 @@ class ComposerStaticInit3a1d27520ae03fdd248f688e5ca5f809
             'Yiisoft\\Arrays\\' => 15,
             'Yiisoft\\Aliases\\' => 16,
         ),
-        'W' => 
+        'W' =>
         array (
             'Whoops\\' => 7,
         ),
-        'T' => 
+        'T' =>
         array (
             'TheNorthMemory\\Xml\\' => 19,
             'Temporal\\' => 9,
         ),
-        'S' => 
+        'S' =>
         array (
             'Symfony\\Polyfill\\Php84\\' => 23,
             'Symfony\\Polyfill\\Php83\\' => 23,
@@ -152,7 +151,6 @@ class ComposerStaticInit3a1d27520ae03fdd248f688e5ca5f809
             'Spiral\\Tokenizer\\' => 17,
             'Spiral\\Security\\' => 16,
             'Spiral\\RoadRunner\\Services\\' => 27,
-            'Spiral\\RoadRunner\\Jobs\\' => 23,
             'Spiral\\RoadRunner\\Http\\' => 23,
             'Spiral\\RoadRunner\\GRPC\\' => 23,
             'Spiral\\RoadRunner\\Console\\' => 26,
@@ -162,7 +160,7 @@ class ComposerStaticInit3a1d27520ae03fdd248f688e5ca5f809
             'Spiral\\Goridge\\' => 15,
             'Spiral\\Core\\' => 12,
         ),
-        'R' => 
+        'R' =>
         array (
             'RoadRunner\\Logger\\' => 18,
             'RoadRunner\\' => 11,
@@ -173,10 +171,9 @@ class ComposerStaticInit3a1d27520ae03fdd248f688e5ca5f809
             'React\\Dns\\' => 10,
             'React\\ChildProcess\\' => 19,
             'React\\Cache\\' => 12,
-            'Ramsey\\Uuid\\' => 12,
             'Ramsey\\Collection\\' => 18,
         ),
-        'P' => 
+        'P' =>
         array (
             'Psr\\SimpleCache\\' => 16,
             'Psr\\Log\\' => 8,
@@ -191,29 +188,28 @@ class ComposerStaticInit3a1d27520ae03fdd248f688e5ca5f809
             'PhpOption\\' => 10,
             'PhpCsFixer\\' => 11,
         ),
-        'O' => 
+        'O' =>
         array (
             'Overtrue\\Socialite\\' => 19,
         ),
-        'N' => 
+        'N' =>
         array (
             'Nyholm\\Psr7\\' => 12,
             'Nyholm\\Psr7Server\\' => 18,
         ),
-        'J' => 
+        'J' =>
         array (
             'JmesPath\\' => 9,
         ),
-        'H' => 
+        'H' =>
         array (
             'HttpSoft\\Message\\' => 17,
         ),
-        'G' => 
+        'G' =>
         array (
             'GuzzleHttp\\Psr7\\' => 16,
             'GuzzleHttp\\Promise\\' => 19,
             'GuzzleHttp\\' => 11,
-            'Grpc\\' => 5,
             'GrahamCampbell\\ResultType\\' => 26,
             'Google\\Type\\' => 12,
             'Google\\Rpc\\' => 11,
@@ -230,24 +226,24 @@ class ComposerStaticInit3a1d27520ae03fdd248f688e5ca5f809
             'GPBMetadata\\Google\\Api\\' => 23,
             'GPBMetadata\\' => 12,
         ),
-        'F' => 
+        'F' =>
         array (
             'Firebase\\JWT\\' => 13,
             'Fidry\\CpuCoreCounter\\' => 21,
             'FastRoute\\' => 10,
         ),
-        'E' => 
+        'E' =>
         array (
             'Evenement\\' => 10,
             'EasyWeChat\\' => 11,
         ),
-        'D' => 
+        'D' =>
         array (
             'Dotenv\\' => 7,
             'Doctrine\\Deprecations\\' => 22,
             'Doctrine\\Common\\Collections\\' => 28,
         ),
-        'C' => 
+        'C' =>
         array (
             'Composer\\XdebugHandler\\' => 23,
             'Composer\\Semver\\' => 16,
@@ -257,12 +253,11 @@ class ComposerStaticInit3a1d27520ae03fdd248f688e5ca5f809
             'Carbon\\Doctrine\\' => 16,
             'Carbon\\' => 7,
         ),
-        'B' => 
+        'B' =>
         array (
-            'Brick\\Math\\' => 11,
             'Basis\\Nats\\' => 11,
         ),
-        'A' => 
+        'A' =>
         array (
             'Aws\\' => 4,
             'Alexkart\\CurlBuilder\\' => 21,
@@ -270,702 +265,686 @@ class ComposerStaticInit3a1d27520ae03fdd248f688e5ca5f809
     );
 
     public static $prefixDirsPsr4 = array (
-        'cebe\\markdown\\' => 
+        'cebe\\markdown\\' =>
         array (
             0 => __DIR__ . '/..' . '/cebe/markdown',
         ),
-        'Zxing\\' => 
+        'Zxing\\' =>
         array (
             0 => __DIR__ . '/..' . '/khanamiryan/qrcode-detector-decoder/lib',
         ),
-        'Yiisoft\\Yii\\Runner\\RoadRunner\\' => 
+        'Yiisoft\\Yii\\Runner\\RoadRunner\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/yii-runner-roadrunner/src',
         ),
-        'Yiisoft\\Yii\\Runner\\Http\\' => 
+        'Yiisoft\\Yii\\Runner\\Http\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/yii-runner-http/src',
         ),
-        'Yiisoft\\Yii\\Runner\\Console\\' => 
+        'Yiisoft\\Yii\\Runner\\Console\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/yii-runner-console/src',
         ),
-        'Yiisoft\\Yii\\Runner\\' => 
+        'Yiisoft\\Yii\\Runner\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/yii-runner/src',
         ),
-        'Yiisoft\\Yii\\Middleware\\' => 
+        'Yiisoft\\Yii\\Middleware\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/yii-middleware/src',
         ),
-        'Yiisoft\\Yii\\Http\\' => 
+        'Yiisoft\\Yii\\Http\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/yii-http/src',
         ),
-        'Yiisoft\\Yii\\Event\\' => 
+        'Yiisoft\\Yii\\Event\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/yii-event/src',
         ),
-        'Yiisoft\\Yii\\Debug\\Tests\\Shared\\' => 
+        'Yiisoft\\Yii\\Debug\\Tests\\Shared\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/yii-debug/tests/Shared',
         ),
-        'Yiisoft\\Yii\\Debug\\' => 
+        'Yiisoft\\Yii\\Debug\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/yii-debug/src',
         ),
-        'Yiisoft\\Yii\\Console\\' => 
+        'Yiisoft\\Yii\\Console\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/yii-console/src',
         ),
-        'Yiisoft\\VarDumper\\' => 
+        'Yiisoft\\VarDumper\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/var-dumper/src',
         ),
-        'Yiisoft\\Validator\\' => 
+        'Yiisoft\\Validator\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/validator/src',
         ),
-        'Yiisoft\\Translator\\' => 
+        'Yiisoft\\Translator\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/translator/src',
         ),
-        'Yiisoft\\Strings\\' => 
+        'Yiisoft\\Strings\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/strings/src',
         ),
-        'Yiisoft\\Session\\' => 
+        'Yiisoft\\Session\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/session/src',
         ),
-        'Yiisoft\\Security\\' => 
+        'Yiisoft\\Security\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/security/src',
         ),
-        'Yiisoft\\Router\\FastRoute\\' => 
+        'Yiisoft\\Router\\FastRoute\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/router-fastroute/src',
         ),
-        'Yiisoft\\Router\\' => 
+        'Yiisoft\\Router\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/router/src',
         ),
-        'Yiisoft\\Request\\Body\\' => 
+        'Yiisoft\\Request\\Body\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/request-body-parser/src',
         ),
-        'Yiisoft\\RequestProvider\\' => 
+        'Yiisoft\\RequestProvider\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/request-provider/src',
         ),
-        'Yiisoft\\Proxy\\' => 
+        'Yiisoft\\Proxy\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/proxy/src',
         ),
-        'Yiisoft\\Profiler\\' => 
+        'Yiisoft\\Profiler\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/profiler/src',
         ),
-        'Yiisoft\\NetworkUtilities\\' => 
+        'Yiisoft\\NetworkUtilities\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/network-utilities/src',
         ),
-        'Yiisoft\\Mutex\\Redis\\' => 
+        'Yiisoft\\Mutex\\Redis\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/mutex-redis/src',
         ),
-        'Yiisoft\\Mutex\\' => 
+        'Yiisoft\\Mutex\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/mutex/src',
         ),
-        'Yiisoft\\Middleware\\Dispatcher\\' => 
+        'Yiisoft\\Middleware\\Dispatcher\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/middleware-dispatcher/src',
         ),
-        'Yiisoft\\Log\\Target\\File\\' => 
+        'Yiisoft\\Log\\Target\\File\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/log-target-file/src',
         ),
-        'Yiisoft\\Log\\' => 
+        'Yiisoft\\Log\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/log/src',
         ),
-        'Yiisoft\\Json\\' => 
+        'Yiisoft\\Json\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/json/src',
         ),
-        'Yiisoft\\Input\\Http\\' => 
+        'Yiisoft\\Input\\Http\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/input-http/src',
         ),
-        'Yiisoft\\Injector\\' => 
+        'Yiisoft\\Injector\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/injector/src',
         ),
-        'Yiisoft\\I18n\\' => 
+        'Yiisoft\\I18n\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/i18n/src',
         ),
-        'Yiisoft\\Hydrator\\Validator\\' => 
+        'Yiisoft\\Hydrator\\Validator\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/hydrator-validator/src',
         ),
-        'Yiisoft\\Hydrator\\' => 
+        'Yiisoft\\Hydrator\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/hydrator/src',
         ),
-        'Yiisoft\\Http\\' => 
+        'Yiisoft\\Http\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/http/src',
         ),
-        'Yiisoft\\FriendlyException\\' => 
+        'Yiisoft\\FriendlyException\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/friendly-exception/src',
         ),
-        'Yiisoft\\Files\\' => 
+        'Yiisoft\\Files\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/files/src',
         ),
-        'Yiisoft\\Factory\\' => 
+        'Yiisoft\\Factory\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/factory/src',
         ),
-        'Yiisoft\\EventDispatcher\\' => 
+        'Yiisoft\\EventDispatcher\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/event-dispatcher/src',
         ),
-        'Yiisoft\\ErrorHandler\\' => 
+        'Yiisoft\\ErrorHandler\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/error-handler/src',
         ),
-        'Yiisoft\\Di\\' => 
+        'Yiisoft\\Di\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/di/src',
         ),
-        'Yiisoft\\Definitions\\' => 
+        'Yiisoft\\Definitions\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/definitions/src',
         ),
-        'Yiisoft\\Db\\Pgsql\\' => 
+        'Yiisoft\\Db\\Pgsql\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/db-pgsql/src',
         ),
-        'Yiisoft\\Db\\Migration\\' => 
+        'Yiisoft\\Db\\Migration\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/db-migration/src',
         ),
-        'Yiisoft\\Db\\' => 
+        'Yiisoft\\Db\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/db/src',
         ),
-        'Yiisoft\\Data\\' => 
+        'Yiisoft\\Data\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/data/src',
         ),
-        'Yiisoft\\DataResponse\\' => 
+        'Yiisoft\\DataResponse\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/data-response/src',
         ),
-        'Yiisoft\\Cookies\\' => 
+        'Yiisoft\\Cookies\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/cookies/src',
         ),
-        'Yiisoft\\Config\\' => 
+        'Yiisoft\\Config\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/config/src',
         ),
-        'Yiisoft\\Cache\\Redis\\' => 
+        'Yiisoft\\Cache\\Redis\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/cache-redis/src',
         ),
-        'Yiisoft\\Cache\\File\\' => 
+        'Yiisoft\\Cache\\File\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/cache-file/src',
         ),
-        'Yiisoft\\Cache\\' => 
+        'Yiisoft\\Cache\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/cache/src',
         ),
-        'Yiisoft\\Auth\\' => 
+        'Yiisoft\\Auth\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/auth/src',
         ),
-        'Yiisoft\\Arrays\\' => 
+        'Yiisoft\\Arrays\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/arrays/src',
         ),
-        'Yiisoft\\Aliases\\' => 
+        'Yiisoft\\Aliases\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/aliases/src',
         ),
-        'Whoops\\' => 
+        'Whoops\\' =>
         array (
             0 => __DIR__ . '/..' . '/filp/whoops/src/Whoops',
         ),
-        'TheNorthMemory\\Xml\\' => 
+        'TheNorthMemory\\Xml\\' =>
         array (
             0 => __DIR__ . '/..' . '/thenorthmemory/xml/src',
         ),
-        'Temporal\\' => 
+        'Temporal\\' =>
         array (
             0 => __DIR__ . '/..' . '/roadrunner-php/roadrunner-api-dto/generated/Temporal',
         ),
-        'Symfony\\Polyfill\\Php84\\' => 
+        'Symfony\\Polyfill\\Php84\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php84',
         ),
-        'Symfony\\Polyfill\\Php83\\' => 
+        'Symfony\\Polyfill\\Php83\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php83',
         ),
-        'Symfony\\Polyfill\\Php81\\' => 
+        'Symfony\\Polyfill\\Php81\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php81',
         ),
-        'Symfony\\Polyfill\\Php80\\' => 
+        'Symfony\\Polyfill\\Php80\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php80',
         ),
-        'Symfony\\Polyfill\\Mbstring\\' => 
+        'Symfony\\Polyfill\\Mbstring\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
         ),
-        'Symfony\\Polyfill\\Intl\\Normalizer\\' => 
+        'Symfony\\Polyfill\\Intl\\Normalizer\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer',
         ),
-        'Symfony\\Polyfill\\Intl\\Idn\\' => 
+        'Symfony\\Polyfill\\Intl\\Idn\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-intl-idn',
         ),
-        'Symfony\\Polyfill\\Intl\\Grapheme\\' => 
+        'Symfony\\Polyfill\\Intl\\Grapheme\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme',
         ),
-        'Symfony\\Polyfill\\Ctype\\' => 
+        'Symfony\\Polyfill\\Ctype\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
         ),
-        'Symfony\\Contracts\\Translation\\' => 
+        'Symfony\\Contracts\\Translation\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/translation-contracts',
         ),
-        'Symfony\\Contracts\\Service\\' => 
+        'Symfony\\Contracts\\Service\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/service-contracts',
         ),
-        'Symfony\\Contracts\\HttpClient\\' => 
+        'Symfony\\Contracts\\HttpClient\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/http-client-contracts',
         ),
-        'Symfony\\Contracts\\EventDispatcher\\' => 
+        'Symfony\\Contracts\\EventDispatcher\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/event-dispatcher-contracts',
         ),
-        'Symfony\\Contracts\\Cache\\' => 
+        'Symfony\\Contracts\\Cache\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/cache-contracts',
         ),
-        'Symfony\\Component\\Yaml\\' => 
+        'Symfony\\Component\\Yaml\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/yaml',
         ),
-        'Symfony\\Component\\VarExporter\\' => 
+        'Symfony\\Component\\VarExporter\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/var-exporter',
         ),
-        'Symfony\\Component\\TypeInfo\\' => 
+        'Symfony\\Component\\TypeInfo\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/type-info',
         ),
-        'Symfony\\Component\\Translation\\' => 
+        'Symfony\\Component\\Translation\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/translation',
         ),
-        'Symfony\\Component\\String\\' => 
+        'Symfony\\Component\\String\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/string',
         ),
-        'Symfony\\Component\\Stopwatch\\' => 
+        'Symfony\\Component\\Stopwatch\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/stopwatch',
         ),
-        'Symfony\\Component\\Scheduler\\' => 
+        'Symfony\\Component\\Scheduler\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/scheduler',
         ),
-        'Symfony\\Component\\PropertyInfo\\' => 
+        'Symfony\\Component\\PropertyInfo\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/property-info',
         ),
-        'Symfony\\Component\\PropertyAccess\\' => 
+        'Symfony\\Component\\PropertyAccess\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/property-access',
         ),
-        'Symfony\\Component\\Process\\' => 
+        'Symfony\\Component\\Process\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/process',
         ),
-        'Symfony\\Component\\OptionsResolver\\' => 
+        'Symfony\\Component\\OptionsResolver\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/options-resolver',
         ),
-        'Symfony\\Component\\Mime\\' => 
+        'Symfony\\Component\\Mime\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/mime',
         ),
-        'Symfony\\Component\\Messenger\\' => 
+        'Symfony\\Component\\Messenger\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/messenger',
         ),
-        'Symfony\\Component\\HttpFoundation\\' => 
+        'Symfony\\Component\\HttpFoundation\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/http-foundation',
         ),
-        'Symfony\\Component\\HttpClient\\' => 
+        'Symfony\\Component\\HttpClient\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/http-client',
         ),
-        'Symfony\\Component\\Finder\\' => 
+        'Symfony\\Component\\Finder\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/finder',
         ),
-        'Symfony\\Component\\Filesystem\\' => 
+        'Symfony\\Component\\Filesystem\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/filesystem',
         ),
-        'Symfony\\Component\\EventDispatcher\\' => 
+        'Symfony\\Component\\EventDispatcher\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/event-dispatcher',
         ),
-        'Symfony\\Component\\Console\\' => 
+        'Symfony\\Component\\Console\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/console',
         ),
-        'Symfony\\Component\\Clock\\' => 
+        'Symfony\\Component\\Clock\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/clock',
         ),
-        'Symfony\\Component\\Cache\\' => 
+        'Symfony\\Component\\Cache\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/cache',
         ),
-        'Symfony\\Bridge\\PsrHttpMessage\\' => 
+        'Symfony\\Bridge\\PsrHttpMessage\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/psr-http-message-bridge',
         ),
-        'Spiral\\Tokenizer\\' => 
+        'Spiral\\Tokenizer\\' =>
         array (
             0 => __DIR__ . '/..' . '/spiral/tokenizer/src',
         ),
-        'Spiral\\Security\\' => 
+        'Spiral\\Security\\' =>
         array (
             0 => __DIR__ . '/..' . '/spiral/security/src',
         ),
-        'Spiral\\RoadRunner\\Services\\' => 
+        'Spiral\\RoadRunner\\Services\\' =>
         array (
             0 => __DIR__ . '/..' . '/spiral/roadrunner-services/src',
         ),
-        'Spiral\\RoadRunner\\Jobs\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/spiral/roadrunner-jobs/src',
-        ),
-        'Spiral\\RoadRunner\\Http\\' => 
+        'Spiral\\RoadRunner\\Http\\' =>
         array (
             0 => __DIR__ . '/..' . '/spiral/roadrunner-http/src',
         ),
-        'Spiral\\RoadRunner\\GRPC\\' => 
+        'Spiral\\RoadRunner\\GRPC\\' =>
         array (
             0 => __DIR__ . '/..' . '/spiral/roadrunner-grpc/src',
         ),
-        'Spiral\\RoadRunner\\Console\\' => 
+        'Spiral\\RoadRunner\\Console\\' =>
         array (
             0 => __DIR__ . '/..' . '/spiral/roadrunner-cli/src',
         ),
-        'Spiral\\RoadRunner\\' => 
+        'Spiral\\RoadRunner\\' =>
         array (
             0 => __DIR__ . '/..' . '/spiral/roadrunner-worker/src',
         ),
-        'Spiral\\Logger\\' => 
+        'Spiral\\Logger\\' =>
         array (
             0 => __DIR__ . '/..' . '/spiral/logger/src',
         ),
-        'Spiral\\Interceptors\\' => 
+        'Spiral\\Interceptors\\' =>
         array (
             0 => __DIR__ . '/..' . '/spiral/interceptors/src',
         ),
-        'Spiral\\Goridge\\' => 
+        'Spiral\\Goridge\\' =>
         array (
             0 => __DIR__ . '/..' . '/spiral/goridge/src',
         ),
-        'Spiral\\Core\\' => 
+        'Spiral\\Core\\' =>
         array (
             0 => __DIR__ . '/..' . '/spiral/hmvc/src',
             1 => __DIR__ . '/..' . '/spiral/core/src',
         ),
-        'RoadRunner\\Logger\\' => 
+        'RoadRunner\\Logger\\' =>
         array (
             0 => __DIR__ . '/..' . '/roadrunner-php/app-logger/src',
         ),
-        'RoadRunner\\' => 
+        'RoadRunner\\' =>
         array (
             0 => __DIR__ . '/..' . '/roadrunner-php/roadrunner-api-dto/generated/RoadRunner',
         ),
-        'React\\Stream\\' => 
+        'React\\Stream\\' =>
         array (
             0 => __DIR__ . '/..' . '/react/stream/src',
         ),
-        'React\\Socket\\' => 
+        'React\\Socket\\' =>
         array (
             0 => __DIR__ . '/..' . '/react/socket/src',
         ),
-        'React\\Promise\\' => 
+        'React\\Promise\\' =>
         array (
             0 => __DIR__ . '/..' . '/react/promise/src',
         ),
-        'React\\EventLoop\\' => 
+        'React\\EventLoop\\' =>
         array (
             0 => __DIR__ . '/..' . '/react/event-loop/src',
         ),
-        'React\\Dns\\' => 
+        'React\\Dns\\' =>
         array (
             0 => __DIR__ . '/..' . '/react/dns/src',
         ),
-        'React\\ChildProcess\\' => 
+        'React\\ChildProcess\\' =>
         array (
             0 => __DIR__ . '/..' . '/react/child-process/src',
         ),
-        'React\\Cache\\' => 
+        'React\\Cache\\' =>
         array (
             0 => __DIR__ . '/..' . '/react/cache/src',
         ),
-        'Ramsey\\Uuid\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/ramsey/uuid/src',
-        ),
-        'Ramsey\\Collection\\' => 
+        'Ramsey\\Collection\\' =>
         array (
             0 => __DIR__ . '/..' . '/ramsey/collection/src',
         ),
-        'Psr\\SimpleCache\\' => 
+        'Psr\\SimpleCache\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/simple-cache/src',
         ),
-        'Psr\\Log\\' => 
+        'Psr\\Log\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/log/src',
         ),
-        'Psr\\Http\\Server\\' => 
+        'Psr\\Http\\Server\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/http-server-middleware/src',
             1 => __DIR__ . '/..' . '/psr/http-server-handler/src',
         ),
-        'Psr\\Http\\Message\\' => 
+        'Psr\\Http\\Message\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/http-factory/src',
             1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
-        'Psr\\Http\\Client\\' => 
+        'Psr\\Http\\Client\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/http-client/src',
         ),
-        'Psr\\EventDispatcher\\' => 
+        'Psr\\EventDispatcher\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/event-dispatcher/src',
         ),
-        'Psr\\Container\\' => 
+        'Psr\\Container\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
         ),
-        'Psr\\Clock\\' => 
+        'Psr\\Clock\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/clock/src',
         ),
-        'Psr\\Cache\\' => 
+        'Psr\\Cache\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/cache/src',
         ),
-        'Predis\\' => 
+        'Predis\\' =>
         array (
             0 => __DIR__ . '/..' . '/predis/predis/src',
         ),
-        'PhpOption\\' => 
+        'PhpOption\\' =>
         array (
             0 => __DIR__ . '/..' . '/phpoption/phpoption/src/PhpOption',
         ),
-        'PhpCsFixer\\' => 
+        'PhpCsFixer\\' =>
         array (
             0 => __DIR__ . '/..' . '/friendsofphp/php-cs-fixer/src',
         ),
-        'Overtrue\\Socialite\\' => 
+        'Overtrue\\Socialite\\' =>
         array (
             0 => __DIR__ . '/..' . '/overtrue/socialite/src',
         ),
-        'Nyholm\\Psr7\\' => 
+        'Nyholm\\Psr7\\' =>
         array (
             0 => __DIR__ . '/..' . '/nyholm/psr7/src',
         ),
-        'Nyholm\\Psr7Server\\' => 
+        'Nyholm\\Psr7Server\\' =>
         array (
             0 => __DIR__ . '/..' . '/nyholm/psr7-server/src',
         ),
-        'JmesPath\\' => 
+        'JmesPath\\' =>
         array (
             0 => __DIR__ . '/..' . '/mtdowling/jmespath.php/src',
         ),
-        'HttpSoft\\Message\\' => 
+        'HttpSoft\\Message\\' =>
         array (
             0 => __DIR__ . '/..' . '/httpsoft/http-message/src',
         ),
-        'GuzzleHttp\\Psr7\\' => 
+        'GuzzleHttp\\Psr7\\' =>
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/psr7/src',
         ),
-        'GuzzleHttp\\Promise\\' => 
+        'GuzzleHttp\\Promise\\' =>
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/promises/src',
         ),
-        'GuzzleHttp\\' => 
+        'GuzzleHttp\\' =>
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
         ),
-        'Grpc\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/grpc/grpc/src/lib',
-        ),
-        'GrahamCampbell\\ResultType\\' => 
+        'GrahamCampbell\\ResultType\\' =>
         array (
             0 => __DIR__ . '/..' . '/graham-campbell/result-type/src',
         ),
-        'Google\\Type\\' => 
+        'Google\\Type\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/common-protos/src/Type',
         ),
-        'Google\\Rpc\\' => 
+        'Google\\Rpc\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/common-protos/src/Rpc',
         ),
-        'Google\\Protobuf\\' => 
+        'Google\\Protobuf\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/protobuf/src/Google/Protobuf',
         ),
-        'Google\\Iam\\' => 
+        'Google\\Iam\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/common-protos/src/Iam',
         ),
-        'Google\\Cloud\\' => 
+        'Google\\Cloud\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/common-protos/src/Cloud',
         ),
-        'Google\\Api\\' => 
+        'Google\\Api\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/common-protos/src/Api',
         ),
-        'GPBMetadata\\Google\\Type\\' => 
+        'GPBMetadata\\Google\\Type\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/common-protos/metadata/Type',
         ),
-        'GPBMetadata\\Google\\Rpc\\' => 
+        'GPBMetadata\\Google\\Rpc\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/common-protos/metadata/Rpc',
         ),
-        'GPBMetadata\\Google\\Protobuf\\' => 
+        'GPBMetadata\\Google\\Protobuf\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/protobuf/src/GPBMetadata/Google/Protobuf',
         ),
-        'GPBMetadata\\Google\\Logging\\' => 
+        'GPBMetadata\\Google\\Logging\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/common-protos/metadata/Logging',
         ),
-        'GPBMetadata\\Google\\Iam\\' => 
+        'GPBMetadata\\Google\\Iam\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/common-protos/metadata/Iam',
         ),
-        'GPBMetadata\\Google\\Cloud\\' => 
+        'GPBMetadata\\Google\\Cloud\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/common-protos/metadata/Cloud',
         ),
-        'GPBMetadata\\Google\\Api\\' => 
+        'GPBMetadata\\Google\\Api\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/common-protos/metadata/Api',
         ),
-        'GPBMetadata\\' => 
+        'GPBMetadata\\' =>
         array (
             0 => __DIR__ . '/..' . '/roadrunner-php/roadrunner-api-dto/generated/GPBMetadata',
         ),
-        'Firebase\\JWT\\' => 
+        'Firebase\\JWT\\' =>
         array (
             0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
         ),
-        'Fidry\\CpuCoreCounter\\' => 
+        'Fidry\\CpuCoreCounter\\' =>
         array (
             0 => __DIR__ . '/..' . '/fidry/cpu-core-counter/src',
         ),
-        'FastRoute\\' => 
+        'FastRoute\\' =>
         array (
             0 => __DIR__ . '/..' . '/nikic/fast-route/src',
         ),
-        'Evenement\\' => 
+        'Evenement\\' =>
         array (
             0 => __DIR__ . '/..' . '/evenement/evenement/src',
         ),
-        'EasyWeChat\\' => 
+        'EasyWeChat\\' =>
         array (
             0 => __DIR__ . '/..' . '/w7corp/easywechat/src',
         ),
-        'Dotenv\\' => 
+        'Dotenv\\' =>
         array (
             0 => __DIR__ . '/..' . '/vlucas/phpdotenv/src',
         ),
-        'Doctrine\\Deprecations\\' => 
+        'Doctrine\\Deprecations\\' =>
         array (
             0 => __DIR__ . '/..' . '/doctrine/deprecations/src',
         ),
-        'Doctrine\\Common\\Collections\\' => 
+        'Doctrine\\Common\\Collections\\' =>
         array (
             0 => __DIR__ . '/..' . '/doctrine/collections/src',
         ),
-        'Composer\\XdebugHandler\\' => 
+        'Composer\\XdebugHandler\\' =>
         array (
             0 => __DIR__ . '/..' . '/composer/xdebug-handler/src',
         ),
-        'Composer\\Semver\\' => 
+        'Composer\\Semver\\' =>
         array (
             0 => __DIR__ . '/..' . '/composer/semver/src',
         ),
-        'Composer\\Pcre\\' => 
+        'Composer\\Pcre\\' =>
         array (
             0 => __DIR__ . '/..' . '/composer/pcre/src',
         ),
-        'Common\\' => 
+        'Common\\' =>
         array (
             0 => __DIR__ . '/../..' . '/common',
         ),
-        'Clue\\React\\NDJson\\' => 
+        'Clue\\React\\NDJson\\' =>
         array (
             0 => __DIR__ . '/..' . '/clue/ndjson-react/src',
         ),
-        'Carbon\\Doctrine\\' => 
+        'Carbon\\Doctrine\\' =>
         array (
             0 => __DIR__ . '/..' . '/carbonphp/carbon-doctrine-types/src/Carbon/Doctrine',
         ),
-        'Carbon\\' => 
+        'Carbon\\' =>
         array (
             0 => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon',
         ),
-        'Brick\\Math\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/brick/math/src',
-        ),
-        'Basis\\Nats\\' => 
+        'Basis\\Nats\\' =>
         array (
             0 => __DIR__ . '/..' . '/basis-company/nats/src',
         ),
-        'Aws\\' => 
+        'Aws\\' =>
         array (
             0 => __DIR__ . '/..' . '/aws/aws-sdk-php/src',
         ),
-        'Alexkart\\CurlBuilder\\' => 
+        'Alexkart\\CurlBuilder\\' =>
         array (
             0 => __DIR__ . '/..' . '/alexkart/curl-builder/src',
         ),

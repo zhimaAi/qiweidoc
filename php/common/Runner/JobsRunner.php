@@ -8,21 +8,22 @@ namespace Common\Runner;
 use Common\Exceptions\RetryableJobException;
 use Common\Job\Producer;
 use Common\Yii;
-use function gc_collect_cycles;
-use function gc_mem_caches;
-use Spiral\RoadRunner\Jobs\Task\Factory\ReceivedTaskFactory;
+use Spiral\RoadRunner\Payload;
 use Spiral\RoadRunner\Worker;
 use Throwable;
 use Yiisoft\Di\StateResetter;
 use Yiisoft\Yii\Console\Application;
 use Yiisoft\Yii\Runner\ApplicationRunner;
 
+use function gc_collect_cycles;
+use function gc_mem_caches;
+use function json_decode;
+
 /**
- * `RoadRunnerHttpApplicationRunner` runs the Yii Jobs application using RoadRunner.
+ * NewJobsRunner - 对接自定义 jobs 插件的 Runner
  */
 final class JobsRunner extends ApplicationRunner
 {
-    const LOCK_TIME = 100;
     public function __construct(
         string  $rootPath,
         bool    $debug = false,
@@ -82,56 +83,64 @@ final class JobsRunner extends ApplicationRunner
         $logger = Yii::logger();
 
         $worker = Worker::create();
-        $receivedTaskFactory = new ReceivedTaskFactory($worker);
 
         while (true) {
             $payload = $worker->waitPayload();
             if (empty($payload)) {
                 break;
             }
-            $task = $receivedTaskFactory->create($payload);
-
-            $id = $task->getId();
-            $name = $task->getName();
-            $payload = $task->getPayload();
-            $data = unserialize($payload);
-
-            // 延迟任务
-            $deferredExecTime = (int) $task->getHeaderLine('deferred_exec_time');
-            if ($deferredExecTime > 0 && $deferredExecTime >= time()) {
-                $time = date("Y-m-d H:i:s", $deferredExecTime);
-                $task->withDelay(max($deferredExecTime - time() + 1, 0))->nack("任务延迟到{$time}执行", true);
-                continue;
-            }
-
-            $lockKey = "task_lock:{$id}";
-            if (!Yii::mutex(self::LOCK_TIME)->acquire($lockKey)) {
-                dump("有任务执行时间过长", compact('id', 'name'));
-                $task->ack();
-                continue;
-            }
 
             try {
-                Producer::dispatchSync($name, $data);
+                // 解析任务数据
+                $requestData = json_decode($payload->body, true);
+
+                if (!isset($requestData['handler']) || !isset($requestData['data'])) {
+                    throw new \Exception('Invalid job payload format');
+                }
+
+                $handler = $requestData['handler'];
+                $dataJson = $requestData['data'];
+                $jobData = json_decode($dataJson, true);
+
+                $className = $jobData['className'] ?? $handler;
+                $args = unserialize($jobData['args'] ?? []);
+                $logger->debug('Processing job', [
+                    'handler' => $handler,
+                    'className' => $className,
+                    'args' => $args,
+                ]);
+
+                // 执行任务
+                Producer::dispatchSync($className, $args);
+
+                // 返回成功响应
+                $worker->respond(new Payload('ok'));
+
             } catch (RetryableJobException $e) {
-                Producer::dispatch($name, $data, $e->getDelay());
-                $logger->error($e, [
-                    'id' => $task->getId(),
-                    'headers' => $task->getHeaders(),
-                    'name' => $task->getName(),
-                    'payload' => $task->getPayload(),
+                // 可重试异常，重新入队
+                $logger->error('Retryable job exception', [
+                    'handler' => $handler ?? 'unknown',
                     'throwable' => $e,
                 ]);
+
+                // 重新入队
+                if (isset($className) && isset($args)) {
+                    Producer::dispatch($className, $args);
+                }
+
+                $worker->respond(new Payload('retry'));
+
             } catch (Throwable $e) {
-                $logger->error($e, [
-                    'id' => $task->getId(),
-                    'headers' => $task->getHeaders(),
-                    'name' => $task->getName(),
-                    'payload' => $task->getPayload(),
+                // 不可重试异常，记录日志
+                $logger->error('Job execution failed', [
+                    'handler' => $handler ?? 'unknown',
                     'throwable' => $e,
                 ]);
+
+                $worker->respond(new Payload('error: ' . $e->getMessage()));
+
             } finally {
-                $task->ack();
+                // 重置状态和清理内存
                 $stateResetter->reset();
                 gc_collect_cycles();
                 gc_mem_caches();

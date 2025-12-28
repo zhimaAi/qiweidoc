@@ -5,6 +5,7 @@ namespace Common\Command;
 
 use Common\Job\Producer;
 use Modules\Main\Consumer\DownloadChatSessionBitMediasConsumer;
+use Modules\Main\Consumer\SendEmailConsumer;
 use Modules\Main\Model\CorpModel;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -18,9 +19,9 @@ final class TestCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $corp = CorpModel::query()->getOne();
-
         for ($i = 0; $i < 100; $i++) {
-            Producer::dispatch(DownloadChatSessionBitMediasConsumer::class, ['corp' => $corp]);
+            Producer::dispatch(SendEmailConsumer::class, ['email' => '1@163.com']);
+            // Producer::dispatch(DownloadChatSessionBitMediasConsumer::class, ['corp' => $corp]);
         }
 
         return ExitCode::OK;

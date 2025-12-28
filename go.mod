@@ -18,7 +18,6 @@ require (
 	github.com/roadrunner-server/errors v1.4.1
 	github.com/roadrunner-server/headers/v5 v5.1.1
 	github.com/roadrunner-server/http/v5 v5.2.8
-	github.com/roadrunner-server/jobs/v5 v5.1.1
 	github.com/roadrunner-server/nats/v5 v5.1.10-0.20251104085128-f5282373b976
 	github.com/roadrunner-server/pool v1.1.3
 	github.com/roadrunner-server/rpc/v5 v5.1.1
@@ -27,7 +26,7 @@ require (
 	github.com/roadrunner-server/static/v5 v5.1.1
 	github.com/robfig/cron/v3 v3.0.1
 	go.uber.org/zap v1.27.0
-	golang.org/x/crypto v0.43.0
+	golang.org/x/crypto v0.45.0
 )
 
 require (
@@ -92,7 +91,6 @@ require (
 	github.com/roadrunner-server/events v1.0.1 // indirect
 	github.com/roadrunner-server/goridge/v3 v3.8.3
 	github.com/roadrunner-server/gzip/v5 v5.1.9
-	github.com/roadrunner-server/priority_queue v1.0.6 // indirect
 	github.com/roadrunner-server/tcplisten v1.5.2 // indirect
 	github.com/rs/cors v1.11.1 // indirect
 	github.com/sagikazarmark/locafero v0.12.0 // indirect
@@ -118,10 +116,10 @@ require (
 	go.opentelemetry.io/otel/trace v1.38.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/mod v0.29.0 // indirect
-	golang.org/x/net v0.46.0 // indirect
-	golang.org/x/sync v0.17.0 // indirect
-	golang.org/x/sys v0.37.0 // indirect
-	golang.org/x/text v0.30.0 // indirect
+	golang.org/x/net v0.47.0 // indirect
+	golang.org/x/sync v0.18.0 // indirect
+	golang.org/x/sys v0.38.0 // indirect
+	golang.org/x/text v0.31.0 // indirect
 	golang.org/x/tools v0.38.0 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
