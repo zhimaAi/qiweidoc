@@ -73,3 +73,5 @@ RUN git config --global core.editor "vim" && \
 
 # 工作目录
 WORKDIR /var/www/
+
+CMD ["/usr/sbin/sshd", "-D", "-e"]

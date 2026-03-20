@@ -103,8 +103,6 @@ services:
     platform: linux/amd64
     image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/qiweidoc_main_prod:latest
     restart: always
-    entrypoint: ""
-    command: [ "tail", "-f", "/dev/null" ]
     environment:
       TZ: Asia/Shanghai
     depends_on:
