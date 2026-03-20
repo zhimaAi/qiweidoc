@@ -39,7 +39,7 @@ services:
     volumes:
       - redis_data:/data
     ports:
-      - ${EXTERNAL_REDIS_PORT:-6379}:6379
+      - 127.0.0.1:${EXTERNAL_REDIS_PORT:-6379}:6379
 
   minio:
     build:
