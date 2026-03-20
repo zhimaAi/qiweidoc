@@ -15,7 +15,6 @@ phpunit.xml
 c3.php
 tests/Support/Data/database.db_snapshot
 .env
-.env.dev*
 tmp
 *.log
 npm-debug.log*
