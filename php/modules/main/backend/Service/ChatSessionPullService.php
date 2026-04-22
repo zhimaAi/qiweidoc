@@ -33,7 +33,8 @@ use Throwable;
 
 class ChatSessionPullService
 {
-    private const MESSAGE_LIMIT = 1000;
+    private const MESSAGE_LIMIT = 100;
+    private const MAX_FETCH_ROUNDS = 10;
     private const LARGE_FILE_THRESHOLD = 20 * 1024 * 1024; // 20MB
     private static CorpModel $corp;
 
@@ -46,57 +47,68 @@ class ChatSessionPullService
     {
         self::$corp = $corp;
 
-        // 拉取消息
-        $messages = self::fetchMessages();
-        $lastSeq = null;
-        foreach ($messages as $msg) {
-            if (!empty($msg['seq'])) {
-                $lastSeq = $msg['seq'];
+        $chatSeq = (int) self::$corp->get('chat_seq');
+        for ($round = 0; $round < self::MAX_FETCH_ROUNDS; $round++) {
+            $messages = self::fetchMessages($chatSeq);
+            if (empty($messages)) {
+                break;
             }
 
-            // 过滤掉不能识别和重复的消息
-            if (!self::isValidMessage($msg)) {
-                continue;
-            }
-
-            //处理并保存消息内容
-            $messageData = self::processMessage($msg);
-            if (!$messageData) {
-                continue;
-            }
-
-            Yii::logger()->info("保存消息成功", ['msg_content' => $messageData->get('msg_content'), 'msg_type' => $messageData->get('msg_type')]);
-
-            // 创建会话
-            $conversation = self::saveConversation($messageData);
-
-            // 更新消息的会话信息
-            $messageData->update([
-                'conversation_id' => $conversation->get('id'),
-                'conversation_type' => $conversation->get('type'),
-            ]);
-
-            // 下载资源
-            if (in_array($messageData->get('msg_type'), ChatSessionService::ValidMediaType)) {
-                if (self::isLargeFile($messageData)) { // 大文件到单独的队列中处理
-                    Producer::dispatch(DownloadChatSessionBitMediasConsumer::class, ['corp' => $corp, 'message' => $messageData]);
-                } else {
-                    Producer::dispatch(DownloadChatSessionMediasConsumer::class, ['corp' => $corp, 'message' => $messageData]);
+            $lastSeq = null;
+            foreach ($messages as $msg) {
+                if (!empty($msg['seq'])) {
+                    $lastSeq = $msg['seq'];
                 }
+
+                // 过滤掉不能识别和重复的消息
+                if (!self::isValidMessage($msg)) {
+                    continue;
+                }
+
+                //处理并保存消息内容
+                $messageData = self::processMessage($msg);
+                if (!$messageData) {
+                    continue;
+                }
+
+                Yii::logger()->info("保存消息成功", ['msg_content' => $messageData->get('msg_content'), 'msg_type' => $messageData->get('msg_type')]);
+
+                // 创建会话
+                $conversation = self::saveConversation($messageData);
+
+                // 更新消息的会话信息
+                $messageData->update([
+                    'conversation_id' => $conversation->get('id'),
+                    'conversation_type' => $conversation->get('type'),
+                ]);
+
+                // 下载资源
+                if (in_array($messageData->get('msg_type'), ChatSessionService::ValidMediaType)) {
+                    if (self::isLargeFile($messageData)) { // 大文件到单独的队列中处理
+                        Producer::dispatch(DownloadChatSessionBitMediasConsumer::class, ['corp' => $corp, 'message' => $messageData]);
+                    } else {
+                        Producer::dispatch(DownloadChatSessionMediasConsumer::class, ['corp' => $corp, 'message' => $messageData]);
+                    }
+                }
+
+                // 广播
+                Broadcast::event('chat-session-pull')->send(json_encode([
+                    'msg_id' => $messageData->get('id'),
+                    'msg_type' => $messageData->get('msg_type'),
+                    'from_role' => $messageData->get('from_role'),
+                    'to_role' => $messageData->get('to_role'),
+                ]));
             }
 
-            // 广播
-            Broadcast::event('chat-session-pull')->send(json_encode([
-                'msg_id' => $messageData->get('id'),
-                'msg_type' => $messageData->get('msg_type'),
-                'from_role' => $messageData->get('from_role'),
-                'to_role' => $messageData->get('to_role'),
-            ]));
-        }
+            // 每批处理完成后推进游标，避免下一批重复拉取。
+            if (!empty($lastSeq)) {
+                $chatSeq = (int) $lastSeq;
+                self::$corp->update(['chat_seq' => $chatSeq]);
+            }
 
-        // 更新消息序号
-        if (!empty($lastSeq)) {
-            self::$corp->update(['chat_seq' => $lastSeq]);
+            if (count($messages) < self::MESSAGE_LIMIT) {
+                break;
+            }
         }
     }
 
@@ -188,14 +200,14 @@ class ChatSessionPullService
      * 从企微拉取消息
      * 由golang处理并自动解密
      */
-    private static function fetchMessages()
+    private static function fetchMessages(int $chatSeq)
     {
         $request = [
             'corp_id' => self::$corp->get('id'),
             'chat_secret' => self::$corp->get('chat_secret'),
             'chat_private_key' => self::$corp->get('chat_private_key'),
             'chat_public_key_version' => self::$corp->get('chat_public_key_version'),
-            'chat_seq' => self::$corp->get('chat_seq'),
+            'chat_seq' => $chatSeq,
             'limit' => self::MESSAGE_LIMIT,
         ];
 
