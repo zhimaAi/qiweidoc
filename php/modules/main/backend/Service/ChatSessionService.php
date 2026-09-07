@@ -986,7 +986,7 @@ SQL;
             $query->andWhere(['in', 'from', array_values(array_unique($fromUserIds))]);
         }
 
-        $res = $query->orderBy(['similarity' => SORT_DESC])
+        $res = $query->orderBy(['msg_time' => SORT_DESC, 'similarity' => SORT_DESC])
             ->paginate($data['page'] ?? 1, $data['size'] ?? 10);
 
         if ($res["items"]->isEmpty()) {

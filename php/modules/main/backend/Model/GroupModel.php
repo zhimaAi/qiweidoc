@@ -155,6 +155,26 @@ class GroupModel extends BaseModel
                 ];
             }
 
+            // 内部群没有群名时，使用最多 3 个群成员名称拼接
+            if (trim($groupName) === '') {
+                $memberUserIds = array_values(array_filter(array_column($memberList, 'userid')));
+                if (!empty($memberUserIds)) {
+                    $staffList = StaffModel::query()
+                        ->select(['userid', 'name'])
+                        ->where(['and',
+                            ['corp_id' => $corp->get('id')],
+                            ['in', 'userid', $memberUserIds],
+                        ])
+                        ->getAll()
+                        ->toArray();
+                    $staffNames = array_column($staffList, 'name', 'userid');
+                    $groupName = implode('、', array_slice(array_values(array_filter(array_map(
+                        static fn (string $userid): string => trim($staffNames[$userid] ?? ''),
+                        $memberUserIds,
+                    ))), 0, 5));
+                }
+            }
+
             self::updateOrCreate(['and',
                 ['corp_id' => $corp->get('id')],
                 ['chat_id' => $chatId],
