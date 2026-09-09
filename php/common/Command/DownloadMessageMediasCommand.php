@@ -7,9 +7,6 @@ declare(strict_types=1);
 namespace Common\Command;
 
 use Carbon\Carbon;
-use Common\Job\Producer;
-use Modules\Main\Consumer\DownloadChatSessionBitMediasConsumer;
-use Modules\Main\Consumer\DownloadChatSessionMediasConsumer;
 use Modules\Main\Model\ChatMessageModel;
 use Modules\Main\Model\CorpModel;
 use Modules\Main\Service\ChatSessionPullService;
@@ -34,6 +31,7 @@ class DownloadMessageMediasCommand extends Command
             ->where(['corp_id' => $corp->get('id')])
             ->andWhere(['in', 'msg_type', ChatSessionService::ValidMediaType])
             ->andWhere(['msg_content' => ''])
+            ->andWhere(['<', 'download_retry_count', ChatSessionPullService::MAX_MEDIA_DOWNLOAD_ATTEMPTS])
             ->andWhere(['<', 'msg_time', Carbon::now()->subHour()->toDateTimeString('millisecond')])
             ->andWhere(['>', 'msg_time', Carbon::now()->subDays(5)->toDateTimeString('millisecond')])
             ->orderBy(['msg_time' => SORT_ASC])
@@ -41,11 +39,7 @@ class DownloadMessageMediasCommand extends Command
             ->getAll();
         foreach ($messages as $message) {
             /** @var ChatMessageModel $message */
-            if (ChatSessionPullService::isLargeFile($message)) { // 大文件到单独的队列中处理
-                Producer::dispatch(DownloadChatSessionBitMediasConsumer::class, ['corp' => $corp, 'message' => $message]);
-            } else {
-                Producer::dispatch(DownloadChatSessionMediasConsumer::class, ['corp' => $corp, 'message' => $message]);
-            }
+            ChatSessionPullService::dispatchMediaDownload($corp, $message);
         }
 
         return ExitCode::OK;

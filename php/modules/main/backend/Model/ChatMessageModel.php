@@ -40,6 +40,7 @@ class ChatMessageModel extends BaseModel
             'from_role' => EnumChatMessageRole::class,
             'to_role' => EnumChatMessageRole::class,
             'msg_content' => 'string',
+            'download_retry_count' => 'int',
             'conversation_type' => EnumChatConversationType::class,
         ];
     }

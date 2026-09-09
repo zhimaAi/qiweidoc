@@ -30,12 +30,14 @@ use Modules\Main\Model\StaffModel;
 use Modules\Main\Model\StorageModel;
 use Ramsey\Uuid\Uuid;
 use Throwable;
+use Yiisoft\Db\Expression\Expression;
 
 class ChatSessionPullService
 {
     private const MESSAGE_LIMIT = 100;
     private const MAX_FETCH_ROUNDS = 10;
     private const LARGE_FILE_THRESHOLD = 20 * 1024 * 1024; // 20MB
+    public const MAX_MEDIA_DOWNLOAD_ATTEMPTS = 3;
     private const MEDIA_SDK_CHUNK_TIMEOUT = 30;
     private const MEDIA_GO_TIMEOUT = 3300;
     private const MEDIA_NATS_TIMEOUT = 3600;
@@ -101,16 +103,12 @@ class ChatSessionPullService
 
                 // 下载资源
                 if (in_array($messageData->get('msg_type'), ChatSessionService::ValidMediaType)) {
-                    if (self::isLargeFile($messageData)) { // 大文件到单独的队列中处理
-                        Producer::dispatch(DownloadChatSessionBitMediasConsumer::class, ['corp' => $corp, 'message' => $messageData]);
-                    } else {
-                        Producer::dispatch(DownloadChatSessionMediasConsumer::class, ['corp' => $corp, 'message' => $messageData]);
-                    }
+                    self::dispatchMediaDownload($corp, $messageData);
                 } elseif (in_array($messageData->get('msg_type'), [
                     EnumMessageType::ChatRecord->value,
                     EnumMessageType::Mixed->value,
                 ], true)) {
-                    Producer::dispatch(DownloadChatSessionMediasConsumer::class, ['corp' => $corp, 'message' => $messageData]);
+                    self::dispatchMediaDownload($corp, $messageData);
                 }
 
                 // 广播
@@ -138,6 +136,56 @@ class ChatSessionPullService
     {
         return in_array($message->get('msg_type'), ['file', 'video'], true)
             && (int) ($message->get('raw_content')['filesize'] ?? 0) > self::LARGE_FILE_THRESHOLD;
+    }
+
+    /**
+     * 原子记录一次媒体下载投递，并把任务加入对应队列。
+     *
+     * 下载次数包含首次投递，达到上限后不再自动投递，避免补偿任务持续下载同一个失败文件。
+     * 使用带条件的 UPDATE，避免实时拉取和定时补偿同时处理同一消息时重复无限入队。
+     *
+     * @throws Throwable
+     */
+    public static function dispatchMediaDownload(CorpModel $corp, ChatMessageModel $message): void
+    {
+        $messageType = $message->get('msg_type');
+        $isStructuredMessage = in_array($messageType, [
+            EnumMessageType::ChatRecord->value,
+            EnumMessageType::Mixed->value,
+        ], true);
+
+        $query = ChatMessageModel::query()
+            ->where(['msg_id' => $message->get('msg_id')])
+            ->andWhere(['<', 'download_retry_count', self::MAX_MEDIA_DOWNLOAD_ATTEMPTS]);
+
+        // 普通媒体下载完成后会写入 msg_content；结构化消息使用 raw_content.storage_hash，
+        // msg_content 可能本来就有文本内容，因此不能用 msg_content 作为它的完成标记。
+        if (!$isStructuredMessage) {
+            $query->andWhere(['msg_content' => '']);
+        }
+
+        $currentRetryCount = (int) $message->get('download_retry_count');
+        $updated = $query->update([
+            'download_retry_count' => new Expression('download_retry_count + 1'),
+        ]);
+        if ($updated !== 1) {
+            Yii::logger()->debug('跳过会话媒体下载投递', [
+                'msg_id' => $message->get('msg_id'),
+                'download_retry_count' => $currentRetryCount,
+                'max_attempts' => self::MAX_MEDIA_DOWNLOAD_ATTEMPTS,
+            ]);
+            return;
+        }
+
+        // 让序列化到队列中的模型带上最新次数，便于日志和后续诊断。
+        $message->set('download_retry_count', $currentRetryCount + 1);
+
+        if (self::isLargeFile($message)) { // 大文件到单独的队列中处理
+            Producer::dispatch(DownloadChatSessionBitMediasConsumer::class, ['corp' => $corp, 'message' => $message]);
+            return;
+        }
+
+        Producer::dispatch(DownloadChatSessionMediasConsumer::class, ['corp' => $corp, 'message' => $message]);
     }
 
     /**
