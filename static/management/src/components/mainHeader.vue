@@ -16,7 +16,13 @@
                     <!-- <div class="menu-item active">会话质检</div> -->
                 </div>
                 <div v-if="diskUsage" class="disk-usage" :class="diskUsageLevel">
-                    <div class="disk-usage-title">磁盘空间</div>
+                    <div class="disk-usage-info">
+                        <div class="disk-usage-title">磁盘空间</div>
+                        <div class="disk-usage-detail">
+                            {{ formatBytes(diskUsage.used_bytes) }}/{{ formatBytes(diskUsage.total_bytes) }}
+                            <span>剩余{{ formatBytes(diskUsage.free_bytes) }}</span>
+                        </div>
+                    </div>
                     <div class="disk-usage-main">
                         <div class="disk-usage-bar">
                             <div class="disk-usage-bar-value" :style="{width: `${diskUsage.usage_percent}%`}"></div>
@@ -31,10 +37,6 @@
                                 <QuestionCircleOutlined class="disk-usage-help"/>
                             </a-tooltip>
                         </span>
-                    </div>
-                    <div class="disk-usage-detail">
-                        {{ formatBytes(diskUsage.used_bytes) }}/{{ formatBytes(diskUsage.total_bytes) }}
-                        <span>剩余{{ formatBytes(diskUsage.free_bytes) }}</span>
                     </div>
                 </div>
             </div>
@@ -332,11 +334,18 @@ onMounted(() => {
         }
 
         .disk-usage {
+            display: flex;
+            align-items: center;
+            gap: 16px;
             width: min(360px, 34vw);
             min-width: 220px;
             margin: 0 24px 0 0;
             color: #595959;
             font-size: 11px;
+
+            .disk-usage-info {
+                flex: 0 0 auto;
+            }
 
             .disk-usage-title {
                 margin-bottom: 2px;
@@ -345,6 +354,8 @@ onMounted(() => {
             }
 
             .disk-usage-main {
+                flex: 1;
+                min-width: 0;
                 display: flex;
                 align-items: center;
                 gap: 8px;
@@ -352,6 +363,7 @@ onMounted(() => {
 
             .disk-usage-bar {
                 flex: 1;
+                min-width: 0;
                 height: 8px;
                 overflow: hidden;
                 border-radius: 5px;
@@ -387,7 +399,8 @@ onMounted(() => {
             .disk-usage-detail {
                 display: flex;
                 justify-content: space-between;
-                margin-top: 2px;
+                gap: 8px;
+                white-space: nowrap;
                 color: #8c8c8c;
             }
 

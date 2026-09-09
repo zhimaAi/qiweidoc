@@ -28,13 +28,15 @@ class SystemController extends BaseController
         $totalBytes = (int) $fields[1];
         $usedBytes = (int) $fields[2];
         $freeBytes = (int) $fields[3];
+        $free_percent = round($freeBytes / $totalBytes * 100, 1);
+        $usage_percent = round($usedBytes / $totalBytes * 100, 1);
 
         return $this->jsonResponse([
             'total_bytes' => $totalBytes,
             'used_bytes' => $usedBytes,
             'free_bytes' => $freeBytes,
-            'usage_percent' => round($usedBytes / $totalBytes * 100, 1),
-            'free_percent' => round($freeBytes / $totalBytes * 100, 1),
+            'usage_percent' => $usage_percent,
+            'free_percent' => $free_percent,
             'mount_path' => $path,
             'checked_at' => date('Y-m-d H:i:s'),
         ]);
