@@ -15,6 +15,19 @@
                 <div v-if="showMenus" class="menus-box">
                     <!-- <div class="menu-item active">会话质检</div> -->
                 </div>
+                <div v-if="diskUsage" class="disk-usage" :class="diskUsageLevel">
+                    <div class="disk-usage-title">磁盘空间</div>
+                    <div class="disk-usage-main">
+                        <div class="disk-usage-bar">
+                            <div class="disk-usage-bar-value" :style="{width: `${diskUsage.usage_percent}%`}"></div>
+                        </div>
+                        <span class="disk-usage-percent">{{ diskUsage.usage_percent }}%</span>
+                    </div>
+                    <div class="disk-usage-detail">
+                        {{ formatBytes(diskUsage.used_bytes) }}/{{ formatBytes(diskUsage.total_bytes) }}
+                        <span>剩余{{ formatBytes(diskUsage.free_bytes) }}</span>
+                    </div>
+                </div>
             </div>
             <a-dropdown v-if="loginInfo.id > 0">
                 <div class="user-info-box">
@@ -39,12 +52,13 @@
 </template>
 
 <script setup>
-import {computed, onMounted} from 'vue';
+import {computed, onMounted, ref} from 'vue';
 import {useStore} from 'vuex';
 import {Modal, message} from 'ant-design-vue';
 import {DownOutlined} from '@ant-design/icons-vue';
 import {logoutHandle} from "@/utils/tools";
 import {getSettings} from "@/api/auth-login";
+import {getDiskUsage} from "@/api/system";
 import {DEFAULT_ZH_LOGO} from "@/constants";
 
 const props = defineProps({
@@ -60,6 +74,28 @@ const company = computed(() => store.getters.getCompany)
 const loginInfo = computed(() => {
     return store.getters.getUserInfo
 })
+const diskUsage = ref(null)
+
+const diskUsageLevel = computed(() => {
+    const freePercent = Number(diskUsage.value?.free_percent)
+    if (freePercent <= 10) return 'critical'
+    if (freePercent <= 20) return 'warning'
+    return 'normal'
+})
+
+const formatBytes = (bytes) => {
+    const value = Number(bytes)
+    if (!Number.isFinite(value) || value < 0) return '--'
+    const units = ['B', 'KB', 'MB', 'GB', 'TB']
+    let size = value
+    let unitIndex = 0
+    while (size >= 1024 && unitIndex < units.length - 1) {
+        size /= 1024
+        unitIndex++
+    }
+    const formatted = size >= 10 || unitIndex === 0 ? Math.round(size) : size.toFixed(1)
+    return `${formatted}${units[unitIndex]}`
+}
 
 const style = computed(() => {
     return {
@@ -98,7 +134,7 @@ onMounted(() => {
           })
         }
       }
-    }).catch((e) => {
+    }).catch(() => {
       // 用默认的头像和企业信息
       store.commit('setCompany', {
         title: '',
@@ -109,9 +145,15 @@ onMounted(() => {
         copyright: ''
       })
     })
-  } catch (e) {
-
+  } catch {
+    // 使用默认企业信息
   }
+
+  getDiskUsage().then((res) => {
+    diskUsage.value = res?.data || null
+  }).catch(() => {
+    diskUsage.value = null
+  })
 })
 </script>
 
@@ -219,6 +261,61 @@ onMounted(() => {
                     background: rgba(0, 0, 0, 0.04);
                     color: #2475fc;
                 }
+            }
+        }
+
+        .disk-usage {
+            width: min(360px, 38vw);
+            min-width: 220px;
+            margin: 0 auto;
+            color: #595959;
+            font-size: 11px;
+
+            .disk-usage-title {
+                margin-bottom: 2px;
+                font-size: 12px;
+                color: #262626;
+            }
+
+            .disk-usage-main {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .disk-usage-bar {
+                flex: 1;
+                height: 8px;
+                overflow: hidden;
+                border-radius: 5px;
+                background: #e8e8e8;
+            }
+
+            .disk-usage-bar-value {
+                height: 100%;
+                border-radius: 5px;
+                background: #9bc56a;
+                transition: width .2s ease;
+            }
+
+            .disk-usage-percent {
+                width: 36px;
+                text-align: right;
+            }
+
+            .disk-usage-detail {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 2px;
+                color: #8c8c8c;
+            }
+
+            &.warning .disk-usage-bar-value {
+                background: #faad14;
+            }
+
+            &.critical .disk-usage-bar-value {
+                background: #ff4d4f;
             }
         }
 
