@@ -2,21 +2,26 @@ package main
 
 import (
 	"context"
+	"crypto/md5"
+	"encoding/hex"
+	"io"
+	"time"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/roadrunner-server/errors"
-	"strings"
 )
 
 type FetchMediaDataRequest struct {
-	CorpId     string `json:"corp_id"`
-	ChatSecret string `json:"chat_secret"`
-	SdkFileId  string `json:"sdk_file_id"`
-	Proxy      string `json:"proxy"`
-	Passwd     string `json:"passwd"`
-	Timeout    int    `json:"timeout"`
+	CorpId         string `json:"corp_id"`
+	ChatSecret     string `json:"chat_secret"`
+	SdkFileId      string `json:"sdk_file_id"`
+	Proxy          string `json:"proxy"`
+	Passwd         string `json:"passwd"`
+	Timeout        int    `json:"timeout"`
+	OverallTimeout int    `json:"overall_timeout"`
 
 	StorageEndpoint   string `json:"storage_endpoint"`
 	StorageRegion     string `json:"storage_region"`
@@ -71,29 +76,38 @@ func FetchAndStreamMediaData(input *FetchMediaDataRequest) (*FileInfo, error) {
 	if err != nil {
 		return nil, errors.E(Op, err)
 	}
+	defer sdk.Close()
 
 	err = sdk.Init(input.CorpId, input.ChatSecret)
 	if err != nil {
 		return nil, errors.E(Op, err)
 	}
 
+	overallTimeout := input.OverallTimeout
+	if overallTimeout <= 0 {
+		overallTimeout = 3300
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(overallTimeout)*time.Second)
+	defer cancel()
+
 	streamingReader := NewStreamingReader(sdk, input.SdkFileId, input.Proxy, input.Passwd, input.Timeout)
+	hasher := md5.New()
 
 	uploader := manager.NewUploader(client)
-	fileUploadInfo, err := uploader.Upload(context.TODO(), &s3.PutObjectInput{
+	_, err = uploader.Upload(ctx, &s3.PutObjectInput{
 		Bucket: aws.String(input.StorageBucketName),
 		Key:    aws.String(input.StorageObjectKey),
-		Body:   streamingReader,
+		Body:   io.TeeReader(streamingReader, hasher),
 	})
 	if err != nil {
 		return nil, errors.E(Op, err)
 	}
 
 	fileInfo := &FileInfo{
-		Hash: extract32BitETag(*fileUploadInfo.ETag),
+		Hash: hex.EncodeToString(hasher.Sum(nil)),
 	}
 
-	headOutput, err := client.HeadObject(context.TODO(), &s3.HeadObjectInput{
+	headOutput, err := client.HeadObject(ctx, &s3.HeadObjectInput{
 		Bucket: aws.String(input.StorageBucketName),
 		Key:    aws.String(input.StorageObjectKey),
 	})
@@ -105,25 +119,4 @@ func FetchAndStreamMediaData(input *FetchMediaDataRequest) (*FileInfo, error) {
 	fileInfo.Mime = aws.ToString(headOutput.ContentType)
 
 	return fileInfo, nil
-}
-
-func extract32BitETag(etag string) string {
-	// 移除 ETag 开头和结尾的双引号（如果存在）
-	etag = strings.Trim(etag, "\"")
-
-	// 检查是否包含连字符（表示分片上传）
-	if strings.Contains(etag, "-") {
-		// 分片上传的情况，提取连字符前的部分
-		parts := strings.Split(etag, "-")
-		if len(parts) > 0 {
-			return parts[0]
-		}
-	}
-
-	// 如果 ETag 长度为 32，直接返回（标准 MD5）
-	if len(etag) == 32 {
-		return etag
-	}
-
-	return etag
 }
