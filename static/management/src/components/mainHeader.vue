@@ -16,27 +16,27 @@
                     <!-- <div class="menu-item active">会话质检</div> -->
                 </div>
                 <div v-if="diskUsage" class="disk-usage" :class="diskUsageLevel">
-                    <div class="disk-usage-info">
-                        <div class="disk-usage-title">磁盘空间</div>
+                    <div class="disk-usage-title">磁盘空间</div>
+                    <div class="disk-usage-main">
+                        <div class="disk-usage-progress">
+                            <div class="disk-usage-bar">
+                                <div class="disk-usage-bar-value" :style="{width: `${diskUsage.usage_percent}%`}"></div>
+                            </div>
+                            <span class="disk-usage-percent">
+                                {{ diskUsage.usage_percent }}%
+                                <a-tooltip placement="bottom">
+                                    <template #title>
+                                        <span>文件存储不足时，可设置存储到OSS中，</span>
+                                        <a class="storage-setting-link" @click.stop.prevent="openStorageSettings">去设置</a>
+                                    </template>
+                                    <QuestionCircleOutlined class="disk-usage-help"/>
+                                </a-tooltip>
+                            </span>
+                        </div>
                         <div class="disk-usage-detail">
                             {{ formatBytes(diskUsage.used_bytes) }}/{{ formatBytes(diskUsage.total_bytes) }}
                             <span>剩余{{ formatBytes(diskUsage.free_bytes) }}</span>
                         </div>
-                    </div>
-                    <div class="disk-usage-main">
-                        <div class="disk-usage-bar">
-                            <div class="disk-usage-bar-value" :style="{width: `${diskUsage.usage_percent}%`}"></div>
-                        </div>
-                        <span class="disk-usage-percent">
-                            {{ diskUsage.usage_percent }}%
-                            <a-tooltip placement="bottom">
-                                <template #title>
-                                    <span>文件存储不足时，可设置存储到OSS中，</span>
-                                    <a class="storage-setting-link" @click.stop.prevent="openStorageSettings">去设置</a>
-                                </template>
-                                <QuestionCircleOutlined class="disk-usage-help"/>
-                            </a-tooltip>
-                        </span>
                     </div>
                 </div>
             </div>
@@ -343,18 +343,22 @@ onMounted(() => {
             color: #595959;
             font-size: 11px;
 
-            .disk-usage-info {
-                flex: 0 0 auto;
-            }
-
             .disk-usage-title {
-                margin-bottom: 2px;
+                flex: 0 0 auto;
                 font-size: 12px;
                 color: #262626;
             }
 
             .disk-usage-main {
                 flex: 1;
+                min-width: 0;
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+            }
+
+            .disk-usage-progress {
+                width: 100%;
                 min-width: 0;
                 display: flex;
                 align-items: center;
