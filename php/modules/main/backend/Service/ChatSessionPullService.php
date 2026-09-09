@@ -36,6 +36,10 @@ class ChatSessionPullService
     private const MESSAGE_LIMIT = 100;
     private const MAX_FETCH_ROUNDS = 10;
     private const LARGE_FILE_THRESHOLD = 20 * 1024 * 1024; // 20MB
+    private const MEDIA_SDK_CHUNK_TIMEOUT = 30;
+    private const MEDIA_GO_TIMEOUT = 3300;
+    private const MEDIA_NATS_TIMEOUT = 3600;
+    private const MEDIA_LOCK_TTL = 3900;
     private const MAX_CHAT_RECORD_DEPTH = 3;
     private const CHAT_RECORD_MEDIA_TYPE_MAP = [
         'ChatRecordImage' => 'image',
@@ -132,7 +136,7 @@ class ChatSessionPullService
 
     public static function isLargeFile(ChatMessageModel $message): bool
     {
-        return $message->get('msg_type') === 'file'
+        return in_array($message->get('msg_type'), ['file', 'video'], true)
             && (int) ($message->get('raw_content')['filesize'] ?? 0) > self::LARGE_FILE_THRESHOLD;
     }
 
@@ -274,7 +278,7 @@ class ChatSessionPullService
             $fileExtension = "mp3";
         }
 
-        $mutex = Yii::mutex(600);
+        $mutex = Yii::mutex(self::MEDIA_LOCK_TTL);
         $mutexKey = 'chat-media-download:' . $md5;
         if (!$mutex->acquire($mutexKey, 10)) {
             throw new LogicException('相同文件正在下载，请稍后重试');
@@ -285,11 +289,41 @@ class ChatSessionPullService
                 return $md5;
             }
 
+            // 先恢复“MinIO 已完成上传但数据库未落库”的孤儿对象，避免补偿任务重复下载大文件。
+            // 仅在企业微信提供了真实 MD5 和文件大小时尝试恢复，缺少校验依据时继续走正常下载。
+            $expectedSize = (int) ($rawContent['filesize'] ?? 0);
+            $recoverableObject = !empty($rawContent['md5sum'])
+                ? StorageService::findRecoverableSessionObject($md5, $expectedSize)
+                : null;
+            if ($recoverableObject !== null) {
+                // 使用已经完成且通过大小、MD5 校验的 MinIO 对象补建 storage 记录。
+                $recoveredFileName = basename($recoverableObject['object_key']);
+                $recoveredExtension = pathinfo($recoveredFileName, PATHINFO_EXTENSION) ?: $fileExtension;
+                $storage = self::createStorageRecord(
+                    hash: $md5,
+                    fileName: $recoveredFileName,
+                    fileExtension: $recoveredExtension,
+                    mimeType: $recoverableObject['mime_type'],
+                    fileSize: $recoverableObject['file_size'],
+                    objectKey: $recoverableObject['object_key'],
+                );
+                Yii::logger()->info('恢复会话存档孤儿文件成功', [
+                    'hash' => $md5,
+                    'object_key' => $recoverableObject['object_key'],
+                ]);
+
+                // 返回 MD5 后由 handleMedia 统一更新消息 msg_content，后续扫描将直接复用该记录。
+                return $storage->get('hash');
+            }
+
+            // MinIO 中不存在可恢复的完整对象时，才创建新对象 Key 并从企业微信重新下载。
             $objectKey = StorageService::generateObjectKey((string) $fileName, $md5);
             $request = [
                 'corp_id' => $corp->get('id'),
                 'chat_secret' => $corp->get('chat_secret'),
                 'sdk_file_id' => $sdkFileId,
+                'timeout' => self::MEDIA_SDK_CHUNK_TIMEOUT,
+                'overall_timeout' => self::MEDIA_GO_TIMEOUT,
 
                 'storage_endpoint' => Yii::params()['local-storage']['endpoint'],
                 'storage_region' => Yii::params()['local-storage']['region'],
@@ -298,7 +332,12 @@ class ChatSessionPullService
                 'storage_bucket_name' => StorageModel::SESSION_BUCKET,
                 'storage_object_key' => $objectKey,
             ];
-            $fileInfo = Micro::call('wxfinance', 'FetchAndStreamMediaData', json_encode($request), 500);
+            $fileInfo = Micro::call(
+                'wxfinance',
+                'FetchAndStreamMediaData',
+                json_encode($request),
+                self::MEDIA_NATS_TIMEOUT,
+            );
             if (empty($fileInfo) || empty($fileInfo['hash'])) {
                 throw new LogicException('下载资源失败');
             }
@@ -309,23 +348,50 @@ class ChatSessionPullService
                 throw new LogicException('下载资源MD5校验失败');
             }
 
-            $retentionDays = (int) SettingModel::getValue('local_session_file_retention_days');
-            $storage = StorageModel::create([
-                'hash' => $actualHash,
-                'original_filename' => $fileName,
-                'file_extension' => $fileExtension,
-                'mime_type' => $fileInfo['mime'] ?? '',
-                'file_size' => $fileInfo['size'] ?? 0,
-                'local_storage_bucket' => StorageModel::SESSION_BUCKET,
-                'local_storage_object_key' => $objectKey,
-                'local_storage_expired_at' => $retentionDays > 0 ? Carbon::now()->addDays($retentionDays)->toDateTimeString('m') : null,
-            ]);
-
-            Producer::dispatch(UploadStorageToCloudConsumer::class, ['storage' => $storage]);
+            // 下载成功与孤儿对象恢复共用同一落库方法，保证 storage 字段和云端同步行为一致。
+            self::createStorageRecord(
+                hash: $actualHash,
+                fileName: (string) $fileName,
+                fileExtension: $fileExtension,
+                mimeType: $fileInfo['mime'] ?? '',
+                fileSize: (int) ($fileInfo['size'] ?? 0),
+                objectKey: $objectKey,
+            );
             return $actualHash;
         } finally {
             $mutex->release($mutexKey);
         }
+    }
+
+    /**
+     * 统一创建会话文件存储记录，并在落库后触发云存储同步。
+     *
+     * @throws Throwable
+     */
+    private static function createStorageRecord(
+        string $hash,
+        string $fileName,
+        string $fileExtension,
+        string $mimeType,
+        int $fileSize,
+        string $objectKey,
+    ): StorageModel {
+        // 恢复孤儿对象时从当前时间重新计算本地保留期限，避免刚恢复就被清理任务删除。
+        $retentionDays = (int) SettingModel::getValue('local_session_file_retention_days');
+        $storage = StorageModel::create([
+            'hash' => $hash,
+            'original_filename' => $fileName,
+            'file_extension' => $fileExtension,
+            'mime_type' => $mimeType,
+            'file_size' => $fileSize,
+            'local_storage_bucket' => StorageModel::SESSION_BUCKET,
+            'local_storage_object_key' => $objectKey,
+            'local_storage_expired_at' => $retentionDays > 0 ? Carbon::now()->addDays($retentionDays)->toDateTimeString('m') : null,
+        ]);
+
+        // storage 记录创建成功后再派发云存储任务，确保消费者始终能查询到本地源对象信息。
+        Producer::dispatch(UploadStorageToCloudConsumer::class, ['storage' => $storage]);
+        return $storage;
     }
 
     private static function removeInvalidMedia(string $objectKey): void

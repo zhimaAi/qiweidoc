@@ -12,6 +12,9 @@ use Throwable;
 
 class StorageService
 {
+    private const SESSION_OBJECT_LOOKBACK_DAYS = 5; // 与未下载媒体补偿任务的消息时间窗口保持一致。
+    private const OBJECT_HASH_READ_SIZE = 1024 * 1024; // 以 1MB 分块校验大文件，避免占满 PHP 内存。
+
     public static function hasAvailableStorage(string $hash): bool
     {
         return self::findAvailableStorage($hash) !== null;
@@ -46,6 +49,112 @@ class StorageService
     {
         $now = Carbon::now();
         return sprintf("%d/%02d/%02d/%s/%s", $now->year, $now->month, $now->day, $md5, basename($fileName));
+    }
+
+    /**
+     * 查找已上传完成但尚未写入 storage 表的会话文件。
+     *
+     * 这里只通过 S3 API 扫描完整对象，未完成的 multipart 分片不会出现在 ListObjectsV2 结果中，
+     * 因而不会被误登记为可下载文件。查找过程中发生 MinIO 异常时主动向上抛出，避免把
+     * “无法确认”误判为“不存在”，进而再次从企业微信下载大文件。
+     *
+     * @return array{object_key: string, file_size: int, mime_type: string}|null
+     * @throws Throwable
+     */
+    public static function findRecoverableSessionObject(string $md5, int $expectedSize): ?array
+    {
+        // 缺少可靠的 MD5 或文件大小时无法验证对象完整性，宁可重新下载也不回填错误记录。
+        if (!is_md5($md5) || $expectedSize <= 0) {
+            return null;
+        }
+
+        $s3Client = self::getLocalS3Client();
+        $now = Carbon::now();
+
+        // 对象 Key 含上传日期，补偿任务只扫描最近五天消息，因此逐日扫描相同时间窗口。
+        for ($daysAgo = 0; $daysAgo <= self::SESSION_OBJECT_LOOKBACK_DAYS; $daysAgo++) {
+            $date = $now->copy()->subDays($daysAgo);
+            $prefix = sprintf('%d/%02d/%02d/%s/', $date->year, $date->month, $date->day, strtolower($md5));
+            $continuationToken = null;
+
+            do {
+                $params = [
+                    'Bucket' => StorageModel::SESSION_BUCKET,
+                    'Prefix' => $prefix,
+                ];
+                // 支持同一 MD5 产生超过一页重复对象，避免漏掉后续页中的有效文件。
+                if ($continuationToken !== null) {
+                    $params['ContinuationToken'] = $continuationToken;
+                }
+
+                $result = $s3Client->listObjectsV2($params);
+                foreach ($result['Contents'] ?? [] as $object) {
+                    $objectKey = (string) ($object['Key'] ?? '');
+                    $objectSize = (int) ($object['Size'] ?? 0);
+
+                    // 先用对象大小做低成本过滤，避免对明显不完整的 2GB 对象执行全量读取。
+                    if ($objectKey === '' || $objectSize !== $expectedSize) {
+                        continue;
+                    }
+
+                    // multipart ETag 不是文件 MD5，必须流式读取对象并计算真实 MD5 后才能回填。
+                    if (!self::objectMd5Matches($s3Client, $objectKey, strtolower($md5))) {
+                        continue;
+                    }
+
+                    // HeadObject 用于取得可信的对象大小和 MIME 信息，供 storage 表完整落库。
+                    $head = $s3Client->headObject([
+                        'Bucket' => StorageModel::SESSION_BUCKET,
+                        'Key' => $objectKey,
+                    ]);
+                    if ((int) ($head['ContentLength'] ?? 0) !== $expectedSize) {
+                        continue;
+                    }
+
+                    return [
+                        'object_key' => $objectKey,
+                        'file_size' => $expectedSize,
+                        'mime_type' => (string) ($head['ContentType'] ?? ''),
+                    ];
+                }
+
+                $continuationToken = !empty($result['IsTruncated'])
+                    ? (string) ($result['NextContinuationToken'] ?? '')
+                    : null;
+                if ($continuationToken === '') {
+                    $continuationToken = null;
+                }
+            } while ($continuationToken !== null);
+        }
+
+        return null;
+    }
+
+    /**
+     * 流式计算 MinIO 对象 MD5，校验 2GB 等大文件时不会一次性载入 PHP 内存。
+     *
+     * @throws Throwable
+     */
+    private static function objectMd5Matches(S3Client $s3Client, string $objectKey, string $expectedMd5): bool
+    {
+        $result = $s3Client->getObject([
+            'Bucket' => StorageModel::SESSION_BUCKET,
+            'Key' => $objectKey,
+        ]);
+        $body = $result['Body'];
+        $hashContext = hash_init('md5');
+
+        // PSR-7 流按固定块读取，既控制内存，也确保完整对象的每个字节都参与校验。
+        while (!$body->eof()) {
+            $chunk = $body->read(self::OBJECT_HASH_READ_SIZE);
+            if ($chunk === '') {
+                // 阻塞式 S3 流在未结束时不应返回空数据，直接失败可避免异常连接导致 CPU 空转。
+                throw new Exception("读取MinIO对象内容失败：{$objectKey}");
+            }
+            hash_update($hashContext, $chunk);
+        }
+
+        return hash_equals($expectedMd5, hash_final($hashContext));
     }
 
     public static function getLocalS3Client()
