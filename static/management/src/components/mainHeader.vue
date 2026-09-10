@@ -65,6 +65,7 @@
 <script setup>
 import {computed, h, onMounted, ref} from 'vue';
 import {useStore} from 'vuex';
+import {useRouter} from 'vue-router';
 import {Modal, message} from 'ant-design-vue';
 import {DownOutlined, QuestionCircleOutlined} from '@ant-design/icons-vue';
 import {logoutHandle} from "@/utils/tools";
@@ -81,6 +82,7 @@ const props = defineProps({
 })
 
 const store = useStore()
+const router = useRouter()
 const company = computed(() => store.getters.getCompany)
 const loginInfo = computed(() => {
     return store.getters.getUserInfo
@@ -142,7 +144,7 @@ const showDiskWarning = (usage) => {
     if (!Number.isFinite(freePercent) || freePercent >= 20 || !shouldShowDiskWarning()) return
 
     markDiskWarningShown()
-    Modal.warning({
+    Modal.confirm({
         title: '磁盘空间已满',
         content: h('div', {style: {lineHeight: '24px'}}, [
             h('div', [
@@ -150,9 +152,11 @@ const showDiskWarning = (usage) => {
                 h('span', {style: {color: '#ff4d4f'}}, `${formatBytes(usage.free_bytes)}（${freePercent}%）`),
                 h('span', {style: {color: '#ff4d4f'}}, '，避免消息存储失败'),
             ]),
-            h('div', '请尽快处理。'),
+            h('div', '请尽快扩容或配置存储到OSS中。'),
         ]),
-        okText: '知道了',
+        cancelText: '知道了',
+        okText: '去配置',
+        onOk: () => router.push('/systemctl/fileStorage'),
         centered: true,
     })
 }

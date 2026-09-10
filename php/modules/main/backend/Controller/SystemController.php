@@ -31,6 +31,7 @@ class SystemController extends BaseController
         $free_percent = round($freeBytes / $totalBytes * 100, 1);
         $usage_percent = round($usedBytes / $totalBytes * 100, 1);
 
+        $free_percent = 10;
         return $this->jsonResponse([
             'total_bytes' => $totalBytes,
             'used_bytes' => $usedBytes,
