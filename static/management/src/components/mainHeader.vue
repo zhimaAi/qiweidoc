@@ -65,7 +65,6 @@
 <script setup>
 import {computed, h, onMounted, ref} from 'vue';
 import {useStore} from 'vuex';
-import {useRouter} from 'vue-router';
 import {Modal, message} from 'ant-design-vue';
 import {DownOutlined, QuestionCircleOutlined} from '@ant-design/icons-vue';
 import {logoutHandle} from "@/utils/tools";
@@ -82,7 +81,6 @@ const props = defineProps({
 })
 
 const store = useStore()
-const router = useRouter()
 const company = computed(() => store.getters.getCompany)
 const loginInfo = computed(() => {
     return store.getters.getUserInfo
@@ -156,7 +154,7 @@ const showDiskWarning = (usage) => {
         ]),
         cancelText: '知道了',
         okText: '去配置',
-        onOk: () => router.push('/systemctl/fileStorage'),
+        onOk: openStorageSettings,
         centered: true,
     })
 }
@@ -396,7 +394,7 @@ onMounted(() => {
             .disk-usage-help {
                 color: #8c8c8c;
                 font-size: 13px;
-                cursor: help;
+                cursor: pointer;
             }
 
             .storage-setting-link {
