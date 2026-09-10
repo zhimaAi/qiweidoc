@@ -11,9 +11,33 @@
         </div>
         <div class="right-header-nav">
             <!-- <div v-if="showMenus" class="my-shadow"></div> -->
-            <div>
+            <div class="header-main-content">
                 <div v-if="showMenus" class="menus-box">
                     <!-- <div class="menu-item active">会话质检</div> -->
+                </div>
+                <div v-if="diskUsage" class="disk-usage" :class="diskUsageLevel">
+                    <div class="disk-usage-title">磁盘空间</div>
+                    <div class="disk-usage-main">
+                        <div class="disk-usage-progress">
+                            <div class="disk-usage-bar">
+                                <div class="disk-usage-bar-value" :style="{width: `${diskUsage.usage_percent}%`}"></div>
+                            </div>
+                            <span class="disk-usage-percent">
+                                {{ diskUsage.usage_percent }}%
+                                <a-tooltip placement="bottom">
+                                    <template #title>
+                                        <span>文件存储不足时，可设置存储到OSS中，</span>
+                                        <a class="storage-setting-link" @click.stop.prevent="openStorageSettings">去设置</a>
+                                    </template>
+                                    <QuestionCircleOutlined class="disk-usage-help"/>
+                                </a-tooltip>
+                            </span>
+                        </div>
+                        <div class="disk-usage-detail">
+                            {{ formatBytes(diskUsage.used_bytes) }}/{{ formatBytes(diskUsage.total_bytes) }}
+                            <span>剩余{{ formatBytes(diskUsage.free_bytes) }}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <a-dropdown v-if="loginInfo.id > 0">
@@ -39,12 +63,13 @@
 </template>
 
 <script setup>
-import {computed, onMounted} from 'vue';
+import {computed, h, onMounted, ref} from 'vue';
 import {useStore} from 'vuex';
 import {Modal, message} from 'ant-design-vue';
-import {DownOutlined} from '@ant-design/icons-vue';
+import {DownOutlined, QuestionCircleOutlined} from '@ant-design/icons-vue';
 import {logoutHandle} from "@/utils/tools";
 import {getSettings} from "@/api/auth-login";
+import {getDiskUsage} from "@/api/system";
 import {DEFAULT_ZH_LOGO} from "@/constants";
 
 const props = defineProps({
@@ -60,6 +85,79 @@ const company = computed(() => store.getters.getCompany)
 const loginInfo = computed(() => {
     return store.getters.getUserInfo
 })
+const diskUsage = ref(null)
+const DISK_WARNING_CACHE_KEY = 'zm:session:archive:disk-usage-warning-date'
+
+const diskUsageLevel = computed(() => {
+    const freePercent = Number(diskUsage.value?.free_percent)
+    if (freePercent <= 10) return 'critical'
+    if (freePercent <= 20) return 'warning'
+    return 'normal'
+})
+
+const formatBytes = (bytes) => {
+    const value = Number(bytes)
+    if (!Number.isFinite(value) || value < 0) return '--'
+    const units = ['B', 'KB', 'MB', 'GB', 'TB']
+    let size = value
+    let unitIndex = 0
+    while (size >= 1024 && unitIndex < units.length - 1) {
+        size /= 1024
+        unitIndex++
+    }
+    const formatted = size >= 10 || unitIndex === 0 ? Math.round(size) : size.toFixed(1)
+    return `${formatted}${units[unitIndex]}`
+}
+
+const openStorageSettings = () => {
+    const url = `${window.location.origin}${window.location.pathname}#/systemctl/fileStorage`
+    window.open(url, '_blank', 'noopener,noreferrer')
+}
+
+const getToday = () => {
+    const now = new Date()
+    const month = String(now.getMonth() + 1).padStart(2, '0')
+    const day = String(now.getDate()).padStart(2, '0')
+    return `${now.getFullYear()}-${month}-${day}`
+}
+
+const shouldShowDiskWarning = () => {
+    try {
+        return localStorage.getItem(DISK_WARNING_CACHE_KEY) !== getToday()
+    } catch {
+        return true
+    }
+}
+
+const markDiskWarningShown = () => {
+    try {
+        localStorage.setItem(DISK_WARNING_CACHE_KEY, getToday())
+    } catch {
+        // 浏览器禁用缓存时仍允许本次提示显示
+    }
+}
+
+const showDiskWarning = (usage) => {
+    const freePercent = Number(usage?.free_percent)
+    if (!Number.isFinite(freePercent) || freePercent >= 20 || !shouldShowDiskWarning()) return
+
+    markDiskWarningShown()
+    Modal.confirm({
+        title: '磁盘空间已满',
+        content: h('div', {style: {lineHeight: '24px'}}, [
+            h('div', [
+                '当前磁盘空间仅剩',
+                h('span', {style: {color: '#ff4d4f'}}, `${formatBytes(usage.free_bytes)}（${freePercent}%）`),
+                h('span', {style: {color: '#ff4d4f'}}, '，避免消息存储失败'),
+            ]),
+            h('div', '请尽快扩容或配置存储到OSS中。'),
+        ]),
+        cancelText: '知道了',
+        okText: '去配置',
+        onOk: openStorageSettings,
+        centered: true,
+    })
+}
 
 const style = computed(() => {
     return {
@@ -98,7 +196,7 @@ onMounted(() => {
           })
         }
       }
-    }).catch((e) => {
+    }).catch(() => {
       // 用默认的头像和企业信息
       store.commit('setCompany', {
         title: '',
@@ -109,9 +207,17 @@ onMounted(() => {
         copyright: ''
       })
     })
-  } catch (e) {
-
+  } catch {
+    // 使用默认企业信息
   }
+
+  getDiskUsage().then((res) => {
+    const data = res?.data || null
+    diskUsage.value = data
+    showDiskWarning(data)
+  }).catch(() => {
+    diskUsage.value = null
+  })
 })
 </script>
 
@@ -178,9 +284,16 @@ onMounted(() => {
         flex: 1;
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: flex-end;
         padding-left: 24px;
         position: relative;
+
+        .header-main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
 
         .my-shadow {
             position: absolute;
@@ -219,6 +332,90 @@ onMounted(() => {
                     background: rgba(0, 0, 0, 0.04);
                     color: #2475fc;
                 }
+            }
+        }
+
+        .disk-usage {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            width: min(360px, 34vw);
+            min-width: 220px;
+            margin: 0 24px 0 0;
+            color: #595959;
+            font-size: 11px;
+
+            .disk-usage-title {
+                flex: 0 0 auto;
+                font-size: 12px;
+                color: #262626;
+            }
+
+            .disk-usage-main {
+                flex: 1;
+                min-width: 0;
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+            }
+
+            .disk-usage-progress {
+                width: 100%;
+                min-width: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .disk-usage-bar {
+                flex: 1;
+                min-width: 0;
+                height: 8px;
+                overflow: hidden;
+                border-radius: 5px;
+                background: #e8e8e8;
+            }
+
+            .disk-usage-bar-value {
+                height: 100%;
+                border-radius: 5px;
+                background: #9bc56a;
+                transition: width .2s ease;
+            }
+
+            .disk-usage-percent {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                white-space: nowrap;
+                color: #595959;
+            }
+
+            .disk-usage-help {
+                color: #8c8c8c;
+                font-size: 13px;
+                cursor: pointer;
+            }
+
+            .storage-setting-link {
+                color: #2475fc;
+                cursor: pointer;
+            }
+
+            .disk-usage-detail {
+                display: flex;
+                justify-content: space-between;
+                gap: 8px;
+                white-space: nowrap;
+                color: #8c8c8c;
+            }
+
+            &.warning .disk-usage-bar-value {
+                background: #faad14;
+            }
+
+            &.critical .disk-usage-bar-value {
+                background: #ff4d4f;
             }
         }
 

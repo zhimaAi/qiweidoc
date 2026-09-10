@@ -36,6 +36,7 @@ use Modules\Main\Controller\ModuleController;
 use Modules\Main\Controller\OpenPushController;
 use Modules\Main\Controller\StaffController;
 use Modules\Main\Controller\StorageController;
+use Modules\Main\Controller\SystemController;
 use Modules\Main\Controller\TagsController;
 use Modules\Main\Controller\UserController;
 use Modules\Main\Cron\SyncStaffChatCron;
@@ -209,6 +210,9 @@ class Routes extends RouterProvider
 
                     // 文件存储
                     Route::post('/storages')->action([StorageController::class, 'upload']),
+
+                    // 宿主机磁盘信息
+                    Route::get('/system/disk-usage')->action([SystemController::class, 'getDiskUsage']),
 
                     // 企业相关接口
                     Route::get("/corps/current")->action([CorpController::class, "getCurrentCorpInfo"]),
