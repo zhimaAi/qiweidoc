@@ -43,12 +43,14 @@ services:
 
   minio:
     image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/qiweidoc_minio:latest
-    command: "server /data"
+    command: "server /data --console-address :9001"
     environment:
       TZ: Asia/Shanghai
     restart: always
     volumes:
       - minio_data:/data
+    ports:
+      - 127.0.0.1:${EXTERNAL_MINIO_CONSOLE_PORT:-9001}:9001
     deploy:
       resources:
         limits:
