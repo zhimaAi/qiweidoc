@@ -46,6 +46,8 @@ services:
     command: "server /data --console-address :9001"
     environment:
       TZ: Asia/Shanghai
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:?Set MINIO_ACCESS_KEY in the Compose environment}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:?Set MINIO_SECRET_KEY in the Compose environment}
     restart: always
     volumes:
       - minio_data:/data

@@ -47,15 +47,17 @@ services:
       dockerfile: docker/minio/Dockerfile
     platform: linux/amd64
     image: registry.cn-hangzhou.aliyuncs.com/zhimaxkf/qiweidoc_minio:latest
-    command: "server /data --console-address 0.0.0.0:9001"
+    command: "server /data --console-address :9001"
     environment:
       TZ: Asia/Shanghai
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:?Set MINIO_ACCESS_KEY in the Compose environment}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:?Set MINIO_SECRET_KEY in the Compose environment}
     restart: always
     volumes:
       - minio_data:/data
     ports:
       - ${EXTERNAL_MINIO_API_PORT:-9000}:9000
-      - 0.0.0.0:${EXTERNAL_MINIO_CONSOLE_PORT:-9001}:9001
+      - 127.0.0.1:${EXTERNAL_MINIO_CONSOLE_PORT:-9001}:9001
 
   nats:
     build:
