@@ -2,6 +2,7 @@
 
 namespace Modules\Main\Service;
 
+use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
 use Carbon\Carbon;
 use Common\Yii;
@@ -370,6 +371,91 @@ class StorageService
             return (string) $request->getUri();
         } else {
             return "";
+        }
+    }
+
+    /**
+     * 生成会话媒体下载地址，并确认对象存储中的文件仍然存在。
+     *
+     * @return array{download_url: string, media_status: string}
+     */
+    public static function getVerifiedDownloadInfo(string $hash): array
+    {
+        $hash = strtolower($hash);
+        $storage = self::findAvailableStorage($hash);
+        if (empty($storage)) {
+            return [
+                'download_url' => '',
+                'media_status' => 'removed',
+            ];
+        }
+
+        try {
+            if (!$storage->get('is_deleted_local')) {
+                $localClient = self::getLocalS3Client();
+                if (self::storageObjectExists(
+                    $localClient,
+                    $storage->get('local_storage_bucket'),
+                    $storage->get('local_storage_object_key')
+                )) {
+                    return [
+                        'download_url' => self::getDownloadUrl($hash),
+                        'media_status' => 'success',
+                    ];
+                }
+            }
+
+            if (!empty($storage->get('cloud_storage_object_key'))
+                && $setting = CloudStorageSettingModel::query()
+                    ->where(['id' => $storage->get('cloud_storage_setting_id')])
+                    ->getOne()
+            ) {
+                $cloudClient = self::getCloudS3Client($setting);
+                if (self::storageObjectExists(
+                    $cloudClient,
+                    $setting->get('bucket'),
+                    $storage->get('cloud_storage_object_key')
+                )) {
+                    $cmd = $cloudClient->getCommand('GetObject', [
+                        'Bucket' => $setting->get('bucket'),
+                        'Key' => $storage->get('cloud_storage_object_key'),
+                    ]);
+                    $request = $cloudClient->createPresignedRequest($cmd, '+1 hour');
+
+                    return [
+                        'download_url' => (string) $request->getUri(),
+                        'media_status' => 'success',
+                    ];
+                }
+            }
+        } catch (Throwable) {
+            return [
+                'download_url' => '',
+                'media_status' => 'unavailable',
+            ];
+        }
+
+        return [
+            'download_url' => '',
+            'media_status' => 'removed',
+        ];
+    }
+
+    private static function storageObjectExists(S3Client $client, string $bucket, string $objectKey): bool
+    {
+        try {
+            $client->headObject([
+                'Bucket' => $bucket,
+                'Key' => $objectKey,
+            ]);
+            return true;
+        } catch (S3Exception $e) {
+            if ($e->getStatusCode() === 404
+                || in_array($e->getAwsErrorCode(), ['NoSuchKey', 'NotFound', 'NoSuchObject'], true)
+            ) {
+                return false;
+            }
+            throw $e;
         }
     }
 

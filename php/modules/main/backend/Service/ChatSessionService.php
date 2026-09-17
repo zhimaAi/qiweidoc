@@ -783,7 +783,10 @@ SQL;
     private static function appendMediaDownloadUrls(ChatMessageModel $message): void
     {
         if (in_array($message->get('msg_type'), self::ValidMediaType) && is_md5($message->get('msg_content'))) {
-            $message->append('msg_content', StorageService::getDownloadUrl($message->get('msg_content')));
+            $mediaInfo = StorageService::getVerifiedDownloadInfo($message->get('msg_content'));
+            $message->append('msg_content', $mediaInfo['download_url']);
+            $message->append('media_status', $mediaInfo['media_status']);
+            $message->append('file_is_remove', $mediaInfo['media_status'] === 'removed');
             return;
         }
 
@@ -820,8 +823,9 @@ SQL;
             if (in_array($type, self::CHAT_RECORD_MEDIA_TYPES, true)) {
                 $storageHash = $content['storage_hash'] ?? '';
                 if (is_md5($storageHash)) {
-                    $content['download_url'] = StorageService::getDownloadUrl($storageHash);
-                    $content['media_status'] = $content['download_url'] === '' ? 'removed' : 'success';
+                    $mediaInfo = StorageService::getVerifiedDownloadInfo($storageHash);
+                    $content['download_url'] = $mediaInfo['download_url'];
+                    $content['media_status'] = $mediaInfo['media_status'];
                 } elseif (!empty($content['sdkfileid']) && is_md5((string) ($content['md5sum'] ?? ''))) {
                     $content['download_url'] = '';
                     $content['media_status'] = 'pending';

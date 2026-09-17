@@ -725,22 +725,24 @@ export function formatBytes(bytes) {
     return `${convertedSize}${sizes[i]}`;
 }
 
-export function  downloadFile(fileUrl, filename="") {
+export function downloadFile(fileUrl, filename = "", onError = null) {
     const x = new window.XMLHttpRequest();
     x.open('GET', fileUrl, true);
     x.responseType = 'blob';
     x.onload = () => {
+        if (x.status < 200 || x.status >= 300) {
+            onError?.(x.status)
+            return
+        }
         const url = window.URL.createObjectURL(x.response);
         const a = document.createElement('a');
         a.href = url;
         a.download = filename;
         a.click();
+        window.setTimeout(() => window.URL.revokeObjectURL(url), 0)
     };
-    x.onerror = err => {
-        const a = document.createElement('a');
-        a.href = fileUrl;
-        a.download = filename;
-        a.click();
+    x.onerror = () => {
+        onError?.(0)
     }
     x.send();
 }
