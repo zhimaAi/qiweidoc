@@ -70,6 +70,7 @@ import {DownOutlined, QuestionCircleOutlined} from '@ant-design/icons-vue';
 import {logoutHandle} from "@/utils/tools";
 import {getSettings} from "@/api/auth-login";
 import {getDiskUsage} from "@/api/system";
+import {getAuthToken} from "@/utils/cache";
 import {DEFAULT_ZH_LOGO} from "@/constants";
 
 const props = defineProps({
@@ -211,13 +212,17 @@ onMounted(() => {
     // 使用默认企业信息
   }
 
-  getDiskUsage().then((res) => {
-    const data = res?.data || null
-    diskUsage.value = data
-    showDiskWarning(data)
-  }).catch(() => {
-    diskUsage.value = null
-  })
+  // 初始化页和登录页也会复用 MainHeader，此时不能请求需要登录的磁盘信息。
+  // 否则接口返回 401 后，全局响应拦截器会强制跳转到登录页。
+  if (getAuthToken()) {
+    getDiskUsage().then((res) => {
+      const data = res?.data || null
+      diskUsage.value = data
+      showDiskWarning(data)
+    }).catch(() => {
+      diskUsage.value = null
+    })
+  }
 })
 </script>
 
