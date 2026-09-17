@@ -18,7 +18,12 @@ class StorageService
 
     public static function hasAvailableStorage(string $hash): bool
     {
-        return self::findAvailableStorage($hash) !== null;
+        $mediaInfo = self::getVerifiedDownloadInfo($hash);
+        if ($mediaInfo['media_status'] === 'unavailable') {
+            throw new Exception('对象存储暂时不可用，无法确认文件状态');
+        }
+
+        return $mediaInfo['media_status'] === 'success';
     }
 
     private static function findAvailableStorage(string $hash): ?StorageModel
