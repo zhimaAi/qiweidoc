@@ -29,15 +29,21 @@ class DownloadChatSessionMediasConsumer
      */
     public function handle(): void
     {
-        if (in_array($this->message->get('msg_type'), [
-            EnumMessageType::ChatRecord->value,
-            EnumMessageType::Mixed->value,
-            EnumMessageType::Note->value,
-        ], true)) {
-            ChatSessionPullService::handleStructuredMessageMedias($this->corp, $this->message);
-            return;
-        }
+        try {
+            if (in_array($this->message->get('msg_type'), [
+                EnumMessageType::ChatRecord->value,
+                EnumMessageType::Mixed->value,
+                EnumMessageType::Note->value,
+            ], true)) {
+                ChatSessionPullService::handleStructuredMessageMedias($this->corp, $this->message);
+            } else {
+                ChatSessionPullService::handleMedia($this->corp, $this->message);
+            }
 
-        ChatSessionPullService::handleMedia($this->corp, $this->message);
+            ChatSessionPullService::markMediaDownloadCompleted($this->message);
+        } catch (Throwable $e) {
+            ChatSessionPullService::markMediaDownloadFailed($this->message);
+            throw $e;
+        }
     }
 }
