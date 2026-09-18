@@ -13,7 +13,7 @@
             <button
                 type="button"
                 class="note-type"
-                @click="onShowMessage(noteContent.items, MessageTypeTextMap[messageInfo.msg_type])"
+                @click="onShowMessage(noteContent.items, MessageTypeTextMap[messageInfo.msg_type], true)"
             >
                 <span>{{ MessageTypeTextMap[messageInfo.msg_type] }}</span>
                 <RightOutlined class="icon-14"/>
@@ -385,10 +385,10 @@ const getVoiceCallDuration = computed(() => {
     return '00:00'
 })
 
-const onShowMessage = (list, title) => {
+const onShowMessage = (list, title, compact = false) => {
     if (messageListRef.value) {
         const newList = copyObj(list)
-        messageListRef.value.show(newList, title)
+        messageListRef.value.show(newList, title, compact)
     }
 }
 

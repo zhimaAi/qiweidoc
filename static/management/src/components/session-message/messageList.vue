@@ -34,14 +34,14 @@ const onShowMessage = (list, title) => {
 }
 
 
-const show = (messageListData, modalTitle) => {
+const show = (messageListData, modalTitle, compact = false) => {
     messageList.value = messageListData
     title.value = modalTitle || '查看聊天记录'
     visible.value = true
     saving.value = false
     nextTick(() => {
         if (messageItemRef.value) {
-            messageItemRef.value.show(messageListData)
+            messageItemRef.value.show(messageListData, undefined, compact)
         }
     })
 }

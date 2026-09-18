@@ -138,11 +138,13 @@ const showFileSize = size => size ? formatBytes(size) : ''
 
 <style scoped lang="less">
 .message-item { display: flex; gap: 12px; padding: 16px 0; border-bottom: 1px solid #f0f0f0; background: #fff; }
-.message-item.compact { padding: 8px 0; border-bottom: 0; background: transparent; }
+.message-item.compact { padding: 0 0 12px; border-bottom: 0; background: transparent; }
+.message-item.compact:last-child { padding-bottom: 0; }
 .avatar, .avatar img { width: 40px; height: 40px; border-radius: 12px; }
 .message-main { min-width: 0; flex: 1; }
 .message-time, .description, .file-size, .disabled { color: #8c8c8c; font-size: 12px; }
 .text-content { margin-top: 8px; white-space: pre-wrap; word-break: break-word; }
+.message-item.compact .text-content { margin-top: 0; }
 .message-box { box-sizing: border-box; max-width: 520px; margin-top: 8px; padding: 12px; border: 1px solid #e6e6e6; border-radius: 8px; color: #595959; word-break: break-word; }
 .media-placeholder { width: 120px; }
 .file-box, .link-box, .location-box { display: flex; align-items: center; gap: 12px; }
