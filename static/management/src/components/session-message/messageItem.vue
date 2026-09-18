@@ -5,6 +5,7 @@
             :key="index"
             :item="item"
             :allow-open="showMore"
+            :compact="compactMode"
             @show-message="onShowMessage"
         />
     </div>
@@ -18,13 +19,15 @@ import ChatRecordItem from './chatRecordItem.vue';
 const emit = defineEmits(['showMessage'])
 const messageList = ref([])
 const showMore = ref(true)
+const compactMode = ref(false)
 
 const onShowMessage = (list, title) => {
     emit('showMessage', copyObj(list), title)
 }
 
-const show = (messageListData, type) => {
+const show = (messageListData, type, compact = false) => {
     showMore.value = type != 3
+    compactMode.value = compact
     messageList.value = Array.isArray(messageListData) ? messageListData : []
 }
 

@@ -10,7 +10,14 @@
                 <div class="note-title">{{ noteContent.title }}</div>
                 <div v-if="noteContent.description" class="note-description">{{ noteContent.description }}</div>
             </div>
-            <div class="note-type">{{ MessageTypeTextMap[messageInfo.msg_type] }}</div>
+            <button
+                type="button"
+                class="note-type"
+                @click="onShowMessage(noteContent.items, MessageTypeTextMap[messageInfo.msg_type], true)"
+            >
+                <span>{{ MessageTypeTextMap[messageInfo.msg_type] }}</span>
+                <RightOutlined class="icon-14"/>
+            </button>
         </div>
         <!-- 接龙 -->
         <div v-else-if="messageInfo.msg_type === 'solitaire'" class="message-box solitaire-message-box">
@@ -27,12 +34,15 @@
         </div>
         <!--图片-->
         <template v-else-if="messageInfo.msg_type === 'image' || messageInfo.msg_type === 'emotion'">
-            <a-tooltip v-if="messageInfo.file_is_remove" title="图片已清除">
+            <a-tooltip v-if="mediaRemoved" title="图片已清除">
                 <img src="@/assets/image/session/load-img-deleted.png" style="width: 120px;"/>
             </a-tooltip>
             <div v-else-if="messageInfo.msg_content " class="message-box image pointer">
-                <a-image :src="messageInfo.msg_content" style="max-width: 200px;"/>
+                <a-image :src="messageInfo.msg_content" style="max-width: 200px;" @error="mediaLoadFailed = true"/>
             </div>
+            <a-tooltip v-else-if="messageInfo.media_status === 'unavailable'" title="图片暂时无法访问，请稍后重试">
+                <img src="@/assets/image/session/load-img-run.png" style="width: 120px;"/>
+            </a-tooltip>
             <a-tooltip v-else title="系统正在下载中，稍后再试！">
                 <img src="@/assets/image/session/load-img-run.png" style="width: 120px;"/>
             </a-tooltip>
@@ -100,7 +110,10 @@
                     <img src="@/assets/image/icon-voice.gif" class="voice-play-icon"/>
                     <span class="ml8">视频消息 {{formatSeconds(messageInfo.raw_content.play_length)}}</span>
                     <a-divider type="vertical"/>
-                    <a-tooltip title="停止播放">
+                    <a-tooltip v-if="mediaRemoved" title="文件已清除">
+                        <PauseCircleOutlined class="icon-disabled"/>
+                    </a-tooltip>
+                    <a-tooltip v-else title="停止播放">
                         <PauseCircleOutlined @click="playingVideo(messageInfo)" class="icon-btn"/>
                     </a-tooltip>
                 </template>
@@ -108,11 +121,18 @@
                     <img class="icon-14" src="@/assets/image/icon-video.png"/>
                     <span class="ml8">视频消息 {{formatSeconds(messageInfo.raw_content.play_length)}}</span>
                     <a-divider type="vertical"/>
-                    <a-tooltip title="播放视频">
+                    <a-tooltip v-if="mediaRemoved" title="文件已清除">
+                        <PlayCircleOutlined class="icon-disabled"/>
+                    </a-tooltip>
+                    <a-tooltip v-else title="播放视频">
                         <PlayCircleOutlined @click="playingVideo(messageInfo)" class="icon-btn"/>
                     </a-tooltip>
                 </template>
-                <DownloadOutlined v-if="messageInfo.msg_content && messageInfo.msg_id" @click="downloadMsgFile" class="icon-btn ml8"/>
+                <a-tooltip v-if="mediaRemoved" title="文件已清除">
+                    <DownloadOutlined class="icon-disabled ml8"/>
+                </a-tooltip>
+                <DownloadOutlined v-else-if="messageInfo.msg_content && messageInfo.msg_id"
+                                  @click="downloadMsgFile" class="icon-btn ml8"/>
                 <DownloadOutlined v-else class="icon-disabled ml8"/>
             </div>
         </div>
@@ -129,13 +149,13 @@
                     <div class="file-size">{{ showFileSize(messageInfo.raw_content.filesize) }}</div>
                 </div>
                 <div class="right-block">
-                    <a-tooltip v-if="messageInfo.file_is_remove" title="文件已清除">
+                    <a-tooltip v-if="mediaRemoved" title="文件已清除">
                         <DownloadOutlined style="color: #CCC;"/>
                     </a-tooltip>
                     <a v-else-if="messageInfo.msg_content" @click="downloadMsgFile">
                         <DownloadOutlined/>
                     </a>
-                    <a-tooltip v-else title="系统正在下载中，稍后再试！">
+                    <a-tooltip v-else :title="messageInfo.media_status === 'unavailable' ? '文件暂时无法访问，请稍后重试' : '系统正在下载中，稍后再试！'">
                         <DownloadOutlined style="color: #CCC;"/>
                     </a-tooltip>
                 </div>
@@ -151,7 +171,10 @@
                     <img src="@/assets/image/icon-voice.gif" class="voice-play-icon"/>
                     <span class="ml8">语音通话 {{getVoiceCallDuration}}</span>
                     <a-divider type="vertical"/>
-                    <a-tooltip title="停止播放">
+                    <a-tooltip v-if="mediaRemoved" title="文件已清除">
+                        <PauseCircleOutlined class="icon-disabled"/>
+                    </a-tooltip>
+                    <a-tooltip v-else title="停止播放">
                         <PauseCircleOutlined @click="playingVoice(messageInfo)" class="icon-btn"/>
                     </a-tooltip>
                 </template>
@@ -159,11 +182,17 @@
                     <PhoneOutlined class="voice-phone-icon"/>
                     <span class="ml8">语音通话 {{getVoiceCallDuration}}</span>
                     <a-divider type="vertical"/>
-                    <a-tooltip title="播放通话">
+                    <a-tooltip v-if="mediaRemoved" title="文件已清除">
+                        <PlayCircleOutlined class="icon-disabled"/>
+                    </a-tooltip>
+                    <a-tooltip v-else title="播放通话">
                         <PlayCircleOutlined @click="playingVoice(messageInfo)" class="icon-btn"/>
                     </a-tooltip>
                 </template>
-                <DownloadOutlined @click="downloadMsgFile" class="icon-btn ml8"/>
+                <a-tooltip v-if="mediaRemoved" title="文件已清除">
+                    <DownloadOutlined class="icon-disabled ml8"/>
+                </a-tooltip>
+                <DownloadOutlined v-else @click="downloadMsgFile" class="icon-btn ml8"/>
             </div>
         </div>
         <div v-else-if="messageInfo.msg_type == 'voiptext'"
@@ -181,7 +210,10 @@
                     <img src="@/assets/image/icon-voice.gif" class="voice-play-icon"/>
                     <span class="ml8">语音消息 {{formatSeconds(messageInfo.raw_content.play_length)}}</span>
                     <a-divider type="vertical"/>
-                    <a-tooltip title="停止播放">
+                    <a-tooltip v-if="mediaRemoved" title="文件已清除">
+                        <PauseCircleOutlined class="icon-disabled"/>
+                    </a-tooltip>
+                    <a-tooltip v-else title="停止播放">
                         <PauseCircleOutlined @click.stop="playingVoice(messageInfo)" class="icon-btn"/>
                     </a-tooltip>
                 </template>
@@ -189,11 +221,17 @@
                     <img class="icon-14" src="@/assets/image/icon-voice.png"/>
                     <span class="ml8">语音消息 {{formatSeconds(messageInfo.raw_content.play_length)}}</span>
                     <a-divider type="vertical"/>
-                    <a-tooltip title="播放语音">
+                    <a-tooltip v-if="mediaRemoved" title="文件已清除">
+                        <PlayCircleOutlined class="icon-disabled"/>
+                    </a-tooltip>
+                    <a-tooltip v-else title="播放语音">
                         <PlayCircleOutlined @click.stop="playingVoice(messageInfo)" class="icon-btn"/>
                     </a-tooltip>
                 </template>
-                <DownloadOutlined @click.stop="downloadMsgFile" class="icon-btn ml8"/>
+                <a-tooltip v-if="mediaRemoved" title="文件已清除">
+                    <DownloadOutlined class="icon-disabled ml8"/>
+                </a-tooltip>
+                <DownloadOutlined v-else @click.stop="downloadMsgFile" class="icon-btn ml8"/>
                 <!--未购买时-->
                 <span v-if="showPaymentTag" @click="payenmtModalShow" class="zm-payment-tag"></span>
             </div>
@@ -310,9 +348,13 @@ const emit = defineEmits(['playVoice'])
 const router = useRouter()
 const store = useStore()
 const amrPlayer = ref(null)
+const mediaLoadFailed = ref(false)
 const totalStorage = ref(10)
 const noteContent = computed(() => getNoteDisplayContent(props.messageInfo))
 const solitaireContent = computed(() => getSolitaireDisplayContent(props.messageInfo))
+const mediaRemoved = computed(() => props.messageInfo.file_is_remove
+    || props.messageInfo.media_status === 'removed'
+    || mediaLoadFailed.value)
 
 const archiveStfModule = computed(() => {
     return store.getters.getArchiveStfInfo || {}
@@ -343,10 +385,10 @@ const getVoiceCallDuration = computed(() => {
     return '00:00'
 })
 
-const onShowMessage = (list) => {
+const onShowMessage = (list, title, compact = false) => {
     if (messageListRef.value) {
         const newList = copyObj(list)
-        messageListRef.value.show(newList)
+        messageListRef.value.show(newList, title, compact)
     }
 }
 
@@ -382,6 +424,14 @@ const existArchivePlug = () => {
 }
 
 const playingVoice = (msg) => {
+    if (mediaRemoved.value) {
+        message.warning('语音文件已清除')
+        return
+    }
+    if (msg.media_status === 'unavailable') {
+        message.error('语音文件暂时无法访问，请稍后重试')
+        return
+    }
     if (!existArchivePlug()) {
         return
     }
@@ -393,6 +443,14 @@ const playingVoice = (msg) => {
 }
 
 const playingVideo = (msg) => {
+    if (mediaRemoved.value) {
+        message.warning('视频文件已清除')
+        return
+    }
+    if (msg.media_status === 'unavailable') {
+        message.error('视频文件暂时无法访问，请稍后重试')
+        return
+    }
     if (!msg.msg_content) {
         message.error('播放失败，文件正在下载中！')
         return;
@@ -405,24 +463,45 @@ const getTotalStorageSizeTitle = () => {
 }
 
 const downloadMsgFile = () => {
+    const msg = props.messageInfo
+    if (mediaRemoved.value) {
+        message.warning('文件已清除')
+        return
+    }
+    if (msg.media_status === 'unavailable') {
+        message.error('文件暂时无法访问，请稍后重试')
+        return
+    }
+    if (!msg.msg_content) {
+        message.warning('文件正在下载中，请稍后再试')
+        return
+    }
     if (!existArchivePlug()) {
         return
     }
-    const msg = props.messageInfo
     switch (msg.msg_type) {
         case 'file':
-            downloadFile(msg.msg_content, msg.raw_content.filename)
+            downloadFile(msg.msg_content, msg.raw_content.filename, handleDownloadError)
             break
         case 'meeting_voice_call':
-            downloadFile(msg.msg_content, `语音通话-${msg.msg_id}.amr`)
+            downloadFile(msg.msg_content, `语音通话-${msg.msg_id}.amr`, handleDownloadError)
             break
         case 'voice':
-            downloadFile(msg.msg_content, `语音消息-${msg.msg_id}.mp3`)
+            downloadFile(msg.msg_content, `语音消息-${msg.msg_id}.mp3`, handleDownloadError)
             break
         case 'video':
-            downloadFile(msg.msg_content, `视频消息-${msg.msg_id}.mp4`)
+            downloadFile(msg.msg_content, `视频消息-${msg.msg_id}.mp4`, handleDownloadError)
             break
     }
+}
+
+const handleDownloadError = status => {
+    if (status === 404) {
+        mediaLoadFailed.value = true
+        message.warning('文件已清除')
+        return
+    }
+    message.error('文件暂时无法访问，请稍后重试')
 }
 
 const downloadFileLimit = fileCont => {
@@ -533,18 +612,31 @@ const showBuyFileStorage = () => {
 
         .note-description {
             margin-top: 4px;
+            display: -webkit-box;
+            overflow: hidden;
             color: #9A9AA1;
             font-size: 14px;
             line-height: 22px;
             white-space: pre-wrap;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
         }
 
         .note-type {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            justify-content: space-between;
             padding: 8px 16px;
             border-top: 1px solid #D9D9D9;
+            border-right: 0;
+            border-bottom: 0;
+            border-left: 0;
+            background: transparent;
             color: #8C8C8C;
             font-size: 14px;
             line-height: 22px;
+            cursor: pointer;
         }
     }
 

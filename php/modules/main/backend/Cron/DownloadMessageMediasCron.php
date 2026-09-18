@@ -3,10 +3,10 @@
 namespace Modules\Main\Cron;
 
 use Carbon\Carbon;
+use Modules\Main\Enum\EnumMediaDownloadStatus;
 use Modules\Main\Model\ChatMessageModel;
 use Modules\Main\Model\CorpModel;
 use Modules\Main\Service\ChatSessionPullService;
-use Modules\Main\Service\ChatSessionService;
 
 class DownloadMessageMediasCron
 {
@@ -21,10 +21,12 @@ class DownloadMessageMediasCron
             return;
         }
 
+        ChatSessionPullService::normalizeUnknownMediaDownloadStatuses();
+        ChatSessionPullService::recoverStaleMediaDownloads();
+
         $messages = ChatMessageModel::query()
             ->where(['corp_id' => $corp->get('id')])
-            ->andWhere(['in', 'msg_type', ChatSessionService::ValidMediaType])
-            ->andWhere(['msg_content' => ''])
+            ->andWhere(['media_download_status' => EnumMediaDownloadStatus::Pending->value])
             ->andWhere(['<', 'download_retry_count', ChatSessionPullService::MAX_MEDIA_DOWNLOAD_ATTEMPTS])
             ->andWhere(['<', 'msg_time', Carbon::now()->subHour()->toDateTimeString('millisecond')])
             ->andWhere(['>', 'msg_time', Carbon::now()->subDays(5)->toDateTimeString('millisecond')])

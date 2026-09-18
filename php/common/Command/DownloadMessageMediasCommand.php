@@ -7,10 +7,10 @@ declare(strict_types=1);
 namespace Common\Command;
 
 use Carbon\Carbon;
+use Modules\Main\Enum\EnumMediaDownloadStatus;
 use Modules\Main\Model\ChatMessageModel;
 use Modules\Main\Model\CorpModel;
 use Modules\Main\Service\ChatSessionPullService;
-use Modules\Main\Service\ChatSessionService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -27,10 +27,12 @@ class DownloadMessageMediasCommand extends Command
             return ExitCode::OK;
         }
 
+        ChatSessionPullService::normalizeUnknownMediaDownloadStatuses();
+        ChatSessionPullService::recoverStaleMediaDownloads();
+
         $messages = ChatMessageModel::query()
             ->where(['corp_id' => $corp->get('id')])
-            ->andWhere(['in', 'msg_type', ChatSessionService::ValidMediaType])
-            ->andWhere(['msg_content' => ''])
+            ->andWhere(['media_download_status' => EnumMediaDownloadStatus::Pending->value])
             ->andWhere(['<', 'download_retry_count', ChatSessionPullService::MAX_MEDIA_DOWNLOAD_ATTEMPTS])
             ->andWhere(['<', 'msg_time', Carbon::now()->subHour()->toDateTimeString('millisecond')])
             ->andWhere(['>', 'msg_time', Carbon::now()->subDays(5)->toDateTimeString('millisecond')])

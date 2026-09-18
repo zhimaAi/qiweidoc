@@ -9,6 +9,13 @@
             <div class="note-content">
                 <div class="note-title">{{ noteContent.title }}</div>
                 <div v-if="noteContent.description" class="note-description">{{ noteContent.description }}</div>
+                <ChatRecordItem
+                    v-for="(item, index) in noteContent.files"
+                    :key="`note-file-${index}`"
+                    :item="item"
+                    :allow-open="false"
+                    compact
+                />
             </div>
             <div class="note-type">{{ MessageTypeTextMap[messageInfo.msg_type] }}</div>
         </div>
@@ -24,12 +31,15 @@
         </div>
         <!--图片-->
         <template v-else-if="messageInfo.msg_type === 'image' || messageInfo.msg_type === 'emotion'">
-            <a-tooltip v-if="messageInfo.file_is_remove" title="图片已清除">
+            <a-tooltip v-if="mediaRemoved" title="图片已清除">
                 <img src="@/assets/image/session/load-img-deleted.png" style="width: 120px;"/>
             </a-tooltip>
             <div v-else-if="messageInfo.msg_content " class="message-box image pointer">
-                <a-image :src="messageInfo.msg_content" style="max-width: 200px;"/>
+                <a-image :src="messageInfo.msg_content" style="max-width: 200px;" @error="mediaLoadFailed = true"/>
             </div>
+            <a-tooltip v-else-if="messageInfo.media_status === 'unavailable'" title="图片暂时无法访问，请稍后重试">
+                <img src="@/assets/image/session/load-img-run.png" style="width: 120px;"/>
+            </a-tooltip>
             <a-tooltip v-else title="系统正在下载中，稍后再试！">
                 <img src="@/assets/image/session/load-img-run.png" style="width: 120px;"/>
             </a-tooltip>
@@ -58,13 +68,13 @@
                     <div class="file-size">{{ showFileSize(messageInfo.raw_content.filesize) }}</div>
                 </div>
                 <div class="right-block">
-                    <a-tooltip v-if="messageInfo.file_is_remove" title="文件已清除">
+                    <a-tooltip v-if="mediaRemoved" title="文件已清除">
                         <DownloadOutlined style="color: #CCC;"/>
                     </a-tooltip>
                     <a v-else-if="messageInfo.msg_content" @click="downloadMsgFile">
                         <DownloadOutlined/>
                     </a>
-                    <a-tooltip v-else title="系统正在下载中，稍后再试！">
+                    <a-tooltip v-else :title="messageInfo.media_status === 'unavailable' ? '文件暂时无法访问，请稍后重试' : '系统正在下载中，稍后再试！'">
                         <DownloadOutlined style="color: #CCC;"/>
                     </a-tooltip>
                 </div>
@@ -80,15 +90,24 @@
                     <img src="@/assets/image/icon-voice.gif" class="voice-play-icon"/>
                     <span class="ml8">语音通话 {{ getVoiceCallDuration }}</span>
                     <a-divider type="vertical"/>
-                    <PauseCircleOutlined @click="playingVoice(messageInfo)" class="icon-btn"/>
+                    <a-tooltip v-if="mediaRemoved" title="文件已清除">
+                        <PauseCircleOutlined class="icon-disabled"/>
+                    </a-tooltip>
+                    <PauseCircleOutlined v-else @click="playingVoice(messageInfo)" class="icon-btn"/>
                 </template>
                 <template v-else>
                     <PhoneOutlined class="voice-phone-icon"/>
                     <span class="ml8">语音通话 {{ getVoiceCallDuration }}</span>
                     <a-divider type="vertical"/>
-                    <PlayCircleOutlined @click="playingVoice(messageInfo)" class="icon-btn"/>
+                    <a-tooltip v-if="mediaRemoved" title="文件已清除">
+                        <PlayCircleOutlined class="icon-disabled"/>
+                    </a-tooltip>
+                    <PlayCircleOutlined v-else @click="playingVoice(messageInfo)" class="icon-btn"/>
                 </template>
-                <DownloadOutlined @click="downloadMsgFile" class="icon-btn ml8"/>
+                <a-tooltip v-if="mediaRemoved" title="文件已清除">
+                    <DownloadOutlined class="icon-disabled ml8"/>
+                </a-tooltip>
+                <DownloadOutlined v-else @click="downloadMsgFile" class="icon-btn ml8"/>
             </div>
         </div>
         <div v-else-if="messageInfo.msg_type == 'voiptext'"
@@ -106,15 +125,24 @@
                     <img src="@/assets/image/icon-voice.gif" class="voice-play-icon"/>
                     <span class="ml8">语音消息 {{ formatSeconds(messageInfo.raw_content.play_length) }}</span>
                     <a-divider type="vertical"/>
-                    <PauseCircleOutlined @click="playingVoice(messageInfo)" class="icon-btn"/>
+                    <a-tooltip v-if="mediaRemoved" title="文件已清除">
+                        <PauseCircleOutlined class="icon-disabled"/>
+                    </a-tooltip>
+                    <PauseCircleOutlined v-else @click="playingVoice(messageInfo)" class="icon-btn"/>
                 </template>
                 <template v-else>
                     <img class="icon-14" src="@/assets/image/icon-voice.png"/>
                     <span class="ml8">语音消息 {{ formatSeconds(messageInfo.raw_content.play_length) }}</span>
                     <a-divider type="vertical"/>
-                    <PlayCircleOutlined @click="playingVoice(messageInfo)" class="icon-btn"/>
+                    <a-tooltip v-if="mediaRemoved" title="文件已清除">
+                        <PlayCircleOutlined class="icon-disabled"/>
+                    </a-tooltip>
+                    <PlayCircleOutlined v-else @click="playingVoice(messageInfo)" class="icon-btn"/>
                 </template>
-                <DownloadOutlined @click="downloadMsgFile" class="icon-btn ml8"/>
+                <a-tooltip v-if="mediaRemoved" title="文件已清除">
+                    <DownloadOutlined class="icon-disabled ml8"/>
+                </a-tooltip>
+                <DownloadOutlined v-else @click="downloadMsgFile" class="icon-btn ml8"/>
             </div>
         </div>
         <!-- 红包消息-->
@@ -191,9 +219,13 @@ const props = defineProps({
 
 const emit = defineEmits(['playVoice'])
 const amrPlayer = ref(null)
+const mediaLoadFailed = ref(false)
 const totalStorage = ref(10)
 const noteContent = computed(() => getNoteDisplayContent(props.messageInfo))
 const solitaireContent = computed(() => getSolitaireDisplayContent(props.messageInfo))
+const mediaRemoved = computed(() => props.messageInfo.file_is_remove
+    || props.messageInfo.media_status === 'removed'
+    || mediaLoadFailed.value)
 
 const getVoiceCallDuration = computed(() => {
     const msg = props.messageInfo
@@ -212,6 +244,14 @@ const getVoiceCallDuration = computed(() => {
 })
 
 const playingVoice = (msg) => {
+    if (mediaRemoved.value) {
+        message.warning('语音文件已清除')
+        return
+    }
+    if (msg.media_status === 'unavailable') {
+        message.error('语音文件暂时无法访问，请稍后重试')
+        return
+    }
     if (!msg.msg_content) {
         message.error('播放失败，缺少文件！')
         return;
@@ -225,17 +265,38 @@ const getTotalStorageSizeTitle = () => {
 
 const downloadMsgFile = () => {
     const msg = props.messageInfo
+    if (mediaRemoved.value) {
+        message.warning('文件已清除')
+        return
+    }
+    if (msg.media_status === 'unavailable') {
+        message.error('文件暂时无法访问，请稍后重试')
+        return
+    }
+    if (!msg.msg_content) {
+        message.warning('文件正在下载中，请稍后再试')
+        return
+    }
     switch (msg.msg_type) {
         case 'file':
-            downloadFile(msg.msg_content, msg.raw_content.filename)
+            downloadFile(msg.msg_content, msg.raw_content.filename, handleDownloadError)
             break
         case 'meeting_voice_call':
-            downloadFile(msg.msg_content, `语音通话-${msg.msg_id}.amr`)
+            downloadFile(msg.msg_content, `语音通话-${msg.msg_id}.amr`, handleDownloadError)
             break
         case 'voice':
-            downloadFile(msg.msg_content, `语音消息-${msg.msg_id}.amr`)
+            downloadFile(msg.msg_content, `语音消息-${msg.msg_id}.amr`, handleDownloadError)
             break
     }
+}
+
+const handleDownloadError = status => {
+    if (status === 404) {
+        mediaLoadFailed.value = true
+        message.warning('文件已清除')
+        return
+    }
+    message.error('文件暂时无法访问，请稍后重试')
 }
 
 const downloadFileLimit = fileCont => {
@@ -501,5 +562,11 @@ const showBuyFileStorage = () => {
     &:hover {
         color: #2475FC;
     }
+}
+
+.icon-disabled {
+    color: #CCC;
+    font-size: 1.6rem;
+    cursor: no-drop;
 }
 </style>

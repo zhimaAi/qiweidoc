@@ -417,7 +417,7 @@ export const jsonDecode = (jsonStr, nullval = {}) => {
 }
 
 /**
- * 获取笔记的标题和正文。
+ * 获取笔记的标题、正文和内容条目。
  * 新消息由后端提供 msg_content；旧消息兼容从 raw_content.items 解析。
  */
 export const getNoteDisplayContent = (messageInfo = {}) => {
@@ -425,9 +425,10 @@ export const getNoteDisplayContent = (messageInfo = {}) => {
     const rawContent = typeof messageInfo.raw_content === 'string'
         ? jsonDecode(messageInfo.raw_content, {})
         : (messageInfo.raw_content || {})
+    const rawItems = Array.isArray(rawContent.items) ? rawContent.items.filter(Boolean) : []
 
-    if (!text && Array.isArray(rawContent.items)) {
-        text = rawContent.items
+    if (!text && rawItems.length) {
+        text = rawItems
             .filter(item => item && item.msg_type === 'text')
             .map(item => {
                 const content = typeof item.content === 'string'
@@ -443,6 +444,12 @@ export const getNoteDisplayContent = (messageInfo = {}) => {
     return {
         title: lines.shift() || '笔记',
         description: lines.join('\n').trim(),
+        // 笔记子项与聊天记录子项结构一致，保留原顺序供详情弹窗完整渲染。
+        items: rawItems.length ? rawItems : (text ? [{
+            msg_type: 'text',
+            content: {content: text},
+        }] : []),
+        files: rawItems.filter(item => item && item.msg_type === 'file'),
     }
 }
 
@@ -725,22 +732,24 @@ export function formatBytes(bytes) {
     return `${convertedSize}${sizes[i]}`;
 }
 
-export function  downloadFile(fileUrl, filename="") {
+export function downloadFile(fileUrl, filename = "", onError = null) {
     const x = new window.XMLHttpRequest();
     x.open('GET', fileUrl, true);
     x.responseType = 'blob';
     x.onload = () => {
+        if (x.status < 200 || x.status >= 300) {
+            onError?.(x.status)
+            return
+        }
         const url = window.URL.createObjectURL(x.response);
         const a = document.createElement('a');
         a.href = url;
         a.download = filename;
         a.click();
+        window.setTimeout(() => window.URL.revokeObjectURL(url), 0)
     };
-    x.onerror = err => {
-        const a = document.createElement('a');
-        a.href = fileUrl;
-        a.download = filename;
-        a.click();
+    x.onerror = () => {
+        onError?.(0)
     }
     x.send();
 }

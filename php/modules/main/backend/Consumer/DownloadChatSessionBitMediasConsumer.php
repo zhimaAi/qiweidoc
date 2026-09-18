@@ -23,6 +23,12 @@ readonly class DownloadChatSessionBitMediasConsumer
      */
     public function handle(): void
     {
-        ChatSessionPullService::handleMedia($this->corp, $this->message);
+        try {
+            ChatSessionPullService::handleMedia($this->corp, $this->message);
+            ChatSessionPullService::markMediaDownloadCompleted($this->message);
+        } catch (Throwable $e) {
+            ChatSessionPullService::markMediaDownloadFailed($this->message);
+            throw $e;
+        }
     }
 }

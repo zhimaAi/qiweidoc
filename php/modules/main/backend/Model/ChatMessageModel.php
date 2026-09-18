@@ -6,6 +6,7 @@ namespace Modules\Main\Model;
 use Common\DB\BaseModel;
 use Modules\Main\Enum\EnumChatConversationType;
 use Modules\Main\Enum\EnumChatMessageRole;
+use Modules\Main\Enum\EnumMediaDownloadStatus;
 
 class ChatMessageModel extends BaseModel
 {
@@ -41,6 +42,8 @@ class ChatMessageModel extends BaseModel
             'to_role' => EnumChatMessageRole::class,
             'msg_content' => 'string',
             'download_retry_count' => 'int',
+            'media_download_status' => EnumMediaDownloadStatus::class,
+            'media_download_updated_at' => 'string',
             'conversation_type' => EnumChatConversationType::class,
         ];
     }

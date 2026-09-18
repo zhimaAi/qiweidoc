@@ -57,7 +57,7 @@ services:
       - minio_data:/data
     ports:
       - ${EXTERNAL_MINIO_API_PORT:-9000}:9000
-      - 127.0.0.1:${EXTERNAL_MINIO_CONSOLE_PORT:-9001}:9001
+      - 0.0.0.0:${EXTERNAL_MINIO_CONSOLE_PORT:-9001}:9001
 
   nats:
     build:

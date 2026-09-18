@@ -19,6 +19,7 @@ use Modules\Main\Consumer\DownloadChatSessionMediasConsumer;
 use Modules\Main\Consumer\UploadStorageToCloudConsumer;
 use Modules\Main\Enum\EnumChatConversationType;
 use Modules\Main\Enum\EnumChatMessageRole;
+use Modules\Main\Enum\EnumMediaDownloadStatus;
 use Modules\Main\Enum\EnumMessageType;
 use Modules\Main\Model\ChatConversationsModel;
 use Modules\Main\Model\ChatMessageModel;
@@ -42,6 +43,7 @@ class ChatSessionPullService
     private const MEDIA_GO_TIMEOUT = 3300;
     private const MEDIA_NATS_TIMEOUT = 3600;
     private const MEDIA_LOCK_TTL = 3900;
+    private const MEDIA_STATUS_NORMALIZE_LIMIT = 500;
     private const MAX_CHAT_RECORD_DEPTH = 3;
     private const CHAT_RECORD_MEDIA_TYPE_MAP = [
         'ChatRecordImage' => 'image',
@@ -107,6 +109,7 @@ class ChatSessionPullService
                 } elseif (in_array($messageData->get('msg_type'), [
                     EnumMessageType::ChatRecord->value,
                     EnumMessageType::Mixed->value,
+                    EnumMessageType::Note->value,
                 ], true)) {
                     self::dispatchMediaDownload($corp, $messageData);
                 }
@@ -149,13 +152,15 @@ class ChatSessionPullService
     public static function dispatchMediaDownload(CorpModel $corp, ChatMessageModel $message): void
     {
         $messageType = $message->get('msg_type');
-        $isStructuredMessage = in_array($messageType, [
-            EnumMessageType::ChatRecord->value,
-            EnumMessageType::Mixed->value,
-        ], true);
+        $isStructuredMessage = self::isStructuredMessageType($messageType);
+        if ($isStructuredMessage && !self::hasPendingStructuredMessageMedia($message)) {
+            self::markMediaDownloadCompleted($message);
+            return;
+        }
 
         $query = ChatMessageModel::query()
             ->where(['msg_id' => $message->get('msg_id')])
+            ->andWhere(['media_download_status' => EnumMediaDownloadStatus::Pending->value])
             ->andWhere(['<', 'download_retry_count', self::MAX_MEDIA_DOWNLOAD_ATTEMPTS]);
 
         // 普通媒体下载完成后会写入 msg_content；结构化消息使用 raw_content.storage_hash，
@@ -167,6 +172,8 @@ class ChatSessionPullService
         $currentRetryCount = (int) $message->get('download_retry_count');
         $updated = $query->update([
             'download_retry_count' => new Expression('download_retry_count + 1'),
+            'media_download_status' => EnumMediaDownloadStatus::Processing->value,
+            'media_download_updated_at' => self::mediaStatusTimestamp(),
         ]);
         if ($updated !== 1) {
             Yii::logger()->debug('跳过会话媒体下载投递', [
@@ -179,13 +186,19 @@ class ChatSessionPullService
 
         // 让序列化到队列中的模型带上最新次数，便于日志和后续诊断。
         $message->set('download_retry_count', $currentRetryCount + 1);
+        $message->set('media_download_status', EnumMediaDownloadStatus::Processing);
 
-        if (self::isLargeFile($message)) { // 大文件到单独的队列中处理
-            Producer::dispatch(DownloadChatSessionBitMediasConsumer::class, ['corp' => $corp, 'message' => $message]);
-            return;
+        try {
+            if (self::isLargeFile($message)) { // 大文件到单独的队列中处理
+                Producer::dispatch(DownloadChatSessionBitMediasConsumer::class, ['corp' => $corp, 'message' => $message]);
+                return;
+            }
+
+            Producer::dispatch(DownloadChatSessionMediasConsumer::class, ['corp' => $corp, 'message' => $message]);
+        } catch (Throwable $e) {
+            self::markMediaDownloadFailed($message);
+            throw $e;
         }
-
-        Producer::dispatch(DownloadChatSessionMediasConsumer::class, ['corp' => $corp, 'message' => $message]);
     }
 
     /**
@@ -204,7 +217,7 @@ class ChatSessionPullService
     }
 
     /**
-     * 下载聊天记录或混合消息中最多三层的媒体，并把存储 hash 回写到对应 content。
+     * 下载聊天记录、混合消息或笔记中的媒体，并把存储 hash 回写到对应 content。
      *
      * @throws Throwable
      */
@@ -213,16 +226,18 @@ class ChatSessionPullService
         if (!in_array($message->get('msg_type'), [
             EnumMessageType::ChatRecord->value,
             EnumMessageType::Mixed->value,
+            EnumMessageType::Note->value,
         ], true)) {
             throw new LogicException('消息类型不正确');
         }
 
         $rawContent = $message->get('raw_content');
-        if (empty($rawContent['item']) || !is_array($rawContent['item'])) {
+        $itemsKey = $message->get('msg_type') === EnumMessageType::Note->value ? 'items' : 'item';
+        if (empty($rawContent[$itemsKey]) || !is_array($rawContent[$itemsKey])) {
             return;
         }
 
-        $rawContent['item'] = self::downloadChatRecordItems($corp, $rawContent['item'], 1);
+        $rawContent[$itemsKey] = self::downloadChatRecordItems($corp, $rawContent[$itemsKey], 1);
         $message->update(['raw_content' => $rawContent]);
     }
 
@@ -242,11 +257,14 @@ class ChatSessionPullService
                 continue;
             }
 
-            $type = (string) ($item['type'] ?? '');
+            // 笔记条目使用 msg_type，聊天记录条目使用 type。
+            $type = (string) ($item['type'] ?? $item['msg_type'] ?? '');
             if (isset(self::CHAT_RECORD_MEDIA_TYPE_MAP[$type])) {
                 $sdkFileId = $content['sdkfileid'] ?? '';
-                $md5 = (string) ($content['md5sum'] ?? '');
-                if (!empty($sdkFileId) && is_md5($md5)) {
+                $storageHash = (string) ($content['storage_hash'] ?? '');
+                // storage_hash 表示该条目曾成功下载。即使对象后来被管理员从 MinIO
+                // 清理，也必须保留完成状态，不能在补偿其他条目时重新下载它。
+                if (!empty($sdkFileId) && !is_md5($storageHash)) {
                     $content['storage_hash'] = self::downloadMedia(
                         $corp,
                         self::CHAT_RECORD_MEDIA_TYPE_MAP[$type],
@@ -279,6 +297,150 @@ class ChatSessionPullService
 
         $decoded = json_decode($content, true);
         return is_array($decoded) ? $decoded : null;
+    }
+
+    /**
+     * 判断结构化消息中是否还有待下载的媒体。
+     */
+    public static function hasPendingStructuredMessageMedia(ChatMessageModel $message): bool
+    {
+        $messageType = $message->get('msg_type');
+        $rawContent = $message->get('raw_content');
+        $itemsKey = $messageType === EnumMessageType::Note->value ? 'items' : 'item';
+        $items = $rawContent[$itemsKey] ?? null;
+
+        return is_array($items) && self::containsPendingChatRecordMedia($items, 1);
+    }
+
+    /**
+     * 将历史结构化消息的未知状态分批归一化。
+     *
+     * 这里只检查持久化的 storage_hash，不访问对象存储。即使管理员已经在 MinIO
+     * 删除文件，只要消息曾写入 storage_hash，仍会保持已完成并且不会重新下载。
+     */
+    public static function normalizeUnknownMediaDownloadStatuses(): void
+    {
+        $messages = ChatMessageModel::query()
+            ->where(['media_download_status' => EnumMediaDownloadStatus::Unknown->value])
+            ->orderBy(['msg_time' => SORT_DESC])
+            ->limit(self::MEDIA_STATUS_NORMALIZE_LIMIT)
+            ->getAll();
+
+        foreach ($messages as $message) {
+            /** @var ChatMessageModel $message */
+            self::updateMediaDownloadStatus($message, self::resolvedMediaDownloadStatus($message));
+        }
+    }
+
+    /**
+     * 消费者异常退出后，回收超过媒体锁时长的处理中任务。
+     */
+    public static function recoverStaleMediaDownloads(): void
+    {
+        $staleBefore = Carbon::now()
+            ->subSeconds(self::MEDIA_LOCK_TTL)
+            ->toDateTimeString('millisecond');
+
+        $messages = ChatMessageModel::query()
+            ->where(['media_download_status' => EnumMediaDownloadStatus::Processing->value])
+            ->andWhere(['<', 'media_download_updated_at', $staleBefore])
+            ->orderBy(['media_download_updated_at' => SORT_ASC])
+            ->limit(self::MEDIA_STATUS_NORMALIZE_LIMIT)
+            ->getAll();
+
+        foreach ($messages as $message) {
+            /** @var ChatMessageModel $message */
+            self::updateMediaDownloadStatus($message, self::resolvedMediaDownloadStatus($message));
+        }
+    }
+
+    public static function markMediaDownloadCompleted(ChatMessageModel $message): void
+    {
+        self::updateMediaDownloadStatus($message, EnumMediaDownloadStatus::Completed);
+    }
+
+    public static function markMediaDownloadFailed(ChatMessageModel $message): void
+    {
+        self::updateMediaDownloadStatus($message, self::resolvedMediaDownloadStatus($message));
+    }
+
+    private static function resolvedMediaDownloadStatus(ChatMessageModel $message): EnumMediaDownloadStatus
+    {
+        $messageType = $message->get('msg_type');
+        if (in_array($messageType, ChatSessionService::ValidMediaType, true)) {
+            return $message->get('msg_content') !== ''
+                ? EnumMediaDownloadStatus::Completed
+                : self::retryableMediaDownloadStatus($message);
+        }
+
+        if (self::isStructuredMessageType($messageType)) {
+            return self::hasPendingStructuredMessageMedia($message)
+                ? self::retryableMediaDownloadStatus($message)
+                : EnumMediaDownloadStatus::Completed;
+        }
+
+        return EnumMediaDownloadStatus::NotRequired;
+    }
+
+    private static function retryableMediaDownloadStatus(ChatMessageModel $message): EnumMediaDownloadStatus
+    {
+        return (int) $message->get('download_retry_count') >= self::MAX_MEDIA_DOWNLOAD_ATTEMPTS
+            ? EnumMediaDownloadStatus::Exhausted
+            : EnumMediaDownloadStatus::Pending;
+    }
+
+    private static function updateMediaDownloadStatus(
+        ChatMessageModel $message,
+        EnumMediaDownloadStatus $status,
+    ): void {
+        $message->update([
+            'media_download_status' => $status->value,
+            'media_download_updated_at' => self::mediaStatusTimestamp(),
+        ]);
+        $message->set('media_download_status', $status);
+    }
+
+    private static function isStructuredMessageType(string $messageType): bool
+    {
+        return in_array($messageType, [
+            EnumMessageType::ChatRecord->value,
+            EnumMessageType::Mixed->value,
+            EnumMessageType::Note->value,
+        ], true);
+    }
+
+    private static function mediaStatusTimestamp(): string
+    {
+        return Carbon::now()->toDateTimeString('millisecond');
+    }
+
+    private static function containsPendingChatRecordMedia(array $items, int $depth): bool
+    {
+        foreach ($items as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+
+            $content = self::decodeChatRecordItemContent($item['content'] ?? null);
+            if ($content === null) {
+                continue;
+            }
+
+            $type = (string) ($item['type'] ?? $item['msg_type'] ?? '');
+            if (isset(self::CHAT_RECORD_MEDIA_TYPE_MAP[$type])) {
+                if (!empty($content['sdkfileid']) && !is_md5((string) ($content['storage_hash'] ?? ''))) {
+                    return true;
+                }
+            } elseif ($depth < self::MAX_CHAT_RECORD_DEPTH && self::isChatRecordContainer($type)) {
+                if (!empty($content['item'])
+                    && is_array($content['item'])
+                    && self::containsPendingChatRecordMedia($content['item'], $depth + 1)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private static function isChatRecordContainer(string $type): bool
@@ -620,6 +782,7 @@ class ChatSessionPullService
             return null;
         }
         $content = $enumMsgType->getMessageHandler()($decryptedData);
+        $mediaDownloadStatus = self::initialMediaDownloadStatus($msgType, $content);
 
         $messageData = ChatMessageModel::create(array_merge([
             'corp_id' => self::$corp->get('id'),
@@ -632,6 +795,8 @@ class ChatSessionPullService
             'msg_type' => $decryptedData['msgtype'] ?? '',
             'roomid' => $decryptedData['roomid'] ?? '',
             'msg_time' => Carbon::createFromTimestampMsUTC($decryptedData['msgtime'])->timezone('Asia/Shanghai')->format('Y-m-d H:i:s.v'),
+            'media_download_status' => $mediaDownloadStatus->value,
+            'media_download_updated_at' => self::mediaStatusTimestamp(),
         ], $content));
         if (self::hasExternalPrefix($messageData->get('from'))) {
             $messageData->set('from_role', EnumChatMessageRole::Customer);
@@ -651,6 +816,29 @@ class ChatSessionPullService
         $messageData->save();
 
         return $messageData;
+    }
+
+    private static function initialMediaDownloadStatus(
+        string $messageType,
+        array $messageContent,
+    ): EnumMediaDownloadStatus {
+        if (in_array($messageType, ChatSessionService::ValidMediaType, true)) {
+            return empty($messageContent['msg_content'])
+                ? EnumMediaDownloadStatus::Pending
+                : EnumMediaDownloadStatus::Completed;
+        }
+
+        if (!self::isStructuredMessageType($messageType)) {
+            return EnumMediaDownloadStatus::NotRequired;
+        }
+
+        $rawContent = $messageContent['raw_content'] ?? [];
+        $itemsKey = $messageType === EnumMessageType::Note->value ? 'items' : 'item';
+        $items = is_array($rawContent) ? ($rawContent[$itemsKey] ?? null) : null;
+
+        return is_array($items) && self::containsPendingChatRecordMedia($items, 1)
+            ? EnumMediaDownloadStatus::Pending
+            : EnumMediaDownloadStatus::Completed;
     }
 
     public static function hasExternalPrefix($id): bool
