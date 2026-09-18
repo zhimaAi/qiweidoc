@@ -32,6 +32,7 @@ class DownloadChatSessionMediasConsumer
         if (in_array($this->message->get('msg_type'), [
             EnumMessageType::ChatRecord->value,
             EnumMessageType::Mixed->value,
+            EnumMessageType::Note->value,
         ], true)) {
             ChatSessionPullService::handleStructuredMessageMedias($this->corp, $this->message);
             return;

@@ -106,7 +106,8 @@ const TYPE_MAP = {
     ChatRecord: 'chatrecord',
 }
 
-const normalizedType = computed(() => TYPE_MAP[props.item.type] || String(props.item.type || '').toLowerCase())
+const itemType = computed(() => props.item.type || props.item.msg_type || '')
+const normalizedType = computed(() => TYPE_MAP[itemType.value] || String(itemType.value).toLowerCase())
 const content = computed(() => {
     if (props.item.content && typeof props.item.content === 'object') {
         return props.item.content

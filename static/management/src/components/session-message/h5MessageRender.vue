@@ -9,6 +9,13 @@
             <div class="note-content">
                 <div class="note-title">{{ noteContent.title }}</div>
                 <div v-if="noteContent.description" class="note-description">{{ noteContent.description }}</div>
+                <ChatRecordItem
+                    v-for="(item, index) in noteContent.files"
+                    :key="`note-file-${index}`"
+                    :item="item"
+                    :allow-open="false"
+                    compact
+                />
             </div>
             <div class="note-type">{{ MessageTypeTextMap[messageInfo.msg_type] }}</div>
         </div>
@@ -109,15 +116,24 @@
                     <img src="@/assets/image/icon-voice.gif" class="voice-play-icon"/>
                     <span class="ml8">语音消息 {{ formatSeconds(messageInfo.raw_content.play_length) }}</span>
                     <a-divider type="vertical"/>
-                    <PauseCircleOutlined @click="playingVoice(messageInfo)" class="icon-btn"/>
+                    <a-tooltip v-if="mediaRemoved" title="文件已清除">
+                        <PauseCircleOutlined class="icon-disabled"/>
+                    </a-tooltip>
+                    <PauseCircleOutlined v-else @click="playingVoice(messageInfo)" class="icon-btn"/>
                 </template>
                 <template v-else>
                     <img class="icon-14" src="@/assets/image/icon-voice.png"/>
                     <span class="ml8">语音消息 {{ formatSeconds(messageInfo.raw_content.play_length) }}</span>
                     <a-divider type="vertical"/>
-                    <PlayCircleOutlined @click="playingVoice(messageInfo)" class="icon-btn"/>
+                    <a-tooltip v-if="mediaRemoved" title="文件已清除">
+                        <PlayCircleOutlined class="icon-disabled"/>
+                    </a-tooltip>
+                    <PlayCircleOutlined v-else @click="playingVoice(messageInfo)" class="icon-btn"/>
                 </template>
-                <DownloadOutlined @click="downloadMsgFile" class="icon-btn ml8"/>
+                <a-tooltip v-if="mediaRemoved" title="文件已清除">
+                    <DownloadOutlined class="icon-disabled ml8"/>
+                </a-tooltip>
+                <DownloadOutlined v-else @click="downloadMsgFile" class="icon-btn ml8"/>
             </div>
         </div>
         <!-- 红包消息-->
@@ -537,5 +553,11 @@ const showBuyFileStorage = () => {
     &:hover {
         color: #2475FC;
     }
+}
+
+.icon-disabled {
+    color: #CCC;
+    font-size: 1.6rem;
+    cursor: no-drop;
 }
 </style>

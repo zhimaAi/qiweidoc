@@ -107,6 +107,7 @@ class ChatSessionPullService
                 } elseif (in_array($messageData->get('msg_type'), [
                     EnumMessageType::ChatRecord->value,
                     EnumMessageType::Mixed->value,
+                    EnumMessageType::Note->value,
                 ], true)) {
                     self::dispatchMediaDownload($corp, $messageData);
                 }
@@ -152,7 +153,11 @@ class ChatSessionPullService
         $isStructuredMessage = in_array($messageType, [
             EnumMessageType::ChatRecord->value,
             EnumMessageType::Mixed->value,
+            EnumMessageType::Note->value,
         ], true);
+        if ($isStructuredMessage && !self::hasPendingStructuredMessageMedia($message)) {
+            return;
+        }
 
         $query = ChatMessageModel::query()
             ->where(['msg_id' => $message->get('msg_id')])
@@ -204,7 +209,7 @@ class ChatSessionPullService
     }
 
     /**
-     * 下载聊天记录或混合消息中最多三层的媒体，并把存储 hash 回写到对应 content。
+     * 下载聊天记录、混合消息或笔记中的媒体，并把存储 hash 回写到对应 content。
      *
      * @throws Throwable
      */
@@ -213,16 +218,18 @@ class ChatSessionPullService
         if (!in_array($message->get('msg_type'), [
             EnumMessageType::ChatRecord->value,
             EnumMessageType::Mixed->value,
+            EnumMessageType::Note->value,
         ], true)) {
             throw new LogicException('消息类型不正确');
         }
 
         $rawContent = $message->get('raw_content');
-        if (empty($rawContent['item']) || !is_array($rawContent['item'])) {
+        $itemsKey = $message->get('msg_type') === EnumMessageType::Note->value ? 'items' : 'item';
+        if (empty($rawContent[$itemsKey]) || !is_array($rawContent[$itemsKey])) {
             return;
         }
 
-        $rawContent['item'] = self::downloadChatRecordItems($corp, $rawContent['item'], 1);
+        $rawContent[$itemsKey] = self::downloadChatRecordItems($corp, $rawContent[$itemsKey], 1);
         $message->update(['raw_content' => $rawContent]);
     }
 
@@ -242,11 +249,11 @@ class ChatSessionPullService
                 continue;
             }
 
-            $type = (string) ($item['type'] ?? '');
+            // 笔记条目使用 msg_type，聊天记录条目使用 type。
+            $type = (string) ($item['type'] ?? $item['msg_type'] ?? '');
             if (isset(self::CHAT_RECORD_MEDIA_TYPE_MAP[$type])) {
                 $sdkFileId = $content['sdkfileid'] ?? '';
-                $md5 = (string) ($content['md5sum'] ?? '');
-                if (!empty($sdkFileId) && is_md5($md5)) {
+                if (!empty($sdkFileId)) {
                     $content['storage_hash'] = self::downloadMedia(
                         $corp,
                         self::CHAT_RECORD_MEDIA_TYPE_MAP[$type],
@@ -279,6 +286,48 @@ class ChatSessionPullService
 
         $decoded = json_decode($content, true);
         return is_array($decoded) ? $decoded : null;
+    }
+
+    /**
+     * 判断结构化消息中是否还有待下载的媒体。
+     */
+    public static function hasPendingStructuredMessageMedia(ChatMessageModel $message): bool
+    {
+        $messageType = $message->get('msg_type');
+        $rawContent = $message->get('raw_content');
+        $itemsKey = $messageType === EnumMessageType::Note->value ? 'items' : 'item';
+        $items = $rawContent[$itemsKey] ?? null;
+
+        return is_array($items) && self::containsPendingChatRecordMedia($items, 1);
+    }
+
+    private static function containsPendingChatRecordMedia(array $items, int $depth): bool
+    {
+        foreach ($items as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+
+            $content = self::decodeChatRecordItemContent($item['content'] ?? null);
+            if ($content === null) {
+                continue;
+            }
+
+            $type = (string) ($item['type'] ?? $item['msg_type'] ?? '');
+            if (isset(self::CHAT_RECORD_MEDIA_TYPE_MAP[$type])) {
+                if (!empty($content['sdkfileid']) && !is_md5((string) ($content['storage_hash'] ?? ''))) {
+                    return true;
+                }
+            } elseif ($depth < self::MAX_CHAT_RECORD_DEPTH && self::isChatRecordContainer($type)) {
+                if (!empty($content['item'])
+                    && is_array($content['item'])
+                    && self::containsPendingChatRecordMedia($content['item'], $depth + 1)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private static function isChatRecordContainer(string $type): bool

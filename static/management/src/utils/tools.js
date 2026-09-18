@@ -417,7 +417,7 @@ export const jsonDecode = (jsonStr, nullval = {}) => {
 }
 
 /**
- * 获取笔记的标题和正文。
+ * 获取笔记的标题、正文和文件条目。
  * 新消息由后端提供 msg_content；旧消息兼容从 raw_content.items 解析。
  */
 export const getNoteDisplayContent = (messageInfo = {}) => {
@@ -443,6 +443,9 @@ export const getNoteDisplayContent = (messageInfo = {}) => {
     return {
         title: lines.shift() || '笔记',
         description: lines.join('\n').trim(),
+        files: Array.isArray(rawContent.items)
+            ? rawContent.items.filter(item => item && item.msg_type === 'file')
+            : [],
     }
 }
 

@@ -778,7 +778,7 @@ SQL;
     }
 
     /**
-     * 动态生成媒体下载链接，嵌套聊天记录最多处理三层。
+     * 动态生成媒体下载链接，嵌套结构化消息最多处理三层。
      */
     private static function appendMediaDownloadUrls(ChatMessageModel $message): void
     {
@@ -793,16 +793,18 @@ SQL;
         if (!in_array($message->get('msg_type'), [
             EnumMessageType::ChatRecord->value,
             EnumMessageType::Mixed->value,
+            EnumMessageType::Note->value,
         ], true)) {
             return;
         }
 
         $rawContent = $message->get('raw_content');
-        if (empty($rawContent['item']) || !is_array($rawContent['item'])) {
+        $itemsKey = $message->get('msg_type') === EnumMessageType::Note->value ? 'items' : 'item';
+        if (empty($rawContent[$itemsKey]) || !is_array($rawContent[$itemsKey])) {
             return;
         }
 
-        $rawContent['item'] = self::appendChatRecordItemUrls($rawContent['item'], 1);
+        $rawContent[$itemsKey] = self::appendChatRecordItemUrls($rawContent[$itemsKey], 1);
         $message->append('raw_content', $rawContent);
     }
 
@@ -819,14 +821,15 @@ SQL;
                 continue;
             }
 
-            $type = (string) ($item['type'] ?? '');
+            // 笔记条目使用 msg_type，聊天记录条目使用 type。
+            $type = (string) ($item['type'] ?? $item['msg_type'] ?? '');
             if (in_array($type, self::CHAT_RECORD_MEDIA_TYPES, true)) {
                 $storageHash = $content['storage_hash'] ?? '';
                 if (is_md5($storageHash)) {
                     $mediaInfo = StorageService::getVerifiedDownloadInfo($storageHash);
                     $content['download_url'] = $mediaInfo['download_url'];
                     $content['media_status'] = $mediaInfo['media_status'];
-                } elseif (!empty($content['sdkfileid']) && is_md5((string) ($content['md5sum'] ?? ''))) {
+                } elseif (!empty($content['sdkfileid'])) {
                     $content['download_url'] = '';
                     $content['media_status'] = 'pending';
                 }
