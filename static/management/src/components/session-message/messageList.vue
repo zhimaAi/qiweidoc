@@ -1,6 +1,6 @@
 <template>
     <a-modal v-model:open="visible"
-        title="查看聊天记录"
+        :title="title"
         :confirm-loading="saving"
         :keyboard="!childVisible"
         width="746px">
@@ -23,6 +23,7 @@ const visible = ref(false)
 const saving = ref(false)
 const childVisible = ref(false)
 const messageList = ref([])
+const title = ref('查看聊天记录')
 
 const onShowMessage = (list, title) => {
     nextTick(() => {
@@ -33,8 +34,9 @@ const onShowMessage = (list, title) => {
 }
 
 
-const show = (messageListData) => {
+const show = (messageListData, modalTitle) => {
     messageList.value = messageListData
+    title.value = modalTitle || '查看聊天记录'
     visible.value = true
     saving.value = false
     nextTick(() => {

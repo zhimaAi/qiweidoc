@@ -90,15 +90,24 @@
                     <img src="@/assets/image/icon-voice.gif" class="voice-play-icon"/>
                     <span class="ml8">语音通话 {{ getVoiceCallDuration }}</span>
                     <a-divider type="vertical"/>
-                    <PauseCircleOutlined @click="playingVoice(messageInfo)" class="icon-btn"/>
+                    <a-tooltip v-if="mediaRemoved" title="文件已清除">
+                        <PauseCircleOutlined class="icon-disabled"/>
+                    </a-tooltip>
+                    <PauseCircleOutlined v-else @click="playingVoice(messageInfo)" class="icon-btn"/>
                 </template>
                 <template v-else>
                     <PhoneOutlined class="voice-phone-icon"/>
                     <span class="ml8">语音通话 {{ getVoiceCallDuration }}</span>
                     <a-divider type="vertical"/>
-                    <PlayCircleOutlined @click="playingVoice(messageInfo)" class="icon-btn"/>
+                    <a-tooltip v-if="mediaRemoved" title="文件已清除">
+                        <PlayCircleOutlined class="icon-disabled"/>
+                    </a-tooltip>
+                    <PlayCircleOutlined v-else @click="playingVoice(messageInfo)" class="icon-btn"/>
                 </template>
-                <DownloadOutlined @click="downloadMsgFile" class="icon-btn ml8"/>
+                <a-tooltip v-if="mediaRemoved" title="文件已清除">
+                    <DownloadOutlined class="icon-disabled ml8"/>
+                </a-tooltip>
+                <DownloadOutlined v-else @click="downloadMsgFile" class="icon-btn ml8"/>
             </div>
         </div>
         <div v-else-if="messageInfo.msg_type == 'voiptext'"

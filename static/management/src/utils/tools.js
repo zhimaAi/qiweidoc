@@ -417,7 +417,7 @@ export const jsonDecode = (jsonStr, nullval = {}) => {
 }
 
 /**
- * 获取笔记的标题、正文和文件条目。
+ * 获取笔记的标题、正文和内容条目。
  * 新消息由后端提供 msg_content；旧消息兼容从 raw_content.items 解析。
  */
 export const getNoteDisplayContent = (messageInfo = {}) => {
@@ -425,9 +425,10 @@ export const getNoteDisplayContent = (messageInfo = {}) => {
     const rawContent = typeof messageInfo.raw_content === 'string'
         ? jsonDecode(messageInfo.raw_content, {})
         : (messageInfo.raw_content || {})
+    const rawItems = Array.isArray(rawContent.items) ? rawContent.items.filter(Boolean) : []
 
-    if (!text && Array.isArray(rawContent.items)) {
-        text = rawContent.items
+    if (!text && rawItems.length) {
+        text = rawItems
             .filter(item => item && item.msg_type === 'text')
             .map(item => {
                 const content = typeof item.content === 'string'
@@ -443,9 +444,12 @@ export const getNoteDisplayContent = (messageInfo = {}) => {
     return {
         title: lines.shift() || '笔记',
         description: lines.join('\n').trim(),
-        files: Array.isArray(rawContent.items)
-            ? rawContent.items.filter(item => item && item.msg_type === 'file')
-            : [],
+        // 笔记子项与聊天记录子项结构一致，保留原顺序供详情弹窗完整渲染。
+        items: rawItems.length ? rawItems : (text ? [{
+            msg_type: 'text',
+            content: {content: text},
+        }] : []),
+        files: rawItems.filter(item => item && item.msg_type === 'file'),
     }
 }
 
